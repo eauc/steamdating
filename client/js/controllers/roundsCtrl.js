@@ -56,14 +56,9 @@ angular.module('srApp.controllers')
         return players.names($scope.state.players);
       };
       $scope.suggestNextRound = function() {
-        $scope.next_round[0].p1.name = 'Player1';
-        $scope.next_round[0].p2.name = 'Player3';
-        $scope.next_round[1].p1.name = 'Player2';
-        $scope.next_round[1].p2.name = 'Player4';
-        $scope.next_round[2].p1.name = 'Player5';
-        $scope.next_round[2].p2.name = 'Player7';
-        $scope.next_round[3].p1.name = 'Player6';
-        $scope.next_round[3].p2.name = 'Phantom';
+        var sorted_player_names = players.names(players.sort($scope.state.players));
+        $scope.next_round = rounds.suggestNextRound($scope.state.rounds,
+                                                    sorted_player_names);
       };
       $scope.registerNextRound = function() {
         $scope.state.rounds.push($scope.next_round);

@@ -4,6 +4,23 @@ angular.module('srApp.services')
   .factory('game', [
     function() {
       var game = {
+        create: function(table, p1_name, p2_name) {
+          return {
+            table: table,
+            p1: {
+              name: p1_name,
+              tournament: null,
+              control: null,
+              army: null
+            },
+            p2: {
+              name: p2_name,
+              tournament: null,
+              control: null,
+              army: null
+            }
+          };
+        },
         player: _.rcurry2(function(g, p) {
           var p1_name = _.getPath(g, 'p1.name');
           return p1_name === p ? _.getPath(g, 'p1') : _.getPath(g, 'p2');
@@ -65,10 +82,46 @@ angular.module('srApp.services')
           return _.map(coll, _.unary(round.gameFor(p)))
             .map(_.unary(game.opponentFor(p)));
         },
+        tablesFor: function(coll, p) {
+          return _.map(coll, _.unary(round.gameFor(p)))
+            .map(_.unary(game.tableFor(p)));
+        },
         query: function(coll, r, p, q) {
           return _.pipeline(rounds.round(r),
                             round.gameFor(p),
                             game[q](p))(coll);
+        },
+        suggestOpponentFor: function(coll, available_players, p) {
+          var opps = rounds.opponentsFor(coll, p);
+          var candidates = _.difference(available_players, opps);
+          return candidates.length === 0 ? available_players[0] : candidates[0];
+        },
+        suggestTableFor: function(coll, available_tables, p1, p2) {
+          var p1_tables = rounds.tablesFor(coll, p1);
+          var p2_tables = rounds.tablesFor(coll, p2);
+          var possible_tables = _.difference(available_tables, p1_tables, p2_tables);
+          return possible_tables.length === 0 ? available_tables[0] : possible_tables[0];
+        },
+        suggestNextRound: function(coll, sorted_player_names) {
+          var round = [];
+          var n_games = sorted_player_names.length/2;
+          var players = sorted_player_names.slice();
+          var tables = _.range(1, n_games+1);
+          return _.chain(_.range(n_games))
+            .map(function(i) {
+              var p1 = players[0];
+              players = _.rest(players);
+
+              var p2 = rounds.suggestOpponentFor(coll, players, p1);
+              players = _.without(players, p2);
+
+              var table = rounds.suggestTableFor(coll, tables, p1, p2);
+              tables = _.without(tables, table);
+
+              return game.create(table, p1, p2);
+            })
+            .sortBy(_.property('table'))
+            .value();
         }
       };
       return rounds;

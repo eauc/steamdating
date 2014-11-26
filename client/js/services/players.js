@@ -4,6 +4,7 @@ angular.module('srApp.services')
   .factory('player', [
     function() {
       var lessOrEqual = _.comparator(_.lt);
+      var greaterOrEqual = _.comparator(_.gt);
       return {
         is: _.rcurry2(function(p, name) {
           return p.name === name;
@@ -13,7 +14,7 @@ angular.module('srApp.services')
           if(0 === ret) ret = lessOrEqual(p1.points.sos, p2.points.sos);
           if(0 === ret) ret = lessOrEqual(p1.points.control, p2.points.control);
           if(0 === ret) ret = lessOrEqual(p1.points.army, p2.points.army);
-          if(0 === ret) ret = p1.name.localCompare(p2.name);
+          if(0 === ret) ret = greaterOrEqual(p1.name, p2.name);
           return ret;
         },
         create: function playerCreate(name, faction, city) {
