@@ -21,21 +21,21 @@ angular.module('srApp.services')
             }
           };
         },
-        player: _.rcurry2(function(g, p) {
+        player: function(g, p) {
           var p1_name = _.getPath(g, 'p1.name');
           return p1_name === p ? _.getPath(g, 'p1') : _.getPath(g, 'p2');
-        }),
-        opponentFor: _.rcurry2(function(g, p) {
+        },
+        opponentFor: function(g, p) {
           var p1_name = _.getPath(g, 'p1.name');
           return p1_name === p ? _.getPath(g, 'p2.name') : p1_name;
-        }),
-        successFor: _.rcurry2(function(g, p) {
-          var player = game.player(p)(g);
-          return _.getPath(player || {}, 'tournament');
-        }),
-        tableFor: _.rcurry2(function(g, p) {
-          return _.getPath(g, 'table');
-        })
+        },
+        successFor: function(g, p) {
+          return _.chain(g)
+            .apply(game.player, p)
+            .getPath('tournament')
+            .value();
+        },
+        tableFor: _.partial(_.getPath, _, 'table')
       };
       return game;
     }
@@ -44,11 +44,11 @@ angular.module('srApp.services')
     'game',
     function(game) {
       var round = {
-        gameFor: _.rcurry2(function(coll, p) {
+        gameFor: function(coll, p) {
           return _.find(coll, function(g) {
             return g.p1.name === p || g.p2.name === p;
           });
-        })
+        }
       };
       return round;
     }
@@ -59,13 +59,14 @@ angular.module('srApp.services')
     function(game,
              round) {
       var rounds = {
-        round: _.rcurry2(function(coll, r) {
+        round: function(coll, r) {
           if(r >= coll.length) return [];
           return coll[r];
-        }),
+        },
         pointsFor: function(coll, p) {
-          return _.map(coll, _.unary(round.gameFor(p)))
-            .map(_.unary(game.player(p)))
+          return _.chain(coll)
+            .mapWith(round.gameFor, p)
+            .mapWith(game.player, p)
             .reduce(function(mem, r) {
               return {
                 tournament: mem.tournament + r.tournament,
@@ -76,20 +77,27 @@ angular.module('srApp.services')
               tournament: 0,
               control: 0,
               army: 0
-            });
+            })
+            .value();
         },
         opponentsFor: function(coll, p) {
-          return _.map(coll, _.unary(round.gameFor(p)))
-            .map(_.unary(game.opponentFor(p)));
+          return _.chain(coll)
+            .mapWith(round.gameFor, p)
+            .mapWith(game.opponentFor, p)
+            .value();
         },
         tablesFor: function(coll, p) {
-          return _.map(coll, _.unary(round.gameFor(p)))
-            .map(_.unary(game.tableFor(p)));
+          return _.chain(coll)
+            .mapWith(round.gameFor, p)
+            .mapWith(game.tableFor, p)
+            .value();
         },
         query: function(coll, r, p, q) {
-          return _.pipeline(rounds.round(r),
-                            round.gameFor(p),
-                            game[q](p))(coll);
+          return _.chain(coll)
+            .apply(rounds.round, r)
+            .apply(round.gameFor, p)
+            .apply(game[q], p)
+            .value();
         },
         suggestOpponentFor: function(coll, available_players, p) {
           var opps = rounds.opponentsFor(coll, p);

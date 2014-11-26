@@ -32,7 +32,7 @@ angular.module('srApp.controllers')
       mapRoundsQuery('tableFor');
 
       $scope.round = function(r) {
-        return rounds.round(r)($scope.state.rounds);
+        return rounds.round($scope.state.rounds, r);
       };
 
       $scope.next_round = _.range($scope.state.players.length/2).map(function(i) {
@@ -56,7 +56,10 @@ angular.module('srApp.controllers')
         return players.names($scope.state.players);
       };
       $scope.suggestNextRound = function() {
-        var sorted_player_names = players.names(players.sort($scope.state.players));
+        var sorted_player_names = _.chain($scope.state.players)
+            .apply(players.sort)
+            .apply(players.names)
+            .value();
         $scope.next_round = rounds.suggestNextRound($scope.state.rounds,
                                                     sorted_player_names);
       };

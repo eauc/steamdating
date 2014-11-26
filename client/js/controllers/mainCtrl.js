@@ -22,27 +22,27 @@ angular.module('srApp.controllers')
       $scope.goToState = _.bind($state.go, $state);
       $scope.currentState = _.bind(_.getPath, _, $state, 'current.name');
 
-      $scope.state.rounds = _.range(4).map(function(i) {
-        return _.range(4).map(function(j) {
-          var game = {
-            table: ((i+j)%4)+1,
-            p1: {
-              name: 'Player'+(j*2+1),
-              tournament: (i/2)>>0,
-              control: (Math.random()*5)>>0+1,
-              army: (Math.random()*50)>>0+1
-            },
-            p2: {
-              name: 'Player'+((j*2+i*2)%8+2),
-              tournament: 1-((i/2)>>0),
-              control: (Math.random()*5)>>0+1,
-              army: (Math.random()*50)>>0+1
-            }
-          };
-          game.p2.name = (game.p2.name === 'Player8') ? 'Phantom' : game.p2.name;
-          return game;
-        });
-      });
+      // $scope.state.rounds = _.range(2).map(function(i) {
+      //   return _.range(4).map(function(j) {
+      //     var game = {
+      //       table: ((i+j)%4)+1,
+      //       p1: {
+      //         name: 'Player'+(j*2+1),
+      //         tournament: (i/2)>>0,
+      //         control: (Math.random()*5)>>0+1,
+      //         army: (Math.random()*50)>>0+1
+      //       },
+      //       p2: {
+      //         name: 'Player'+((j*2+i*2)%8+2),
+      //         tournament: 1-((i/2)>>0),
+      //         control: (Math.random()*5)>>0+1,
+      //         army: (Math.random()*50)>>0+1
+      //       }
+      //     };
+      //     game.p2.name = (game.p2.name === 'Player8') ? 'Phantom' : game.p2.name;
+      //     return game;
+      //   });
+      // });
 
       $scope.state.players = _.range(7).map(function(i) {
         return {
