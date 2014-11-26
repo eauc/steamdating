@@ -15,12 +15,30 @@ angular.module('srApp', [
   '$stateProvider',
   '$urlRouterProvider',
   function($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/');
+    $urlRouterProvider.otherwise('/players');
     $stateProvider
-      .state('start', {
-        url: '/',
-        templateUrl: 'partials/start.html',
-        controller: 'startCtrl',
+      .state('players', {
+        url: '/players',
+        templateUrl: 'partials/players.html',
+        controller: 'playersCtrl',
+        data: {}
+      })
+      .state('players_add', {
+        url: '/players_add',
+        templateUrl: 'partials/players_add.html',
+        controller: 'playersAddCtrl',
+        data: {}
+      })
+      .state('rounds', {
+        url: '/rounds/:pane',
+        templateUrl: 'partials/rounds.html',
+        controller: 'roundsCtrl',
+        data: {}
+      })
+      .state('game_edit', {
+        // url: '/game',
+        templateUrl: 'partials/game_edit.html',
+        controller: 'gameEditCtrl',
         data: {}
       });
   }

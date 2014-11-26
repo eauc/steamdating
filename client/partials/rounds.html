@@ -1,0 +1,119 @@
+<div>
+  <ul class="nav nav-tabs">
+    <li ng-class="{
+        'active': pane==='sum'
+        }">
+      <a href="#/rounds/sum">Summary</a>
+    </li>
+    <li ng-repeat="i in roundsRange()"
+        ng-class="{
+        'active': pane===(''+i)
+        }">
+      <a href="#/rounds/{{i}}">Round{{i+1}}</a>
+    </li>
+    <li ng-class="{
+        'active': pane==='next'
+        }">
+      <a href="#/rounds/next">Next</a>
+    </li>
+  </ul>
+  <table ng-show="pane==='sum'"
+         class="table">
+    <tr>
+      <th>Player</th>
+      <th ng-repeat="i in roundsRange()">
+        Round{{i+1}}
+      </th>
+    </tr>
+    <tr ng-repeat="p in state.players"
+        ng-style="{
+        'background-color': p.name === 'Phantom' ? '#CCC' : 'auto'
+        }">
+      <td>{{p.name}}</td>
+      <td ng-repeat="i in roundsRange()"
+          ng-class="{
+          'success': successFor(p.name, i) === 1,
+          'danger': successFor(p.name, i) === 0,
+          }">
+        {{tableFor(p.name, i)}} -
+        {{opponentFor(p.name, i)}}
+      </td>
+    </tr>
+  </table>
+  <table class="table text-center"
+         ng-repeat="r in roundsRange()"
+         ng-show="pane===''+r">
+    <tr>
+      <th class="text-center" colspan="3">Player1</th>
+      <th class="text-center">Table</th>
+      <th class="text-center" colspan="3">Player2</th>
+    </tr>
+    <tr>
+      <th class="text-center">CP</th>
+      <th class="text-center">AP</th>
+      <th class="text-center">Name</th>
+      <th class="text-center"></th>
+      <th class="text-center">Name</th>
+      <th class="text-center">CP</th>
+      <th class="text-center">AP</th>
+    </tr>
+    <tr ng-repeat="g in round(r)"
+        ng-click="doGameEdit(g)">
+      <td>{{g.p1.control}}</td>
+      <td>{{g.p1.army}}</td>
+      <td ng-class="{
+          'success': successFor(g.p1.name, r) === 1,
+          'danger': successFor(g.p1.name, r) === 0,
+          }">{{g.p1.name}}</td>
+      <td>{{g.table}}</td>
+      <td ng-class="{
+          'success': successFor(g.p2.name, r) === 1,
+          'danger': successFor(g.p2.name, r) === 0,
+          }">{{g.p2.name}}</td>
+      <td>{{g.p2.control}}</td>
+      <td>{{g.p2.army}}</td>
+    </tr>
+  </table>
+  <div class="text-center"
+       ng-show="pane==='next'">
+    <table class="table text-center">
+      <tr>
+        <th class="text-center" colspan="3">Player1</th>
+        <th class="text-center">Table</th>
+        <th class="text-center" colspan="3">Player2</th>
+      </tr>
+      <tr>
+        <th class="text-center">CP</th>
+        <th class="text-center">AP</th>
+        <th class="text-center">Name</th>
+        <th class="text-center"></th>
+        <th class="text-center">Name</th>
+        <th class="text-center">CP</th>
+        <th class="text-center">AP</th>
+      </tr>
+      <tr ng-repeat="g in next_round">
+        <td>{{g.p1.control}}</td>
+        <td>{{g.p1.army}}</td>
+        <td>
+          <select ng-options="n as n for n in playerNames()"
+                  ng-model="g.p1.name" />
+        </td>
+        <td>{{g.table}}</td>
+        <td>
+          <select ng-options="n as n for n in playerNames()"
+                  ng-model="g.p2.name" />
+        </td>
+        <td>{{g.p2.control}}</td>
+        <td>{{g.p2.army}}</td>
+      </tr>
+    </table>
+    <button class="btn btn-default"
+            ng-click="suggestNextRound()">
+      Make Suggestion
+    </button>
+    <button class="btn btn-default"
+            ng-click="registerNextRound()">
+      Register Round
+    </button>
+  </div>
+</div>

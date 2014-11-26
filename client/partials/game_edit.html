@@ -1,0 +1,67 @@
+<div class="text-center">
+  <h3>Edit Game</h3>
+  <table class="table text-center">
+    <tr>
+      <th></th>
+      <th>
+        {{game.p1.name}}
+      </th>
+      <th>
+        {{game.p2.name}}
+      </th>
+    </tr>
+    <tr>
+      <th class="text-right">
+        Tournament
+      </th>
+      <td ng-class="{
+          'success': game.p1.tournament === 1,
+          'danger': game.p1.tournament === 0,
+          }"
+          ng-click="setWinLoss('p1','p2')">
+        {{game.p1.tournament===1 ? 'Win' : game.p1.tournament===0 ? 'Loss' : ''}}
+      </td>
+      <td ng-class="{
+          'success': game.p2.tournament === 1,
+          'danger': game.p2.tournament === 0,
+          }"
+          ng-click="setWinLoss('p2','p1')">
+        {{game.p2.tournament===1 ? 'Win' : game.p2.tournament===0 ? 'Loss' : ''}}
+      </td>
+    </tr>
+    <tr>
+      <th class="text-right">
+        Control
+      </th>
+      <td>
+        <input type="number"
+               ng-model="game.p1.control" />
+      </td>
+      <td>
+        <input type="number"
+               ng-model="game.p2.control" />
+      </td>
+    </tr>
+    <tr>
+      <th class="text-right">
+        Army
+      </th>
+      <td>
+        <input type="number"
+               ng-model="game.p1.army" />
+      </td>
+      <td>
+        <input type="number"
+               ng-model="game.p2.army" />
+      </td>
+    </tr>
+  </table>
+  <button class="btn btn-default"
+          ng-click="close(true)">
+    Save
+  </button>
+  <button class="btn btn-default"
+          ng-click="close(true)">
+    Cancel
+  </button>
+</div>

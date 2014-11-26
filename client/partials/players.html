@@ -1,0 +1,32 @@
+<div>
+  <button class="btn btn-default"
+          ng-click="goToState('players_add')">
+    <span class="glyphicon glyphicon-plus"></span>
+    Add Player(s)
+  </button>
+  <table class="table">
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Faction</th>
+      <th>City</th>
+      <th>TP</th>
+      <th>SoS</th>
+      <th>CP</th>
+      <th>AP</th>
+    </tr>
+    <tr ng-repeat="p in state.players"
+        ng-style="{
+        'background-color': p.name === 'Phantom' ? '#CCC' : 'auto'
+        }">
+      <td>{{$index+1}}</td>
+      <td>{{p.name}}</td>
+      <td>{{p.faction}}</td>
+      <td>{{p.city}}</td>
+      <td>{{p.points.tournament}}</td>
+      <td>{{p.points.sos}}</td>
+      <td>{{p.points.control}}</td>
+      <td>{{p.points.army}}</td>
+    </tr>
+  </table>
+</div>
