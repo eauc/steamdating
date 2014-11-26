@@ -58,7 +58,8 @@
       <th class="text-center">AP</th>
     </tr>
     <tr ng-repeat="g in round(r)"
-        ng-click="doGameEdit(g)">
+        ng-click="doGameEdit(g)"
+        style="cursor:pointer;">
       <td>{{g.p1.control}}</td>
       <td>{{g.p1.army}}</td>
       <td ng-class="{
