@@ -15,7 +15,7 @@
       <th>CP</th>
       <th>AP</th>
     </tr>
-    <tr ng-repeat="p in state.players"
+    <tr ng-repeat="p in state.players | playerSort"
         ng-style="{
         'background-color': p.name === 'Phantom' ? '#CCC' : 'auto'
         }">

@@ -3,10 +3,19 @@
 angular.module('srApp.services')
   .factory('player', [
     function() {
+      var lessOrEqual = _.comparator(_.lt);
       return {
         is: _.rcurry2(function(p, name) {
           return p.name === name;
         }),
+        compare: function(p1, p2) {
+          var ret = lessOrEqual(p1.points.tournament, p2.points.tournament);
+          if(0 === ret) ret = lessOrEqual(p1.points.sos, p2.points.sos);
+          if(0 === ret) ret = lessOrEqual(p1.points.control, p2.points.control);
+          if(0 === ret) ret = lessOrEqual(p1.points.army, p2.points.army);
+          if(0 === ret) ret = p1.name.localCompare(p2.name);
+          return ret;
+        },
         create: function playerCreate(name, faction, city) {
           return {
             name: name,
@@ -39,6 +48,9 @@ angular.module('srApp.services')
         },
         names: function(coll) {
           return _.map(coll, _.partial(_.getPath, _, 'name'));
+        },
+        sort: function(coll) {
+          return coll.slice().sort(player.compare).reverse();
         },
         sosFrom: function(coll, opponents) {
           return _.map(opponents, function(o) {
