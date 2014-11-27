@@ -1,0 +1,31 @@
+<div class="container">
+  <form class="form-inline">
+    <fieldset style="margin-top:10px">
+      <legend>  
+        <span class="glyphicon glyphicon-open"></span>
+        Open
+      </legend>
+      <div class="form-group">
+        <label class="control-label"
+               for="import-file">
+          Choose file
+        </label>
+        <input id="import-file"
+               type="file"
+               onchange="angular.element(this).scope().openFile(this.files[0])" />
+      </div>
+      <strong class="text-danger">{{open_result}}</strong>
+    </fieldset>
+    <fieldset style="margin-top:10px">
+      <legend>  
+        <span class="glyphicon glyphicon-save"></span>
+        Save
+      </legend>
+      <a ng-show="save_url !== null"
+         ng-href="{{save_url}}"
+         download="{{save_name}}">
+        Download File
+      </a>
+    </fieldset>
+  </form>
+</div>

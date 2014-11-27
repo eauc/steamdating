@@ -19,6 +19,10 @@ angular.module('srApp.controllers')
         players: [],
         rounds: []
       };
+      $scope.newState = function(state) {
+        $scope.state = state;
+      };
+
       $scope.goToState = _.bind($state.go, $state);
       $scope.currentState = _.bind(_.getPath, _, $state, 'current.name');
 

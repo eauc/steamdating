@@ -17,6 +17,12 @@ angular.module('srApp', [
   function($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/players');
     $stateProvider
+      .state('file', {
+        url: '/file',
+        templateUrl: 'partials/file.html',
+        controller: 'fileCtrl',
+        data: {}
+      })
       .state('players', {
         url: '/players',
         templateUrl: 'partials/players.html',
