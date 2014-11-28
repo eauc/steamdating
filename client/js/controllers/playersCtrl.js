@@ -31,6 +31,8 @@ angular.module('srApp.controllers')
       console.log('init playerEditCtrl');
 
       $scope.state.factions = factions.listFrom($scope.state.players);
+      $scope.state.cities = players.cities($scope.state.players);
+
       $scope.player = _.snapshot($scope.edit.player);
 
       $scope.doClose = function(validate) {

@@ -60,7 +60,14 @@ angular.module('srApp.services')
           return _.find(coll, _.unary(player.is(name)));
         },
         names: function(coll) {
-          return _.map(coll, _.partial(_.getPath, _, 'name'));
+          return _.mapWith(coll, _.getPath, 'name');
+        },
+        cities: function(coll) {
+          return _.chain(coll)
+            .mapWith(_.getPath, 'city')
+            .uniq()
+            .without(undefined)
+            .value();
         },
         sort: function(coll) {
           return coll.slice().sort(player.compare).reverse();
