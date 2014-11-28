@@ -92,6 +92,12 @@ angular.module('srApp.services')
             .mapWith(game.tableFor, p)
             .value();
         },
+        gameFor: function(coll, p, r) {
+          return _.chain(coll)
+            .apply(rounds.round, r)
+            .apply(round.gameFor, p)
+            .value();
+        },
         query: function(coll, r, p, q) {
           return _.chain(coll)
             .apply(rounds.round, r)

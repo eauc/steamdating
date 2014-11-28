@@ -13,10 +13,6 @@ angular.module('srApp.controllers')
         $scope.edit.player = player.create();
         $scope.goToState('player_edit');
       };
-      $scope.doEditPlayer = function(player) {
-        $scope.edit.player = player;
-        $scope.goToState('player_edit');
-      };
     }
   ])
   .controller('playerEditCtrl', [

@@ -30,6 +30,9 @@ angular.module('srApp.controllers')
       mapRoundsQuery('opponentFor');
       mapRoundsQuery('successFor');
       mapRoundsQuery('tableFor');
+      $scope.gameFor = function(p, r) {
+        return rounds.gameFor($scope.state.rounds, p, r);
+      };
 
       $scope.round = function(r) {
         return rounds.round($scope.state.rounds, r);

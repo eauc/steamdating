@@ -29,12 +29,17 @@
         ng-style="{
         'background-color': p.name === 'Phantom' ? '#CCC' : 'auto'
         }">
-      <td>{{p.name}}</td>
+      <td style="cursor:pointer;"
+          ng-click="doEditPlayer(p)">
+        {{p.name}}
+      </td>
       <td ng-repeat="i in roundsRange()"
+          ng-click="doGameEdit(gameFor(p.name, i))"
           ng-class="{
           'success': successFor(p.name, i) === 1,
           'danger': successFor(p.name, i) === 0,
-          }">
+          }"
+          style="cursor:pointer;">
         {{tableFor(p.name, i)}} -
         {{opponentFor(p.name, i)}}
       </td>

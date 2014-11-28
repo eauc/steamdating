@@ -30,6 +30,11 @@ angular.module('srApp.controllers')
       $scope.goToState = _.bind($state.go, $state);
       $scope.currentState = _.bind(_.getPath, _, $state, 'current.name');
 
+      $scope.doEditPlayer = function(player) {
+        $scope.edit.player = player;
+        $scope.goToState('player_edit');
+      };
+
       // $scope.state.rounds = _.range(2).map(function(i) {
       //   return _.range(4).map(function(j) {
       //     var game = {
