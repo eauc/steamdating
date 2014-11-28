@@ -6,10 +6,12 @@ angular.module('srApp.controllers')
     'rounds',
     'players',
     '$stateParams',
+    '$window',
     function($scope,
              rounds,
              players,
-             $stateParams) {
+             $stateParams,
+             $window) {
       console.log('init roundsCtrl');
 
       $scope.pane = $stateParams.pane;

@@ -6,17 +6,19 @@ angular.module('srApp.controllers')
     '$state',
     'player',
     'players',
+    '$window',
     function($scope,
              $state,
              player,
-             players) {
+             players,
+             $window) {
       console.log('init playersCtrl');
       $scope.doAddPlayer = function() {
         $scope.edit.player = player.create();
         $scope.goToState('player_edit');
       };
       $scope.doDeletePlayer = function(p, event) {
-        var conf = confirm("You sure ?", "Yup", "Nooooooo !");
+        var conf = $window.confirm("You sure ?");
         if(conf) {
           $scope.state.players = players.drop($scope.state.players,
                                               p,
@@ -31,10 +33,12 @@ angular.module('srApp.controllers')
     'players',
     'player',
     'factions',
+    '$window',
     function($scope,
              players,
              player,
-             factions) {
+             factions,
+             $window) {
       console.log('init playerEditCtrl');
 
       $scope.state.factions = factions.listFrom($scope.state.players);
@@ -46,7 +50,7 @@ angular.module('srApp.controllers')
         if(validate) {
           if(!_.isString($scope.player.name) ||
              0 >= $scope.player.name) {
-            alert('invalid player info');
+            $window.alert('invalid player info');
             return;
           }
           var existing_players = players.names($scope.state.players);
@@ -54,7 +58,7 @@ angular.module('srApp.controllers')
             existing_players = _.without(existing_players, $scope.edit.player.name);
           }
           if(0 <= _.indexOf(existing_players, $scope.player.name)) {
-              alert('a player with the same name already exists');
+            $window.alert('a player with the same name already exists');
             return;
           }
           if(!_.exists($scope.edit.player.name)) {
