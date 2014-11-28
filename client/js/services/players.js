@@ -56,6 +56,13 @@ angular.module('srApp.services')
             .apply(players.appendPhantom, phantom)
             .value();
         },
+        drop: function(coll, p, phantom) {
+          return _.chain(coll)
+            .reject(_.unary(player.is(p.name)))
+            .reject(_.unary(player.is('Phantom')))
+            .apply(players.appendPhantom, phantom)
+            .value();
+        },
         player: function(coll, name) {
           return _.find(coll, _.unary(player.is(name)));
         },

@@ -5,13 +5,24 @@ angular.module('srApp.controllers')
     '$scope',
     '$state',
     'player',
+    'players',
     function($scope,
              $state,
-             player) {
+             player,
+             players) {
       console.log('init playersCtrl');
       $scope.doAddPlayer = function() {
         $scope.edit.player = player.create();
         $scope.goToState('player_edit');
+      };
+      $scope.doDeletePlayer = function(p, event) {
+        var conf = confirm("You sure ?", "Yup", "Nooooooo !");
+        if(conf) {
+          $scope.state.players = players.drop($scope.state.players,
+                                              p,
+                                              $scope.state.phantom);
+        }
+        event.stopPropagation();
       };
     }
   ])

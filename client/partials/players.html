@@ -14,6 +14,7 @@
       <th>SoS</th>
       <th>CP</th>
       <th>AP</th>
+      <th></th>
     </tr>
     <tr ng-repeat="p in state.players | playerSort"
         ng-style="{
@@ -33,6 +34,14 @@
       <td>{{p.points.sos}}</td>
       <td>{{p.points.control}}</td>
       <td>{{p.points.army}}</td>
+      <td>
+        <button ng-if="p.name !== 'Phantom'"
+                ng-click="doDeletePlayer(p, $event)"
+                class="btn btn-default">
+          <span class="glyphicon glyphicon-trash"></span>
+          Delete
+        </button>
+      </td>
     </tr>
   </table>
 </div>
