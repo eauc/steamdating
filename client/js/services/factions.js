@@ -28,7 +28,7 @@ angular.module('srApp.services')
         iconFor: function(f) {
           return _.chain(f)
             .apply(function(f) {
-              return _.exists(base_factions, f) ? base_factions[f].icon : undefined;
+              return _.exists(base_factions[f]) ? base_factions[f].icon : undefined;
             })
             .apply(function(f) {
               return _.exists(f) ? 'data/icons/'+f : '';
