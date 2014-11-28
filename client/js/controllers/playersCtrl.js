@@ -40,11 +40,15 @@ angular.module('srApp.controllers')
             alert('invalid player info');
             return;
           }
-          if(!_.exists($scope.edit.player.name)) {
-            if(players.player($scope.state.players, $scope.player.name)) {
+          var existing_players = players.names($scope.state.players);
+          if(_.exists($scope.edit.player.name)) {
+            existing_players = _.without(existing_players, $scope.edit.player.name);
+          }
+          if(0 <= _.indexOf(existing_players, $scope.player.name)) {
               alert('a player with the same name already exists');
-              return;
-            }
+            return;
+          }
+          if(!_.exists($scope.edit.player.name)) {
             $scope.state.players = players.add($scope.state.players,
                                                $scope.player,
                                                $scope.state.phantom);
