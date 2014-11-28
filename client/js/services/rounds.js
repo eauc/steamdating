@@ -63,6 +63,11 @@ angular.module('srApp.services')
           if(r >= coll.length) return [];
           return coll[r];
         },
+        drop: function(coll, r) {
+          var new_coll = coll.slice();
+          new_coll.splice(r, 1);
+          return new_coll;
+        },
         pointsFor: function(coll, p) {
           return _.chain(coll)
             .mapWith(round.gameFor, p)

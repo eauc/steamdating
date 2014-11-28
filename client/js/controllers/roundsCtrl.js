@@ -78,5 +78,21 @@ angular.module('srApp.controllers')
         $scope.edit.rounds_pane = $scope.pane;
         $scope.goToState('game_edit');
       };
+
+      $scope.doDeleteRound = function(r) {
+        var conf = $window.confirm("You sure ?");
+        if(conf) {
+          $scope.state.rounds = rounds.drop($scope.state.rounds, r);
+          _.chain($scope.state.players)
+            .each(function(p) {
+              p.points = rounds.pointsFor($scope.state.rounds, p.name);
+            })
+            .each(function(p) {
+              p.points.sos = players.sosFrom($scope.state.players,
+                                             rounds.opponentsFor($scope.state.rounds,
+                                                                 p.name));
+            });
+        }
+      };
     }
   ]);
