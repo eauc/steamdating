@@ -1,6 +1,6 @@
 <div>
   <button class="btn btn-default"
-          ng-click="goToState('players_add')">
+          ng-click="doAddPlayer()">
     <span class="glyphicon glyphicon-plus"></span>
     Add Player(s)
   </button>
@@ -18,10 +18,16 @@
     <tr ng-repeat="p in state.players | playerSort"
         ng-style="{
         'background-color': p.name === 'Phantom' ? '#CCC' : 'auto'
-        }">
+        }"
+        style="cursor:pointer;"
+        ng-click="doEditPlayer(p)">
       <td>{{$index+1}}</td>
       <td>{{p.name}}</td>
-      <td>{{p.faction}}</td>
+      <td>
+        <img ng-src="{{p.faction | factionIcon}}"
+             style="height:1.8em;"/>
+        {{p.faction}}
+      </td>
       <td>{{p.city}}</td>
       <td>{{p.points.tournament}}</td>
       <td>{{p.points.sos}}</td>

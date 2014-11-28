@@ -7,20 +7,24 @@ angular.module('srApp.controllers')
     'player',
     'players',
     'rounds',
+    'factions',
     function($scope,
              $state,
              player,
              players,
-             rounds) {
+             rounds,
+             factions) {
       console.log('init mainCtrl');
       $scope.edit = {};
       $scope.state = {
         phantom: player.create('Phantom'),
         players: [],
-        rounds: []
+        rounds: [],
+        factions: []
       };
       $scope.newState = function(state) {
         $scope.state = state;
+        $scope.state.factions = factions.listFrom($scope.state.players);
       };
 
       $scope.goToState = _.bind($state.go, $state);
@@ -48,21 +52,21 @@ angular.module('srApp.controllers')
       //   });
       // });
 
-      $scope.state.players = _.range(7).map(function(i) {
-        return {
-          name: 'Player'+(i+1),
-          faction: 'Faction'+(((i/2)>>0)+1),
-          city: 'City'+(((i/3)>>0)+1),
-          points: rounds.pointsFor($scope.state.rounds, 'Player'+(i+1))
-        };
-      });
-      $scope.state.players.push($scope.state.phantom);
+      // $scope.state.players = _.range(7).map(function(i) {
+      //   return {
+      //     name: 'Player'+(i+1),
+      //     faction: 'Faction'+(((i/2)>>0)+1),
+      //     city: 'City'+(((i/3)>>0)+1),
+      //     points: rounds.pointsFor($scope.state.rounds, 'Player'+(i+1))
+      //   };
+      // });
+      // $scope.state.players.push($scope.state.phantom);
       $scope.state.phantom.points = rounds.pointsFor($scope.state.rounds, 'Phantom');
 
-      _.each($scope.state.players, function(p) {
-        p.points.sos = players.sosFrom($scope.state.players,
-                                       rounds.opponentsFor($scope.state.rounds, p.name));
-      });
+      // _.each($scope.state.players, function(p) {
+      //   p.points.sos = players.sosFrom($scope.state.players,
+      //                                  rounds.opponentsFor($scope.state.rounds, p.name));
+      // });
 
       console.log('state', $scope.state);
     }

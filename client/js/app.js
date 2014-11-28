@@ -29,10 +29,10 @@ angular.module('srApp', [
         controller: 'playersCtrl',
         data: {}
       })
-      .state('players_add', {
-        url: '/players_add',
-        templateUrl: 'partials/players_add.html',
-        controller: 'playersAddCtrl',
+      .state('player_edit', {
+        // url: '/players_add',
+        templateUrl: 'partials/player_edit.html',
+        controller: 'playerEditCtrl',
         data: {}
       })
       .state('rounds', {
@@ -42,7 +42,7 @@ angular.module('srApp', [
         data: {}
       })
       .state('game_edit', {
-        // url: '/game',
+        // url: '/game_edit',
         templateUrl: 'partials/game_edit.html',
         controller: 'gameEditCtrl',
         data: {}

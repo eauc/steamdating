@@ -4,33 +4,55 @@ angular.module('srApp.controllers')
   .controller('playersCtrl', [
     '$scope',
     '$state',
+    'player',
     function($scope,
-             $state) {
-      console.log('init playersCtrl', $state);
+             $state,
+             player) {
+      console.log('init playersCtrl');
+      $scope.doAddPlayer = function() {
+        $scope.edit.player = player.create();
+        $scope.goToState('player_edit');
+      };
+      $scope.doEditPlayer = function(player) {
+        $scope.edit.player = player;
+        $scope.goToState('player_edit');
+      };
     }
   ])
-  .controller('playersAddCtrl', [
+  .controller('playerEditCtrl', [
     '$scope',
     'players',
     'player',
+    'factions',
     function($scope,
              players,
-             player) {
-      console.log('init playersAddCtrl');
+             player,
+             factions) {
+      console.log('init playerEditCtrl');
 
-      function initScope() {
-        $scope.name = 'Player';
-        $scope.faction = '';
-        $scope.city = '';
-      }
-      initScope();
+      $scope.state.factions = factions.listFrom($scope.state.players);
+      $scope.player = _.snapshot($scope.edit.player);
 
-      $scope.doAddPlayer = function doAddPlayer() {
-        $scope.state.players = players.add($scope.state.players,
-                                           player.create($scope.name,
-                                                         $scope.faction,
-                                                         $scope.city),
-                                           $scope.state.phantom);
+      $scope.doClose = function(validate) {
+        if(validate) {
+          if(!_.isString($scope.player.name) ||
+             0 >= $scope.player.name) {
+            alert('invalid player info');
+            return;
+          }
+          if(!_.exists($scope.edit.player.name)) {
+            if(players.player($scope.state.players, $scope.player.name)) {
+              alert('a player with the same name already exists');
+              return;
+            }
+            $scope.state.players = players.add($scope.state.players,
+                                               $scope.player,
+                                               $scope.state.phantom);
+          }
+          else {
+            _.extend($scope.edit.player, $scope.player);
+          }
+        }
         $scope.goToState('players');
       };
     }
