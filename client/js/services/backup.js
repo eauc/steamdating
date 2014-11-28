@@ -38,10 +38,6 @@ angular.module('srApp.services')
             })
             .apply($window.URL.createObjectURL)
             .value();
-          // var string = JSON.stringify(data);
-          // var blob = new $window.Blob([string], {type: 'text/plain'});
-          // var url = $window.URL.createObjectURL(blob);
-          // return url;
         },
         cleanup: function(url) {
           if(url !== null) {

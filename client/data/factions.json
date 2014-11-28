@@ -1,0 +1,518 @@
+{
+  "Cygnar": {
+    "name": "Cygnar",
+    "casters": {
+      "blaize1": {
+        "name": "Constance Blaize, Knight of the Prophet"
+      },
+      "siege1": {
+        "name": "Major Markus 'Siege' Brisbane"
+      },
+      "caine1": {
+        "name": "Lieutenant Allister Caine"
+      },
+      "caine2": {
+        "name": "Captain Allister Caine"
+      },
+      "darius1": {
+        "name": "Captain E. Dominic Darius"
+      },
+      "haley1": {
+        "name": "Captain Victoria Haley"
+      },
+      "haley2": {
+        "name": "Major Victoria Haley"
+      },
+      "kraye1": {
+        "name": "Captain Jeremiah Kraye"
+      },
+      "nemo1": {
+        "name": "Commander Adept Sebastian Nemo"
+      },
+      "nemo2": {
+        "name": "General Adept Sebastian Nemo"
+      },
+      "nemo3": {
+        "name": "Artificer General Nemo"
+      },
+      "sloan1": {
+        "name": "Captain Kara Sloan"
+      },
+      "stryker1": {
+        "name": "Commander Coleman Stryker"
+      },
+      "stryker2": {
+        "name": "Lord Commander Stryker"
+      },
+      "stryker3": {
+        "name": "Lord General Coleman Stryker"
+      },
+      "sturgis1": {
+        "name": "Commander Dalin Sturgis"
+      }
+    },
+    "icon": "cygnar.png"
+  },
+  "The Protectorate of Menoth": {
+    "name": "The Protectorate of Menoth",
+    "casters": {
+      "kreoss1": {
+        "name": "High Exemplar Kreoss"
+      },
+      "kreoss2": {
+        "name": "Grand Exemplar Kreoss"
+      },
+      "kreoss3": {
+        "name": "Intercessor Kreoss"
+      },
+      "reclaimer1": {
+        "name": "High Reclaimer"
+      },
+      "reclaimer2": {
+        "name": "Testament of Menoth"
+      },
+      "severius1": {
+        "name": "Grand Scrutator Severius"
+      },
+      "severius2": {
+        "name": "Hierarch Severius"
+      },
+      "feora1": {
+        "name": "Feora, Priestess of the Flame"
+      },
+      "feora2": {
+        "name": "Feora, Protector of the Flame"
+      },
+      "amon1": {
+        "name": "High Allegiant Amon Ad'Raza"
+      },
+      "harbinger1": {
+        "name": "Harbinger of Menoth"
+      },
+      "reznik1": {
+        "name": "High Executioner Servath Reznik"
+      },
+      "reznik2": {
+        "name": "Servath Reznik, Wrath of Ages"
+      },
+      "thyra1": {
+        "name": "Thyra, Flame of Sorrow"
+      },
+      "vindictus1": {
+        "name": "Vice Scrutator Vindictus"
+      }
+    },
+    "icon": "menoth.png"
+  },
+  "Khador": {
+    "name": "Khador",
+    "casters": {
+      "butcher1": {
+        "name": "Orsus Zoktavir, Butcher of Khardov"
+      },
+      "butcher2": {
+        "name": "Kommander Orsus Zoktavir"
+      },
+      "butcher3": {
+        "name": "Kommander Zoktavir, The Butcher Unleashed"
+      },
+      "harkevich1": {
+        "name": "Kommander Harkevich, The Iron Wolf"
+      },
+      "irusk1": {
+        "name": "Kommandant Irusk"
+      },
+      "irusk2": {
+        "name": "Supreme Kommandant Irusk"
+      },
+      "karchev1": {
+        "name": "Karchev the Terrible"
+      },
+      "sorscha1": {
+        "name": "Kommander Sorscha Kratikoff"
+      },
+      "sorscha2": {
+        "name": "Forward Kommander Sorscha Kratikoff"
+      },
+      "strakhov1": {
+        "name": "Kommander Strakhov"
+      },
+      "theoldwitch1": {
+        "name": "Zevanna Agha, Old Witch of Khador"
+      },
+      "vlad1": {
+        "name": "Vladimir Tzepesci, The Dark Prince"
+      },
+      "vlad2": {
+        "name": "Vladimir Tzepesci, The Dark Champion"
+      },
+      "vlad3": {
+        "name": "Vladimir Tzepesci, Great Prince of Umbrey"
+      },
+      "zerkova1": {
+        "name": "Koldun Kommander Aleksandra Zerkova"
+      }
+    },
+    "icon": "khador.png"
+  },
+  "Cryx": {
+    "name": "Cryx",
+    "casters": {
+      "asphyxious1": {
+        "name": "Iron Lich Asphyxious"
+      },
+      "asphyxious2": {
+        "name": "Lich Lord Asphyxious"
+      },
+      "asphyxious3": {
+        "name": "Asphyxious the Hellbringer"
+      },
+      "deneghra1": {
+        "name": "War Witch Deneghra"
+      },
+      "deneghra2": {
+        "name": "Wraith Witch Deneghra"
+      },
+      "goreshade1": {
+        "name": "Goreshade the Bastard"
+      },
+      "goreshade2": {
+        "name": "Goreshade the Cursed"
+      },
+      "goreshade3": {
+        "name": "Goreshade, Lord of Ruin"
+      },
+      "mortenebra1": {
+        "name": "Master Necrotech Mortenebra"
+      },
+      "scaverous1": {
+        "name": "Lord Exhumator Scaverous"
+      },
+      "skarre1": {
+        "name": "Skarre, the Pirate Queen"
+      },
+      "skarre2": {
+        "name": "Skarre, Queen of the Broken Coast"
+      },
+      "sturgis2": {
+        "name": "Sturgis the Corrupted"
+      },
+      "terminus1": {
+        "name": "Lich Lord Terminus"
+      },
+      "venethrax1": {
+        "name": "Lich Lord Venethrax"
+      },
+      "witchcoven1": {
+        "name": "The Witch Coven of Garlghast"
+      }
+    },
+    "icon": "cryx.png"
+  },
+  "Retribution of Scyrah": {
+    "name": "Retribution of Scyrah",
+    "casters": {
+      "garryth1": {
+        "name": "Garryth, Blade of Retribution"
+      },
+      "issyria1": {
+        "name": "Issyria, Sibyl of Dawn"
+      },
+      "kaelyssa1": {
+        "name": "Kaelyssa, Night's Whisper"
+      },
+      "ossyan1": {
+        "name": "Lord Arcanist Ossyan"
+      },
+      "rahn1": {
+        "name": "AdeptisRahn"
+      },
+      "ravyn1": {
+        "name": "Ravyn, Eternal Light"
+      },
+      "vyros1": {
+        "name": "DawnlordVyros"
+      },
+      "vyros2": {
+        "name": "Vyros, Incissar of the Dawnguard"
+      }
+    },
+    "icon": "scyrah.png"
+  },
+  "Trollbloods": {
+    "name": "Trollbloods",
+    "casters": {
+      "borka1": {
+        "name": "Borka Kegslayer"
+      },
+      "borka2": {
+        "name": "Borka, Vengeance of the Rimeshaws"
+      },
+      "calandra1": {
+        "name": "Calandra Truthsayer, Oracle of the Glimmerwood"
+      },
+      "grim1": {
+        "name": "GrimAngus"
+      },
+      "grim2": {
+        "name": "Hunters Grim"
+      },
+      "grissel1": {
+        "name": "Grissel Bloodsong"
+      },
+      "grissel2": {
+        "name": "Grissel Bloodsong, Marshal of the Kriels"
+      },
+      "gunnbjorn1": {
+        "name": "Captain Gunnbjorn"
+      },
+      "hoarluk1": {
+        "name": "Hoarluk Doomshaper, Shaman of the Gnarls"
+      },
+      "hoarluk2": {
+        "name": "Hoarluk Doomshaper, Rage of Dhunia"
+      },
+      "jarl1": {
+        "name": "Jarl Skuld, Devil of the Thornwood"
+      },
+      "madrak1": {
+        "name": "Chief Madrak Ironhide"
+      },
+      "madrak2": {
+        "name": "Madrak Ironhide, World Ender"
+      }
+    },
+    "icon": "troll.png"
+  },
+  "Circle Orboros": {
+    "name": "Circle Orboros",
+    "casters": {
+      "baldur1": {
+        "name": "Baldur the Stonecleaver"
+      },
+      "baldur2": {
+        "name": "Baldur the Stonesoul"
+      },
+      "dragibus1": {
+        "name": "Bradigus Thorle the Runecarver"
+      },
+      "cassius1": {
+        "name": "Cassius the Oathkeeper"
+      },
+      "grayle1": {
+        "name": "Grayle the Farstrider"
+      },
+      "kaya1": {
+        "name": "Kaya the Wildborne"
+      },
+      "kaya2": {
+        "name": "Kayathe Moonhunter and Laris"
+      },
+      "kromac1": {
+        "name": "Kromac the Ravenous"
+      },
+      "krueger1": {
+        "name": "Krueger the Stormwrath"
+      },
+      "krueger2": {
+        "name": "Krueger the Stormlord"
+      },
+      "mohsar1": {
+        "name": "Mohsar the Desert walker"
+      },
+      "morvahna1": {
+        "name": "Morvahna the Autumnblade"
+      },
+      "morvahna2": {
+        "name": "Morvahna the Dawnshadow"
+      }
+    },
+    "icon": "circle.png"
+  },
+  "Skorne": {
+    "name": "Skorne",
+    "casters": {
+      "hexeris1": {
+        "name": "Lord Tyrant Hexeris"
+      },
+      "hexeris2": {
+        "name": "Lord Arbiter Hexeris"
+      },
+      "makeda1": {
+        "name": "Archdomina Makeda"
+      },
+      "makeda2": {
+        "name": "Supreme Archdomina Makeda"
+      },
+      "makeda3": {
+        "name": "Makeda & the Exalted Court"
+      },
+      "mordikaar1": {
+        "name": "Void Seer Mordikaar"
+      },
+      "morghoul1": {
+        "name": "Master Tormentor Morghoul"
+      },
+      "morghoul2": {
+        "name": "Lord Assassin Morghoul"
+      },
+      "naaresh1": {
+        "name": "Master Ascetic Naaresh"
+      },
+      "rasheth1": {
+        "name": "Dominar Rasheth"
+      },
+      "xerxis1": {
+        "name": "Tyrant Xerxis"
+      },
+      "xerxis2": {
+        "name": "Xerxis, Fury of Halaak"
+      },
+      "zaal1": {
+        "name": "Supreme Aptimus Zaal"
+      }
+    },
+    "icon": "skorne.png"
+  },
+  "Legion of Everblight": {
+    "name": "Legion of Everblight",
+    "casters": {
+      "absylonia1": {
+        "name": "Absylonia, Terror of Everblight"
+      },
+      "absylonia2": {
+        "name": "Absylonia, Daughter of Everblight"
+      },
+      "bethayne1": {
+        "name": "Bethayne, Voice of Everblight"
+      },
+      "kallus1": {
+        "name": "Kallus, Wrath of Everblight"
+      },
+      "lylyth1": {
+        "name": "Lylyth, Herald of Everblight"
+      },
+      "lylyth2": {
+        "name": "Lylyth, Shadow of Everblight"
+      },
+      "lylyth3": {
+        "name": "Lylyth, Reckoning of Everblight"
+      },
+      "rhyas1": {
+        "name": "Rhyas, Sigil of Everblight"
+      },
+      "saeryn1": {
+        "name": "Saeryn, Omen of Everblight"
+      },
+      "thagrosh1": {
+        "name": "Thagrosh, Prophet of Everblight"
+      },
+      "thagrosh2": {
+        "name": "Thagrosh, Messiah of Everblight"
+      },
+      "vayl1": {
+        "name": "Vayl, Disciple of Everblight"
+      },
+      "vayl2": {
+        "name": "Vayl, Consul of Everblight"
+      }
+    },
+    "icon": "loe.png"
+  },
+  "Mercenary Theme Forces": {
+    "name": "Mercenary Theme Forces",
+    "casters": {
+      "ashlynn1": {
+        "name": "Ashlynn D'Elyse"
+      },
+      "bartolo1": {
+        "name": "Captain Bartolo Montador"
+      },
+      "damiano1": {
+        "name": "Captain Damiano"
+      },
+      "fiona1": {
+        "name": "Fiona the Black"
+      },
+      "gorten1": {
+        "name": "Gorten Grundback"
+      },
+      "macbain1": {
+        "name": "Drake Mac Bain"
+      },
+      "madhammer1": {
+        "name": "Durgen Madhammer"
+      },
+      "magnus1": {
+        "name": "Magnus the Traitor"
+      },
+      "magnus2": {
+        "name": "Magnus the Warlord"
+      },
+      "ossrum1": {
+        "name": "General Ossrum"
+      },
+      "shae1": {
+        "name": "Captain Phinneus Shae"
+      }
+    },
+    "icon": "mercs.png"
+  },
+  "Minion Theme Forces": {
+    "name": "Minion Theme Forces",
+    "casters": {
+      "arkadius1": {
+        "name": "Dr.Arkadius"
+      },
+      "barnabas1": {
+        "name": "Bloody Barnabas"
+      },
+      "calaban1": {
+        "name": "Calaban the Gravewalker"
+      },
+      "carver1": {
+        "name": "Lord Carver"
+      },
+      "helga1": {
+        "name": "Helga the Conqueror"
+      },
+      "jaga1": {
+        "name": "Jaga-Jaga, the Death Charmer"
+      },
+      "maelok1": {
+        "name": "Maelok the Dreadbound"
+      },
+      "midas1": {
+        "name": "Midas"
+      },
+      "rask1": {
+        "name": "Rask"
+      },
+      "sturm&drang1": {
+        "name": "Sturm & Drang"
+      }
+    },
+    "icon": "minions.png"
+  },
+  "Convergence of Cyriss": {
+    "name": "Convergence of Cyriss",
+    "casters": {
+      "aurora1": {
+        "name": "Aurora, Numen of Aerogenesis"
+      },
+      "axis1": {
+        "name": "Axis, the Harmonic Enforcer"
+      },
+      "directrix1": {
+        "name": "Iron Mother Directrix"
+      },
+      "lucant1": {
+        "name": "Father Lucant, Divinity Architect"
+      },
+      "syntherion1": {
+        "name": "Forge Master Syntherion"
+      }
+    },
+    "icon": "cyriss.png"
+  }
+}
