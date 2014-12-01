@@ -27,6 +27,7 @@ angular.module('srApp.controllers')
         if(save) {
           _.extend($scope.edit.game, $scope.game);
           $scope.updatePoints();
+          $scope.storeState();
         }
         $scope.goToState('rounds', { pane: $scope.edit.rounds_pane });
       };

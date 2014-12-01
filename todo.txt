@@ -1,0 +1,10 @@
+- localstorage state + button 'New'
+- possibilite de creer un critere de classement specifique a partir des donnees standard des parties
+- gestion des regles speciales du SR (divide & conquer notament)
+- gestion d'un format "elimination directe", possiblement apres N rondes suisses
+- import des infos joueurs a partir d'un fichier texte avec un format bien precis
+- import des listes au format FK
+- fonctionnement offline en app web
+- export au format csv pour import excel.
+- module de statistiques
+- gestion d'un compendium de tournois

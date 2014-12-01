@@ -37,7 +37,7 @@
         Round{{i+1}}
       </th>
     </tr>
-    <tbody ng-repeat="t in state.teams">
+    <tbody ng-repeat="t in state.teams track by t.name">
       <tr>
         <td style="cursor:pointer;"
             ng-click="doEditTeam(t)">
@@ -65,7 +65,7 @@
         </td>
       </tr>
       <tr ng-show="show[t.name]"
-          ng-repeat="p in state.players | playersInTeam:t.name">
+          ng-repeat="p in state.players | playersInTeam:t.name track by p.name">
         <td style="cursor:pointer;"
             ng-click="doEditPlayer(p)">
           - {{p.name}}
@@ -83,7 +83,7 @@
       </tr>
     </tbody>
     <tbody ng-if="!isTeamTournament()">
-      <tr ng-repeat="p in state.players"
+      <tr ng-repeat="p in state.players track by p.name"
           ng-style="{
           'background-color': p.name === 'Phantom' ? '#CCC' : 'auto'
           }">

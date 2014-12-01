@@ -3,8 +3,10 @@
 angular.module('srApp.controllers')
   .controller('fileCtrl', [
     '$scope',
+    '$window',
     'backup',
     function($scope,
+             $window,
              backup) {
       console.log('init fileCtrl');
 
@@ -23,5 +25,13 @@ angular.module('srApp.controllers')
       $scope.$on('$destroy', function() {
         backup.cleanup($scope.save_url);
       });
+
+      $scope.doReset = function() {
+        var conf = ($scope.state.teams.length === 0 &&
+                    $scope.state.players.length === 0 &&
+                    $scope.state.rounds.length === 0);
+        if(!conf) conf = $window.confirm('You sure ?');
+        if(conf) $scope.resetState();
+      };
     }
   ]);

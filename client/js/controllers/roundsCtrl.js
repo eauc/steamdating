@@ -137,6 +137,7 @@ angular.module('srApp.controllers')
       };
       $scope.registerNextRound = function() {
         $scope.state.rounds.push($scope.next_round);
+        $scope.storeState();
         $scope.goToState('rounds', { pane: $scope.state.rounds.length-1 });
       };
 
@@ -151,6 +152,8 @@ angular.module('srApp.controllers')
         if(conf) {
           $scope.state.rounds = rounds.drop($scope.state.rounds, r);
           $scope.updatePoints();
+          $scope.storeState();
+          $scope.goToState('rounds', { pane: 'sum' });
         }
       };
     }

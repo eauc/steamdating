@@ -33,6 +33,7 @@ angular.module('srApp.controllers')
           $scope.state.players = players.drop($scope.state.players,
                                               p,
                                               $scope.state.phantom);
+          $scope.storeState();
         }
         event.stopPropagation();
       };
@@ -42,6 +43,7 @@ angular.module('srApp.controllers')
           $scope.state.teams = teams.drop($scope.state.teams, t);
           $scope.state.players = players.dropTeam($scope.state.players,
                                                   t.name);
+          $scope.storeState();
         }
         event.stopPropagation();
       };
@@ -94,6 +96,7 @@ angular.module('srApp.controllers')
           else {
             _.extend($scope.edit.player, $scope.player);
           }
+          $scope.storeState();
         }
         $scope.goToState('players');
       };

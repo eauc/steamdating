@@ -43,6 +43,7 @@ angular.module('srApp.controllers')
           else {
             _.extend($scope.edit.team, $scope.team);
           }
+          $scope.storeState();
         }
         $scope.goToState('players');
       };
