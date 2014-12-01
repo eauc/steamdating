@@ -3,26 +3,18 @@
 angular.module('srApp.services')
   .factory('team', [
     function() {
-      var chainComp = function(comp) {
-        return function(ret, a, b) {
-          return ret===0 ? comp(a, b) : ret;
-        };
-      };
-      var lessOrEqual = chainComp(_.comparator(_.lt));
-      var greaterOrEqual = chainComp(_.comparator(_.gt));
       return {
         is: _.rcurry2(function(t, name) {
           return t.name === name;
         }),
-        compare: function(t1, t2) {
-          return _.chain(0)
-            .apply(lessOrEqual, t1.points.tournament, t2.points.tournament)
-            .apply(lessOrEqual, t1.points.tournament, t2.points.tournament)
-            .apply(lessOrEqual, t1.points.sos, t2.points.sos)
-            .apply(lessOrEqual, t1.points.control, t2.points.control)
-            .apply(lessOrEqual, t1.points.army, t2.points.army)
-            .apply(greaterOrEqual, t1.name, t2.name)
-            .value();
+        rank: function(t, critFn) {
+          var rank = critFn(t.points.team_tournament,
+                            t.points.tournament,
+                            t.points.sos,
+                            t.points.control,
+                            t.points.army);
+          // console.log(t, rank);
+          return rank;
         },
         create: function teamCreate(name, city) {
           return {
@@ -42,7 +34,9 @@ angular.module('srApp.services')
   ])
   .factory('teams', [
     'team',
-    function(team) {
+    'players',
+    function(team,
+             players) {
       var teams = {
         add: function(coll, t) {
           return _.cat(coll, t);
@@ -63,8 +57,18 @@ angular.module('srApp.services')
             .without(undefined)
             .value();
         },
-        sort: function(coll) {
-          return coll.slice().sort(team.compare).reverse();
+        sort: function(coll, criterium, ps, n_rounds) {
+          var baseCritFn = new Function('ttp', 'tp', 'sos', 'cp', 'ap',
+                                        'team_size', 'n_teams', 'n_players', 'n_rounds',
+                                        'return '+criterium+';');
+          var team_size = _.chain(coll)
+              .map(function(t) { return players.inTeam(ps, t.name).length; })
+              .max()
+              .value();
+          var critFn = _.partial(baseCritFn, _, _, _, _, _,
+                                 team_size, coll.length, ps.length, n_rounds);
+          return _.sortBy(coll.slice(),
+                          _.partial(team.rank, _, critFn)).reverse();
         },
         sosFrom: function(coll, opponents) {
           return _.chain(opponents)

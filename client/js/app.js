@@ -30,13 +30,13 @@ angular.module('srApp', [
         data: {}
       })
       .state('player_edit', {
-        // url: '/players_add',
+        // url: '/players_edit',
         templateUrl: 'partials/player_edit.html',
         controller: 'playerEditCtrl',
         data: {}
       })
       .state('team_edit', {
-        // url: '/players_add',
+        // url: '/team_edit',
         templateUrl: 'partials/team_edit.html',
         controller: 'teamEditCtrl',
         data: {}
@@ -51,6 +51,12 @@ angular.module('srApp', [
         // url: '/game_edit',
         templateUrl: 'partials/game_edit.html',
         controller: 'gameEditCtrl',
+        data: {}
+      })
+      .state('ranking_edit', {
+        url: '/ranking_edit',
+        templateUrl: 'partials/ranking_edit.html',
+        controller: 'rankingEditCtrl',
         data: {}
       });
   }

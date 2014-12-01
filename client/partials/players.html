@@ -40,7 +40,11 @@
       <th>AP</th>
       <th></th>
     </tr>
-    <tbody ng-repeat="t in state.teams | teamSort track by t.name">
+    <tbody ng-repeat="
+           t
+           in state.teams | teamSort:state.ranking.team:state.players:state.rounds
+           track by t.name
+           ">
       <tr style="cursor:pointer;"
           ng-click="doEditTeam(t)">
         <td>{{$index+1}}</td>
@@ -100,7 +104,11 @@
       </tr>
     </tbody>
     <tr ng-if="!isTeamTournament()"
-        ng-repeat="p in state.players | playerSort track by p.name"
+        ng-repeat="
+        p
+        in state.players | playerSort:state.ranking.player:state.rounds
+        track by p.name
+        "
         ng-style="{
         'background-color': p.name === 'Phantom' ? '#CCC' : 'auto'
         }"

@@ -23,16 +23,20 @@ angular.module('srApp.controllers')
       console.log('init mainCtrl');
       $scope.edit = {};
       $scope.resetState = function() {
-        $scope.newState({
+        $scope.newState({});
+      };
+      $scope.newState = function(state) {
+        $scope.state = _.defaults(state, {
           phantom: player.create('Phantom'),
           teams:[],
           players: [],
           rounds: [],
-          factions: []
+          factions: [],
+          ranking: {
+            player: '((tp*n_players^2+sos)*5*n_rounds+cp)*100*n_rounds+ap',
+            team: '(((ttp*team_size*n_rounds+tp)*n_teams^2+sos)*5*n_rounds+cp)*100*n_rounds+ap'
+          }
         });
-      };
-      $scope.newState = function(state) {
-        $scope.state = state;
         $scope.state.factions = factions.listFrom($scope.state.players);
         $scope.storeState();
         console.log('state', $scope.state);

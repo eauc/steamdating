@@ -3,13 +3,6 @@
 angular.module('srApp.services')
   .factory('player', [
     function() {
-      var chainComp = function(comp) {
-        return function(ret, a, b) {
-          return ret===0 ? comp(a, b) : ret;
-        };
-      };
-      var lessOrEqual = chainComp(_.comparator(_.lt));
-      var greaterOrEqual = chainComp(_.comparator(_.gt));
       return {
         is: _.rcurry2(function(p, name) {
           return p.name === name;
@@ -17,14 +10,12 @@ angular.module('srApp.services')
         inTeam: _.rcurry2(function(p, team) {
           return p.team === team;
         }),
-        compare: function(p1, p2) {
-          return _.chain(0)
-            .apply(lessOrEqual, p1.points.tournament, p2.points.tournament)
-            .apply(lessOrEqual, p1.points.sos, p2.points.sos)
-            .apply(lessOrEqual, p1.points.control, p2.points.control)
-            .apply(lessOrEqual, p1.points.army, p2.points.army)
-            .apply(greaterOrEqual, p1.name, p2.name)
-            .value();
+        rank: function(p, critFn) {
+          var rank = critFn(p.points.tournament,
+                            p.points.sos,
+                            p.points.control,
+                            p.points.army);
+          return rank;
         },
         create: function playerCreate(name, faction, city, team) {
           return {
@@ -80,8 +71,14 @@ angular.module('srApp.services')
             .without(undefined)
             .value();
         },
-        sort: function(coll) {
-          return coll.slice().sort(player.compare).reverse();
+        sort: function(coll, criterium, n_rounds) {
+          var baseCritFn = new Function('tp', 'sos', 'cp', 'ap',
+                                        'n_players', 'n_rounds',
+                                        'return '+criterium+';');
+          var critFn = _.partial(baseCritFn, _, _, _, _,
+                                 coll.length, n_rounds);
+          return _.sortBy(coll.slice(),
+                          _.partial(player.rank, _, critFn)).reverse();
         },
         sosFrom: function(coll, opponents) {
           return _.chain(opponents)
