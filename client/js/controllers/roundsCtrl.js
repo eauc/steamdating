@@ -119,7 +119,9 @@ angular.module('srApp.controllers')
       $scope.suggestNextRound = function() {
         if(!$scope.isTeamTournament()) {
           var sorted_player_names = _.chain($scope.state.players)
-            .apply(players.sort, $scope.state.ranking.player, $scope.state.rounds.length)
+            .apply(players.sort,
+                   $scope.state.ranking.player,
+                   $scope.state.rounds.length)
             .apply(players.names)
             .value();
           $scope.next_round = rounds.suggestNextRound($scope.state.rounds,
@@ -127,7 +129,10 @@ angular.module('srApp.controllers')
         }
         else {
           var sorted_team_names = _.chain($scope.state.teams)
-            .apply(teams.sort)
+            .apply(teams.sort,
+                   $scope.state.ranking.team,
+                   $scope.state.players,
+                   $scope.state.rounds.length)
             .apply(teams.names)
             .value();
           $scope.next_round = rounds.suggestNextTeamRound($scope.state.rounds,
