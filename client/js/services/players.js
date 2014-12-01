@@ -14,6 +14,9 @@ angular.module('srApp.services')
         is: _.rcurry2(function(p, name) {
           return p.name === name;
         }),
+        inTeam: _.rcurry2(function(p, team) {
+          return p.team === team;
+        }),
         compare: function(p1, p2) {
           return _.chain(0)
             .apply(lessOrEqual, p1.points.tournament, p2.points.tournament)
@@ -23,11 +26,12 @@ angular.module('srApp.services')
             .apply(greaterOrEqual, p1.name, p2.name)
             .value();
         },
-        create: function playerCreate(name, faction, city) {
+        create: function playerCreate(name, faction, city, team) {
           return {
             name: name,
             faction: faction,
             city: city,
+            team: team,
             points: {
               tournament: 0,
               sos: 0,
@@ -86,6 +90,15 @@ angular.module('srApp.services')
               return mem + _.getPath(o, 'points.tournament');
             }, 0)
             .value();
+        },
+        inTeam: function(coll, t) {
+          return _.chain(coll)
+            .select(_.unary(player.inTeam(t)))
+            // .tap(function(c) { console.log(c.length); })
+            .value();
+        },
+        dropTeam: function(coll, t) {
+          return _.reject(coll, _.unary(player.inTeam(t)));
         }
       };
       return players;

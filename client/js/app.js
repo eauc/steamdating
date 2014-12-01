@@ -35,6 +35,12 @@ angular.module('srApp', [
         controller: 'playerEditCtrl',
         data: {}
       })
+      .state('team_edit', {
+        // url: '/players_add',
+        templateUrl: 'partials/team_edit.html',
+        controller: 'teamEditCtrl',
+        data: {}
+      })
       .state('rounds', {
         url: '/rounds/:pane',
         templateUrl: 'partials/rounds.html',

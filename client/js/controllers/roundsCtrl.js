@@ -5,14 +5,35 @@ angular.module('srApp.controllers')
     '$scope',
     'rounds',
     'players',
+    'teams',
     '$stateParams',
     '$window',
     function($scope,
              rounds,
              players,
+             teams,
              $stateParams,
              $window) {
       console.log('init roundsCtrl');
+
+      var nb_games = _.chain($scope.state.teams)
+          .map(function(t) {
+            return players.inTeam($scope.state.players, t.name).length;
+          })
+          .max()
+          .value();
+      $scope.doShowAllTables = function(show, event) {
+        _.chain(nb_games)
+          .range()
+          .each(function(i) {
+            $scope.show['table'+(i+1)] = show;
+          });
+        event.stopPropagation();
+      };
+      $scope.doShowTable = function(t, show, event) {
+        $scope.show['table'+t] = show;
+        event.stopPropagation();
+      };
 
       $scope.pane = $stateParams.pane;
       if($scope.pane >= $scope.state.rounds.length) {
@@ -35,38 +56,84 @@ angular.module('srApp.controllers')
       $scope.gameFor = function(p, r) {
         return rounds.gameFor($scope.state.rounds, p, r);
       };
+      function mapRoundsTeamQuery(q) {
+        $scope[q] = function(t, r) {
+          return rounds.teamQuery($scope.state.rounds, r, t, q);
+        };
+      }
+      mapRoundsTeamQuery('opponentForTeam');
+      mapRoundsTeamQuery('successForTeam');
+      mapRoundsTeamQuery('tableForTeam');
+      $scope.gameForTeam = function(t, r) {
+        return rounds.gameForTeam($scope.state.rounds, t, r);
+      };
 
       $scope.round = function(r) {
         return rounds.round($scope.state.rounds, r);
       };
 
-      $scope.next_round = _.range($scope.state.players.length/2).map(function(i) {
-        return {
-          table: i+1,
-          p1: {
-            name: null,
-            tournament: null,
-            control: null,
-            army: null
-          },
-          p2: {
-            name: null,
-            tournament: null,
-            control: null,
-            army: null
-          }
-        };
-      });
+      if(!$scope.isTeamTournament()) {
+        $scope.next_round = _.chain($scope.state.players.length/2)
+          .range()
+          .map(function(i) {
+            return {
+              table: i+1,
+              p1: {
+                name: null,
+                tournament: null,
+                control: null,
+                army: null
+              },
+              p2: {
+                name: null,
+                tournament: null,
+                control: null,
+                army: null
+              }
+            };
+          })
+          .value();
+      }
+      else {
+        $scope.next_round = _.chain($scope.state.teams.length/2)
+          .range()
+          .map(function(i) {
+            return {
+              table: i+1,
+              t1: {
+                name: null,
+              },
+              t2: {
+                name: null,
+              }
+            };
+          })
+          .value();
+      }
       $scope.playerNames = function() {
         return players.names($scope.state.players);
       };
+      $scope.teamNames = function() {
+        return teams.names($scope.state.teams);
+      };
       $scope.suggestNextRound = function() {
-        var sorted_player_names = _.chain($scope.state.players)
+        if(!$scope.isTeamTournament()) {
+          var sorted_player_names = _.chain($scope.state.players)
             .apply(players.sort)
             .apply(players.names)
             .value();
-        $scope.next_round = rounds.suggestNextRound($scope.state.rounds,
-                                                    sorted_player_names);
+          $scope.next_round = rounds.suggestNextRound($scope.state.rounds,
+                                                      sorted_player_names);
+        }
+        else {
+          var sorted_team_names = _.chain($scope.state.teams)
+            .apply(teams.sort)
+            .apply(teams.names)
+            .value();
+          $scope.next_round = rounds.suggestNextTeamRound($scope.state.rounds,
+                                                          sorted_team_names,
+                                                          nb_games);
+        }
       };
       $scope.registerNextRound = function() {
         $scope.state.rounds.push($scope.next_round);
@@ -83,15 +150,7 @@ angular.module('srApp.controllers')
         var conf = $window.confirm("You sure ?");
         if(conf) {
           $scope.state.rounds = rounds.drop($scope.state.rounds, r);
-          _.chain($scope.state.players)
-            .each(function(p) {
-              p.points = rounds.pointsFor($scope.state.rounds, p.name);
-            })
-            .each(function(p) {
-              p.points.sos = players.sosFrom($scope.state.players,
-                                             rounds.opponentsFor($scope.state.rounds,
-                                                                 p.name));
-            });
+          $scope.updatePoints();
         }
       };
     }
