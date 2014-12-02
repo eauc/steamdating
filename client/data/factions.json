@@ -1,6 +1,7 @@
 {
   "Cygnar": {
     "name": "Cygnar",
+    "color": "#5963a2",
     "casters": {
       "blaize1": {
         "name": "Constance Blaize, Knight of the Prophet"
@@ -55,6 +56,7 @@
   },
   "The Protectorate of Menoth": {
     "name": "The Protectorate of Menoth",
+    "color" : "#ecc76d",
     "casters": {
       "kreoss1": {
         "name": "High Exemplar Kreoss"
@@ -106,6 +108,7 @@
   },
   "Khador": {
     "name": "Khador",
+    "color": "#a94a4a",
     "casters": {
       "butcher1": {
         "name": "Orsus Zoktavir, Butcher of Khardov"
@@ -157,6 +160,7 @@
   },
   "Cryx": {
     "name": "Cryx",
+    "color": "#3a4c3f",
     "casters": {
       "asphyxious1": {
         "name": "Iron Lich Asphyxious"
@@ -211,6 +215,7 @@
   },
   "Retribution of Scyrah": {
     "name": "Retribution of Scyrah",
+    "color": "#85d1bd",
     "casters": {
       "garryth1": {
         "name": "Garryth, Blade of Retribution"
@@ -241,6 +246,7 @@
   },
   "Trollbloods": {
     "name": "Trollbloods",
+    "color": "#81beaa",
     "casters": {
       "borka1": {
         "name": "Borka Kegslayer"
@@ -286,6 +292,7 @@
   },
   "Circle Orboros": {
     "name": "Circle Orboros",
+    "color": "#5ab36e",
     "casters": {
       "baldur1": {
         "name": "Baldur the Stonecleaver"
@@ -331,6 +338,7 @@
   },
   "Skorne": {
     "name": "Skorne",
+    "color": "#5963a2",
     "casters": {
       "hexeris1": {
         "name": "Lord Tyrant Hexeris"
@@ -376,6 +384,7 @@
   },
   "Legion of Everblight": {
     "name": "Legion of Everblight",
+    "color": "#a9bae0",
     "casters": {
       "absylonia1": {
         "name": "Absylonia, Terror of Everblight"
@@ -421,6 +430,7 @@
   },
   "Mercenary Theme Forces": {
     "name": "Mercenary Theme Forces",
+    "color": "#959571",
     "casters": {
       "ashlynn1": {
         "name": "Ashlynn D'Elyse"
@@ -460,6 +470,7 @@
   },
   "Minion Theme Forces": {
     "name": "Minion Theme Forces",
+    "color": "#889751",
     "casters": {
       "arkadius1": {
         "name": "Dr.Arkadius"
@@ -496,6 +507,7 @@
   },
   "Convergence of Cyriss": {
     "name": "Convergence of Cyriss",
+    "color": "#00b8c2",
     "casters": {
       "aurora1": {
         "name": "Aurora, Numen of Aerogenesis"

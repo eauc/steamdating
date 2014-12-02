@@ -4,18 +4,42 @@ angular.module('srApp.services')
   .factory('factions', [
     '$window',
     '$http',
+    '$q',
     function($window,
-             $http) {
+             $http,
+             $q) {
 
       var base_factions;
+      var base_factions_defers = [];
 
       $http.get('data/factions.json').then(function(response) {
         base_factions = response.data;
+        _.each(base_factions_defers, function(d) {
+          d.resolve(base_factions);
+        });
       }, function(response) {
         console.log('error get factions', response);
       });
 
       return {
+        baseFactions: function() {
+          var defer = $q.defer();
+          if(_.exists(base_factions)) {
+            defer.resolve(base_factions);
+          }
+          else {
+            base_factions_defers.push(defer);
+          }
+          return defer.promise;
+        },
+        info: function(f) {
+          return _.chain(base_factions)
+            // .tap(function(c) { console.log(f, c); })
+            .getPath(f)
+            .apply(function(fc) { return fc || { name:f, color:'#CCC' }; })
+            .pick('name', 'color')
+            .value();
+        },
         listFrom: function(players) {
           return _.chain(players)
             .mapWith(_.getPath, 'faction')
