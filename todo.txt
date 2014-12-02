@@ -1,10 +1,8 @@
+- export au format csv pour import excel.
+- import des infos joueurs a partir d'un fichier texte avec un format bien precis
 - gestion des regles speciales du SR (divide & conquer notament)
 - gestion d'un format "elimination directe", possiblement apres N rondes suisses
-- import des infos joueurs a partir d'un fichier texte avec un format bien precis
 - import des listes au format FK
 - fonctionnement offline en app web
-- export au format csv pour import excel.
 - module de statistiques
 - gestion d'un compendium de tournois
-
-(((ttp*team_size*n_rounds+tp)*n_teams^2+sos)*5*n_rounds+cp)*100*n_rounds+ap

@@ -3,18 +3,171 @@
 angular.module('srApp.controllers')
   .controller('rankingEditCtrl', [
     '$scope',
-    function($scope) {
+    '$window',
+    function($scope,
+             $window) {
       console.log('init rankingEditCtrl');
-      $scope.ranking = _.snapshot($scope.state.ranking);
-      $scope.doReset = function() {
-        $scope.ranking = {
-          player: '((tp*n_players^2+sos)*5*n_rounds+cp)*100*n_rounds+ap',
-          team: '(((ttp*team_size*n_rounds+tp)*n_teams^2+sos)*5*n_rounds+cp)*100*n_rounds+ap'
-        };
+      $scope.pane = 'player';
+
+      $scope.player_test = {
+        ranking: $scope.state.ranking.player,
+        n_rounds: 5,
+        n_players: 32,
+        player1: {
+          tp: 4,
+          sos: 10,
+          cp: 13,
+          ap: 38,
+          rank: 0
+        },
+        player2: {
+          tp: 3,
+          sos: 15,
+          cp: 8,
+          ap: 45,
+          rank: 0
+        }
+      };
+      function computePlayerTestRankings() {
+        $scope.player_ranking_valid = true;
+        var critFun;
+        try {
+          critFun = new Function('tp', 'sos', 'cp', 'ap',
+                                 'n_rounds', 'n_players',
+                                 'return '+$scope.player_test.ranking+';');
+        }
+        catch(e) {
+          $scope.player_test.player1.rank = "Error : " + e.message;
+          $scope.player_test.player2.rank = "Error : " + e.message;
+          $scope.player_ranking_valid = false;
+          return;
+        }
+        try {
+          $scope.player_test.player1.rank = critFun($scope.player_test.player1.tp,
+                                                    $scope.player_test.player1.sos,
+                                                    $scope.player_test.player1.cp,
+                                                    $scope.player_test.player1.ap,
+                                                    $scope.player_test.n_rounds,
+                                                    $scope.player_test.n_players);
+        }
+        catch(e) {
+          $scope.player_test.player1.rank = "Error : " + e.message;
+          $scope.player_ranking_valid = false;
+        }
+        try {
+          $scope.player_test.player2.rank = critFun($scope.player_test.player2.tp,
+                                                    $scope.player_test.player2.sos,
+                                                    $scope.player_test.player2.cp,
+                                                    $scope.player_test.player2.ap,
+                                                    $scope.player_test.n_rounds,
+                                                    $scope.player_test.n_players);
+        }
+        catch(e) {
+          $scope.player_test.player2.rank = "Error : " + e.message;
+          $scope.player_ranking_valid = false;
+        }
+      }
+      computePlayerTestRankings();
+      $scope.$watch('player_test', function() {
+        computePlayerTestRankings();
+      }, true);
+
+      $scope.team_test = {
+        ranking: $scope.state.ranking.team,
+        n_teams: 8,
+        team_size: 5,
+        n_rounds: 3,
+        n_players: 40,
+        team1: {
+          ttp: 2,
+          tp: 5,
+          sos: 10,
+          cp: 13,
+          ap: 38,
+          rank: 0
+        },
+        team2: {
+          ttp: 1,
+          tp: 4,
+          sos: 15,
+          cp: 8,
+          ap: 45,
+          rank: 0
+        }
+      };
+      function computeTeamTestRankings() {
+        $scope.team_ranking_valid = true;
+        var critFun;
+        try {
+          critFun = new Function('ttp', 'tp', 'sos', 'cp', 'ap',
+                                 'n_teams', 'team_size', 'n_rounds', 'n_players',
+                                 'return '+$scope.team_test.ranking+';');
+        }
+        catch(e) {
+          $scope.team_test.team1.rank = "Error : " + e.message;
+          $scope.team_test.team2.rank = "Error : " + e.message;
+          $scope.team_ranking_valid = false;
+          return;
+        }
+        try {
+          $scope.team_test.team1.rank = critFun($scope.team_test.team1.ttp,
+                                                $scope.team_test.team1.tp,
+                                                $scope.team_test.team1.sos,
+                                                $scope.team_test.team1.cp,
+                                                $scope.team_test.team1.ap,
+                                                $scope.team_test.n_teams,
+                                                $scope.team_test.team_size,
+                                                $scope.team_test.n_rounds,
+                                                $scope.team_test.n_teams);
+        }
+        catch(e) {
+          $scope.team_test.team1.rank = "Error : " + e.message;
+          $scope.team_ranking_valid = false;
+        }
+        try {
+          $scope.team_test.team2.rank = critFun($scope.team_test.team2.ttp,
+                                                $scope.team_test.team2.tp,
+                                                $scope.team_test.team2.sos,
+                                                $scope.team_test.team2.cp,
+                                                $scope.team_test.team2.ap,
+                                                $scope.team_test.n_teams,
+                                                $scope.team_test.team_size,
+                                                $scope.team_test.n_rounds,
+                                                $scope.team_test.n_teams);
+        }
+        catch(e) {
+          $scope.team_test.team2.rank = "Error : " + e.message;
+          $scope.team_ranking_valid = false;
+        }
+      }
+      computeTeamTestRankings();
+      $scope.$watch('team_test', function() {
+        computeTeamTestRankings();
+      }, true);
+
+      $scope.doReset = function(type) {
+        if('player' === type) {
+          $scope.player_test.ranking = '((tp*n_players^2+sos)*5*n_rounds+cp)*100*n_rounds+ap';
+        }
+        if('team' === type) {
+          $scope.team_test.ranking =
+            '(((ttp*team_size*n_rounds+tp)*n_teams^2+sos)*5*n_rounds+cp)*100*n_rounds+ap';
+        }
       };
       $scope.doClose = function(validate) {
         if(validate) {
-          _.extend($scope.state.ranking, $scope.ranking);
+          if(!$scope.player_ranking_valid) {
+            $window.alert('current player ranking is invalid !');
+            $scope.pane = 'player';
+            return;
+          }
+          if(!$scope.team_ranking_valid) {
+            $window.alert('current team ranking is invalid !');
+            $scope.pane = 'team';
+            return;
+          }
+          $scope.state.ranking.player = $scope.player_test.ranking;
+          $scope.state.ranking.team = $scope.team_test.ranking;
         }
         $scope.goToState('players');
       };
