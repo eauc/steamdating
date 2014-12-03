@@ -25,10 +25,26 @@
         <span class="glyphicon glyphicon-save"></span>
         Save
       </legend>
-      <a ng-show="save_url !== null"
+      <a ng-show="save_url"
          ng-href="{{save_url}}"
          download="{{save_name}}">
         Download File
+      </a>
+    </fieldset>
+    <fieldset style="margin-top:10px">
+      <legend>  
+        <span class="glyphicon glyphicon-export"></span>
+        Export
+      </legend>
+      <a ng-show="csv_url"
+         ng-href="{{csv_url}}"
+         download="{{csv_name}}">
+        Download CSV File
+      </a><br />
+      <a ng-show="bb_url"
+         ng-href="{{bb_url}}"
+         download="{{bb_name}}">
+        Download BB File
       </a>
     </fieldset>
   </form>

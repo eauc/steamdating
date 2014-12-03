@@ -5,9 +5,11 @@ angular.module('srApp.controllers')
     '$scope',
     '$window',
     'backup',
+    'exporter',
     function($scope,
              $window,
-             backup) {
+             backup,
+             exporter) {
       console.log('init fileCtrl');
 
       $scope.openFile = function(file) {
@@ -20,10 +22,20 @@ angular.module('srApp.controllers')
       };
 
       var today = new Date();
+
       $scope.save_name = 'dating_' + today.getTime() + '.txt';
       $scope.save_url = backup.generate($scope.state);
+
+      $scope.csv_name = 'dating_' + today.getTime() + '.csv';
+      $scope.csv_url = exporter.generate('csv', $scope.state);
+
+      $scope.bb_name = 'dating_' + today.getTime() + '.txt';
+      $scope.bb_url = exporter.generate('bb', $scope.state);
+
       $scope.$on('$destroy', function() {
         backup.cleanup($scope.save_url);
+        backup.cleanup($scope.csv_url);
+        backup.cleanup($scope.bb_url);
       });
 
       $scope.doReset = function() {
