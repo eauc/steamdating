@@ -16,8 +16,9 @@ angular.module('srApp.services')
         player: [
           'name',
           'team',
-          'faction',
           'city',
+          'faction',
+          'lists',
           'points.tournament',
           'points.sos',
           'points.control',
@@ -28,10 +29,12 @@ angular.module('srApp.services')
           't1.tournament',
           't1.control',
           't1.army',
+          'p1.list',
           't1.name',
           't1.team_tournament',
           't2.team_tournament',
           't2.name',
+          'p2.list',
           't2.army',
           't2.control',
           't2.tournament'
@@ -40,10 +43,12 @@ angular.module('srApp.services')
           'table',
           'p1.control',
           'p1.army',
+          'p1.list',
           'p1.name',
           'p1.tournament',
           'p2.tournament',
           'p2.name',
+          'p2.list',
           'p2.army',
           'p2.control'
         ]
@@ -54,9 +59,11 @@ angular.module('srApp.services')
     'export_keys',
     'teams',
     'players',
+    'lists',
     function(export_keys,
              teams,
-             players) {
+             players,
+             lists) {
       var CSV = {
         stringifyObject: function(o, keys) {
           var res = '';
@@ -152,9 +159,16 @@ angular.module('srApp.services')
                                                  state.players,
                                                  state.rounds.length)) + '\r\n';
           }
-          res += CSV.stringifyPlayers(players.sort(state.players,
-                                                   state.ranking.player,
-                                                   state.rounds.length),
+          var sorted_players = _.chain(state.players)
+              .snapshot()
+              .apply(players.sort,
+                     state.ranking.player,
+                     state.rounds.length)
+              .each(function(p) {
+                p.lists = lists.casters(p.lists).join(' ');
+              })
+              .value();
+          res += CSV.stringifyPlayers(sorted_players,
                                       is_team_tournament) + '\r\n';
           res += CSV.stringifyRounds(state.rounds, is_team_tournament) + '\r\n';
           return res;
@@ -167,9 +181,11 @@ angular.module('srApp.services')
     'export_keys',
     'teams',
     'players',
+    'lists',
     function(export_keys,
              teams,
-             players) {
+             players,
+             lists) {
       var BB = {
         stringifyObject: function(o, keys, prefix) {
           prefix = prefix || '';
@@ -274,10 +290,17 @@ angular.module('srApp.services')
                                                  state.players,
                                                  state.rounds.length)) + '\r\n';
           }
-          res += BB.stringifyPlayers(players.sort(state.players,
-                                                   state.ranking.player,
-                                                   state.rounds.length),
-                                      is_team_tournament) + '\r\n';
+          var sorted_players = _.chain(state.players)
+              .snapshot()
+              .apply(players.sort,
+                     state.ranking.player,
+                     state.rounds.length)
+              .each(function(p) {
+                p.lists = lists.casters(p.lists).join(' ');
+              })
+              .value();
+          res += BB.stringifyPlayers(sorted_players,
+                                     is_team_tournament) + '\r\n';
           res += BB.stringifyRounds(state.rounds, is_team_tournament) + '\r\n';
           return res;
         }
