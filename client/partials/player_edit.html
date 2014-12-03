@@ -87,23 +87,14 @@
         </div>
         <div class="row"
              ng-show="list !== -1">
-          <!-- <div class="form-group">
-          <label class="col-sm-2 control-label"
-          for="list-faction">Faction :</label>
-          <div class="col-sm-10">
-          <input class="form-control"
-          type="text"
-          id="new-list-faction"
-          name="new.list.faction"
-          ng-model="player.lists[list].faction" />
-          <select class="form-control"
-          id="list-faction"
-          name="list.faction"
-          ng-model="player.lists[list].faction"
-          ng-options="f as f for f in state.factions">
-          </select>
+          <div class="form-group">
+            <label class="col-sm-2 control-label"
+                   for="list-faction">Faction :</label>
+            <div class="col-sm-10 text-left"
+                 style="padding-top:0.6em">
+              {{player.lists[list].faction}}
+            </div>
           </div>
-          </div> -->
           <div class="form-group">
             <label class="col-sm-2 control-label"
                    for="list-faction">Wardude :</label>
@@ -119,7 +110,7 @@
                       ng-model="player.lists[list].caster"
                       ng-options="
                       id as c.name
-                      for (id,c) in player.faction | factionCasters
+                      for (id,c) in player.lists[list].faction | factionCasters
                       ">
               </select>
             </div>
