@@ -38,6 +38,7 @@ angular.module('srApp.controllers')
           }
         });
         $scope.state.factions = factions.listFrom($scope.state.players);
+        $scope.updatePoints();
         $scope.storeState();
         console.log('state', $scope.state);
       };
@@ -65,24 +66,27 @@ angular.module('srApp.controllers')
       $scope.updatePoints = function() {
         _.chain($scope.state.players)
           .each(function(p) {
+            p.lists_played = rounds.listsFor($scope.state.rounds, p.name);
+          })
+          .each(function(p) {
             p.points = rounds.pointsFor($scope.state.rounds, p.name);
           })
-            .each(function(p) {
-              p.points.sos = players.sosFrom($scope.state.players,
-                                             rounds.opponentsFor($scope.state.rounds,
-                                                                 p.name));
-            });
+          .each(function(p) {
+            p.points.sos = players.sosFrom($scope.state.players,
+                                           rounds.opponentsFor($scope.state.rounds,
+                                                               p.name));
+          });
         _.chain($scope.state.teams)
           .each(function(t) {
             t.points = rounds.pointsForTeam($scope.state.rounds, t.name);
           })
-            .each(function(t) {
-              t.points.sos = teams.sosFrom($scope.state.teams,
-                                           rounds.opponentsForTeam($scope.state.rounds,
-                                                                   t.name));
-            });
+          .each(function(t) {
+            t.points.sos = teams.sosFrom($scope.state.teams,
+                                         rounds.opponentsForTeam($scope.state.rounds,
+                                                                 t.name));
+          });
       };
-
+      
       $scope.show = {};
       $scope.doShowAll = function(show, event) {
         _.each($scope.state.teams, function(t) {

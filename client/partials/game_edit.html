@@ -48,12 +48,14 @@
       <tr>
         <th></th>
         <th>
-          <select ng-model="g.p1.name"
+          <select class="form-control"
+                  ng-model="g.p1.name"
                   ng-options="p.name as p.name for p in state.players | playersInTeam:game.t1.name">
           </select>
         </th>
         <th>
-          <select ng-model="g.p2.name"
+          <select class="form-control"
+                  ng-model="g.p2.name"
                   ng-options="p.name as p.name for p in state.players | playersInTeam:game.t2.name">
           </select>
         </th>
@@ -77,6 +79,27 @@
             ng-click="setWinLoss(g, 'p2','p1')"
             style="cursor:pointer;">
           {{g.p2.tournament===1 ? 'Win' : g.p2.tournament===0 ? 'Loss' : ''}}
+        </td>
+      </tr>
+      <tr>
+        <th class="text-right">
+          List
+        </th>
+        <td>
+          <select class="form-control"
+                  ng-model="g.p1.list"
+                  ng-options="
+                  c as c for c in casters[g.p1.name]
+                  ">
+          </select>
+        </td>
+        <td>
+          <select class="form-control"
+                  ng-model="g.p2.list"
+                  ng-options="
+                  c as c for c in casters[g.p2.name]
+                  ">
+          </select>
         </td>
       </tr>
       <tr>
@@ -137,6 +160,27 @@
           ng-click="setWinLoss($scope.game, 'p2','p1')"
           style="cursor:pointer;">
         {{game.p2.tournament===1 ? 'Win' : game.p2.tournament===0 ? 'Loss' : ''}}
+      </td>
+    </tr>
+    <tr>
+      <th class="text-right">
+        List
+      </th>
+      <td>
+        <select class="form-control"
+                ng-model="game.p1.list"
+                ng-options="
+                c as c for c in casters.p1
+                ">
+        </select>
+      </td>
+      <td>
+        <select class="form-control"
+                ng-model="game.p2.list"
+                ng-options="
+                c as c for c in casters.p2
+                ">
+        </select>
       </td>
     </tr>
     <tr>

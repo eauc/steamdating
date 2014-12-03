@@ -9,12 +9,14 @@ angular.module('srApp.services')
             table: table,
             p1: {
               name: p1_name,
+              list: null,
               tournament: null,
               control: null,
               army: null
             },
             p2: {
               name: p2_name,
+              list: null,
               tournament: null,
               control: null,
               army: null
@@ -33,6 +35,12 @@ angular.module('srApp.services')
           return _.chain(g)
             .apply(game.player, p)
             .getPath('tournament')
+            .value();
+        },
+        listFor: function(g, p) {
+          return _.chain(g)
+            .apply(game.player, p)
+            .getPath('list')
             .value();
         },
         tableFor: _.partial(_.getPath, _, 'table')
@@ -231,6 +239,14 @@ angular.module('srApp.services')
           return _.chain(coll)
             .mapWith(round.gameFor, p)
             .mapWith(game.tableFor, p)
+            .value();
+        },
+        listsFor: function(coll, p) {
+          return _.chain(coll)
+            .mapWith(round.gameFor, p)
+            .mapWith(game.listFor, p)
+            .uniq()
+            .without(undefined, null)
             .value();
         },
         tablesForTeam: function(coll, t) {
