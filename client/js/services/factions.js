@@ -52,11 +52,21 @@ angular.module('srApp.services')
         iconFor: function(f) {
           return _.chain(f)
             .apply(function(f) {
-              return _.exists(base_factions[f]) ? base_factions[f].icon : undefined;
+              var base = base_factions || {};
+              return _.exists(base[f]) ? base_factions[f].icon : undefined;
             })
             .apply(function(f) {
               return _.exists(f) ? 'data/icons/'+f : '';
             })
+            .value();              
+        },
+        castersFor: function(f) {
+          return _.chain(f)
+            .apply(function(f) {
+              var base = base_factions || {};
+              return _.exists(base[f]) ? base[f].casters : undefined;
+            })
+            // .tap(function(c) { console.log(base_factions, f, c); })
             .value();              
         }
       };

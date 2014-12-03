@@ -23,6 +23,7 @@ angular.module('srApp.services')
             faction: faction,
             city: city,
             team: team,
+            lists: [],
             points: {
               tournament: 0,
               sos: 0,

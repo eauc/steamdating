@@ -31,6 +31,7 @@
       </th>
       <th>City</th>
       <th>Faction</th>
+      <th>Wardudes</th>
       <th ng-if="isTeamTournament()">
         TTP
       </th>
@@ -63,6 +64,7 @@
         </td>
         <td>{{t.city}}</td>
         <td></td>
+        <td></td>
         <td>{{t.points.team_tournament}}</td>
         <td>{{t.points.tournament}}</td>
         <td>{{t.points.sos}}</td>
@@ -87,6 +89,11 @@
           <img ng-src="{{p.faction | factionIcon}}"
                style="height:1.8em;"/>
           {{p.faction}}
+        </td>
+        <td style="font-size: 0.8em">
+          <span ng-repeat="l in p.lists">
+            {{l.caster}} <br />
+          </span>
         </td>
         <td></td>
         <td>{{p.points.tournament}}</td>
@@ -121,6 +128,11 @@
         <img ng-src="{{p.faction | factionIcon}}"
              style="height:1.8em;"/>
         {{p.faction}}
+      </td>
+      <td style="font-size: 0.8em">
+        <span ng-repeat="l in p.lists">
+          {{l.caster}} <br />
+        </span>
       </td>
       <td>{{p.points.tournament}}</td>
       <td>{{p.points.sos}}</td>

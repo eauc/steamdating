@@ -1,75 +1,174 @@
 <div>
   <form class="form-horizontal">
-    <div class="form-group">
-      <label class="col-sm-2 control-label"
-             for="name">Name :</label>
-      <div class="col-sm-10">
-        <input class="form-control"
-               type="text"
-               id="name"
-               name="name"
-               ng-model="player.name"
-               required="required" />
+    <div class="container text-center">
+      <div class="form-group">
+        <label class="col-sm-2 control-label"
+               for="name">Name :</label>
+        <div class="col-sm-10">
+          <input class="form-control"
+                 type="text"
+                 id="name"
+                 name="name"
+                 ng-model="player.name"
+                 required="required" />
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <label class="col-sm-2 control-label"
-             for="faction">Faction :</label>
-      <div class="col-sm-10">
-        <input class="form-control"
-               type="text"
-               id="new_faction"
-               name="new_faction"
-               ng-model="player.faction" />
-        <select class="form-control"
-                id="faction"
-                name="faction"
-                ng-model="player.faction"
-                ng-options="f as f for f in state.factions">
-        </select>
-     </div>
-    </div>
-    <div ng-if="!isTeamTournament()"
-         class="form-group">
-      <label class="col-sm-2 control-label"
-             for="city">City :</label>
-      <div class="col-sm-10">
-        <input class="form-control"
-               type="text"
-               id="new_city"
-               name="new_city"
-               ng-model="player.city" />
-        <select class="form-control"
-                id="city"
-                name="city"
-                ng-model="player.city"
-                ng-options="c as c for c in state.cities">
-        </select>
+      <div class="form-group">
+        <label class="col-sm-2 control-label"
+               for="faction">Faction :</label>
+        <div class="col-sm-10">
+          <input class="form-control"
+                 type="text"
+                 id="new_faction"
+                 name="new_faction"
+                 ng-model="player.faction" />
+          <select class="form-control"
+                  id="faction"
+                  name="faction"
+                  ng-model="player.faction"
+                  ng-options="f as f for f in state.factions">
+          </select>
+        </div>
       </div>
-    </div>
-    <div ng-if="isTeamTournament()"
-         class="form-group">
-      <label class="col-sm-2 control-label"
-             for="team">Team :</label>
-      <div class="col-sm-10">
-        <select class="form-control"
-                id="team"
-                name="team"
-                ng-model="player.team"
-                required="required"
-                ng-options="t.name as t.name for t in state.teams">
-        </select>
+      <div ng-if="!isTeamTournament()"
+           class="form-group">
+        <label class="col-sm-2 control-label"
+               for="city">City :</label>
+        <div class="col-sm-10">
+          <input class="form-control"
+                 type="text"
+                 id="new_city"
+                 name="new_city"
+                 ng-model="player.city" />
+          <select class="form-control"
+                  id="city"
+                  name="city"
+                  ng-model="player.city"
+                  ng-options="c as c for c in state.cities">
+          </select>
+        </div>
       </div>
+      <div ng-if="isTeamTournament()"
+           class="form-group">
+        <label class="col-sm-2 control-label"
+               for="team">Team :</label>
+        <div class="col-sm-10">
+          <select class="form-control"
+                  id="team"
+                  name="team"
+                  ng-model="player.team"
+                  required="required"
+                  ng-options="t.name as t.name for t in state.teams">
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="row">
+          <div class="col-sm-1">
+          </div>
+          <div class="col-sm-11">
+            <ul class="nav nav-tabs">
+              <li ng-repeat="l in player.lists"
+                  ng-class="{
+                  'active': list===$index
+                  }">
+                <a ng-click="doSwitchToList($index)">
+                  List{{$index+1}}
+                </a>
+              </li>
+              <li>
+                <a ng-click="doAddList()">
+                  <span class="glyphicon glyphicon-plus"></span>
+                  Add list
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row"
+             ng-show="list !== -1">
+          <!-- <div class="form-group">
+          <label class="col-sm-2 control-label"
+          for="list-faction">Faction :</label>
+          <div class="col-sm-10">
+          <input class="form-control"
+          type="text"
+          id="new-list-faction"
+          name="new.list.faction"
+          ng-model="player.lists[list].faction" />
+          <select class="form-control"
+          id="list-faction"
+          name="list.faction"
+          ng-model="player.lists[list].faction"
+          ng-options="f as f for f in state.factions">
+          </select>
+          </div>
+          </div> -->
+          <div class="form-group">
+            <label class="col-sm-2 control-label"
+                   for="list-faction">Wardude :</label>
+            <div class="col-sm-10">
+              <input class="form-control"
+                     type="text"
+                     id="new-list-caster"
+                     name="new.list.caster"
+                     ng-model="player.lists[list].caster" />
+              <select class="form-control"
+                      id="list-caster"
+                      name="list.caster"
+                      ng-model="player.lists[list].caster"
+                      ng-options="
+                      id as c.name
+                      for (id,c) in player.faction | factionCasters
+                      ">
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label"
+                   for="list-faction">Theme :</label>
+            <div class="col-sm-10">
+              <input class="form-control"
+                     type="text"
+                     id="new-list-caster"
+                     name="new.list.caster"
+                     ng-model="player.lists[list].theme" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label"
+                   for="list-faction">FK list :</label>
+            <div class="col-sm-10">
+              <textarea style="min-height:20em;"
+                        class="form-control"
+                        id="new-list-fk"
+                        name="new.list.fk"
+                        ng-model="player.lists[list].fk">
+              </textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10 text-left">
+              <button class="btn btn-default"
+                      ng-click="doDropList(list)">
+                <span class="glyphicon glyphicon-trash"></span>
+                Delete list
+              </button>
+            </div>
+          </div>
+        </div>            
+      </div>
+      <button class="btn btn-default"
+              ng-click="doClose(true)"
+              type="button">
+        Save
+      </button>
+      <button class="btn btn-default"
+              ng-click="doClose(false)"
+              type="button">
+        Cancel
+      </button>
     </div>
-    <button class="btn btn-default"
-            ng-click="doClose(true)"
-            type="button">
-      Save
-    </button>
-    <button class="btn btn-default"
-            ng-click="doClose(false)"
-            type="button">
-      Cancel
-    </button>
   </form>
 </div>

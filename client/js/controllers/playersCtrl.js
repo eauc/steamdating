@@ -55,11 +55,15 @@ angular.module('srApp.controllers')
     'player',
     'factions',
     '$window',
+    'list',
+    'lists',
     function($scope,
              players,
              player,
              factions,
-             $window) {
+             $window,
+             list,
+             lists) {
       console.log('init playerEditCtrl');
 
       $scope.state.factions = factions.listFrom($scope.state.players);
@@ -99,6 +103,20 @@ angular.module('srApp.controllers')
           $scope.storeState();
         }
         $scope.goToState('players');
+      };
+
+      $scope.player.lists = $scope.player.lists || [];
+      $scope.list = $scope.player.lists.length === 0 ? -1 : 0;
+      $scope.doSwitchToList = function(i) {
+        $scope.list = i;
+      };
+      $scope.doAddList = function() {
+        $scope.list = $scope.player.lists.length;
+        $scope.player.lists = lists.add($scope.player.lists,
+                                        list.create($scope.player.faction));
+      };
+      $scope.doDropList = function(i) {
+        $scope.player.lists = lists.drop($scope.player.lists, i);
       };
     }
   ]);
