@@ -78,6 +78,14 @@ angular.module('srApp.services')
             }, 0)
             .value();
         },
+        teamSize: function(coll, ps) {
+          return _.chain(coll)
+            .map(function(t) {
+              return players.inTeam(ps, t.name).length;
+            })
+            .max()
+            .value();
+        }
       };
       return teams;
     }

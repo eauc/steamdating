@@ -6,22 +6,20 @@ angular.module('srApp.controllers')
     'rounds',
     'players',
     'teams',
+    'pairing',
     '$stateParams',
     '$window',
     function($scope,
              rounds,
              players,
              teams,
+             pairing,
              $stateParams,
              $window) {
       console.log('init roundsCtrl');
 
-      var nb_games = _.chain($scope.state.teams)
-          .map(function(t) {
-            return players.inTeam($scope.state.players, t.name).length;
-          })
-          .max()
-          .value();
+      var nb_games = teams.teamSize($scope.state.teams,
+                                    $scope.state.players);
       $scope.doShowAllTables = function(show, event) {
         _.chain(nb_games)
           .range()
@@ -117,28 +115,7 @@ angular.module('srApp.controllers')
         return teams.names($scope.state.teams);
       };
       $scope.suggestNextRound = function() {
-        if(!$scope.isTeamTournament()) {
-          var sorted_player_names = _.chain($scope.state.players)
-            .apply(players.sort,
-                   $scope.state.ranking.player,
-                   $scope.state.rounds.length)
-            .apply(players.names)
-            .value();
-          $scope.next_round = rounds.suggestNextRound($scope.state.rounds,
-                                                      sorted_player_names);
-        }
-        else {
-          var sorted_team_names = _.chain($scope.state.teams)
-            .apply(teams.sort,
-                   $scope.state.ranking.team,
-                   $scope.state.players,
-                   $scope.state.rounds.length)
-            .apply(teams.names)
-            .value();
-          $scope.next_round = rounds.suggestNextTeamRound($scope.state.rounds,
-                                                          sorted_team_names,
-                                                          nb_games);
-        }
+        $scope.next_round = pairing.suggestNextRound($scope.state);
       };
       $scope.registerNextRound = function() {
         $scope.state.rounds.push($scope.next_round);
