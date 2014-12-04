@@ -18,8 +18,9 @@ angular.module('srApp.controllers')
              $window) {
       console.log('init roundsCtrl');
 
-      var nb_games = teams.teamSize($scope.state.teams,
-                                    $scope.state.players);
+      var nb_games = $scope.state.teams.length > 0 ?
+        $scope.state.teams.length / 2 :
+        $scope.state.players.length / 2;
       $scope.doShowAllTables = function(show, event) {
         _.chain(nb_games)
           .range()

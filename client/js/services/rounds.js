@@ -190,6 +190,7 @@ angular.module('srApp.services')
         pointsFor: function(coll, p) {
           return _.chain(coll)
             .mapWith(round.gameFor, p)
+            .without(undefined)
             .mapWith(game.player, p)
             .reduce(function(mem, r) {
               return {
@@ -207,6 +208,7 @@ angular.module('srApp.services')
         pointsForTeam: function(coll, t) {
           return _.chain(coll)
             .mapWith(round.gameForTeam, t)
+            .without(undefined)
             .mapWith(team_game.team, t)
             .reduce(function(mem, r) {
               return {
@@ -226,13 +228,17 @@ angular.module('srApp.services')
         opponentsFor: function(coll, p) {
           return _.chain(coll)
             .mapWith(round.gameFor, p)
+            .without(undefined)
             .mapWith(game.opponentFor, p)
+            .without(undefined)
             .value();
         },
         opponentsForTeam: function(coll, t) {
           return _.chain(coll)
             .mapWith(round.gameForTeam, t)
+            .without(undefined)
             .mapWith(team_game.opponentForTeam, t)
+            .without(undefined)
             .value();
         },
         tablesFor: function(coll, p) {

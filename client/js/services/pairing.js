@@ -97,7 +97,7 @@ angular.module('srApp.services')
               var table = pairing.suggestTableForTeam(state.rounds, tables, t1, t2);
               tables = _.without(tables, table);
 
-              return team_game.create(table, t1, t2, n_games);
+              return team_game.create(table, t1, t2, nb_games);
             })
             .sortBy(_.property('table'))
             .value();

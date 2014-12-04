@@ -67,6 +67,5 @@ angular.module('srApp.controllers')
           .apply(lists.casters)
           .value();
       }
-      console.log($scope.casters);
     }
   ]);
