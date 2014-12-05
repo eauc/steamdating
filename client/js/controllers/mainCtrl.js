@@ -33,8 +33,8 @@ angular.module('srApp.controllers')
           rounds: [],
           factions: [],
           ranking: {
-            player: '((tp*n_players^2+sos)*5*n_rounds+cp)*100*n_rounds+ap',
-            team: '(((ttp*team_size*n_rounds+tp)*n_teams^2+sos)*5*n_rounds+cp)*100*n_rounds+ap'
+            player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
+            team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
           }
         });
         $scope.state.factions = factions.listFrom($scope.state.players);
