@@ -168,6 +168,7 @@ angular.module('srApp.controllers')
           }
           $scope.state.ranking.player = $scope.player_test.ranking;
           $scope.state.ranking.team = $scope.team_test.ranking;
+          $scope.storeState();
         }
         $scope.goToState('players');
       };
