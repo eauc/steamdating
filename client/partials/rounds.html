@@ -17,7 +17,7 @@
       <a href="#/rounds/next">Next</a>
     </li>
   </ul>
-  <table ng-show="pane==='sum'"
+  <table ng-if="pane==='sum'"
          class="table">
     <tr>
       <th>
@@ -129,7 +129,7 @@
     </tbody>
   </table>
   <div ng-repeat="r in roundsRange()"
-       ng-show="pane===''+r">
+       ng-if="pane===''+r">
     <button class="btn btn-default"
             ng-click="doDeleteRound(r)">
       <span class="glyphicon glyphicon-trash"></span>
@@ -269,7 +269,7 @@
     </table>
   </div>
   <div class="text-center"
-       ng-show="pane==='next'">
+       ng-if="pane==='next'">
     <table ng-if="isTeamTournament()"
            class="table text-center">
       <tr>
