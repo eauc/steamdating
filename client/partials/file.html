@@ -33,7 +33,23 @@
     </fieldset>
     <fieldset style="margin-top:10px">
       <legend>  
-        <span class="glyphicon glyphicon-share"></span>
+        <span class="glyphicon glyphicon-log-in"></span>
+        Import
+      </legend>
+      <div class="form-group">
+        <label class="control-label"
+               for="import-file">
+          T3 Players File
+        </label>
+        <input id="import-file"
+               type="file"
+               onchange="angular.element(this).scope().importT3File(this.files[0])" />
+      </div>
+      <strong class="text-danger">{{import_t3_result}}</strong>
+    </fieldset>
+    <fieldset style="margin-top:10px">
+      <legend>  
+        <span class="glyphicon glyphicon-log-out"></span>
         Export
       </legend>
       <a ng-show="csv_url"

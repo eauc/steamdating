@@ -1,6 +1,7 @@
 {
   "Cygnar": {
     "name": "Cygnar",
+    "t3": "Cygnar",
     "color": "#5963a2",
     "casters": {
       "blaize1": {
@@ -56,6 +57,7 @@
   },
   "The Protectorate of Menoth": {
     "name": "The Protectorate of Menoth",
+    "t3": "Menoth",
     "color" : "#ecc76d",
     "casters": {
       "kreoss1": {
@@ -108,6 +110,7 @@
   },
   "Khador": {
     "name": "Khador",
+    "t3": "Khador",
     "color": "#a94a4a",
     "casters": {
       "butcher1": {
@@ -160,6 +163,7 @@
   },
   "Cryx": {
     "name": "Cryx",
+    "t3": "Cryx",
     "color": "#3a4c3f",
     "casters": {
       "asphyxious1": {
@@ -215,6 +219,7 @@
   },
   "Retribution of Scyrah": {
     "name": "Retribution of Scyrah",
+    "t3": "Scyrah",
     "color": "#85d1bd",
     "casters": {
       "garryth1": {
@@ -246,6 +251,7 @@
   },
   "Trollbloods": {
     "name": "Trollbloods",
+    "t3": "Trollblood",
     "color": "#81beaa",
     "casters": {
       "borka1": {
@@ -292,6 +298,7 @@
   },
   "Circle Orboros": {
     "name": "Circle Orboros",
+    "t3": "Orboros",
     "color": "#5ab36e",
     "casters": {
       "baldur1": {
@@ -338,6 +345,7 @@
   },
   "Skorne": {
     "name": "Skorne",
+    "t3": "Skorne",
     "color": "#5963a2",
     "casters": {
       "hexeris1": {
@@ -384,6 +392,7 @@
   },
   "Legion of Everblight": {
     "name": "Legion of Everblight",
+    "t3": "Everblight",
     "color": "#a9bae0",
     "casters": {
       "absylonia1": {
@@ -430,6 +439,7 @@
   },
   "Mercenary Theme Forces": {
     "name": "Mercenary Theme Forces",
+    "t3": "Merc",
     "color": "#959571",
     "casters": {
       "ashlynn1": {
@@ -470,6 +480,7 @@
   },
   "Minion Theme Forces": {
     "name": "Minion Theme Forces",
+    "t3": "Min",
     "color": "#889751",
     "casters": {
       "arkadius1": {
@@ -507,6 +518,7 @@
   },
   "Convergence of Cyriss": {
     "name": "Convergence of Cyriss",
+    "t3": "Cyriss",
     "color": "#00b8c2",
     "casters": {
       "aurora1": {
