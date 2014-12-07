@@ -57,8 +57,8 @@ angular.module('srApp.services')
             .without(undefined)
             .value();
         },
-        sort: function(coll, bracket, criterium, ps, n_rounds) {
-          if(bracket) {
+        sort: function(coll, state) { //bracket, criterium, ps, n_rounds) {
+          if(state.bracket) {
             return _.sortBy(coll.slice(),
                             function(p) { return p.points.bracket; })
               .reverse();
@@ -66,13 +66,17 @@ angular.module('srApp.services')
           else {
             var baseCritFn = new Function('ttp', 'tp', 'sos', 'cp', 'ap',
                                           'team_size', 'n_teams', 'n_players', 'n_rounds',
-                                          'return '+criterium+';');
+                                          'return '+state.ranking.team+';');
             var team_size = _.chain(coll)
-                .map(function(t) { return players.inTeam(ps, t.name).length; })
+                .map(function(t) {
+                  return players.inTeam(state.players, t.name).length;
+                })
                 .max()
                 .value();
             var critFn = _.partial(baseCritFn, _, _, _, _, _,
-                                   team_size, coll.length, ps.length, n_rounds);
+                                   team_size, coll.length,
+                                   state.players.length,
+                                   state.rounds.length);
             return _.sortBy(coll.slice(),
                             _.partial(team.rank, _, critFn)).reverse();
           }

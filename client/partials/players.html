@@ -43,7 +43,7 @@
     </tr>
     <tbody ng-repeat="
            t
-           in state.teams | teamSort:state.bracket:state.ranking.team:state.players:state.rounds
+           in state.teams | teams:'sort':state
            track by t.name
            ">
       <tr style="cursor:pointer;"
@@ -79,14 +79,14 @@
         </td>
       </tr>
       <tr ng-show="show[t.name]"
-          ng-repeat="p in state.players | playersInTeam:t.name track by p.name"
+          ng-repeat="p in state.players | players:'inTeam':t.name track by p.name"
           style="cursor:pointer;"
           ng-click="doEditPlayer(p)">
         <td></td>
         <td>{{p.name}}</td>
         <td>{{p.city}}</td>
         <td>
-          <img ng-src="{{p.faction | factionIcon}}"
+          <img ng-src="{{p.faction | factions:'iconFor'}}"
                style="height:1.8em;"/>
           {{p.faction}}
         </td>
@@ -113,7 +113,7 @@
     <tr ng-if="!isTeamTournament()"
         ng-repeat="
         p
-        in state.players | playerSort:state.bracket:state.ranking.player:state.rounds
+        in state.players | players:'sort':state
         track by p.name
         "
         ng-style="{
@@ -125,7 +125,7 @@
       <td>{{p.name}}</td>
       <td>{{p.city}}</td>
       <td>
-        <img ng-src="{{p.faction | factionIcon}}"
+        <img ng-src="{{p.faction | factions:'iconFor'}}"
              style="height:1.8em;"/>
         {{p.faction}}
       </td>

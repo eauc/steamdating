@@ -50,13 +50,13 @@
         <th>
           <select class="form-control"
                   ng-model="g.p1.name"
-                  ng-options="p.name as p.name for p in state.players | playersInTeam:game.t1.name">
+                  ng-options="p.name as p.name for p in state.players | players:'inTeam':game.t1.name">
           </select>
         </th>
         <th>
           <select class="form-control"
                   ng-model="g.p2.name"
-                  ng-options="p.name as p.name for p in state.players | playersInTeam:game.t2.name">
+                  ng-options="p.name as p.name for p in state.players | players:'inTeam':game.t2.name">
           </select>
         </th>
       </tr>

@@ -69,7 +69,7 @@
         </td>
       </tr>
       <tr ng-show="show[t.name]"
-          ng-repeat="p in state.players | playersInTeam:t.name track by p.name">
+          ng-repeat="p in state.players | players:'inTeam':t.name track by p.name">
         <td style="cursor:pointer;"
             ng-click="doEditPlayer(p)">
           - {{p.name}}

@@ -154,16 +154,11 @@ angular.module('srApp.services')
           var is_team_tournament = (state.teams.length !== 0);
           var res = '';
           if(is_team_tournament) {
-            res += CSV.stringifyTeams(teams.sort(state.teams,
-                                                 state.ranking.team,
-                                                 state.players,
-                                                 state.rounds.length)) + '\r\n';
+            res += CSV.stringifyTeams(teams.sort(state.teams, state)) + '\r\n';
           }
           var sorted_players = _.chain(state.players)
               .snapshot()
-              .apply(players.sort,
-                     state.ranking.player,
-                     state.rounds.length)
+              .apply(players.sort, state)
               .each(function(p) {
                 p.lists = lists.casters(p.lists).join(' ');
               })
@@ -285,16 +280,11 @@ angular.module('srApp.services')
           var is_team_tournament = (state.teams.length !== 0);
           var res = '';
           if(is_team_tournament) {
-            res += BB.stringifyTeams(teams.sort(state.teams,
-                                                 state.ranking.team,
-                                                 state.players,
-                                                 state.rounds.length)) + '\r\n';
+            res += BB.stringifyTeams(teams.sort(state.teams, state)) + '\r\n';
           }
           var sorted_players = _.chain(state.players)
               .snapshot()
-              .apply(players.sort,
-                     state.ranking.player,
-                     state.rounds.length)
+              .apply(players.sort, state)
               .each(function(p) {
                 p.lists = lists.casters(p.lists).join(' ');
               })

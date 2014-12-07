@@ -1,19 +1,12 @@
 'use strict';
 
 angular.module('srApp.filters')
-  .filter('playersInTeam', [
+  .filter('players', [
     'players',
     function(players) {
-      return function(input, team) {
-        return players.inTeam(input, team);
-      };
-    }
-  ])
-  .filter('playerSort', [
-    'players',
-    function(players) {
-      return function(input, bracket, criterium, rounds) {
-        return players.sort(input, bracket, criterium, rounds.length);
+      return function(input, method) {
+        var args = _.rest(_.rest(arguments));
+        return players[method].apply(null, _.cons(input, args));
       };
     }
   ]);

@@ -110,7 +110,7 @@
                       ng-model="player.lists[list].caster"
                       ng-options="
                       id as c.name
-                      for (id,c) in player.lists[list].faction | factionCasters
+                      for (id,c) in player.lists[list].faction | factions:'castersFor'
                       ">
               </select>
             </div>

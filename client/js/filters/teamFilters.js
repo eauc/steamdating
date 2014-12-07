@@ -1,11 +1,12 @@
 'use strict';
 
 angular.module('srApp.filters')
-  .filter('teamSort', [
+  .filter('teams', [
     'teams',
     function(teams) {
-      return function(input, bracket, criterium, players, rounds) {
-        return teams.sort(input, bracket, criterium, players, rounds.length);
+      return function(input, method) {
+        var args = _.rest(_.rest(arguments));
+        return teams[method].apply(null, _.cons(input, args));
       };
     }
   ]);
