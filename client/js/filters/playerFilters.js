@@ -12,8 +12,8 @@ angular.module('srApp.filters')
   .filter('playerSort', [
     'players',
     function(players) {
-      return function(input, criterium, rounds) {
-        return players.sort(input, criterium, rounds.length);
+      return function(input, bracket, criterium, rounds) {
+        return players.sort(input, bracket, criterium, rounds.length);
       };
     }
   ]);

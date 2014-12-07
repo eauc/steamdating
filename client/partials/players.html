@@ -43,7 +43,7 @@
     </tr>
     <tbody ng-repeat="
            t
-           in state.teams | teamSort:state.ranking.team:state.players:state.rounds
+           in state.teams | teamSort:state.bracket:state.ranking.team:state.players:state.rounds
            track by t.name
            ">
       <tr style="cursor:pointer;"
@@ -113,7 +113,7 @@
     <tr ng-if="!isTeamTournament()"
         ng-repeat="
         p
-        in state.players | playerSort:state.ranking.player:state.rounds
+        in state.players | playerSort:state.bracket:state.ranking.player:state.rounds
         track by p.name
         "
         ng-style="{

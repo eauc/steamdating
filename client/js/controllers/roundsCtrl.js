@@ -115,8 +115,9 @@ angular.module('srApp.controllers')
       $scope.teamNames = function() {
         return teams.names($scope.state.teams);
       };
-      $scope.suggestNextRound = function() {
-        $scope.next_round = pairing.suggestNextRound($scope.state);
+      $scope.suggestNextRound = function(bracket) {
+        $scope.state.bracket = bracket;
+        $scope.next_round = pairing.suggestRound($scope.state);
       };
       $scope.registerNextRound = function() {
         $scope.state.rounds.push($scope.next_round);

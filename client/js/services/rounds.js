@@ -43,7 +43,18 @@ angular.module('srApp.services')
             .getPath('list')
             .value();
         },
-        tableFor: _.partial(_.getPath, _, 'table')
+        tableFor: _.partial(_.getPath, _, 'table'),
+        winner: function(g) {
+          return (g.p1.tournament === 1 ? g.p1.name :
+                  g.p2.tournament === 1 ? g.p2.name :
+                  undefined);
+        },
+        loser: function(g) {
+          return _.chain(g)
+            .apply(game.winner)
+            .apply(function(w) { return game.opponentFor(g, w); })
+            .value();
+        }
       };
       return game;
     }
@@ -92,6 +103,17 @@ angular.module('srApp.services')
             .value();
         },
         tableForTeam: _.partial(_.getPath, _, 'table'),
+        winner: function(g) {
+          return (g.t1.team_tournament === 1 ? g.t1.name :
+                  g.t2.team_tournament === 1 ? g.t2.name :
+                  undefined);
+        },
+        loser: function(g) {
+          return _.chain(g)
+            .apply(team_game.winner)
+            .apply(function(w) { return team_game.opponentForTeam(g, w); })
+            .value();
+        },
         refreshPoints: function(tg) {
           var points = _.chain(tg.games)
             .reduce(function(mem, g) {
@@ -133,7 +155,9 @@ angular.module('srApp.services')
   ])
   .factory('round', [
     'game',
-    function(game) {
+    'team_game',
+    function(game,
+             team_game) {
       var round = {
         gameFor: function(coll, p) {
           if(!_.isArray(coll) ||
@@ -165,6 +189,18 @@ angular.module('srApp.services')
           return _.find(coll, function(g) {
             return g.t1.name === t || g.t2.name === t;
           });
+        },
+        winners: function(coll) {
+          return _.map(coll, game.winner);
+        },
+        losers: function(coll) {
+          return _.map(coll, game.loser);
+        },
+        winnerTeams: function(coll) {
+          return _.map(coll, team_game.winner);
+        },
+        loserTeams: function(coll) {
+          return _.map(coll, team_game.loser);
         }
       };
       return round;
@@ -187,37 +223,43 @@ angular.module('srApp.services')
           new_coll.splice(r, 1);
           return new_coll;
         },
-        pointsFor: function(coll, p) {
+        pointsFor: function(coll, p, base_weight) {
           return _.chain(coll)
             .mapWith(round.gameFor, p)
             .without(undefined)
             .mapWith(game.player, p)
-            .reduce(function(mem, r) {
+            .reduce(function(mem, r, i) {
+              var bracket_weight = base_weight >> i;
               return {
+                bracket: mem.bracket + bracket_weight * r.tournament,
                 tournament: mem.tournament + r.tournament,
                 control: mem.control + r.control,
                 army: mem.army + r.army
               };
             }, {
+              bracket: 0,
               tournament: 0,
               control: 0,
               army: 0
             })
             .value();
         },
-        pointsForTeam: function(coll, t) {
+        pointsForTeam: function(coll, t, base_weight) {
           return _.chain(coll)
             .mapWith(round.gameForTeam, t)
             .without(undefined)
             .mapWith(team_game.team, t)
-            .reduce(function(mem, r) {
+            .reduce(function(mem, r, i) {
+              var bracket_weight = base_weight >> i;
               return {
+                bracket: mem.bracket + bracket_weight * r.team_tournament,
                 team_tournament: mem.team_tournament + r.team_tournament,
                 tournament: mem.tournament + r.tournament,
                 control: mem.control + r.control,
                 army: mem.army + r.army
               };
             }, {
+              bracket: 0,
               team_tournament: 0,
               tournament: 0,
               control: 0,

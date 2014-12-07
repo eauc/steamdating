@@ -72,14 +72,22 @@ angular.module('srApp.services')
             .without(undefined)
             .value();
         },
-        sort: function(coll, criterium, n_rounds) {
-          var baseCritFn = new Function('tp', 'sos', 'cp', 'ap',
-                                        'n_players', 'n_rounds',
-                                        'return '+criterium+';');
-          var critFn = _.partial(baseCritFn, _, _, _, _,
-                                 coll.length, n_rounds);
-          return _.sortBy(coll.slice(),
-                          _.partial(player.rank, _, critFn)).reverse();
+        sort: function(coll, bracket, criterium, n_rounds) {
+          if(bracket) {
+            return _.sortBy(coll.slice(),
+                            function(p) { return p.points.bracket; })
+              .reverse();
+          }
+          else {
+            var baseCritFn = new Function('tp', 'sos', 'cp', 'ap',
+                                          'n_players', 'n_rounds',
+                                          'return '+criterium+';');
+            var critFn = _.partial(baseCritFn, _, _, _, _,
+                                   coll.length, n_rounds);
+            return _.sortBy(coll.slice(),
+                            _.partial(player.rank, _, critFn))
+              .reverse();
+          }
         },
         sosFrom: function(coll, opponents) {
           return _.chain(opponents)

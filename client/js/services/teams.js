@@ -57,18 +57,25 @@ angular.module('srApp.services')
             .without(undefined)
             .value();
         },
-        sort: function(coll, criterium, ps, n_rounds) {
-          var baseCritFn = new Function('ttp', 'tp', 'sos', 'cp', 'ap',
-                                        'team_size', 'n_teams', 'n_players', 'n_rounds',
-                                        'return '+criterium+';');
-          var team_size = _.chain(coll)
-              .map(function(t) { return players.inTeam(ps, t.name).length; })
-              .max()
-              .value();
-          var critFn = _.partial(baseCritFn, _, _, _, _, _,
-                                 team_size, coll.length, ps.length, n_rounds);
-          return _.sortBy(coll.slice(),
-                          _.partial(team.rank, _, critFn)).reverse();
+        sort: function(coll, bracket, criterium, ps, n_rounds) {
+          if(bracket) {
+            return _.sortBy(coll.slice(),
+                            function(p) { return p.points.bracket; })
+              .reverse();
+          }
+          else {
+            var baseCritFn = new Function('ttp', 'tp', 'sos', 'cp', 'ap',
+                                          'team_size', 'n_teams', 'n_players', 'n_rounds',
+                                          'return '+criterium+';');
+            var team_size = _.chain(coll)
+                .map(function(t) { return players.inTeam(ps, t.name).length; })
+                .max()
+                .value();
+            var critFn = _.partial(baseCritFn, _, _, _, _, _,
+                                   team_size, coll.length, ps.length, n_rounds);
+            return _.sortBy(coll.slice(),
+                            _.partial(team.rank, _, critFn)).reverse();
+          }
         },
         sosFrom: function(coll, opponents) {
           return _.chain(opponents)

@@ -317,8 +317,20 @@
       </tr>
     </table>
     <button class="btn btn-default"
-            ng-click="suggestNextRound()">
-      Make Suggestion
+            ng-click="suggestNextRound(false)"
+            ng-show="
+            state.rounds.length===0 ||
+            !state.bracket
+            ">
+      Make SR Suggestion
+    </button>
+    <button class="btn btn-default"
+            ng-click="suggestNextRound(true)"
+            ng-show="
+            state.rounds.length===0 ||
+            state.bracket
+            ">
+      Make Bracket Suggestion
     </button>
     <button class="btn btn-default"
             ng-click="registerNextRound()">
