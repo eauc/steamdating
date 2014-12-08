@@ -115,11 +115,17 @@ angular.module('srApp.controllers')
       $scope.teamNames = function() {
         return teams.names($scope.state.teams);
       };
-      $scope.suggestNextRound = function(bracket) {
-        $scope.state.bracket = bracket;
-        $scope.next_round = pairing.suggestRound($scope.state);
+      $scope.suggestNextRound = function(bracket_start) {
+        $scope.bracket = $scope.state.bracket;
+        if(bracket_start) {
+          $scope.bracket = (_.exists($scope.bracket) ?
+                            $scope.bracket :
+                            $scope.state.rounds.length);
+        }
+        $scope.next_round = pairing.suggestRound($scope.state, $scope.bracket);
       };
       $scope.registerNextRound = function() {
+        $scope.state.bracket = $scope.bracket;
         $scope.state.rounds.push($scope.next_round);
         $scope.storeState();
         $scope.goToState('rounds', { pane: $scope.state.rounds.length-1 });
@@ -135,6 +141,10 @@ angular.module('srApp.controllers')
         var conf = $window.confirm("You sure ?");
         if(conf) {
           $scope.state.rounds = rounds.drop($scope.state.rounds, r);
+          if(_.exists($scope.state.bracket) &&
+             $scope.state.rounds.length <= $scope.state.bracket) {
+            $scope.state.bracket = undefined;
+          }
           $scope.updatePoints();
           $scope.storeState();
           $scope.goToState('rounds', { pane: 'sum' });

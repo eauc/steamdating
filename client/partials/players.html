@@ -13,6 +13,10 @@
     <span class="glyphicon glyphicon-plus"></span>
     Add Player
   </button>
+    <h3 ng-if="isBracketTournament()"
+        class="text-center">
+      Bracket - {{bracketRoundOf(state.rounds.length-1)}}
+    </h3>
   <table class="table">
     <tr>
       <th>#</th>

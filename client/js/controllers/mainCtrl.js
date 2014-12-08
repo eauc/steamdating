@@ -50,6 +50,9 @@ angular.module('srApp.controllers')
       $scope.isTeamTournament = function() {
         return $scope.state.teams.length !== 0;
       };
+      $scope.isBracketTournament = function() {
+        return _.exists($scope.state.bracket);
+      };
 
       $scope.goToState = _.bind($state.go, $state);
       $scope.currentState = _.bind(_.getPath, _, $state, 'current.name');
@@ -72,6 +75,7 @@ angular.module('srApp.controllers')
           .each(function(p) {
             p.points = rounds.pointsFor($scope.state.rounds,
                                         p.name,
+                                        $scope.state.bracket,
                                         base_weight);
           })
           .each(function(p) {
@@ -84,6 +88,7 @@ angular.module('srApp.controllers')
           .each(function(t) {
             t.points = rounds.pointsForTeam($scope.state.rounds,
                                             t.name,
+                                            $scope.state.bracket,
                                             base_weight);
           })
           .each(function(t) {
@@ -119,6 +124,30 @@ angular.module('srApp.controllers')
       if(!_.exists($scope.state)) {
         $scope.resetState();
       }
+
+      $scope.bracketRoundOf = function(r) {
+        var n = ($scope.isTeamTournament() ?
+                 $scope.state.teams.length >> (r - $scope.state.bracket + 1) :
+                 $scope.state.players.length >> (r - $scope.state.bracket + 1));
+        switch(n) {
+        case 1:
+          {
+            return 'Final';
+          }
+        case 2:
+          {
+            return 'Semi-finals';
+          }
+        case 4:
+          {
+            return 'Quarter-finals';
+          }
+        default:
+          {
+            return 'Round of '+n;
+          }
+        }
+      };
 
       console.log('state', $scope.state);
     }

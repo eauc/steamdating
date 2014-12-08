@@ -73,7 +73,7 @@ angular.module('srApp.services')
             .value();
         },
         sort: function(coll, state) { //bracket, criterium, n_rounds) {
-          if(state.bracket) {
+          if(_.exists(state.bracket)) {
             return _.sortBy(coll.slice(),
                             function(p) { return p.points.bracket; })
               .reverse();

@@ -129,12 +129,17 @@
     </tbody>
   </table>
   <div ng-repeat="r in roundsRange()"
-       ng-if="pane===''+r">
+       ng-if="pane===''+r"
+       class="text-center">
     <button class="btn btn-default"
             ng-click="doDeleteRound(r)">
       <span class="glyphicon glyphicon-trash"></span>
       Delete Round
     </button>
+    <h3 ng-if="
+        isBracketTournament() &&
+        r >= state.bracket
+        ">Bracket - {{bracketRoundOf(r)}}</h3>
     <table ng-if="isTeamTournament()"
            class="table text-center">
       <tr>
@@ -270,6 +275,9 @@
   </div>
   <div class="text-center"
        ng-if="pane==='next'">
+    <h3 ng-if="
+        isBracketTournament()
+        ">Bracket - {{bracketRoundOf(state.rounds.length)}}</h3>
     <table ng-if="isTeamTournament()"
            class="table text-center">
       <tr>
@@ -318,18 +326,12 @@
     </table>
     <button class="btn btn-default"
             ng-click="suggestNextRound(false)"
-            ng-show="
-            state.rounds.length===0 ||
-            !state.bracket
-            ">
+            ng-show="!isBracketTournament()">
       Make SR Suggestion
     </button>
     <button class="btn btn-default"
             ng-click="suggestNextRound(true)"
-            ng-show="
-            state.rounds.length===0 ||
-            state.bracket
-            ">
+            >
       Make Bracket Suggestion
     </button>
     <button class="btn btn-default"

@@ -223,15 +223,20 @@ angular.module('srApp.services')
           new_coll.splice(r, 1);
           return new_coll;
         },
-        pointsFor: function(coll, p, base_weight) {
+        pointsFor: function(coll, p, bracket_start, base_weight) {
           return _.chain(coll)
             .mapWith(round.gameFor, p)
-            .without(undefined)
+            .map(function(g) {
+              if(!_.exists(g)) return game.create(0, p);
+              return g;
+            })
             .mapWith(game.player, p)
             .reduce(function(mem, r, i) {
-              var bracket_weight = base_weight >> i;
+              var bracket_weight = base_weight >> (i - bracket_start);
               return {
-                bracket: mem.bracket + bracket_weight * r.tournament,
+                bracket: ((_.exists(bracket_start) && i >= bracket_start) ?
+                          mem.bracket + bracket_weight * r.tournament :
+                          mem.bracket),
                 tournament: mem.tournament + r.tournament,
                 control: mem.control + r.control,
                 army: mem.army + r.army
@@ -242,17 +247,20 @@ angular.module('srApp.services')
               control: 0,
               army: 0
             })
+            .spy('pointsFor', p)
             .value();
         },
-        pointsForTeam: function(coll, t, base_weight) {
+        pointsForTeam: function(coll, t, bracket_start, base_weight) {
           return _.chain(coll)
             .mapWith(round.gameForTeam, t)
             .without(undefined)
             .mapWith(team_game.team, t)
             .reduce(function(mem, r, i) {
-              var bracket_weight = base_weight >> i;
+              var bracket_weight = base_weight >> (i - bracket_start);
               return {
-                bracket: mem.bracket + bracket_weight * r.team_tournament,
+                bracket: ((_.exists(bracket_start) && i >= bracket_start) ?
+                          mem.bracket + bracket_weight * r.team_tournament :
+                          mem.bracket),
                 team_tournament: mem.team_tournament + r.team_tournament,
                 tournament: mem.tournament + r.tournament,
                 control: mem.control + r.control,
@@ -265,6 +273,7 @@ angular.module('srApp.services')
               control: 0,
               army: 0
             })
+            .spy('pointsForTeam', t)
             .value();
         },
         opponentsFor: function(coll, p) {

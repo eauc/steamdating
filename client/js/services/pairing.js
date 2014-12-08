@@ -26,11 +26,13 @@ angular.module('srApp.services')
     'game',
     'team_game',
     'round',
+    'players',
     'teams',
     function(basePairing,
              game,
              team_game,
              round,
+             players,
              teams) {
       var bracketPairing = {
         indices: function(n) {
@@ -47,11 +49,12 @@ angular.module('srApp.services')
         suggestFirstSingleRound: function(state) {
           var n_games = state.players.length/2;
           var tables = _.range(1, n_games+1);
+          var ps = players.sort(state.players, state);
           return _.chain(state.players.length)
               .apply(bracketPairing.indices)
               .map(function(ind) {
-                var p1 = state.players[ind[0]-1].name;
-                var p2 = state.players[ind[1]-1].name;
+                var p1 = ps[ind[0]-1].name;
+                var p2 = ps[ind[1]-1].name;
                 var table = basePairing.suggestTableFor(state.rounds, tables, p1, p2);
                 tables = _.without(tables, table);
                 return game.create(table, p1, p2);
@@ -61,9 +64,10 @@ angular.module('srApp.services')
         suggestNextSingleRound: function(state) {
           var n_games = state.players.length/2;
           var tables = _.range(1, n_games+1);
+          var nb_bracket_rounds = state.rounds.length - state.bracket;
           return _.chain(state.rounds)
             .last()
-            .chunk(n_games / (1 << state.rounds.length-1))
+            .chunk(n_games / (1 << nb_bracket_rounds-1))
             .reduce(function(mem, r) {
               var winners = _.chain(r)
                 .apply(round.winners)
@@ -90,11 +94,12 @@ angular.module('srApp.services')
           var tables = _.range(1, n_games+1);
           var nb_games = teams.teamSize(state.teams,
                                         state.players);
+          var ts = teams.sort(state.teams, state);
           return _.chain(state.teams.length)
               .apply(bracketPairing.indices)
               .map(function(ind) {
-                var t1 = state.teams[ind[0]-1].name;
-                var t2 = state.teams[ind[1]-1].name;
+                var t1 = ts[ind[0]-1].name;
+                var t2 = ts[ind[1]-1].name;
                 var table = basePairing.suggestTableForTeam(state.rounds,
                                                             tables,
                                                             t1, t2);
@@ -108,9 +113,10 @@ angular.module('srApp.services')
           var tables = _.range(1, n_games+1);
           var nb_games = teams.teamSize(state.teams,
                                         state.players);
+          var nb_bracket_rounds = state.rounds.length - state.bracket;
           return _.chain(state.rounds)
             .last()
-            .chunk(n_games / (1 << state.rounds.length-1))
+            .chunk(n_games / (1 << nb_bracket_rounds-1))
             .reduce(function(mem, r) {
               var winners = _.chain(r)
                 .apply(round.winnerTeams)
@@ -146,6 +152,15 @@ angular.module('srApp.services')
           }
           else {
             return bracketPairing.suggestNextTeamRound(state);
+          }
+        },
+        suggestRound: function(state, bracket) {
+          var last_round = state.rounds.length;
+          if(bracket === last_round) {
+            return bracketPairing.suggestFirstRound(state);
+          }
+          else {
+            return bracketPairing.suggestNextRound(state);
           }
         }
       };
@@ -266,7 +281,7 @@ angular.module('srApp.services')
             .sortBy(_.property('table'))
             .value();
         },
-        suggestNextRound: function(state) {
+        suggestRound: function(state) {
           if(state.teams.length === 0) {
             return srPairing.suggestNextSingleRound(state);
           }
@@ -275,7 +290,6 @@ angular.module('srApp.services')
           }
         }
       };
-      srPairing.suggestFirstRound = srPairing.suggestNextRound;
       return srPairing;
     }
   ])
@@ -285,15 +299,12 @@ angular.module('srApp.services')
     function(bracketPairing,
              srPairing) {
       var pairing = {
-        suggestRound: function(state) {
-          var method = (state.rounds.length === 0 ?
-                        'suggestFirstRound' :
-                        'suggestNextRound');
-          if(state.bracket) {
-            return bracketPairing[method](state);
+        suggestRound: function(state, bracket) {
+          if(_.exists(bracket)) {
+            return bracketPairing.suggestRound(state, bracket);
           }
           else {
-            return srPairing[method](state);
+            return srPairing.suggestRound(state);
           }
         }
       };
