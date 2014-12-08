@@ -1,0 +1,12 @@
+<div>
+  <div ng-if="pane==='sum'"
+       ng-include="'partials/rounds_sum_team.html'">
+  </div>
+  <div ng-repeat="r in roundsRange()"
+       ng-if="pane===''+r"
+       ng-include="'partials/rounds_round_team.html'">
+  </div>
+  <div ng-if="pane==='next'"
+       ng-include="'partials/rounds_next_team.html'">
+  </div>
+</div>

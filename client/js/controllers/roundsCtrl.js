@@ -18,9 +18,9 @@ angular.module('srApp.controllers')
              $window) {
       console.log('init roundsCtrl');
 
-      var nb_games = $scope.state.teams.length > 0 ?
-        $scope.state.teams.length / 2 :
-        $scope.state.players.length / 2;
+      var nb_games = $scope.isTeamTournament() ?
+        _.flatten($scope.state.teams).length / 2 :
+        _.flatten($scope.state.players).length / 2;
       $scope.doShowAllTables = function(show, event) {
         _.chain(nb_games)
           .range()
@@ -67,66 +67,103 @@ angular.module('srApp.controllers')
         return rounds.gameForTeam($scope.state.rounds, t, r);
       };
 
-      $scope.round = function(r) {
-        return rounds.round($scope.state.rounds, r);
+      $scope.round = function(r, i) {
+        var start_index;
+        var end_index;
+        if($scope.isTeamTournament()) {
+          start_index = _.chain($scope.state.teams)
+            .slice(0, i)
+            .flatten()
+            .value()
+            .length / 2;
+          end_index = (start_index +
+                       $scope.state.teams[i].length / 2);
+          return _.chain($scope.state.rounds)
+            .apply(rounds.round, r)
+            .slice(start_index, end_index)
+            .value();
+        }
+        else {
+          start_index = _.chain($scope.state.players)
+            .slice(0, i)
+            .flatten()
+            .value()
+            .length / 2;
+          end_index = (start_index +
+                       $scope.state.players[i].length / 2);
+          return _.chain($scope.state.rounds)
+            .apply(rounds.round, r)
+            .slice(start_index, end_index)
+            .value();
+        }
       };
 
       if(!$scope.isTeamTournament()) {
-        $scope.next_round = _.chain($scope.state.players.length/2)
-          .range()
-          .map(function(i) {
-            return {
-              table: i+1,
-              p1: {
-                name: null,
-                tournament: null,
-                control: null,
-                army: null
-              },
-              p2: {
-                name: null,
-                tournament: null,
-                control: null,
-                army: null
-              }
-            };
-          })
-          .value();
+        $scope.next_round = _.map($scope.state.players, function(group) {
+          return _.chain(group.length/2)
+            .range()
+            .map(function(i) {
+              return {
+                table: i+1,
+                p1: {
+                  name: null,
+                  tournament: null,
+                  control: null,
+                  army: null
+                },
+                p2: {
+                  name: null,
+                  tournament: null,
+                  control: null,
+                  army: null
+                }
+              };
+            })
+            .value();
+        });
       }
       else {
-        $scope.next_round = _.chain($scope.state.teams.length/2)
-          .range()
-          .map(function(i) {
-            return {
-              table: i+1,
-              t1: {
-                name: null,
-              },
-              t2: {
-                name: null,
-              }
-            };
-          })
-          .value();
+        $scope.next_round = _.map($scope.state.teams, function(group) {
+          return _.chain(group.length/2)
+            .range()
+            .map(function(i) {
+              return {
+                table: i+1,
+                t1: {
+                  name: null,
+                },
+                t2: {
+                  name: null,
+                }
+              };
+            })
+            .value();
+        });
       }
-      $scope.playerNames = function() {
-        return players.names($scope.state.players);
+      $scope.playerNames = function(gr) {
+        return players.names(gr);
       };
-      $scope.teamNames = function() {
-        return teams.names($scope.state.teams);
+      $scope.teamNames = function(gr) {
+        return teams.names(gr);
       };
-      $scope.suggestNextRound = function(bracket_start) {
-        $scope.bracket = $scope.state.bracket;
+      $scope.suggestNextRound = function(i, bracket_start) {
+        var n_groups = ($scope.isTeamTournament() ?
+                        $scope.state.teams.length :
+                        $scope.state.players.length);
+        $scope.bracket = _.snapshot($scope.state.bracket);
         if(bracket_start) {
-          $scope.bracket = (_.exists($scope.bracket) ?
-                            $scope.bracket :
-                            $scope.state.rounds.length);
+          if($scope.bracket.length !== n_groups) {
+            $scope.bracket = _.repeat(n_groups, undefined);
+          }
+          if(!_.exists($scope.bracket[i])) {
+            $scope.bracket[i] = $scope.state.rounds.length;
+          }
         }
-        $scope.next_round = pairing.suggestRound($scope.state, $scope.bracket);
+        $scope.next_round[i] = pairing.suggestRound($scope.state, i, $scope.bracket[i]);
       };
       $scope.registerNextRound = function() {
         $scope.state.bracket = $scope.bracket;
-        $scope.state.rounds.push($scope.next_round);
+        $scope.state.rounds.push(_.flatten($scope.next_round));
         $scope.storeState();
         $scope.goToState('rounds', { pane: $scope.state.rounds.length-1 });
       };
@@ -141,10 +178,12 @@ angular.module('srApp.controllers')
         var conf = $window.confirm("You sure ?");
         if(conf) {
           $scope.state.rounds = rounds.drop($scope.state.rounds, r);
-          if(_.exists($scope.state.bracket) &&
-             $scope.state.rounds.length <= $scope.state.bracket) {
-            $scope.state.bracket = undefined;
-          }
+          _.each($scope.state.bracket, function(b, i) {
+            if(_.exists(b) &&
+               $scope.state.rounds.length <= b) {
+              $scope.state.bracket[i] = undefined;
+            }
+          });
           $scope.updatePoints();
           $scope.storeState();
           $scope.goToState('rounds', { pane: 'sum' });

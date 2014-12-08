@@ -50,7 +50,7 @@ angular.module('srApp.controllers')
 
       $scope.importT3File = function(file) {
         t3Import.read(file).then(function(data) {
-          $scope.newState({ players: data });
+          $scope.newState({ players: [data] });
           $scope.goToState('players');
         }, function(error) {
           $scope.import_t3_result = error;

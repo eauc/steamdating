@@ -18,12 +18,14 @@ angular.module('srApp.controllers')
              $window) {
       console.log('init playersCtrl');
 
-      $scope.doAddPlayer = function() {
+      $scope.doAddPlayer = function(i) {
         $scope.edit.player = player.create();
+        $scope.edit.group = i;
         $scope.goToState('player_edit');
       };
-      $scope.doAddTeam = function() {
+      $scope.doAddTeam = function(i) {
         $scope.edit.team = team.create();
+        $scope.edit.group = i;
         $scope.goToState('team_edit');
       };
 
@@ -66,7 +68,7 @@ angular.module('srApp.controllers')
              lists) {
       console.log('init playerEditCtrl');
 
-      $scope.state.factions = factions.listFrom($scope.state.players);
+      $scope.state.factions = players.factions($scope.state.players);
       $scope.state.cities = players.cities($scope.state.players);
 
       $scope.player = _.snapshot($scope.edit.player);
@@ -95,7 +97,7 @@ angular.module('srApp.controllers')
           if(!_.exists($scope.edit.player.name)) {
             $scope.state.players = players.add($scope.state.players,
                                                $scope.player,
-                                               $scope.state.phantom);
+                                               $scope.edit.group);
           }
           else {
             _.extend($scope.edit.player, $scope.player);

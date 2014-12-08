@@ -1,0 +1,84 @@
+<div ng-repeat="gr in state.teams">
+  <h2 style="border-bottom:1px solid black;">
+    Group{{$index+1}}
+  </h2>
+  <table class="table">
+    <tr>
+      <th>
+        <button class="btn btn-default"
+                ng-click="doShowAll($index, false, $event)">
+          <span class="glyphicon glyphicon-chevron-up"></span>
+        </button>
+        <button class="btn btn-default"
+                ng-click="doShowAll($index, true, $event)">
+          <span class="glyphicon glyphicon-chevron-right"></span>
+        </button>
+        Team
+      </th>
+      <th>Lists Played</th>
+      <th ng-repeat="i in roundsRange()">
+        Round{{i+1}}
+      </th>
+    </tr>
+    <tbody ng-repeat="t in gr track by t.name">
+      <tr>
+        <td style="cursor:pointer;"
+            ng-click="doEditTeam(t)">
+          <button ng-show="show[t.name]"
+                  class="btn btn-default"
+                  ng-click="doShow(t.name, false, $event)">
+            <span class="glyphicon glyphicon-chevron-up"></span>
+          </button>
+          <button ng-show="!show[t.name]"
+                  class="btn btn-default"
+                  ng-click="doShow(t.name, true, $event)">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+          </button>
+          {{t.name}}
+        </td>
+        <td></td>
+        <td ng-repeat="i in roundsRange()"
+            ng-click="doGameEdit(gameForTeam(t.name, i))"
+            ng-class="{
+            'success': successForTeam(t.name, i) === 1,
+            'danger': successForTeam(t.name, i) === 0,
+            }"
+            style="cursor:pointer;">
+          {{tableForTeam(t.name, i)}} -
+          {{opponentForTeam(t.name, i)}}
+        </td>
+      </tr>
+      <tr ng-show="show[t.name]"
+          ng-repeat="
+          p
+          in state.players
+          | players:'inTeam':t.name track by p.name
+          ">
+        <td style="cursor:pointer;"
+            ng-click="doEditPlayer(p)">
+          - {{p.name}}
+        </td>
+        <td style="font-size:0.8em;"
+            ng-class="{
+            'warning': p.lists_played.length < p.lists.length,
+            'info': p.lists_played.length >= p.lists.length,
+            }">
+          {{p.lists_played.length}}/{{p.lists.length}} -
+          <span ng-repeat="c in p.lists_played">
+            {{c}}
+          </span>
+        </td>
+        <td ng-repeat="i in roundsRange()"
+            ng-click="doGameEdit(gameForTeam(t.name, i))"
+            ng-class="{
+            'success': successFor(p.name, i) === 1,
+            'danger': successFor(p.name, i) === 0,
+            }"
+            style="cursor:pointer;">
+          {{tableFor(p.name, i)}} -
+          {{opponentFor(p.name, i)}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

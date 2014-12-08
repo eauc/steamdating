@@ -164,19 +164,14 @@ angular.module('srApp.services')
              coll.length === 0) return [];
           if(_.exists(coll[0].games)) {
             return _.chain(coll)
-              // .tap(function(c) { console.log('start', c); })
               .map(function(g) { return _.getPath(g, 'games'); })
-              // .tap(function(c) { console.log(c); })
               .map(function(games) {
                 return _.find(games, function(g) {
                   return g.p1.name === p || g.p2.name === p;
                 });
               })
-              // .tap(function(c) { console.log(c); })
               .without(undefined)
-              // .tap(function(c) { console.log(c); })
               .first()
-              // .tap(function(c) { console.log(c); })
               .value();
           }
           else {
@@ -308,11 +303,8 @@ angular.module('srApp.services')
         },
         tablesForTeam: function(coll, t) {
           return _.chain(coll)
-            // .tap(function(c) { console.log('start', c); })
             .mapWith(round.gameForTeam, t)
-            // .tap(function(c) { console.log(c); })
             .mapWith(team_game.tableForTeam, t)
-            // .tap(function(c) { console.log(c); })
             .value();
         },
         gameFor: function(coll, p, r) {

@@ -13,7 +13,6 @@ angular.module('srApp.services')
                             t.points.sos,
                             t.points.control,
                             t.points.army);
-          // console.log(t, rank);
           return rank;
         },
         create: function teamCreate(name, city) {
@@ -35,30 +34,55 @@ angular.module('srApp.services')
   .factory('teams', [
     'team',
     'players',
+    'factions',
     function(team,
-             players) {
+             players,
+             factions) {
+      var base_factions = {};
+      factions.baseFactions().then(function(f) {
+        base_factions = f;
+      });
       var teams = {
-        add: function(coll, t) {
-          return _.cat(coll, t);
+        add: function(coll, t, i) {
+          coll[i] = _.cat(coll[i], t);
+          return coll;
         },
         drop: function(coll, t) {
-          return _.reject(coll, _.unary(team.is(t.name)));
+          return _.map(coll, function(group) {
+            return _.reject(group, _.unary(team.is(t.name)));
+          });
         },
         team: function(coll, name) {
-          return _.find(coll, _.unary(team.is(name)));
+          return _.chain(coll)
+            .flatten()
+            .find(_.unary(team.is(name)))
+            .value();
         },
         names: function(coll) {
-          return _.mapWith(coll, _.getPath, 'name');
+          return _.chain(coll)
+            .flatten()
+            .mapWith(_.getPath, 'name')
+            .value();
         },
         cities: function(coll) {
           return _.chain(coll)
+            .flatten()
             .mapWith(_.getPath, 'city')
             .uniq()
             .without(undefined)
             .value();
         },
-        sort: function(coll, state) { //bracket, criterium, ps, n_rounds) {
-          if(_.exists(state.bracket)) {
+        factions: function(coll) {
+          return _.chain(coll)
+            .flatten()
+            .mapWith(_.getPath, 'faction')
+            .cat(_.keys(base_factions))
+            .uniq()
+            .without(undefined)
+            .value();
+        },
+        sortGroup: function(coll, i, state) {
+          if(_.exists(state.bracket[i])) {
             return _.sortBy(coll.slice(),
                             function(p) { return -p.points.bracket; });
           }
@@ -66,21 +90,30 @@ angular.module('srApp.services')
             var baseCritFn = new Function('ttp', 'tp', 'sos', 'cp', 'ap',
                                           'team_size', 'n_teams', 'n_players', 'n_rounds',
                                           'return '+state.ranking.team+';');
-            var team_size = _.chain(coll)
-                .map(function(t) {
-                  return players.inTeam(state.players, t.name).length;
-                })
-                .max()
-                .value();
+            var team_size = _.chain(state.teams)
+              .flatten()
+              .map(function(t) {
+                return players.inTeam(state.players, t.name).length;
+              })
+              .max()
+              .value();
+            var n_teams = _.flatten(state.teams).length;
+            var n_players = _.flatten(state.players).length;
             var critFn = _.partial(baseCritFn, _, _, _, _, _,
-                                   team_size, coll.length,
-                                   state.players.length,
+                                   team_size, 
+                                   n_teams,
+                                   n_players,
                                    state.rounds.length);
             return _.sortBy(coll.slice(),
                             function(t) {
                               return -team.rank(t, critFn);
                             });
           }
+        },
+        sort: function(coll, state) {
+          return _.map(coll, function(group, i) {
+            return teams.sortGroup(group, i, state);
+          });
         },
         sosFrom: function(coll, opponents) {
           return _.chain(opponents)
@@ -92,6 +125,7 @@ angular.module('srApp.services')
         },
         teamSize: function(coll, ps) {
           return _.chain(coll)
+            .flatten()
             .map(function(t) {
               return players.inTeam(ps, t.name).length;
             })

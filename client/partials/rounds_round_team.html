@@ -1,0 +1,111 @@
+<div class="text-center">
+  <button class="btn btn-default"
+          ng-click="doDeleteRound(r)">
+    <span class="glyphicon glyphicon-trash"></span>
+    Delete Round
+  </button>
+  <div ng-repeat="gr in state.teams">
+    <h2 style="border-bottom:1px solid black;">
+      Group{{$index+1}}
+    </h2>
+    <h3 ng-if="
+      isBracketTournament($index) &&
+      r >= state.bracket[$index]
+      ">
+      Bracket - {{bracketRoundOf($index, r)}}
+    </h3>
+    <table class="table text-center">
+      <tr>
+        <th class="text-center" colspan="5">Team1</th>
+        <th class="text-center">
+          <button class="btn btn-default"
+                  ng-click="doShowAllTables(false, $event)">
+            <span class="glyphicon glyphicon-chevron-up"></span>
+          </button>
+          <button class="btn btn-default"
+                  ng-click="doShowAllTables(true, $event)">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+          </button>
+          Table
+        </th>
+        <th class="text-center" colspan="5">Team2</th>
+      </tr>
+      <tr>
+        <th class="text-center">TP</th>
+        <th class="text-center">AP</th>
+        <th class="text-center">CP</th>
+        <th class="text-center">List</th>
+        <th class="text-center">Name</th>
+        <th class="text-center"></th>
+        <th class="text-center">Name</th>
+        <th class="text-center">List</th>
+        <th class="text-center">CP</th>
+        <th class="text-center">AP</th>
+        <th class="text-center">TP</th>
+      </tr>
+      <tbody ng-repeat="g in round(r, $index)"
+             ng-click="doGameEdit(g)"
+             style="cursor:pointer;">
+        <tr>
+          <td>{{g.t1.tournament}}</td>
+          <td>{{g.t1.army}}</td>
+          <td>{{g.t1.control}}</td>
+          <td></td>
+          <td ng-class="{
+              'success': g.t1.team_tournament === 1,
+              'danger': g.t1.team_tournament === 0,
+              }">
+            {{g.t1.name}}
+          </td>
+          <td>
+            <button ng-show="show['table'+g.table]"
+                    class="btn btn-default"
+                    ng-click="doShowTable(g.table, false, $event)">
+              <span class="glyphicon glyphicon-chevron-up"></span>
+            </button>
+            <button ng-show="!show['table'+g.table]"
+                    class="btn btn-default"
+                    ng-click="doShowTable(g.table, true, $event)">
+              <span class="glyphicon glyphicon-chevron-right"></span>
+            </button>
+            {{g.table}}
+          </td> 
+          <td ng-class="{
+              'success': g.t2.team_tournament === 1,
+              'danger': g.t2.team_tournament === 0,
+              }">
+            {{g.t2.name}}
+          </td>
+          <td></td>
+          <td>{{g.t2.control}}</td>
+          <td>{{g.t2.army}}</td>
+          <td>{{g.t2.tournament}}</td>
+        </tr>
+        <tr ng-show="show['table'+g.table]"
+            ng-repeat="i in g.games">
+          <td></td>
+          <td>{{i.p1.army}}</td>
+          <td>{{i.p1.control}}</td>
+          <td>{{i.p1.list}}</td>
+          <td ng-class="{
+              'success': i.p1.tournament === 1,
+              'danger': i.p1.tournament === 0,
+              }">
+            {{i.p1.name}}
+          </td>
+          <td></td>
+          <td ng-class="{
+              'success': i.p2.tournament === 1,
+              'danger': i.p2.tournament === 0,
+              }">
+            {{i.p2.name}}
+          </td>
+          <td>{{i.p2.list}}</td>
+          <td>{{i.p2.control}}</td>
+          <td>{{i.p2.army}}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

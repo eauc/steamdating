@@ -40,15 +40,15 @@ angular.module('srApp.services')
             .pick('name', 'color')
             .value();
         },
-        listFrom: function(players) {
-          return _.chain(players)
-            .mapWith(_.getPath, 'faction')
-            .cat(_.keys(base_factions))
-            .uniq()
-            .without(undefined)
-            .sort()
-            .value();
-        },
+        // listFrom: function(players) {
+        //   return _.chain(players)
+        //     .mapWith(_.getPath, 'faction')
+        //     .cat(_.keys(base_factions))
+        //     .uniq()
+        //     .without(undefined)
+        //     .sort()
+        //     .value();
+        // },
         iconFor: function(f) {
           return _.chain(f)
             .apply(function(f) {

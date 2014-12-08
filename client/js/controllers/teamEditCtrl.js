@@ -16,7 +16,7 @@ angular.module('srApp.controllers')
              teams) {
       console.log('init teamsEditCtrl');
 
-      $scope.state.factions = factions.listFrom($scope.state.players);
+      $scope.state.factions = players.factions($scope.state.players);
       $scope.state.cities = teams.cities($scope.state.teams);
 
       $scope.team = _.snapshot($scope.edit.team);
@@ -38,7 +38,8 @@ angular.module('srApp.controllers')
           }
           if(!_.exists($scope.edit.team.name)) {
             $scope.state.teams = teams.add($scope.state.teams,
-                                           $scope.team);
+                                           $scope.team,
+                                           $scope.edit.group);
           }
           else {
             _.extend($scope.edit.team, $scope.team);

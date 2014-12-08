@@ -17,12 +17,12 @@ angular.module('srApp.controllers')
       console.log('init statsCtrl');
       $scope.pane = $stateParams.pane;
 
-      var n_players = $scope.state.players.length;
+      var n_players = _.flatten($scope.state.players).length;
 
       $scope.player_stats = {};
       factions.baseFactions().then(function() {
         var mem = 0;
-        $scope.player_stats.factions = _.chain($scope.state.players)
+        $scope.player_stats.factions = _.chain(_.flatten($scope.state.players))
           .countBy(function(p) { return p.faction; })
           .map(function(f, key) {
             return _.extend({
@@ -47,7 +47,7 @@ angular.module('srApp.controllers')
           .value();
       });
       var player_win_loss = {};
-      _.chain($scope.state.players)
+      _.chain(_.flatten($scope.state.players))
         .each(function(p) {
           player_win_loss[p.name] = _.chain($scope.state.rounds)
             .map(function(r) {
@@ -66,14 +66,14 @@ angular.module('srApp.controllers')
         })
         .value();
       console.log(player_win_loss);
-      var faction_win_loss = _.chain($scope.state.players)
+      var faction_win_loss = _.chain(_.flatten($scope.state.players))
         .map(function(p) { return p.faction; })
         .uniq()
         .without(undefined)
         .map(function(f) {
           return {
             name: f,
-            wl: _.chain($scope.state.players)
+            wl: _.chain(_.flatten($scope.state.players))
               .where({ faction: f })
               .reduce(function(mem, p) {
                 mem[0] += player_win_loss[p.name][0];

@@ -58,7 +58,7 @@
                   name="team"
                   ng-model="player.team"
                   required="required"
-                  ng-options="t.name as t.name for t in state.teams">
+                  ng-options="t as t for t in state.teams | teams:'names'">
           </select>
         </div>
       </div>

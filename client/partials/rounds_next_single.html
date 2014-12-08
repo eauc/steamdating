@@ -1,0 +1,48 @@
+<div class="text-center">
+  <div ng-repeat="gr in state.players">
+    <h2 style="border-bottom:1px solid black;">
+      Group{{$index+1}}
+    </h2>
+    <h3 ng-if="
+        isBracketTournament($index)
+        ">
+      Bracket - {{bracketRoundOf($index, state.rounds.length)}}
+    </h3>
+    <table class="table text-center">
+      <tr>
+        <th class="text-center" colspan="3">Player1</th>
+        <th class="text-center">Table</th>
+        <th class="text-center" colspan="3">Player2</th>
+      </tr>
+      <tr ng-repeat="g in next_round[$index]">
+        <td></td>
+        <td></td>
+        <td>
+          <select ng-options="n as n for n in playerNames(gr)"
+                  ng-model="g.p1.name" />
+        </td>
+        <td>{{g.table}}</td>
+        <td>
+          <select ng-options="n as n for n in playerNames(gr)"
+                  ng-model="g.p2.name" />
+        </td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+    <button class="btn btn-default"
+            ng-click="suggestNextRound($index, false)"
+            ng-show="!isBracketTournament(0)">
+      Make SR Suggestion
+    </button>
+    <button class="btn btn-default"
+            ng-click="suggestNextRound($index, true)"
+            >
+      Make Bracket Suggestion
+    </button>
+  </div>
+  <button class="btn btn-default"
+          ng-click="registerNextRound()">
+    Register Round
+  </button>
+</div>

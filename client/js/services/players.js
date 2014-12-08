@@ -37,45 +37,57 @@ angular.module('srApp.services')
   ])
   .factory('players', [
     'player',
-    function(player) {
+    'factions',
+    function(player,
+             factions) {
+      var base_factions = {};
+      factions.baseFactions().then(function(f) {
+        base_factions = f;
+      });
       var players = {
-        appendPhantom: function(coll, phantom) {
-          if((coll.length % 2) === 1) {
-            return _.cat(coll, phantom);
-          }
+        add: function playersAdd(coll, p, i) {
+          coll[i] = _.cat(coll[i], p);
           return coll;
         },
-        add: function playersAdd(coll, p, phantom) {
-          return _.chain(coll)
-            .reject(_.unary(player.is('Phantom')))
-            .cat(p)
-            .apply(players.appendPhantom, phantom)
-            .value();
-        },
         drop: function(coll, p, phantom) {
-          return _.chain(coll)
-            .reject(_.unary(player.is(p.name)))
-            .reject(_.unary(player.is('Phantom')))
-            .apply(players.appendPhantom, phantom)
-            .value();
+          return _.map(coll, function(group) {
+            return _.reject(group, _.unary(player.is(p.name)));
+          });
         },
         player: function(coll, name) {
-          return _.find(coll, _.unary(player.is(name)));
+          return _.chain(coll)
+            .flatten()
+            .find(_.unary(player.is(name)))
+            .value();
         },
         names: function(coll) {
-          return _.mapWith(coll, _.getPath, 'name');
+          return _.chain(coll)
+            .flatten()
+            .mapWith(_.getPath, 'name')
+            .value();
+        },
+        factions: function(coll) {
+          return _.chain(coll)
+            .flatten()
+            .mapWith(_.getPath, 'faction')
+            .cat(_.keys(base_factions))
+            .uniq()
+            .without(undefined)
+            .value();
         },
         cities: function(coll) {
           return _.chain(coll)
+            .flatten()
             .mapWith(_.getPath, 'city')
             .uniq()
             .without(undefined)
             .value();
         },
-        sort: function(coll, state) { //bracket, criterium, n_rounds) {
-          if(_.exists(state.bracket)) {
-            return _.sortBy(coll.slice(),
-                            function(p) { return -p.points.bracket; });
+        sortGroup: function(coll, i, state) {
+          if(_.exists(state.bracket[i])) {
+            return _.sortBy(coll.slice(), function(p) {
+              return -p.points.bracket;
+            });
           }
           else {
             var baseCritFn = new Function('tp', 'sos', 'cp', 'ap',
@@ -83,11 +95,15 @@ angular.module('srApp.services')
                                           'return '+state.ranking.player+';');
             var critFn = _.partial(baseCritFn, _, _, _, _,
                                    coll.length, state.rounds.length);
-            return _.sortBy(coll.slice(),
-                            function(p) {
-                              return -player.rank(p, critFn);
-                            });
+            return _.sortBy(coll.slice(), function(p) {
+              return -player.rank(p, critFn);
+            });
           }
+        },
+        sort: function(coll, state) {
+          return _.map(state.players, function(group, i) {
+            return players.sortGroup(group, i, state);
+          });
         },
         sosFrom: function(coll, opponents) {
           return _.chain(opponents)
@@ -99,12 +115,14 @@ angular.module('srApp.services')
         },
         inTeam: function(coll, t) {
           return _.chain(coll)
+            .flatten()
             .select(_.unary(player.inTeam(t)))
-            // .tap(function(c) { console.log(c.length); })
             .value();
         },
         dropTeam: function(coll, t) {
-          return _.reject(coll, _.unary(player.inTeam(t)));
+          return _.map(coll, function(group) {
+            return _.reject(group, _.unary(player.inTeam(t)));
+          });
         }
       };
       return players;

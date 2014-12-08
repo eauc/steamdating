@@ -28,8 +28,9 @@ angular.module('srApp.controllers')
       $scope.newState = function(state) {
         $scope.state = _.defaults(state, {
           phantom: player.create('Phantom'),
-          teams:[],
-          players: [],
+          bracket: [],
+          teams:[[]],
+          players: [[]],
           rounds: [],
           factions: [],
           ranking: {
@@ -37,7 +38,6 @@ angular.module('srApp.controllers')
             team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
           }
         });
-        $scope.state.factions = factions.listFrom($scope.state.players);
         $scope.updatePoints();
         $scope.storeState();
         console.log('state', $scope.state);
@@ -47,11 +47,15 @@ angular.module('srApp.controllers')
                                      JSON.stringify($scope.state));
         console.log('state stored');
       };
-      $scope.isTeamTournament = function() {
-        return $scope.state.teams.length !== 0;
+      $scope.hasPlayers = function() {
+        return _.flatten($scope.state.players).length !== 0;
       };
-      $scope.isBracketTournament = function() {
-        return _.exists($scope.state.bracket);
+      $scope.isTeamTournament = function() {
+        return _.flatten($scope.state.teams).length !== 0;
+      };
+      $scope.isBracketTournament = function(g) {
+        return (g < $scope.state.bracket.length &&
+                _.exists($scope.state.bracket[g]));
       };
 
       $scope.goToState = _.bind($state.go, $state);
@@ -67,42 +71,48 @@ angular.module('srApp.controllers')
       };
 
       $scope.updatePoints = function() {
-        var base_weight = $scope.state.players.length/2;
-        _.chain($scope.state.players)
-          .each(function(p) {
-            p.lists_played = rounds.listsFor($scope.state.rounds, p.name);
-          })
-          .each(function(p) {
-            p.points = rounds.pointsFor($scope.state.rounds,
-                                        p.name,
-                                        $scope.state.bracket,
-                                        base_weight);
-          })
-          .each(function(p) {
-            p.points.sos = players.sosFrom($scope.state.players,
-                                           rounds.opponentsFor($scope.state.rounds,
-                                                               p.name));
-          });
-        base_weight = $scope.state.teams.length/2;
-        _.chain($scope.state.teams)
-          .each(function(t) {
-            t.points = rounds.pointsForTeam($scope.state.rounds,
-                                            t.name,
-                                            $scope.state.bracket,
-                                            base_weight);
-          })
-          .each(function(t) {
-            t.points.sos = teams.sosFrom($scope.state.teams,
-                                         rounds.opponentsForTeam($scope.state.rounds,
-                                                                 t.name));
-          });
+        _.each($scope.state.players, function(group) {
+          var base_weight = group.length/2;
+          _.chain(group)
+            .each(function(p) {
+              p.lists_played = rounds.listsFor($scope.state.rounds, p.name);
+            })
+            .each(function(p) {
+              p.points = rounds.pointsFor($scope.state.rounds,
+                                          p.name,
+                                          $scope.state.bracket,
+                                          base_weight);
+            })
+            .each(function(p) {
+              p.points.sos = players.sosFrom($scope.state.players,
+                                             rounds.opponentsFor($scope.state.rounds,
+                                                                 p.name));
+            });
+        });
+        _.each($scope.state.teams, function(group) {
+          var base_weight = group.length/2;
+          _.chain(group)
+            .each(function(t) {
+              t.points = rounds.pointsForTeam($scope.state.rounds,
+                                              t.name,
+                                              $scope.state.bracket,
+                                              base_weight);
+            })
+            .each(function(t) {
+              t.points.sos = teams.sosFrom($scope.state.teams,
+                                           rounds.opponentsForTeam($scope.state.rounds,
+                                                                   t.name));
+            });
+        });
       };
       
       $scope.show = {};
-      $scope.doShowAll = function(show, event) {
-        _.each($scope.state.teams, function(t) {
-          $scope.show[t.name] = show;
-        });
+      $scope.doShowAll = function(i, show, event) {
+        _.chain($scope.state.teams[i])
+          .apply(teams.names)
+          .each(function(name) {
+            $scope.show[name] = show;
+          });
         event.stopPropagation();
       };
       $scope.doShow = function(name, show, event) {
@@ -125,10 +135,10 @@ angular.module('srApp.controllers')
         $scope.resetState();
       }
 
-      $scope.bracketRoundOf = function(r) {
+      $scope.bracketRoundOf = function(g, r) {
         var n = ($scope.isTeamTournament() ?
-                 $scope.state.teams.length >> (r - $scope.state.bracket + 1) :
-                 $scope.state.players.length >> (r - $scope.state.bracket + 1));
+                 $scope.state.teams[g].length >> (r - $scope.state.bracket[g] + 1) :
+                 $scope.state.players[g].length >> (r - $scope.state.bracket[g] + 1));
         switch(n) {
         case 1:
           {
