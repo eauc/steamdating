@@ -60,8 +60,7 @@ angular.module('srApp.services')
         sort: function(coll, state) { //bracket, criterium, ps, n_rounds) {
           if(_.exists(state.bracket)) {
             return _.sortBy(coll.slice(),
-                            function(p) { return p.points.bracket; })
-              .reverse();
+                            function(p) { return -p.points.bracket; });
           }
           else {
             var baseCritFn = new Function('ttp', 'tp', 'sos', 'cp', 'ap',
@@ -78,7 +77,9 @@ angular.module('srApp.services')
                                    state.players.length,
                                    state.rounds.length);
             return _.sortBy(coll.slice(),
-                            _.partial(team.rank, _, critFn)).reverse();
+                            function(t) {
+                              return -team.rank(t, critFn);
+                            });
           }
         },
         sosFrom: function(coll, opponents) {

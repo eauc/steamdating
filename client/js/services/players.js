@@ -75,8 +75,7 @@ angular.module('srApp.services')
         sort: function(coll, state) { //bracket, criterium, n_rounds) {
           if(_.exists(state.bracket)) {
             return _.sortBy(coll.slice(),
-                            function(p) { return p.points.bracket; })
-              .reverse();
+                            function(p) { return -p.points.bracket; });
           }
           else {
             var baseCritFn = new Function('tp', 'sos', 'cp', 'ap',
@@ -85,8 +84,9 @@ angular.module('srApp.services')
             var critFn = _.partial(baseCritFn, _, _, _, _,
                                    coll.length, state.rounds.length);
             return _.sortBy(coll.slice(),
-                            _.partial(player.rank, _, critFn))
-              .reverse();
+                            function(p) {
+                              return -player.rank(p, critFn);
+                            });
           }
         },
         sosFrom: function(coll, opponents) {
