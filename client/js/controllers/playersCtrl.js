@@ -76,6 +76,7 @@ angular.module('srApp.controllers')
           n_groups = $scope.state.teams.length;
         }
         $scope.state.bracket = _.repeat(n_groups, undefined);
+        $scope.storeState();
       };
     }
   ])
