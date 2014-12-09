@@ -71,7 +71,7 @@ angular.module('srApp.controllers')
       };
 
       $scope.updatePoints = function() {
-        _.each($scope.state.players, function(group) {
+        _.each($scope.state.players, function(group, i) {
           var base_weight = group.length/2;
           _.chain(group)
             .each(function(p) {
@@ -80,7 +80,7 @@ angular.module('srApp.controllers')
             .each(function(p) {
               p.points = rounds.pointsFor($scope.state.rounds,
                                           p.name,
-                                          $scope.state.bracket,
+                                          $scope.state.bracket[i],
                                           base_weight);
             })
             .each(function(p) {
@@ -89,13 +89,13 @@ angular.module('srApp.controllers')
                                                                  p.name));
             });
         });
-        _.each($scope.state.teams, function(group) {
+        _.each($scope.state.teams, function(group, i) {
           var base_weight = group.length/2;
           _.chain(group)
             .each(function(t) {
               t.points = rounds.pointsForTeam($scope.state.rounds,
                                               t.name,
-                                              $scope.state.bracket,
+                                              $scope.state.bracket[i],
                                               base_weight);
             })
             .each(function(t) {
