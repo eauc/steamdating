@@ -1,5 +1,6 @@
 <div ng-repeat="gr in state.players">
-  <h2 style="border-bottom:1px solid black;">
+  <h2 ng-if="state.players.length !== 1"
+      style="border-bottom:1px solid black;">
     Group{{$index+1}}
   </h2>
   <button class="btn btn-default"
