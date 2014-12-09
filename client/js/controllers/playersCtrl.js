@@ -20,7 +20,7 @@ angular.module('srApp.controllers')
 
       $scope.doAddPlayer = function(i) {
         $scope.edit.player = player.create();
-        $scope.edit.group = i;
+        $scope.edit.group = $scope.isTeamTournament() ? 0 : i;
         $scope.goToState('player_edit');
       };
       $scope.doAddTeam = function(i) {
@@ -48,6 +48,34 @@ angular.module('srApp.controllers')
           $scope.storeState();
         }
         event.stopPropagation();
+      };
+
+      $scope.chunkGroups = function() {
+        var chunk_size = NaN;
+        while(isNaN(chunk_size)) {
+          var size = $window.prompt('Groups size');
+          if(null === size) {
+            return;
+          }
+          chunk_size = parseFloat(size);
+        }
+        chunk_size = chunk_size >> 0;
+        var n_groups = 1;
+        if($scope.isTeamTournament()) {
+          $scope.state.teams = _.chain($scope.state.teams)
+            .apply(teams.sort, $scope.state)
+            .apply(teams.chunk, chunk_size)
+            .value();
+          n_groups = $scope.state.teams.length;
+        }
+        else {
+          $scope.state.players = _.chain($scope.state.players)
+            .apply(players.sort, $scope.state)
+            .apply(players.chunk, chunk_size)
+            .value();
+          n_groups = $scope.state.teams.length;
+        }
+        $scope.state.bracket = _.repeat(n_groups, undefined);
       };
     }
   ])

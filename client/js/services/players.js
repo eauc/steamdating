@@ -123,6 +123,12 @@ angular.module('srApp.services')
           return _.map(coll, function(group) {
             return _.reject(group, _.unary(player.inTeam(t)));
           });
+        },
+        chunk: function(coll, size) {
+          return _.chain(coll)
+            .flatten()
+            .chunk(size)
+            .value();
         }
       };
       return players;

@@ -146,17 +146,22 @@ angular.module('srApp.controllers')
       $scope.teamNames = function(gr) {
         return teams.names(gr);
       };
+      $scope.bracket = _.snapshot($scope.state.bracket);
+      var n_groups = ($scope.isTeamTournament() ?
+                      $scope.state.teams.length :
+                      $scope.state.players.length);
+      if($scope.bracket.length !== n_groups) {
+        $scope.bracket = _.repeat(n_groups, undefined);
+      }
       $scope.suggestNextRound = function(i, bracket_start) {
-        var n_groups = ($scope.isTeamTournament() ?
-                        $scope.state.teams.length :
-                        $scope.state.players.length);
-        $scope.bracket = _.snapshot($scope.state.bracket);
         if(bracket_start) {
-          if($scope.bracket.length !== n_groups) {
-            $scope.bracket = _.repeat(n_groups, undefined);
-          }
           if(!_.exists($scope.bracket[i])) {
             $scope.bracket[i] = $scope.state.rounds.length;
+          }
+        }
+        else {
+          if(_.exists($scope.bracket[i])) {
+            $scope.bracket[i] = undefined;
           }
         }
         $scope.next_round[i] = pairing.suggestRound($scope.state, i, $scope.bracket[i]);

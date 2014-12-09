@@ -131,6 +131,12 @@ angular.module('srApp.services')
             })
             .max()
             .value();
+        },
+        chunk: function(coll, size) {
+          return _.chain(coll)
+            .flatten()
+            .chunk(size)
+            .value();
         }
       };
       return teams;

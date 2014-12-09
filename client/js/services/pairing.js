@@ -63,7 +63,7 @@ angular.module('srApp.services')
             .value();
         },
         suggestNextSingleRound: function(state, i) {
-          var n_games = _.flatten(state.players).length/2;
+          var n_games = _.flatten(state.players[i]).length/2;
           var tables = _.range(1, n_games+1);
           var group = state.players[i];
           var nb_bracket_rounds = state.rounds.length - state.bracket[i];
@@ -118,7 +118,7 @@ angular.module('srApp.services')
             .value();
         },
         suggestNextTeamRound: function(state, i) {
-          var n_games = _.flatten(state.teams).length/2;
+          var n_games = _.flatten(state.teams[i]).length/2;
           var tables = _.range(1, n_games+1);
           var nb_games = teams.teamSize(state.teams,
                                         state.players);
