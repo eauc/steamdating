@@ -48,7 +48,12 @@ angular.module('srApp.services')
         },
         suggestFirstSingleRound: function(state, i) {
           var n_games = _.flatten(state.players).length/2;
-          var tables = _.range(1, n_games+1);
+          var first_table = _.chain(state.players)
+            .slice(0, i)
+            .flatten()
+            .value().length / 2 + 1;
+          var last_table = first_table + state.players[i].length / 2;
+          var tables = _.range(first_table, last_table);
           var group = state.players[i];
           var ps = players.sortGroup(group, i, state);
           return _.chain(group.length)
@@ -64,7 +69,12 @@ angular.module('srApp.services')
         },
         suggestNextSingleRound: function(state, i) {
           var n_games = _.flatten(state.players[i]).length/2;
-          var tables = _.range(1, n_games+1);
+          var first_table = _.chain(state.players)
+            .slice(0, i)
+            .flatten()
+            .value().length / 2 + 1;
+          var last_table = first_table + state.players[i].length / 2;
+          var tables = _.range(first_table, last_table);
           var group = state.players[i];
           var nb_bracket_rounds = state.rounds.length - state.bracket[i];
           var start_index = _.chain(state.players)
@@ -99,7 +109,12 @@ angular.module('srApp.services')
         },
         suggestFirstTeamRound: function(state, i) {
           var n_games = _.flatten(state.teams).length/2;
-          var tables = _.range(1, n_games+1);
+          var first_table = _.chain(state.teams)
+            .slice(0, i)
+            .flatten()
+            .value().length / 2 + 1;
+          var last_table = first_table + state.teams[i].length / 2;
+          var tables = _.range(first_table, last_table);
           var nb_games = teams.teamSize(state.teams,
                                         state.players);
           var group = state.teams[i];
@@ -119,7 +134,12 @@ angular.module('srApp.services')
         },
         suggestNextTeamRound: function(state, i) {
           var n_games = _.flatten(state.teams[i]).length/2;
-          var tables = _.range(1, n_games+1);
+          var first_table = _.chain(state.teams)
+            .slice(0, i)
+            .flatten()
+            .value().length / 2 + 1;
+          var last_table = first_table + state.teams[i].length / 2;
+          var tables = _.range(first_table, last_table);
           var nb_games = teams.teamSize(state.teams,
                                         state.players);
           var group = state.teams[i];
@@ -216,8 +236,12 @@ angular.module('srApp.services')
                   players.player(available_players, candidates[0]));
         },
         suggestNextSingleRound: function(state, i) {
-          var n_games = _.flatten(state.players).length/2;
-          var tables = _.range(1, n_games+1);
+          var first_table = _.chain(state.players)
+            .slice(0, i)
+            .flatten()
+            .value().length / 2 + 1;
+          var last_table = first_table + state.players[i].length / 2;
+          var tables = _.range(first_table, last_table);
           var group = state.players[i];
           var sorted_players = _.chain(group)
             .groupBy(function(p) { return p.points.tournament; })
@@ -266,8 +290,12 @@ angular.module('srApp.services')
                   teams.team(available_teams, candidates[0]));
         },
         suggestNextTeamRound: function(state, i) {
-          var n_games = _.flatten(state.teams).length/2;
-          var tables = _.range(1, n_games+1);
+          var first_table = _.chain(state.teams)
+            .slice(0, i)
+            .flatten()
+            .value().length / 2 + 1;
+          var last_table = first_table + state.teams[i].length / 2;
+          var tables = _.range(first_table, last_table);
           var group = state.teams[i];
           var nb_games = teams.teamSize(group,
                                         state.players);
