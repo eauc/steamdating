@@ -1,0 +1,17 @@
+/******************************************************/
+/* appCache progress bar
+/******************************************************/
+
+.appcache-progress {
+    position:absolute;
+    bottom:-3px;
+    left:0px;
+    height:3px;
+    width:100%;
+    background-color:#999;
+}
+.appcache-progress-bar {
+    background-color:#BBF;
+    height:3px;
+}
+
