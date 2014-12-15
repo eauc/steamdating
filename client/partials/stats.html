@@ -21,7 +21,7 @@
         <div class="col-sm-4 text-right">
           <ul style="list-style-type: none;">
             <li ng-repeat="f in player_stats.factions">
-              {{f.name}}
+              {{::f.name}}
               <svg width="10px" height="10px">
                 <rect x="0" y="0" width="10" height="10"
                       style="
@@ -40,8 +40,8 @@
             <path ng-repeat="(id,f) in player_stats.factions"
                   d="
                   M100,100
-                  L{{f.start.x}},{{f.start.y}}
-                  A75,75 0 0,1 {{f.end.x}},{{f.end.y}}
+                  L{{::f.start.x}},{{::f.start.y}}
+                  A75,75 0 0,1 {{::f.end.x}},{{::f.end.y}}
                   L100,100
                   "
                   style="
@@ -65,27 +65,27 @@
           <tr ng-repeat="f in faction_win_loss">
             <td class="text-right"
                 style="vertical-align:middle">
-              {{f.name}}
+              {{::f.name}}
             </td>
             <td>
               <svg width="430px" height="50px">
-                <rect x="0" y="0" width="{{400*f.wl[0]/f.wl[2]}}" height="25"
+                <rect x="0" y="0" width="{{::400*f.wl[0]/f.wl[2]}}" height="25"
                       style="
                       fill:#5F5;
                       stroke:#000;
                       stroke-width:0.5;
                       " />
                 <text x="{{400*f.wl[0]/f.wl[2]+10}}" y="20">
-                  {{f.wl[0]}}
+                  {{::f.wl[0]}}
                 </text>
-                <rect x="0" y="25" width="{{400*f.wl[1]/f.wl[2]}}" height="25"
+                <rect x="0" y="25" width="{{::400*f.wl[1]/f.wl[2]}}" height="25"
                       style="
                       fill:#F55;
                       stroke:#000;
                       stroke-width:0.5;
                       " />
-                <text x="{{400*f.wl[1]/f.wl[2]+10}}" y="45">
-                  {{f.wl[1]}}
+                <text x="{{::400*f.wl[1]/f.wl[2]+10}}" y="45">
+                  {{::f.wl[1]}}
                 </text>
               </svg>
             </td>

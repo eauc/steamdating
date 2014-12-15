@@ -7,13 +7,13 @@
   <div ng-repeat="gr in state.players">
     <h2 ng-if="state.players.length !== 1"
         style="border-bottom:1px solid black;">
-      Group{{$index+1}}
+      Group{{::$index+1}}
     </h2>
     <h3 ng-if="
-      isBracketTournament($index) &&
-      r >= state.bracket[$index]
-      ">
-      Bracket - {{bracketRoundOf($index, r)}}
+        isBracketTournament($index) &&
+        r >= state.bracket[$index]
+        ">
+      Bracket - {{::bracketRoundOf($index, r)}}
     </h3>
     <table class="table text-center">
       <tr>
@@ -35,21 +35,21 @@
       <tr ng-repeat="g in round(r, $index)"
           ng-click="doGameEdit(g)"
           style="cursor:pointer;">
-        <td>{{g.p1.army}}</td>
-        <td>{{g.p1.control}}</td>
-        <td>{{g.p1.list}}</td>
+        <td>{{::g.p1.army}}</td>
+        <td>{{::g.p1.control}}</td>
+        <td>{{::g.p1.list}}</td>
         <td ng-class="{
             'success': successFor(g.p1.name, r) === 1,
             'danger': successFor(g.p1.name, r) === 0,
-            }">{{g.p1.name}}</td>
-        <td>{{g.table}}</td>
+            }">{{::g.p1.name}}</td>
+        <td>{{::g.table}}</td>
         <td ng-class="{
             'success': successFor(g.p2.name, r) === 1,
             'danger': successFor(g.p2.name, r) === 0,
-            }">{{g.p2.name}}</td>
-        <td>{{g.p2.list}}</td>
-        <td>{{g.p2.control}}</td>
-        <td>{{g.p2.army}}</td>
+            }">{{::g.p2.name}}</td>
+        <td>{{::g.p2.list}}</td>
+        <td>{{::g.p2.control}}</td>
+        <td>{{::g.p2.army}}</td>
       </tr>
     </table>
   </div>

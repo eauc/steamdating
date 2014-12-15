@@ -1,6 +1,5 @@
+=================================================================================
 - import des infos joueurs a partir d'un fichier texte avec un format bien precis
-- gestion d'un format "elimination directe", possiblement apres N rondes suisses
 - import des listes au format FK
-- fonctionnement offline en app web
 - module de statistiques
 - gestion d'un compendium de tournois

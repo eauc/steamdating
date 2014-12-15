@@ -1,7 +1,7 @@
 <div ng-repeat="gr in state.teams">
   <h2 ng-if="state.teams.length !== 1"
       style="border-bottom:1px solid black;">
-    Group{{$index+1}}
+    Group{{::$index+1}}
   </h2>
   <table class="table">
     <tr>
@@ -18,7 +18,7 @@
       </th>
       <th>Lists Played</th>
       <th ng-repeat="i in roundsRange()">
-        Round{{i+1}}
+        Round{{::i+1}}
       </th>
     </tr>
     <tbody ng-repeat="t in gr track by t.name">
@@ -35,7 +35,7 @@
                   ng-click="doShow(t.name, true, $event)">
             <span class="glyphicon glyphicon-chevron-right"></span>
           </button>
-          {{t.name}}
+          {{::t.name}}
         </td>
         <td></td>
         <td ng-repeat="i in roundsRange()"
@@ -45,8 +45,8 @@
             'danger': successForTeam(t.name, i) === 0,
             }"
             style="cursor:pointer;">
-          {{tableForTeam(t.name, i)}} -
-          {{opponentForTeam(t.name, i)}}
+          {{::tableForTeam(t.name, i)}} -
+          {{::opponentForTeam(t.name, i)}}
         </td>
       </tr>
       <tr ng-show="show[t.name]"
@@ -57,16 +57,16 @@
           ">
         <td style="cursor:pointer;"
             ng-click="doEditPlayer(p)">
-          - {{p.name}}
+          - {{::p.name}}
         </td>
         <td style="font-size:0.8em;"
             ng-class="{
             'warning': p.lists_played.length < p.lists.length,
             'info': p.lists_played.length >= p.lists.length,
             }">
-          {{p.lists_played.length}}/{{p.lists.length}} -
+          {{::p.lists_played.length}}/{{::p.lists.length}} -
           <span ng-repeat="c in p.lists_played">
-            {{c}}
+            {{::c}}
           </span>
         </td>
         <td ng-repeat="i in roundsRange()"
@@ -76,8 +76,8 @@
             'danger': successFor(p.name, i) === 0,
             }"
             style="cursor:pointer;">
-          {{tableFor(p.name, i)}} -
-          {{opponentFor(p.name, i)}}
+          {{::tableFor(p.name, i)}} -
+          {{::opponentFor(p.name, i)}}
         </td>
       </tr>
     </tbody>

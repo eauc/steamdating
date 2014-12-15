@@ -1,14 +1,14 @@
 <div ng-repeat="gr in state.players">
   <h2 ng-if="state.players.length !== 1"
       style="border-bottom:1px solid black;">
-    Group{{$index+1}}
+    Group{{::$index+1}}
   </h2>
   <table class="table">
     <tr>
       <th>Player</th>
       <th>Lists Played</th>
       <th ng-repeat="i in roundsRange()">
-        Round{{i+1}}
+        Round{{::i+1}}
       </th>
     </tr>
     <tr ng-repeat="p in gr track by p.name"
@@ -17,16 +17,16 @@
         }">
       <td style="cursor:pointer;"
           ng-click="doEditPlayer(p)">
-        {{p.name}}
+        {{::p.name}}
       </td>
       <td style="font-size:0.8em;"
           ng-class="{
-        'warning': p.lists_played.length < p.lists.length,
-        'info': p.lists_played.length >= p.lists.length,
-        }">
-        {{p.lists_played.length}}/{{p.lists.length}} -
+          'warning': p.lists_played.length < p.lists.length,
+          'info': p.lists_played.length >= p.lists.length,
+          }">
+        {{::p.lists_played.length}}/{{::p.lists.length}} -
         <span ng-repeat="c in p.lists_played">
-          {{c}}
+          {{::c}}
         </span>
       </td>
       <td ng-repeat="i in roundsRange()"
@@ -36,8 +36,8 @@
           'danger': successFor(p.name, i) === 0,
           }"
           style="cursor:pointer;">
-        {{tableFor(p.name, i)}} -
-        {{opponentFor(p.name, i)}}
+        {{::tableFor(p.name, i)}} -
+        {{::opponentFor(p.name, i)}}
       </td>
     </tr>
   </table>

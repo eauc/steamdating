@@ -75,7 +75,7 @@ angular.module('srApp.directives')
                  appCache) {
           $scope.appCache = appCache;
           appCache.onProgress = function() {
-            $scope.$apply();
+            $scope.$digest();
           };
           appCache.onUpdateReady = function() {
             if($window.confirm('A new version of this site is available. Load it?')) {

@@ -2,12 +2,12 @@
   <div ng-repeat="gr in state.teams">
     <h2 ng-if="state.teams.length !== 1"
         style="border-bottom:1px solid black;">
-      Group{{$index+1}}
+      Group{{::$index+1}}
     </h2>
     <h3 ng-if="
         isBracketTournament($index)
         ">
-      Bracket - {{bracketRoundOf($index, state.rounds.length)}}
+      Bracket - {{::bracketRoundOf($index, state.rounds.length)}}
     </h3>
     <table class="table text-center">
       <tr>

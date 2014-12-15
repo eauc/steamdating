@@ -26,8 +26,8 @@
         Save
       </legend>
       <a ng-show="save_url"
-         ng-href="{{save_url}}"
-         download="{{save_name}}">
+         ng-href="{{::save_url}}"
+         download="{{::save_name}}">
         Download File
       </a>
     </fieldset>
@@ -53,13 +53,13 @@
         Export
       </legend>
       <a ng-show="csv_url"
-         ng-href="{{csv_url}}"
-         download="{{csv_name}}">
+         ng-href="{{::csv_url}}"
+         download="{{::csv_name}}">
         Download CSV File
       </a><br />
       <a ng-show="bb_url"
-         ng-href="{{bb_url}}"
-         download="{{bb_name}}">
+         ng-href="{{::bb_url}}"
+         download="{{::bb_name}}">
         Download BB File
       </a>
     </fieldset>

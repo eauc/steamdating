@@ -1,7 +1,7 @@
 <div ng-repeat="gr in state.teams">
   <h2 ng-if="state.teams.length !== 1"
       style="border-bottom:1px solid black;">
-    Group{{$index+1}}
+    Group{{::$index+1}}
   </h2>
   <button class="btn btn-default"
           ng-click="doAddTeam($index)">
@@ -15,7 +15,7 @@
   </button>
   <h3 ng-if="isBracketTournament($index)"
       class="text-center">
-    Bracket - {{bracketRoundOf($index, state.rounds.length-1)}}
+    Bracket - {{::bracketRoundOf($index, state.rounds.length-1)}}
   </h3>
   <table class="table">
     <tr>
@@ -48,7 +48,7 @@
            ">
       <tr style="cursor:pointer;"
           ng-click="doEditTeam(t)">
-        <td>{{$index+1}}</td>
+        <td>{{::$index+1}}</td>
         <td>
           <button ng-show="show[t.name]"
                   class="btn btn-default"
@@ -60,16 +60,16 @@
                   ng-click="doShow(t.name, true, $event)">
             <span class="glyphicon glyphicon-chevron-right"></span>
           </button>
-          {{t.name}}
+          {{::t.name}}
         </td>
-        <td>{{t.city}}</td>
+        <td>{{::t.city}}</td>
         <td></td>
         <td></td>
-        <td>{{t.points.team_tournament}}</td>
-        <td>{{t.points.tournament}}</td>
-        <td>{{t.points.sos}}</td>
-        <td>{{t.points.control}}</td>
-        <td>{{t.points.army}}</td>
+        <td>{{::t.points.team_tournament}}</td>
+        <td>{{::t.points.tournament}}</td>
+        <td>{{::t.points.sos}}</td>
+        <td>{{::t.points.control}}</td>
+        <td>{{::t.points.army}}</td>
         <td>
           <button ng-click="doDeleteTeam(t, $event)"
                   class="btn btn-default">
@@ -86,23 +86,23 @@
           style="cursor:pointer;"
           ng-click="doEditPlayer(p)">
         <td></td>
-        <td>{{p.name}}</td>
-        <td>{{p.city}}</td>
+        <td>{{::p.name}}</td>
+        <td>{{::p.city}}</td>
         <td>
           <img ng-src="{{p.faction | factions:'iconFor'}}"
                style="height:1.8em;"/>
-          {{p.faction}}
+          {{::p.faction}}
         </td>
         <td style="font-size: 0.8em">
           <span ng-repeat="l in p.lists">
-            {{l.caster}} <br />
+            {{::l.caster}} <br />
           </span>
         </td>
         <td></td>
-        <td>{{p.points.tournament}}</td>
-        <td>{{p.points.sos}}</td>
-        <td>{{p.points.control}}</td>
-        <td>{{p.points.army}}</td>
+        <td>{{::p.points.tournament}}</td>
+        <td>{{::p.points.sos}}</td>
+        <td>{{::p.points.control}}</td>
+        <td>{{::p.points.army}}</td>
         <td>
           <button ng-if="p.name !== 'Phantom'"
                   ng-click="doDeletePlayer(p, $event)"
