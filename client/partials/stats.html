@@ -12,7 +12,7 @@
         <a href="#/stats/games">Games</a>
       </li>
     </ul>
-    <div ng-show="pane === 'players'"
+    <div ng-if="pane === 'players'"
          class="panel panel-default">
       <div class="panel-heading">
         <div class="panel-title">Per Faction</div>
@@ -55,7 +55,7 @@
         </div>
       </div>
     </div>
-    <div ng-show="pane === 'games'"
+    <div ng-if="pane === 'games'"
          class="panel panel-default">
       <div class="panel-heading">
         <div class="panel-title">Wins/Loss Per Faction</div>

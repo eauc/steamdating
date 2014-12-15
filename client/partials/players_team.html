@@ -50,12 +50,12 @@
           ng-click="doEditTeam(t)">
         <td>{{::$index+1}}</td>
         <td>
-          <button ng-show="show[t.name]"
+          <button ng-if="show[t.name]"
                   class="btn btn-default"
                   ng-click="doShow(t.name, false, $event)">
             <span class="glyphicon glyphicon-chevron-up"></span>
           </button>
-          <button ng-show="!show[t.name]"
+          <button ng-if="!show[t.name]"
                   class="btn btn-default"
                   ng-click="doShow(t.name, true, $event)">
             <span class="glyphicon glyphicon-chevron-right"></span>
@@ -78,7 +78,7 @@
           </button>
         </td>
       </tr>
-      <tr ng-show="show[t.name]"
+      <tr ng-if="show[t.name]"
           ng-repeat="
           p
           in state.players | players:'inTeam':t.name track by p.name

@@ -59,12 +59,12 @@
             {{::g.t1.name}}
           </td>
           <td>
-            <button ng-show="show['table'+g.table]"
+            <button ng-if="show['table'+g.table]"
                     class="btn btn-default"
                     ng-click="doShowTable(g.table, false, $event)">
               <span class="glyphicon glyphicon-chevron-up"></span>
             </button>
-            <button ng-show="!show['table'+g.table]"
+            <button ng-if="!show['table'+g.table]"
                     class="btn btn-default"
                     ng-click="doShowTable(g.table, true, $event)">
               <span class="glyphicon glyphicon-chevron-right"></span>
@@ -82,7 +82,7 @@
           <td>{{::g.t2.army}}</td>
           <td>{{::g.t2.tournament}}</td>
         </tr>
-        <tr ng-show="show['table'+g.table]"
+        <tr ng-if="show['table'+g.table]"
             ng-repeat="i in g.games">
           <td></td>
           <td>{{::i.p1.army}}</td>

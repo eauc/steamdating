@@ -12,7 +12,7 @@
         <a ng-click="pane = 'team'">Team</a>
       </li>
     </ul>
-    <form ng-show="pane === 'player'"
+    <form ng-if="pane === 'player'"
           class="form-horizontal text-center">
       <div class="form-group">
         <label class="col-sm-2 control-label"
@@ -132,7 +132,7 @@
         Cancel
       </button>
     </form>
-    <form ng-show="pane === 'team'"
+    <form ng-if="pane === 'team'"
           class="form-horizontal text-center">
       <div class="form-group">
         <label class="col-sm-2 control-label"

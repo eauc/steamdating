@@ -25,7 +25,7 @@
         <span class="glyphicon glyphicon-save"></span>
         Save
       </legend>
-      <a ng-show="save_url"
+      <a ng-if="save_url"
          ng-href="{{::save_url}}"
          download="{{::save_name}}">
         Download File
@@ -52,12 +52,12 @@
         <span class="glyphicon glyphicon-log-out"></span>
         Export
       </legend>
-      <a ng-show="csv_url"
+      <a ng-if="csv_url"
          ng-href="{{::csv_url}}"
          download="{{::csv_name}}">
         Download CSV File
       </a><br />
-      <a ng-show="bb_url"
+      <a ng-if="bb_url"
          ng-href="{{::bb_url}}"
          download="{{::bb_name}}">
         Download BB File
