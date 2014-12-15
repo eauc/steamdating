@@ -127,7 +127,7 @@ angular.module('srApp.services')
         chunk: function(coll, size) {
           return _.chain(coll)
             .flatten()
-            .chunk(size)
+            .chunkAll(size)
             .value();
         }
       };
