@@ -23,30 +23,17 @@ angular.module('srApp.services')
 
       return {
         baseFactions: function() {
+          if(_.exists(base_factions)) return base_factions;
+
           var defer = $q.defer();
-          if(_.exists(base_factions)) {
-            defer.resolve(base_factions);
-          }
-          else {
-            base_factions_defers.push(defer);
-          }
+          base_factions_defers.push(defer);
           return defer.promise;
         },
-        info: function(f) {
-          return _.chain(base_factions)
-            // .tap(function(c) { console.log(f, c); })
-            .getPath(f)
-            .apply(function(fc) { return fc || { name:f, color:'#CCC' }; })
-            .pick('name', 'color')
-            .value();
-        },
-        // listFrom: function(players) {
-        //   return _.chain(players)
-        //     .mapWith(_.getPath, 'faction')
-        //     .cat(_.keys(base_factions))
-        //     .uniq()
-        //     .without(undefined)
-        //     .sort()
+        // info: function(f) {
+        //   return _.chain(base_factions)
+        //     .getPath(f)
+        //     .apply(function(fc) { return fc || { name:f, color:'#CCC' }; })
+        //     .pick('name', 'color')
         //     .value();
         // },
         iconFor: function(f) {
@@ -60,15 +47,14 @@ angular.module('srApp.services')
             })
             .value();              
         },
-        castersFor: function(f) {
-          return _.chain(f)
-            .apply(function(f) {
-              var base = base_factions || {};
-              return _.exists(base[f]) ? base[f].casters : undefined;
-            })
-            // .tap(function(c) { console.log(base_factions, f, c); })
-            .value();              
-        }
+        // castersFor: function(f) {
+        //   return _.chain(f)
+        //     .apply(function(f) {
+        //       var base = base_factions || {};
+        //       return _.exists(base[f]) ? base[f].casters : undefined;
+        //     })
+        //     .value();              
+        // }
       };
     }
   ]);

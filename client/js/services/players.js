@@ -7,16 +7,16 @@ angular.module('srApp.services')
         is: _.rcurry2(function(p, name) {
           return p.name === name;
         }),
-        inTeam: _.rcurry2(function(p, team) {
-          return p.team === team;
-        }),
-        rank: function(p, critFn) {
-          var rank = critFn(p.points.tournament,
-                            p.points.sos,
-                            p.points.control,
-                            p.points.army);
-          return rank;
-        },
+        // inTeam: _.rcurry2(function(p, team) {
+        //   return p.team === team;
+        // }),
+        // rank: function(p, critFn) {
+        //   var rank = critFn(p.points.tournament,
+        //                     p.points.sos,
+        //                     p.points.control,
+        //                     p.points.army);
+        //   return rank;
+        // },
         create: function playerCreate(name, faction, city, team) {
           return {
             name: name,
@@ -36,12 +36,14 @@ angular.module('srApp.services')
     }
   ])
   .factory('players', [
+    '$q',
     'player',
     'factions',
-    function(player,
+    function($q,
+             player,
              factions) {
       var base_factions = {};
-      factions.baseFactions().then(function(f) {
+      $q.when(factions.baseFactions()).then(function(f) {
         base_factions = f;
       });
       var players = {
@@ -49,7 +51,7 @@ angular.module('srApp.services')
           coll[i] = _.cat(coll[i], p);
           return coll;
         },
-        drop: function(coll, p, phantom) {
+        drop: function(coll, p) {
           return _.map(coll, function(group) {
             return _.reject(group, _.unary(player.is(p.name)));
           });
@@ -83,53 +85,53 @@ angular.module('srApp.services')
             .without(undefined)
             .value();
         },
-        sortGroup: function(coll, i, state) {
-          if(_.exists(state.bracket[i])) {
-            return _.sortBy(coll.slice(), function(p) {
-              return -p.points.bracket;
-            });
-          }
-          else {
-            var baseCritFn = new Function('tp', 'sos', 'cp', 'ap',
-                                          'n_players', 'n_rounds',
-                                          'return '+state.ranking.player+';');
-            var critFn = _.partial(baseCritFn, _, _, _, _,
-                                   coll.length, state.rounds.length);
-            return _.sortBy(coll.slice(), function(p) {
-              return -player.rank(p, critFn);
-            });
-          }
-        },
-        sort: function(coll, state) {
-          return _.map(state.players, function(group, i) {
-            return players.sortGroup(group, i, state);
-          });
-        },
-        sosFrom: function(coll, opponents) {
-          return _.chain(opponents)
-            .map(_.partial(players.player, coll))
-            .reduce(function(mem, o) {
-              return mem + _.getPath(o, 'points.tournament');
-            }, 0)
-            .value();
-        },
-        inTeam: function(coll, t) {
-          return _.chain(coll)
-            .flatten()
-            .select(_.unary(player.inTeam(t)))
-            .value();
-        },
-        dropTeam: function(coll, t) {
-          return _.map(coll, function(group) {
-            return _.reject(group, _.unary(player.inTeam(t)));
-          });
-        },
-        chunk: function(coll, size) {
-          return _.chain(coll)
-            .flatten()
-            .chunkAll(size)
-            .value();
-        }
+        // sortGroup: function(coll, i, state) {
+        //   if(_.exists(state.bracket[i])) {
+        //     return _.sortBy(coll.slice(), function(p) {
+        //       return -p.points.bracket;
+        //     });
+        //   }
+        //   else {
+        //     var baseCritFn = new Function('tp', 'sos', 'cp', 'ap',
+        //                                   'n_players', 'n_rounds',
+        //                                   'return '+state.ranking.player+';');
+        //     var critFn = _.partial(baseCritFn, _, _, _, _,
+        //                            coll.length, state.rounds.length);
+        //     return _.sortBy(coll.slice(), function(p) {
+        //       return -player.rank(p, critFn);
+        //     });
+        //   }
+        // },
+        // sort: function(coll, state) {
+        //   return _.map(state.players, function(group, i) {
+        //     return players.sortGroup(group, i, state);
+        //   });
+        // },
+        // sosFrom: function(coll, opponents) {
+        //   return _.chain(opponents)
+        //     .map(_.partial(players.player, coll))
+        //     .reduce(function(mem, o) {
+        //       return mem + _.getPath(o, 'points.tournament');
+        //     }, 0)
+        //     .value();
+        // },
+        // inTeam: function(coll, t) {
+        //   return _.chain(coll)
+        //     .flatten()
+        //     .select(_.unary(player.inTeam(t)))
+        //     .value();
+        // },
+        // dropTeam: function(coll, t) {
+        //   return _.map(coll, function(group) {
+        //     return _.reject(group, _.unary(player.inTeam(t)));
+        //   });
+        // },
+        // chunk: function(coll, size) {
+        //   return _.chain(coll)
+        //     .flatten()
+        //     .chunkAll(size)
+        //     .value();
+        // }
       };
       return players;
     }

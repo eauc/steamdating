@@ -1,26 +1,26 @@
 <div ng-repeat="gr in state.players">
-  <h2 ng-if="state.players.length !== 1"
+  <h2 ng-if="::state | state:'hasPlayerGroups'"
       style="border-bottom:1px solid black;">
     Group{{::$index+1}}
   </h2>
-  <button class="btn btn-default"
-          ng-click="doAddTeam($index)"
-          ng-hide="
-          hasPlayers() &&
-          !isTeamTournament()
-          ">
-    <span class="glyphicon glyphicon-plus"></span>
-    Add Team
+  <!-- <button class="btn btn-default"
+  ng-click="doAddTeam($index)"
+  ng-hide="
+  hasPlayers() &&
+  !isTeamTournament()
+  ">
+  <span class="glyphicon glyphicon-plus"></span>
+  Add Team
   </button>
   <button class="btn btn-default"
-          ng-click="doAddPlayer($index)">
-    <span class="glyphicon glyphicon-plus"></span>
-    Add Player
-  </button>
-  <h3 ng-if="isBracketTournament($index)"
-      class="text-center">
-    Bracket - {{::bracketRoundOf($index, state.rounds.length-1)}}
-  </h3>
+  ng-click="doAddPlayer($index)">
+  <span class="glyphicon glyphicon-plus"></span>
+  Add Player
+  </button> -->
+  <!-- <h3 ng-if="isBracketTournament($index)"
+  class="text-center">
+  Bracket - {{::bracketRoundOf($index, state.rounds.length-1)}}
+  </h3> -->
   <table class="table">
     <tr>
       <th>#</th>
@@ -36,22 +36,19 @@
       <th>AP</th>
       <th></th>
     </tr>
-    <tr ng-repeat="p in gr | players:'sortGroup':$index:state track by p.name"
-        ng-style="{
-        'background-color': p.name === 'Phantom' ? '#CCC' : 'auto'
-        }"
+    <tr ng-repeat="p in gr track by p.name"
         style="cursor:pointer;"
         ng-click="doEditPlayer(p)">
       <td>{{::$index+1}}</td>
       <td>{{::p.name}}</td>
       <td>{{::p.city}}</td>
       <td>
-        <img ng-src="{{p.faction | factions:'iconFor'}}"
+        <img ng-src="{{::p.faction | factions:'iconFor'}}"
              style="height:1.8em;"/>
         {{::p.faction}}
       </td>
       <td style="font-size: 0.8em">
-        <span ng-repeat="l in p.lists">
+        <span ng-repeat="l in ::p.lists">
           {{::l.caster}} <br />
         </span>
       </td>
@@ -60,11 +57,11 @@
       <td>{{::p.points.control}}</td>
       <td>{{::p.points.army}}</td>
       <td>
-        <button ng-click="doDeletePlayer(p, $event)"
-                class="btn btn-default">
-          <span class="glyphicon glyphicon-trash"></span>
-          Delete
-        </button>
+        <!-- <button ng-click="doDeletePlayer(p, $event)"
+        class="btn btn-default">
+        <span class="glyphicon glyphicon-trash"></span>
+        Delete
+        </button> -->
       </td>
     </tr>
   </table>
