@@ -16,7 +16,7 @@ module.exports = function(grunt) {
           src: js_src
         }
       },
-      spec: {
+      spec_src: {
         options: {
           jshintrc: '.spec_jshintrc'
         },
@@ -70,9 +70,9 @@ module.exports = function(grunt) {
           spawn: true
         }
       },
-      spec: {
+      spec_src: {
         files: js_src.concat(spec_js_src, spec_js_helpers),
-        tasks: [ 'jshint:spec', 'jasmine:spec' ],
+        tasks: [ 'jshint:app_src', 'jshint:spec_src', 'jasmine:spec' ],
         options: {
           spawn: true
         }

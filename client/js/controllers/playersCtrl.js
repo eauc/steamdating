@@ -3,43 +3,44 @@
 angular.module('srApp.controllers')
   .controller('playersCtrl', [
     '$scope',
-    '$state',
     '$window',
-    'player',
+    'state',
+    // '$state',
     'players',
+    'player',
     // 'team',
     // 'teams',
     function($scope,
-             $state,
              $window,
-             player,
-             players
+             state,
+             // $state,
+             players,
+             player
              // team,
              // teams
             ) {
       console.log('init playersCtrl');
 
-      // $scope.doAddPlayer = function(i) {
-      //   $scope.edit.player = player.create();
-      //   $scope.edit.group = $scope.isTeamTournament() ? 0 : i;
-      //   $scope.goToState('player_edit');
-      // };
+      $scope.doAddPlayer = function(i) {
+        $scope.edit.player = player.create();
+        // $scope.edit.group = $scope.isTeamTournament() ? 0 : i;
+        $scope.edit.group = i;
+        $scope.goToState('player_edit');
+      };
       // $scope.doAddTeam = function(i) {
       //   $scope.edit.team = team.create();
       //   $scope.edit.group = i;
       //   $scope.goToState('team_edit');
       // };
 
-      // $scope.doDeletePlayer = function(p, event) {
-      //   var conf = $window.confirm("You sure ?");
-      //   if(conf) {
-      //     $scope.state.players = players.drop($scope.state.players,
-      //                                         p,
-      //                                         $scope.state.phantom);
-      //     $scope.storeState();
-      //   }
-      //   event.stopPropagation();
-      // };
+      $scope.doDropPlayer = function(p, event) {
+        var conf = $window.confirm("You sure ?");
+        if(conf) {
+          $scope.state.players = players.drop($scope.state.players, p);
+          state.store($scope.state);
+        }
+        event.stopPropagation();
+      };
       // $scope.doDeleteTeam = function(t, event) {
       //   var conf = $window.confirm("You sure ?");
       //   if(conf) {
@@ -80,75 +81,81 @@ angular.module('srApp.controllers')
       //   $scope.storeState();
       // };
     }
+  ])
+  .controller('playerEditCtrl', [
+    '$scope',
+    '$q',
+    '$window',
+    'factions',
+    'state',
+    'players',
+    // 'player',
+    'list',
+    'lists',
+    function($scope,
+             $q,
+             $window,
+             factions,
+             state,
+             players,
+             // player,
+             list,
+             lists
+            ) {
+      $scope.player = _.clone($scope.edit.player);
+      console.log('init playerEditCtrl', $scope.player);
+
+      $q.when(factions.baseFactions()).then(function(base_factions) {
+        $scope.factions = players.factions($scope.state.players,
+                                           base_factions);
+      });
+      $scope.cities = players.cities($scope.state.players);
+
+      $scope.doClose = function(validate) {
+        if(validate) {
+          if(!_.isString($scope.player.name) ||
+             0 >= $scope.player.name) {
+            $window.alert('invalid player name');
+            return;
+          }
+        //   if($scope.isTeamTournament() &&
+        //      (!_.isString($scope.player.team) ||
+        //       0 >= $scope.player.team)) {
+        //     $window.alert('invalid player team');
+        //     return;
+        //   }
+          var existing_players = players.names($scope.state.players);
+          if(_.exists($scope.edit.player.name)) {
+            existing_players = _.without(existing_players, $scope.edit.player.name);
+          }
+          if(0 <= _.indexOf(existing_players, $scope.player.name)) {
+            $window.alert('a player with the same name already exists');
+            return;
+          }
+          if(!_.exists($scope.edit.player.name)) {
+            $scope.state.players = players.add($scope.state.players,
+                                               $scope.player,
+                                               $scope.edit.group);
+          }
+          else {
+            _.extend($scope.edit.player, $scope.player);
+          }
+          state.store($scope.state);
+        }
+        $scope.goToState('players');
+      };
+
+      $scope.list = $scope.player.lists.length === 0 ? -1 : 0;
+      $scope.doSwitchToList = function(i) {
+        $scope.list = i;
+      };
+      $scope.doAddList = function() {
+        $scope.list = $scope.player.lists.length;
+        $scope.player.lists = lists.add($scope.player.lists,
+                                        list.create($scope.player.faction));
+      };
+      $scope.doDropList = function(i) {
+        $scope.player.lists = lists.drop($scope.player.lists, i);
+      };
+    }
   ]);
-  // .controller('playerEditCtrl', [
-  //   '$scope',
-  //   'players',
-  //   'player',
-  //   'factions',
-  //   '$window',
-  //   'list',
-  //   'lists',
-  //   function($scope,
-  //            players,
-  //            player,
-  //            factions,
-  //            $window,
-  //            list,
-  //            lists) {
-  //     console.log('init playerEditCtrl');
-
-  //     $scope.state.factions = players.factions($scope.state.players);
-  //     $scope.state.cities = players.cities($scope.state.players);
-
-  //     $scope.player = _.snapshot($scope.edit.player);
-
-  //     $scope.doClose = function(validate) {
-  //       if(validate) {
-  //         if(!_.isString($scope.player.name) ||
-  //            0 >= $scope.player.name) {
-  //           $window.alert('invalid player name');
-  //           return;
-  //         }
-  //         if($scope.isTeamTournament() &&
-  //            (!_.isString($scope.player.team) ||
-  //             0 >= $scope.player.team)) {
-  //           $window.alert('invalid player team');
-  //           return;
-  //         }
-  //         var existing_players = players.names($scope.state.players);
-  //         if(_.exists($scope.edit.player.name)) {
-  //           existing_players = _.without(existing_players, $scope.edit.player.name);
-  //         }
-  //         if(0 <= _.indexOf(existing_players, $scope.player.name)) {
-  //           $window.alert('a player with the same name already exists');
-  //           return;
-  //         }
-  //         if(!_.exists($scope.edit.player.name)) {
-  //           $scope.state.players = players.add($scope.state.players,
-  //                                              $scope.player,
-  //                                              $scope.edit.group);
-  //         }
-  //         else {
-  //           _.extend($scope.edit.player, $scope.player);
-  //         }
-  //         $scope.storeState();
-  //       }
-  //       $scope.goToState('players');
-  //     };
-
-  //     $scope.player.lists = $scope.player.lists || [];
-  //     $scope.list = $scope.player.lists.length === 0 ? -1 : 0;
-  //     $scope.doSwitchToList = function(i) {
-  //       $scope.list = i;
-  //     };
-  //     $scope.doAddList = function() {
-  //       $scope.list = $scope.player.lists.length;
-  //       $scope.player.lists = lists.add($scope.player.lists,
-  //                                       list.create($scope.player.faction));
-  //     };
-  //     $scope.doDropList = function(i) {
-  //       $scope.player.lists = lists.drop($scope.player.lists, i);
-  //     };
-  //   }
-  // ]);

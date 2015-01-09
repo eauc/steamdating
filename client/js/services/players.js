@@ -4,9 +4,9 @@ angular.module('srApp.services')
   .factory('player', [
     function() {
       return {
-        is: _.rcurry2(function(p, name) {
+        is: function(p, name) {
           return p.name === name;
-        }),
+        },
         // inTeam: _.rcurry2(function(p, team) {
         //   return p.team === team;
         // }),
@@ -42,33 +42,30 @@ angular.module('srApp.services')
     function($q,
              player,
              factions) {
-      var base_factions = {};
-      $q.when(factions.baseFactions()).then(function(f) {
-        base_factions = f;
-      });
       var players = {
         add: function playersAdd(coll, p, i) {
           coll[i] = _.cat(coll[i], p);
           return coll;
         },
         drop: function(coll, p) {
-          return _.map(coll, function(group) {
-            return _.reject(group, _.unary(player.is(p.name)));
-          });
-        },
-        player: function(coll, name) {
           return _.chain(coll)
-            .flatten()
-            .find(_.unary(player.is(name)))
+            .mapWith(_.reject, _.partial(player.is, _, p.name))
+            .reject(_.isEmpty)
             .value();
         },
+        // player: function(coll, name) {
+        //   return _.chain(coll)
+        //     .flatten()
+        //     .find(_.unary(player.is(name)))
+        //     .value();
+        // },
         names: function(coll) {
           return _.chain(coll)
             .flatten()
             .mapWith(_.getPath, 'name')
             .value();
         },
-        factions: function(coll) {
+        factions: function(coll, base_factions) {
           return _.chain(coll)
             .flatten()
             .mapWith(_.getPath, 'faction')

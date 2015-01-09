@@ -11,12 +11,12 @@
   ">
   <span class="glyphicon glyphicon-plus"></span>
   Add Team
-  </button>
-  <button class="btn btn-default"
-  ng-click="doAddPlayer($index)">
-  <span class="glyphicon glyphicon-plus"></span>
-  Add Player
   </button> -->
+  <button class="btn btn-default"
+          ng-click="doAddPlayer($index)">
+    <span class="glyphicon glyphicon-plus"></span>
+    Add Player
+  </button>
   <!-- <h3 ng-if="isBracketTournament($index)"
   class="text-center">
   Bracket - {{::bracketRoundOf($index, state.rounds.length-1)}}
@@ -57,11 +57,11 @@
       <td>{{::p.points.control}}</td>
       <td>{{::p.points.army}}</td>
       <td>
-        <!-- <button ng-click="doDeletePlayer(p, $event)"
-        class="btn btn-default">
-        <span class="glyphicon glyphicon-trash"></span>
-        Delete
-        </button> -->
+        <button ng-click="doDropPlayer(p, $event)"
+                class="btn btn-default">
+          <span class="glyphicon glyphicon-trash"></span>
+          Delete
+        </button>
       </td>
     </tr>
   </table>

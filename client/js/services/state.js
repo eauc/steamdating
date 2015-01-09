@@ -2,10 +2,10 @@
 
 angular.module('srApp.services')
   .factory('state', [
-    '$window',
     'player',
-    function($window,
-             player) {
+    'list',
+    function(player,
+             list) {
       var state = {
         init: function() {
           // var stored_state = $window.localStorage.getItem('srApp.state');
@@ -29,13 +29,17 @@ angular.module('srApp.services')
 
           _st.players = [[],[]];
           _.range(8).map(function(i) {
+            var f = _.chain(faction).shuffle().first().value();
             _st.players[i >> 2].push(player.create(
               'Player'+(i+1),
-              _.chain(faction).shuffle().first().value(),
-              _.chain(team).shuffle().first().value(),
-              _.chain(city).shuffle().first().value()
+              f,
+              _.chain(city).shuffle().first().value(),
+              _.chain(team).shuffle().first().value()
             ));
-            _st.players[i >> 2][i%4].lists.push({ caster: 'Caster1' }, { caster: 'Caster2' });
+            _st.players[i >> 2][i%4].lists.push(
+              list.create(f, 'Caster1'),
+              list.create(f, 'Caster2')
+            );
           });
           return _st;
         },
@@ -57,11 +61,11 @@ angular.module('srApp.services')
           //   $scope.storeState();
           //   console.log('state', $scope.state);
         },
-        // $scope.storeState = function() {
-        //   $window.localStorage.setItem('sdApp.state',
-        //                                JSON.stringify($scope.state));
-        //   console.log('state stored');
-        // };
+        store: function(st) {
+          // $window.localStorage.setItem('srApp.state',
+          //                              JSON.stringify(st));
+          // console.log('state stored');
+        },
         hasPlayers: function(st) {
           return _.flatten(st.players).length !== 0;
         },

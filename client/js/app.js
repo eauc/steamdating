@@ -28,13 +28,13 @@ angular.module('srApp', [
         templateUrl: 'partials/players.html',
         controller: 'playersCtrl',
         data: {}
+      })
+      .state('player_edit', {
+        // url: '/players_edit',
+        templateUrl: 'partials/player_edit.html',
+        controller: 'playerEditCtrl',
+        data: {}
       });
-      // .state('player_edit', {
-      //   // url: '/players_edit',
-      //   templateUrl: 'partials/player_edit.html',
-      //   controller: 'playerEditCtrl',
-      //   data: {}
-      // })
       // .state('team_edit', {
       //   // url: '/team_edit',
       //   templateUrl: 'partials/team_edit.html',

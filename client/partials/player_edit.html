@@ -26,12 +26,13 @@
                   id="faction"
                   name="faction"
                   ng-model="player.faction"
-                  ng-options="f as f for f in state.factions">
+                  ng-options="f as f for f in factions">
           </select>
         </div>
       </div>
-      <div ng-if="!isTeamTournament()"
-           class="form-group">
+      <!-- <div ng-if="::!isTeamTournament()"
+      class="form-group"> -->
+      <div class="form-group">
         <label class="col-sm-2 control-label"
                for="city">City :</label>
         <div class="col-sm-10">
@@ -44,24 +45,24 @@
                   id="city"
                   name="city"
                   ng-model="player.city"
-                  ng-options="c as c for c in state.cities">
+                  ng-options="c as c for c in cities">
           </select>
         </div>
+        <!-- </div> -->
+      <!-- <div ng-if="::isTeamTournament()"
+      class="form-group">
+      <label class="col-sm-2 control-label"
+      for="team">Team :</label>
+      <div class="col-sm-10">
+      <select class="form-control"
+      id="team"
+      name="team"
+      ng-model="player.team"
+      required="required"
+      ng-options="t as t for t in state.teams | teams:'names'">
+      </select>
       </div>
-      <div ng-if="isTeamTournament()"
-           class="form-group">
-        <label class="col-sm-2 control-label"
-               for="team">Team :</label>
-        <div class="col-sm-10">
-          <select class="form-control"
-                  id="team"
-                  name="team"
-                  ng-model="player.team"
-                  required="required"
-                  ng-options="t as t for t in state.teams | teams:'names'">
-          </select>
-        </div>
-      </div>
+      </div> -->
       <div>
         <div class="row">
           <div class="col-sm-1">

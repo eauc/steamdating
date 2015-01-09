@@ -12,16 +12,17 @@ angular.module('srApp.services')
       var base_factions;
       var base_factions_defers = [];
 
-      $http.get('data/factions.json').then(function(response) {
-        base_factions = response.data;
-        _.each(base_factions_defers, function(d) {
-          d.resolve(base_factions);
-        });
-      }, function(response) {
-        console.log('error get factions', response);
-      });
-
       return {
+        init: function() {
+          $http.get('data/factions.json').then(function(response) {
+            base_factions = response.data;
+            _.each(base_factions_defers, function(d) {
+              d.resolve(base_factions);
+            });
+          }, function(response) {
+            console.log('error get factions', response);
+          });
+        },
         baseFactions: function() {
           if(_.exists(base_factions)) return base_factions;
 
@@ -40,21 +41,21 @@ angular.module('srApp.services')
           return _.chain(f)
             .apply(function(f) {
               var base = base_factions || {};
-              return _.exists(base[f]) ? base_factions[f].icon : undefined;
+              return _.exists(base[f]) ? base[f].icon : undefined;
             })
             .apply(function(f) {
               return _.exists(f) ? 'data/icons/'+f : '';
             })
             .value();              
         },
-        // castersFor: function(f) {
-        //   return _.chain(f)
-        //     .apply(function(f) {
-        //       var base = base_factions || {};
-        //       return _.exists(base[f]) ? base[f].casters : undefined;
-        //     })
-        //     .value();              
-        // }
+        castersFor: function(f) {
+          return _.chain(f)
+            .apply(function(f) {
+              var base = base_factions || {};
+              return _.exists(base[f]) ? base[f].casters : undefined;
+            })
+            .value();              
+        }
       };
     }
   ]);

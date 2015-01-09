@@ -3,28 +3,31 @@
 angular.module('srApp.controllers')
   .controller('mainCtrl', [
     '$scope',
-    // '$state',
+    '$state',
+    '$q',
     // '$window',
+    'factions',
     'state',
     // 'player',
     // 'players',
     // 'rounds',
-    // 'factions',
     // 'team',
     // 'teams',
     function($scope,
-             // $state,
+             $state,
+             $q,
              // $window,
+             factions,
              state
              // player,
              // players,
              // rounds,
-             // factions,
              // team,
              // teams
             ) {
       console.log('init mainCtrl');
 
+      factions.init();
       // $scope.resetState = function() {
       //   $scope.state = state.create();
       // };
@@ -32,18 +35,19 @@ angular.module('srApp.controllers')
       // $scope.state = state.test($scope.state);
       console.log('state', $scope.state);
 
-      // $scope.goToState = _.bind($state.go, $state);
-      // $scope.currentState = _.bind(_.getPath, _, $state, 'current.name');
+      $scope.goToState = _.bind($state.go, $state);
+      $scope.currentState = _.bind(_.getPath, _, $state, 'current.name');
 
-      // $scope.edit = {};
-      // $scope.doEditPlayer = function(player) {
-      //   $scope.edit.player = player;
-      //   $scope.goToState('player_edit');
-      // };
+      $scope.edit = {};
+      $scope.doEditPlayer = function(player) {
+        $scope.edit.player = player;
+        $scope.goToState('player_edit');
+      };
       // $scope.doEditTeam = function(team) {
       //   $scope.edit.team = team;
       //   $scope.goToState('team_edit');
       // };
+      // $scope.edit.player = $scope.state.players[0][1];
 
       // $scope.show = {};
       // $scope.doShowAll = function(i, show, event) {
