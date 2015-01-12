@@ -2,7 +2,10 @@
 
 angular.module('srApp.services')
   .factory('player', [
-    function() {
+    'rounds',
+    'lists',
+    function(rounds,
+             lists) {
       return {
         is: function(p, name) {
           return p.name === name;
@@ -24,6 +27,7 @@ angular.module('srApp.services')
             city: city,
             team: team,
             lists: [],
+            lists_played: [],
             points: {
               tournament: 0,
               sos: 0,
@@ -31,16 +35,29 @@ angular.module('srApp.services')
               army: 0
             }
           };
+        },
+        updateListsPlayed: function(p, rs) {
+          return _.chain(p)
+            .clone()
+            .apply(function(p) {
+              p.lists_played = rounds.listsForPlayer(rs, p.name);
+              return p;
+            })
+            .value();
+        },
+        allListsHaveBeenPlayed: function(p) {
+          return _.chain(p.lists)
+            .apply(lists.casters)
+            .difference(p.lists_played)
+            .value().length === 0;
         }
       };
     }
   ])
   .factory('players', [
-    '$q',
     'player',
     'factions',
-    function($q,
-             player,
+    function(player,
              factions) {
       var players = {
         add: function playersAdd(coll, p, i) {
@@ -53,12 +70,12 @@ angular.module('srApp.services')
             .reject(_.isEmpty)
             .value();
         },
-        // player: function(coll, name) {
-        //   return _.chain(coll)
-        //     .flatten()
-        //     .find(_.unary(player.is(name)))
-        //     .value();
-        // },
+        player: function(coll, name) {
+          return _.chain(coll)
+            .flatten()
+            .find(_.partial(player.is, _, name))
+            .value();
+        },
         names: function(coll) {
           return _.chain(coll)
             .flatten()
@@ -80,6 +97,13 @@ angular.module('srApp.services')
             .mapWith(_.getPath, 'city')
             .uniq()
             .without(undefined)
+            .value();
+        },
+        updateListsPlayed: function(coll, rs) {
+          return _.chain(coll)
+            .map(function(g) {
+                return _.mapWith(g, player.updateListsPlayed, rs);
+            })
             .value();
         },
         // sortGroup: function(coll, i, state) {

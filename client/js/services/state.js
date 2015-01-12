@@ -3,9 +3,15 @@
 angular.module('srApp.services')
   .factory('state', [
     'player',
+    'players',
+    'game',
     'list',
+    'lists',
     function(player,
-             list) {
+             players,
+             game,
+             list,
+             lists) {
       var state = {
         init: function() {
           // var stored_state = $window.localStorage.getItem('srApp.state');
@@ -41,6 +47,40 @@ angular.module('srApp.services')
               list.create(f, 'Caster2')
             );
           });
+          _.range(2).map(function(i) {
+            _st.rounds.push([]);
+            var names = _.shuffle(players.names(_st.players));
+            _.range(4).map(function(j) {
+              var p1 = _.first(names);
+              names = _.rest(names);
+              var p2 = _.first(names);
+              names = _.rest(names);
+
+              var g = game.create(j+1, p1, p2);
+              g.p1.list = _.chain(_st.players)
+                .apply(players.player, p1)
+                .getPath('lists')
+                .apply(lists.casters)
+                .shuffle()
+                .first()
+                .value();
+              g.p2.list = _.chain(_st.players)
+                .apply(players.player, p2)
+                .getPath('lists')
+                .apply(lists.casters)
+                .shuffle()
+                .first()
+                .value();
+              var res = _.shuffle(['p1','p2']);
+              g[res[0]].tournament = 1;
+              g[res[1]].tournament = 0;
+              g.p1.control = (Math.random()*5)>>0;
+              g.p2.control = (Math.random()*5)>>0;
+              g.p1.army = (Math.random()*50)>>0;
+              g.p2.army = (Math.random()*50)>>0;
+              _st.rounds[i].push(g);
+            });
+          });
           return _st;
         },
         create: function(data) {
@@ -50,7 +90,7 @@ angular.module('srApp.services')
             // bracket: [],
             // teams:[[]],
             players: [[]],
-            // rounds: [],
+            rounds: [],
             // factions: [],
             // ranking: {
             //   player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',

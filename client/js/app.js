@@ -34,25 +34,25 @@ angular.module('srApp', [
         templateUrl: 'partials/player_edit.html',
         controller: 'playerEditCtrl',
         data: {}
-      });
+      })
       // .state('team_edit', {
       //   // url: '/team_edit',
       //   templateUrl: 'partials/team_edit.html',
       //   controller: 'teamEditCtrl',
       //   data: {}
       // })
-      // .state('rounds', {
-      //   url: '/rounds/:pane',
-      //   templateUrl: 'partials/rounds.html',
-      //   controller: 'roundsCtrl',
-      //   data: {}
-      // })
-      // .state('game_edit', {
-      //   // url: '/game_edit',
-      //   templateUrl: 'partials/game_edit.html',
-      //   controller: 'gameEditCtrl',
-      //   data: {}
-      // })
+      .state('rounds', {
+        url: '/rounds/:pane',
+        templateUrl: 'partials/rounds.html',
+        controller: 'roundsCtrl',
+        data: {}
+      })
+      .state('game_edit', {
+        // url: '/game_edit',
+        templateUrl: 'partials/game_edit.html',
+        controller: 'gameEditCtrl',
+        data: {}
+      })
       // .state('ranking_edit', {
       //   url: '/ranking_edit',
       //   templateUrl: 'partials/ranking_edit.html',
@@ -64,7 +64,8 @@ angular.module('srApp', [
       //   templateUrl: 'partials/stats.html',
       //   controller: 'statsCtrl',
       //   data: {}
-      // });
+      // })
+    ;
   }
 ]).config([
   '$compileProvider',

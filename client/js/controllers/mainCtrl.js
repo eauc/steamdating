@@ -47,7 +47,10 @@ angular.module('srApp.controllers')
       //   $scope.edit.team = team;
       //   $scope.goToState('team_edit');
       // };
+
       // $scope.edit.player = $scope.state.players[0][1];
+      // $scope.edit.game = $scope.state.rounds[0][1];
+      // $scope.edit.rounds_pane = 'sum';
 
       // $scope.show = {};
       // $scope.doShowAll = function(i, show, event) {
@@ -63,5 +66,12 @@ angular.module('srApp.controllers')
       //   event.stopPropagation();
       // };
 
+      $scope.updatePoints = function() {
+        // $scope.players = players.updatePoints($scope.state_players,
+        //                                       $scope.state.rounds);
+      };
+      $scope.storeState = function() {
+        // state.store($scope.state);
+      };
     }
   ]);

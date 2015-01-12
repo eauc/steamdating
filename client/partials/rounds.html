@@ -5,22 +5,22 @@
         }">
       <a href="#/rounds/sum">Summary</a>
     </li>
-    <li ng-repeat="i in roundsRange()"
-        ng-class="{
-        'active': pane===(''+i)
-        }">
-      <a href="#/rounds/{{i}}">Round{{i+1}}</a>
-    </li>
-    <li ng-class="{
-        'active': pane==='next'
-        }">
-      <a href="#/rounds/next">Next</a>
-    </li>
+    <!-- <li ng-repeat="i in roundsRange()"
+    ng-class="{
+    'active': pane===(''+i)
+    }">
+    <a href="#/rounds/{{i}}">Round{{i+1}}</a>
+    </li> -->
+    <!-- <li ng-class="{
+    'active': pane==='next'
+    }">
+    <a href="#/rounds/next">Next</a>
+    </li> -->
   </ul>
-  <div ng-if="isTeamTournament()"
-       ng-include="'partials/rounds_team.html'">
-  </div>
-  <div ng-if="!isTeamTournament()"
-       ng-include="'partials/rounds_single.html'">
+  <!-- <div ng-if="isTeamTournament()"
+  ng-include="'partials/rounds_team.html'">
+  </div> -->
+  <!-- <div ng-if="!isTeamTournament()" -->
+  <div ng-include="'partials/rounds_single.html'">
   </div>
 </div>

@@ -18,6 +18,7 @@ describe('controllers', function() {
         initController = function(ctxt, player) {
           ctxt.scope = $rootScope.$new();
           ctxt.scope.goToState = jasmine.createSpy('goToState');
+          ctxt.scope.storeState = jasmine.createSpy('storeState');
           ctxt.group = 4;
           ctxt.scope.edit = { player: player, group: ctxt.group };
           ctxt.current_state = {
@@ -47,8 +48,6 @@ describe('controllers', function() {
           ctxt.dummy_lists = [ ['1'], ['2'] ];
           ctxt.lists.add.and.returnValue(ctxt.dummy_lists);
           ctxt.lists.drop.and.returnValue(ctxt.dummy_lists);
-
-          ctxt.state = jasmine.createSpyObj('state', ['store']);
 
           ctxt.window = jasmine.createSpyObj('window', ['alert']);
 
@@ -240,7 +239,7 @@ describe('controllers', function() {
         it('should store state', function() {
           this.scope.doClose(true);
           
-          expect(this.state.store).toHaveBeenCalledWith(this.scope.state);
+          expect(this.scope.storeState).toHaveBeenCalled();
         });
 
         it('should return to player state', function() {

@@ -54,6 +54,16 @@ describe('service', function() {
                          ]);
       });
     });
+
+    describe('casters(<l>)', function() {
+      it('should return caster names list', function() {
+        expect(lists.casters([
+          { caster: '1' },
+          { caster: '2' },
+          { caster: '3' }
+        ])).toEqual([ '1', '2', '3' ]);
+      });
+    });
   });
  
 });

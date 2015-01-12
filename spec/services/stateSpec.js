@@ -29,13 +29,15 @@ describe('service', function() {
 
       it('should add default fields', function() {
         expect(this.result.players).toEqual([[]]);
+        expect(this.result.rounds).toEqual([]);
       });
 
       describe('when expected fields exist in data', function() {
         beforeEach(function() {
           this.data = {
             test: 'value',
-            players: [ [ 'toto' ] ]
+            players: [ [ 'toto' ] ],
+            rounds: [ 'titi' ]
           };
           this.result = state.create(this.data);
         });
@@ -53,7 +55,8 @@ describe('service', function() {
 
       it('should create default state', function() {
         expect(this.result).toEqual({
-          players: [[]]
+          players: [[]],
+          rounds: []
         });
       });
     });

@@ -1,139 +1,141 @@
-<div class="text-center">
+<div class="text-center container">
   <h3>Edit Game</h3>
-  <table ng-if="isTeamTournament()"
-         class="table text-center">
+  <!-- <table ng-if="isTeamTournament()"
+  class="table text-center">
+  <tr>
+  <th></th>
+  <th>
+  {{::game.t1.name}}
+  </th>
+  <th>
+  {{::game.t2.name}}
+  </th>
+  </tr>
+  <tbody>
+  <tr>
+  <th class="text-right">
+  Tournament
+  </th>
+  <td ng-class="{
+  'success': game.t1.team_tournament === 1,
+  'danger': game.t1.team_tournament === 0,
+  }">
+  {{game.t1.tournament}}
+  </td>
+  <td ng-class="{
+  'success': game.t2.team_tournament === 1,
+  'danger': game.t2.team_tournament === 0,
+  }">
+  {{game.t2.tournament}}
+  </td>
+  </tr>
+  <tr>
+  <th class="text-right">
+  Control
+  </th>
+  <td>{{game.t1.control}}</td>
+  <td>{{game.t2.control}}</td>
+  </tr>
+  <tr>
+  <th class="text-right">
+  Army
+  </th>
+  <td>{{game.t1.army}}</td>
+  <td>{{game.t2.army}}</td>
+  </tr>
+  </tbody>
+  <tbody ng-repeat="g in game.games">
+  <tr>
+  <th></th>
+  <th>
+  <select class="form-control"
+  ng-model="g.p1.name"
+  ng-options="p.name as p.name for p in state.players | players:'inTeam':game.t1.name">
+  </select>
+  </th>
+  <th>
+  <select class="form-control"
+  ng-model="g.p2.name"
+  ng-options="p.name as p.name for p in state.players | players:'inTeam':game.t2.name">
+  </select>
+  </th>
+  </tr>
+  <tr>
+  <th class="text-right">
+  Tournament
+  </th>
+  <td ng-class="{
+  'success': g.p1.tournament === 1,
+  'danger': g.p1.tournament === 0,
+  }"
+  ng-click="setWinLoss(g, 'p1','p2')"
+  style="cursor:pointer;">
+  {{g.p1.tournament===1 ? 'Win' : g.p1.tournament===0 ? 'Loss' : ''}}
+  </td>
+  <td ng-class="{
+  'success': g.p2.tournament === 1,
+  'danger': g.p2.tournament === 0,
+  }"
+  ng-click="setWinLoss(g, 'p2','p1')"
+  style="cursor:pointer;">
+  {{g.p2.tournament===1 ? 'Win' : g.p2.tournament===0 ? 'Loss' : ''}}
+  </td>
+  </tr>
+  <tr>
+  <th class="text-right">
+  List
+  </th>
+  <td>
+  <select class="form-control"
+  ng-model="g.p1.list"
+  ng-options="
+  c as c for c in casters[g.p1.name]
+  ">
+  </select>
+  </td>
+  <td>
+  <select class="form-control"
+  ng-model="g.p2.list"
+  ng-options="
+  c as c for c in casters[g.p2.name]
+  ">
+  </select>
+  </td>
+  </tr>
+  <tr>
+  <th class="text-right">
+  Control
+  </th>
+  <td>
+  <input type="number"
+  ng-model="g.p1.control" />
+  </td>
+  <td>
+  <input type="number"
+  ng-model="g.p2.control" />
+  </td>
+  </tr>
+  <tr>
+  <th class="text-right">
+  Army
+  </th>
+  <td>
+  <input type="number"
+  ng-model="g.p1.army" />
+  </td>
+  <td>
+  <input type="number"
+  ng-model="g.p2.army" />
+  </td>
+  </tr>
+  </tbody>
+  </table> -->
+
+  <!-- <table ng-if="!isTeamTournament()"
+  class="table text-center"> -->
+  <table class="table text-center">
     <tr>
-      <th></th>
-      <th>
-        {{::game.t1.name}}
-      </th>
-      <th>
-        {{::game.t2.name}}
-      </th>
-    </tr>
-    <tbody>
-      <tr>
-        <th class="text-right">
-          Tournament
-        </th>
-        <td ng-class="{
-          'success': game.t1.team_tournament === 1,
-          'danger': game.t1.team_tournament === 0,
-          }">
-          {{game.t1.tournament}}
-        </td>
-        <td ng-class="{
-          'success': game.t2.team_tournament === 1,
-          'danger': game.t2.team_tournament === 0,
-          }">
-          {{game.t2.tournament}}
-        </td>
-      </tr>
-      <tr>
-        <th class="text-right">
-          Control
-        </th>
-        <td>{{game.t1.control}}</td>
-        <td>{{game.t2.control}}</td>
-      </tr>
-      <tr>
-        <th class="text-right">
-          Army
-        </th>
-        <td>{{game.t1.army}}</td>
-        <td>{{game.t2.army}}</td>
-      </tr>
-    </tbody>
-    <tbody ng-repeat="g in game.games">
-      <tr>
-        <th></th>
-        <th>
-          <select class="form-control"
-                  ng-model="g.p1.name"
-                  ng-options="p.name as p.name for p in state.players | players:'inTeam':game.t1.name">
-          </select>
-        </th>
-        <th>
-          <select class="form-control"
-                  ng-model="g.p2.name"
-                  ng-options="p.name as p.name for p in state.players | players:'inTeam':game.t2.name">
-          </select>
-        </th>
-      </tr>
-      <tr>
-        <th class="text-right">
-          Tournament
-        </th>
-        <td ng-class="{
-            'success': g.p1.tournament === 1,
-            'danger': g.p1.tournament === 0,
-            }"
-            ng-click="setWinLoss(g, 'p1','p2')"
-            style="cursor:pointer;">
-          {{g.p1.tournament===1 ? 'Win' : g.p1.tournament===0 ? 'Loss' : ''}}
-        </td>
-        <td ng-class="{
-            'success': g.p2.tournament === 1,
-            'danger': g.p2.tournament === 0,
-            }"
-            ng-click="setWinLoss(g, 'p2','p1')"
-            style="cursor:pointer;">
-          {{g.p2.tournament===1 ? 'Win' : g.p2.tournament===0 ? 'Loss' : ''}}
-        </td>
-      </tr>
-      <tr>
-        <th class="text-right">
-          List
-        </th>
-        <td>
-          <select class="form-control"
-                  ng-model="g.p1.list"
-                  ng-options="
-                  c as c for c in casters[g.p1.name]
-                  ">
-          </select>
-        </td>
-        <td>
-          <select class="form-control"
-                  ng-model="g.p2.list"
-                  ng-options="
-                  c as c for c in casters[g.p2.name]
-                  ">
-          </select>
-        </td>
-      </tr>
-      <tr>
-        <th class="text-right">
-          Control
-        </th>
-        <td>
-          <input type="number"
-                 ng-model="g.p1.control" />
-        </td>
-        <td>
-          <input type="number"
-                 ng-model="g.p2.control" />
-        </td>
-      </tr>
-      <tr>
-        <th class="text-right">
-          Army
-        </th>
-        <td>
-          <input type="number"
-                 ng-model="g.p1.army" />
-        </td>
-        <td>
-          <input type="number"
-                 ng-model="g.p2.army" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <table ng-if="!isTeamTournament()"
-         class="table text-center">
-    <tr>
-      <th></th>
+      <th style="width:200px;"></th>
       <th>
         {{::game.p1.name}}
       </th>
@@ -151,7 +153,7 @@
           }"
           ng-click="setWinLoss(game, 'p1','p2')"
           style="cursor:pointer;">
-        {{game.p1.tournament===1 ? 'Win' : game.p1.tournament===0 ? 'Loss' : ''}}
+        {{game.p1.tournament===1 ? 'Win' : game.p1.tournament===0 ? 'Loss' : 'Click to set Winner'}}
       </td>
       <td ng-class="{
           'success': game.p2.tournament === 1,
@@ -159,7 +161,7 @@
           }"
           ng-click="setWinLoss(game, 'p2','p1')"
           style="cursor:pointer;">
-        {{game.p2.tournament===1 ? 'Win' : game.p2.tournament===0 ? 'Loss' : ''}}
+        {{game.p2.tournament===1 ? 'Win' : game.p2.tournament===0 ? 'Loss' : 'Click to set Winner'}}
       </td>
     </tr>
     <tr>
@@ -170,7 +172,7 @@
         <select class="form-control"
                 ng-model="game.p1.list"
                 ng-options="
-                c as c for c in casters.p1
+                c as c for c in casters[game.p1.name]
                 ">
         </select>
       </td>
@@ -178,7 +180,7 @@
         <select class="form-control"
                 ng-model="game.p2.list"
                 ng-options="
-                c as c for c in casters.p2
+                c as c for c in casters[game.p2.name]
                 ">
         </select>
       </td>
@@ -188,11 +190,13 @@
         Control
       </th>
       <td>
-        <input type="number"
+        <input class="form-control"
+               type="number"
                ng-model="game.p1.control" />
       </td>
       <td>
-        <input type="number"
+        <input class="form-control"
+               type="number"
                ng-model="game.p2.control" />
       </td>
     </tr>
@@ -201,11 +205,13 @@
         Army
       </th>
       <td>
-        <input type="number"
+        <input class="form-control"
+               type="number"
                ng-model="game.p1.army" />
       </td>
       <td>
-        <input type="number"
+        <input class="form-control"
+               type="number"
                ng-model="game.p2.army" />
       </td>
     </tr>

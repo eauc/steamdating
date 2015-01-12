@@ -96,6 +96,26 @@ describe('service', function() {
       });
     });
 
+    describe('player(<name>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'toto1' },
+            { name: 'toto2' },
+            { name: 'toto3' },
+          ],
+          [
+            { name: 'tata1' },
+            { name: 'tata2' },
+          ]
+        ];
+      });
+
+      it('should return player', function() {
+        expect(players.player(this.coll, 'tata2')).toBe(this.coll[1][1]);
+      });
+    });
+
     describe('names()', function() {
       beforeEach(function() {
         this.coll = [
@@ -167,6 +187,36 @@ describe('service', function() {
         expect(players.factions(this.coll, { toto2: {}, base1: {} })).toEqual([
           'toto1', 'toto2', 'tata1', 'tutu2', 'base1'
         ]);
+      });
+    });
+
+    describe('updateListsPlayed(<rounds>)', function() {
+      beforeEach(inject(function(rounds) {
+        this.coll = [
+          [
+            { name: 'toto1' },
+            { name: 'toto2' },
+            { name: 'toto3' },
+          ],
+          [
+            { name: 'tata1' },
+            { name: 'tata2' },
+          ]
+        ];
+
+        this.rounds = rounds;
+        this.dummy_lists = [ 'toto' ];
+        spyOn(rounds, 'listsForPlayer').and.returnValue(this.dummy_lists);
+      }));
+
+      it('should update lists played in <rounds>', function() {
+        var dummy_rounds = [ 'tata' ];
+
+        var res = players.updateListsPlayed(this.coll, dummy_rounds);
+
+        expect(this.rounds.listsForPlayer.calls.count()).toBe(5);
+        expect(res[0][2].lists_played).toBe(this.dummy_lists);
+        expect(res[1][1].lists_played).toBe(this.dummy_lists);
       });
     });
   });

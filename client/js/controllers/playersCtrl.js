@@ -140,7 +140,7 @@ angular.module('srApp.controllers')
           else {
             _.extend($scope.edit.player, $scope.player);
           }
-          state.store($scope.state);
+          $scope.storeState();
         }
         $scope.goToState('players');
       };

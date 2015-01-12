@@ -27,9 +27,9 @@ angular.module('srApp.services')
           new_coll.splice(i, 1);
           return new_coll;
         },
-        // casters: function(coll) {
-        //   return _.mapWith(coll, _.getPath, 'caster');
-        // }
+        casters: function(coll) {
+          return _.mapWith(coll, _.getPath, 'caster');
+        }
       };
       return lists;
     }
