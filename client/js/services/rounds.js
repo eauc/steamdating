@@ -180,6 +180,18 @@ angular.module('srApp.services')
             .first()
             .value();
         },
+        gamesForGroup: function(coll, ps, i) {
+          var start_index = _.chain(ps)
+            .slice(0, i)
+            .flatten()
+            .value()
+            .length / 2;
+          var end_index = (start_index +
+                           ps[i].length / 2);
+          return _.chain(coll)
+            .slice(start_index, end_index)
+            .value();
+        },
         // gameForTeam: function(coll, t) {
         //   return _.find(coll, function(g) {
         //     return g.t1.name === t || g.t2.name === t;
@@ -217,11 +229,11 @@ angular.module('srApp.services')
         //   if(r >= coll.length) return [];
         //   return coll[r];
         // },
-        // drop: function(coll, r) {
-        //   var new_coll = coll.slice();
-        //   new_coll.splice(r, 1);
-        //   return new_coll;
-        // },
+        drop: function(coll, r) {
+          var new_coll = coll.slice();
+          new_coll.splice(r, 1);
+          return new_coll;
+        },
         // pointsFor: function(coll, p, bracket_start, base_weight) {
         //   return _.chain(coll)
         //     .mapWith(round.gameFor, p)

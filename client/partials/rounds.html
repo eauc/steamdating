@@ -5,12 +5,12 @@
         }">
       <a href="#/rounds/sum">Summary</a>
     </li>
-    <!-- <li ng-repeat="i in roundsRange()"
-    ng-class="{
-    'active': pane===(''+i)
-    }">
-    <a href="#/rounds/{{i}}">Round{{i+1}}</a>
-    </li> -->
+    <li ng-repeat="r in ::state.rounds"
+        ng-class="{
+        'active': pane===(''+$index)
+        }">
+      <a href="#/rounds/{{::$index}}">Round{{::$index+1}}</a>
+    </li>
     <!-- <li ng-class="{
     'active': pane==='next'
     }">

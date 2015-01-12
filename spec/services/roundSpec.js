@@ -38,6 +38,21 @@ describe('service', function() {
       });
     });
 
+    describe('gamesForGroup(<players>, <group_index>)', function() {
+      it('should extract games for <group_index>', function() {
+        var coll = [
+          { table: 1 },
+          { table: 2 },
+          { table: 3 },
+          { table: 4 },
+        ];
+        var players = [ [ {}, {} ], [ {}, {}, {}, {} ], [ {}, {} ] ];
+        expect(round.gamesForGroup(coll, players, 1)).toEqual([
+          { table: 2 },
+          { table: 3 }
+        ]);
+      });
+    });
   });
 
 });

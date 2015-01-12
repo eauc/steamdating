@@ -23,6 +23,8 @@ describe('controllers', function() {
 
           ctxt.scope = $rootScope.$new();
           ctxt.scope.goToState = jasmine.createSpy('goToState');
+          ctxt.scope.updatePoints = jasmine.createSpy('updatePoints');
+          ctxt.scope.storeState = jasmine.createSpy('storeState');
           ctxt.scope.edit = {};
           ctxt.scope.state = {
             players: ctxt.state_players,
@@ -31,17 +33,21 @@ describe('controllers', function() {
           ctxt.$stateParams = {
             pane: ctxt.pane
           };
-          
+          ctxt.window = jasmine.createSpyObj('$window', [ 'confirm' ]);
+
           ctxt.players = jasmine.createSpyObj('players', [ 'updateListsPlayed' ]);
           ctxt.dummy_players = ['tata'];
           ctxt.players.updateListsPlayed.and.returnValue(ctxt.dummy_players);
 
           ctxt.round = jasmine.createSpyObj('round', [ 'gameForPlayer' ]);
+          ctxt.rounds = jasmine.createSpyObj('rounds', [ 'drop' ]);
 
           $controller('roundsCtrl', { 
             '$scope': ctxt.scope,
             '$stateParams': ctxt.$stateParams,
+            '$window': ctxt.window,
             'players': ctxt.players,
+            'rounds': ctxt.rounds,
             'round': ctxt.round
           });
         };
@@ -82,6 +88,43 @@ describe('controllers', function() {
 
       it('should go to game dit page', function() {
         expect(this.scope.goToState).toHaveBeenCalledWith('game_edit');
+      });
+    });
+
+    describe('doDeleteRound(<index>)', function() {
+      it('should ask user confirmation', function() {
+        this.scope.doDeleteRound(1);
+
+        expect(this.window.confirm).toHaveBeenCalled();
+      });
+
+      describe('when user confirms', function() {
+        beforeEach(function() {
+          this.scope.state.rounds = [ 'rounds' ];
+          this.window.confirm.and.returnValue(true);
+          this.dummy_rounds = [ 'dummy' ];
+          this.rounds.drop.and.returnValue(this.dummy_rounds);
+
+          this.scope.doDeleteRound(4);
+        });
+
+        it('should drop round <index>', function() {
+          expect(this.rounds.drop).toHaveBeenCalledWith([ 'rounds' ], 4);
+          expect(this.scope.state.rounds).toBe(this.dummy_rounds);
+        });
+
+        it('should update points', function() {
+          expect(this.scope.updatePoints).toHaveBeenCalled();
+        });
+
+        it('should store state', function() {
+          expect(this.scope.storeState).toHaveBeenCalled();
+        });
+
+        it('should return to rounds summary page', function() {
+          expect(this.scope.goToState).toHaveBeenCalledWith('rounds',
+                                                            { pane: 'sum' });
+        });
       });
     });
   });

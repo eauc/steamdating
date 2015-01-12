@@ -46,6 +46,11 @@ describe('service', function() {
       });
     });
 
+    describe('drop(<index>)', function() {
+      it('should remove <index> from collection', function() {
+        expect(rounds.drop([ 'r1', 'r2', 'r3' ], 1)).toEqual([ 'r1', 'r3' ]);
+      });
+    });
   });
 
 });

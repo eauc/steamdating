@@ -49,36 +49,39 @@ angular.module('srApp.services')
           });
           _.range(2).map(function(i) {
             _st.rounds.push([]);
-            var names = _.shuffle(players.names(_st.players));
-            _.range(4).map(function(j) {
-              var p1 = _.first(names);
-              names = _.rest(names);
-              var p2 = _.first(names);
-              names = _.rest(names);
+            var table = 1;
+            _.each(_st.players, function(gr) {
+              var names = _.shuffle(players.names(gr));
+              _.range(names.length/2).map(function(j) {
+                var p1 = _.first(names);
+                names = _.rest(names);
+                var p2 = _.first(names);
+                names = _.rest(names);
 
-              var g = game.create(j+1, p1, p2);
-              g.p1.list = _.chain(_st.players)
-                .apply(players.player, p1)
-                .getPath('lists')
-                .apply(lists.casters)
-                .shuffle()
-                .first()
-                .value();
-              g.p2.list = _.chain(_st.players)
-                .apply(players.player, p2)
-                .getPath('lists')
-                .apply(lists.casters)
-                .shuffle()
-                .first()
-                .value();
-              var res = _.shuffle(['p1','p2']);
-              g[res[0]].tournament = 1;
-              g[res[1]].tournament = 0;
-              g.p1.control = (Math.random()*5)>>0;
-              g.p2.control = (Math.random()*5)>>0;
-              g.p1.army = (Math.random()*50)>>0;
-              g.p2.army = (Math.random()*50)>>0;
-              _st.rounds[i].push(g);
+                var g = game.create(table++, p1, p2);
+                g.p1.list = _.chain(_st.players)
+                  .apply(players.player, p1)
+                  .getPath('lists')
+                  .apply(lists.casters)
+                  .shuffle()
+                  .first()
+                  .value();
+                g.p2.list = _.chain(_st.players)
+                  .apply(players.player, p2)
+                  .getPath('lists')
+                  .apply(lists.casters)
+                  .shuffle()
+                  .first()
+                  .value();
+                var res = _.shuffle(['p1','p2']);
+                g[res[0]].tournament = 1;
+                g[res[1]].tournament = 0;
+                g.p1.control = (Math.random()*5)>>0;
+                g.p2.control = (Math.random()*5)>>0;
+                g.p1.army = (Math.random()*50)>>0;
+                g.p2.army = (Math.random()*50)>>0;
+                _st.rounds[i].push(g);
+              });
             });
           });
           return _st;

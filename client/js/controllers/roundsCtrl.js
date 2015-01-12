@@ -4,18 +4,20 @@ angular.module('srApp.controllers')
   .controller('roundsCtrl', [
     '$scope',
     '$stateParams',
+    '$window',
     'players',
+    'rounds',
     'round',
     // 'teams',
     // 'pairing',
-    // '$window',
     function($scope,
              $stateParams,
+             $window,
              players,
+             rounds,
              round
              // teams,
-             // pairing,
-             // $window
+             // pairing
             ) {
       console.log('init roundsCtrl');
 
@@ -28,6 +30,22 @@ angular.module('srApp.controllers')
         $scope.edit.game = round.gameForPlayer(r, p);
         $scope.edit.rounds_pane = $scope.pane;
         $scope.goToState('game_edit');
+      };
+
+      $scope.doDeleteRound = function(r) {
+        var conf = $window.confirm("You sure ?");
+        if(conf) {
+          $scope.state.rounds = rounds.drop($scope.state.rounds, r);
+          // _.each($scope.state.bracket, function(b, i) {
+          //   if(_.exists(b) &&
+          //      $scope.state.rounds.length <= b) {
+          //     $scope.state.bracket[i] = undefined;
+          //   }
+          // });
+          $scope.updatePoints();
+          $scope.storeState();
+          $scope.goToState('rounds', { pane: 'sum' });
+        }
       };
 
       // var nb_games = $scope.isTeamTournament() ?
@@ -181,20 +199,5 @@ angular.module('srApp.controllers')
       //   $scope.goToState('rounds', { pane: $scope.state.rounds.length-1 });
       // };
 
-      // $scope.doDeleteRound = function(r) {
-      //   var conf = $window.confirm("You sure ?");
-      //   if(conf) {
-      //     $scope.state.rounds = rounds.drop($scope.state.rounds, r);
-      //     _.each($scope.state.bracket, function(b, i) {
-      //       if(_.exists(b) &&
-      //          $scope.state.rounds.length <= b) {
-      //         $scope.state.bracket[i] = undefined;
-      //       }
-      //     });
-      //     $scope.updatePoints();
-      //     $scope.storeState();
-      //     $scope.goToState('rounds', { pane: 'sum' });
-      //   }
-      // };
     }
   ]);
