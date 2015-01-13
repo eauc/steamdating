@@ -138,7 +138,8 @@ describe('controllers', function() {
     });
 
     describe('doClose(<validate>)', function() {
-      describe('when not validate', function() {
+      when('not validate', function() {
+      },function() {
         it('should return to player state', function() {
           this.scope.doClose(false);
           
@@ -146,7 +147,8 @@ describe('controllers', function() {
         });
       });
 
-      describe('when validate', function() {
+      when('validate', function() {
+      }, function() {
         it('should validate player\'s name', function() {
           this.scope.player.name = null;
           this.scope.doClose(true);
@@ -158,12 +160,10 @@ describe('controllers', function() {
           expect(this.window.alert).toHaveBeenCalledWith('invalid player name');
         });
 
-        describe('when editing an existing player', function() {
-          beforeEach(function() {
-            initController(this, { name: 'titi', lists:[] });
-            this.players.names.and.returnValue([ 'titi', 'toto' ]);
-          });
-
+        when('editing an existing player', function() {
+          initController(this, { name: 'titi', lists:[] });
+          this.players.names.and.returnValue([ 'titi', 'toto' ]);
+        }, function() {
           it('should check that the new name does not already exists', function() {
             // no change
             this.window.alert.calls.reset();
@@ -200,12 +200,10 @@ describe('controllers', function() {
           });
         });
 
-        describe('when creating a new player', function() {
-          beforeEach(function() {
-            initController(this, { name: undefined, lists:[] });
-            this.players.names.and.returnValue([ 'titi', 'toto' ]);
-          });
-
+        when('creating a new player', function() {
+          initController(this, { name: undefined, lists:[] });
+          this.players.names.and.returnValue([ 'titi', 'toto' ]);
+        }, function() {
           it('should check that the new name does not already exists', function() {
             // new name
             this.window.alert.calls.reset();

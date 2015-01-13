@@ -51,11 +51,9 @@ describe('service', function() {
     });
 
     describe('forPlayer(<name>)', function() {
-      describe('when <game> involves player', function() {
-        beforeEach(function() {
-          this.game = game.create(4, 'toto', 'titi');
-        });
-
+      when('<game> involves player', function() {
+        this.game = game.create(4, 'toto', 'titi');
+      }, function() {
         it('should return <game>', function() {
           expect(game.forPlayer(this.game, 'toto')).toBe(this.game);
           expect(game.forPlayer(this.game, 'titi')).toBe(this.game);
@@ -64,15 +62,13 @@ describe('service', function() {
         });
       });
 
-      describe('when <game>\'s sub-games involves player', function() {
-        beforeEach(function() {
-          var g = game.create(4, 'toto', 'titi');
-          _.range(3).map(function(i) {
-            g.games.push(game.create(i+1, 'p'+(i+1), 'p'+(i+3)));
-          });
-          this.game = g;
+      when('<game>\'s sub-games involves player', function() {
+        var g = game.create(4, 'toto', 'titi');
+        _.range(3).map(function(i) {
+          g.games.push(game.create(i+1, 'p'+(i+1), 'p'+(i+3)));
         });
-
+        this.game = g;
+      }, function() {
         it('should return <game>\'s sub-game for this player', function() {
           expect(game.forPlayer(this.game, 'p1')).toBe(this.game.games[0]);
           expect(game.forPlayer(this.game, 'p5')).toBe(this.game.games[2]);
@@ -109,19 +105,18 @@ describe('service', function() {
         this.game = game.create(4, 'toto', 'titi');
       });
 
-      describe('when result is not defined', function() {
+      when('result is not defined', function(){
+      }, function() {
         it('should return undefined', function() {
           expect(game.winForPlayer(this.game, 'toto')).toBe(undefined);
           expect(game.winForPlayer(this.game, 'titi')).toBe(undefined);
         });
       });
 
-      describe('when result is defined', function() {
-        beforeEach(function() {
-          this.game.p1.tournament = 1;
-          this.game.p2.tournament = 0;
-        });
-
+      when('result is defined', function() {
+        this.game.p1.tournament = 1;
+        this.game.p2.tournament = 0;
+      }, function() {
         it('should return whether <name> has won', function() {
           expect(game.winForPlayer(this.game, 'toto')).toBe(true);
           expect(game.winForPlayer(this.game, 'titi')).toBe(false);

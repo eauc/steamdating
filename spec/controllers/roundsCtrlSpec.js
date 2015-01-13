@@ -98,16 +98,14 @@ describe('controllers', function() {
         expect(this.window.confirm).toHaveBeenCalled();
       });
 
-      describe('when user confirms', function() {
-        beforeEach(function() {
-          this.scope.state.rounds = [ 'rounds' ];
-          this.window.confirm.and.returnValue(true);
-          this.dummy_rounds = [ 'dummy' ];
-          this.rounds.drop.and.returnValue(this.dummy_rounds);
+      when('user confirms', function() {
+        this.scope.state.rounds = [ 'rounds' ];
+        this.window.confirm.and.returnValue(true);
+        this.dummy_rounds = [ 'dummy' ];
+        this.rounds.drop.and.returnValue(this.dummy_rounds);
 
-          this.scope.doDeleteRound(4);
-        });
-
+        this.scope.doDeleteRound(4);
+      }, function() {
         it('should drop round <index>', function() {
           expect(this.rounds.drop).toHaveBeenCalledWith([ 'rounds' ], 4);
           expect(this.scope.state.rounds).toBe(this.dummy_rounds);

@@ -61,15 +61,13 @@ describe('controllers', function() {
     });
 
     describe('close(<validate>)', function() {
-      describe('when <validate>', function() {
-        beforeEach(function() {
-          this.scope.game = {
-            p1: { name: 'toto', tournament: 1, control: 3, army: 45 },
-            p2: { name: 'titi', tournament: 0, control: 1, army: 25 }
-          };
-          this.scope.close(true);
-        });
-        
+      when('<validate>', function() {
+        this.scope.game = {
+          p1: { name: 'toto', tournament: 1, control: 3, army: 45 },
+          p2: { name: 'titi', tournament: 0, control: 1, army: 25 }
+        };
+        this.scope.close(true);
+      }, function() {
         it('should update game', function() {
           expect(this.scope.edit.game).toEqual({
             table: 4,

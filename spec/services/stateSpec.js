@@ -32,16 +32,14 @@ describe('service', function() {
         expect(this.result.rounds).toEqual([]);
       });
 
-      describe('when expected fields exist in data', function() {
-        beforeEach(function() {
-          this.data = {
-            test: 'value',
-            players: [ [ 'toto' ] ],
-            rounds: [ 'titi' ]
-          };
-          this.result = state.create(this.data);
-        });
-
+      when('expected fields exist in data', function() {
+        this.data = {
+          test: 'value',
+          players: [ [ 'toto' ] ],
+          rounds: [ 'titi' ]
+        };
+        this.result = state.create(this.data);
+      }, function() {
         it('should not modify them', function() {
           expect(this.result).toEqual(this.data);
         });

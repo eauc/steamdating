@@ -75,13 +75,11 @@ describe('controllers', function() {
         expect(this.window.confirm).toHaveBeenCalled();
       });
 
-      describe('when user confirms', function() {
-        beforeEach(function() {
-          this.window.confirm.and.returnValue(true);
+      when('user confirms', function() {
+        this.window.confirm.and.returnValue(true);
 
-          this.scope.doDropPlayer(this.player, this.event);
-        });
-
+        this.scope.doDropPlayer(this.player, this.event);
+      }, function() {
         it('should drop player from state', function() {
           expect(this.players.drop).toHaveBeenCalledWith(this.state_players, this.player);
           expect(this.scope.state.players).toBe(this.dummy_players);

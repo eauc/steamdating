@@ -10,6 +10,7 @@
     "$": false,
     "describe": false,
     "xdescribe": false,
+    "when": false,
     "beforeEach": false,
     "afterEach": false,
     "it": false,

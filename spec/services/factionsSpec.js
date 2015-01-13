@@ -38,11 +38,9 @@ describe('service', function() {
         $httpBackend.flush();
       });
 
-      describe('when data is downloaded', function() {
-        beforeEach(function() {
-          initBaseFactionsWith(['base_factions' ]);
-        });
-
+      when('data is downloaded', function() {
+        initBaseFactionsWith(['base_factions' ]);
+      }, function() {
         it('should store the response', function() {
           expect(factions.baseFactions()).toEqual(['base_factions']);
         });
@@ -50,23 +48,22 @@ describe('service', function() {
     });
 
     describe('baseFation()', function() {
-      describe('when data has not yet available', function() {
+      when('data is not yet available', function() {
+      }, function() {
         it('should return a promise', function() {
           expect(factions.baseFactions()).toBeAn('Object');
           expect(factions.baseFactions().then).toBeA('Function');
         });
       });
 
-      describe('when data is available', function() {
-        beforeEach(inject(function($rootScope) {
-          this.cbk = jasmine.createSpy('promise_callback');
-          factions.baseFactions().then(this.cbk);
+      when('data is available', inject(function($rootScope) {
+        this.cbk = jasmine.createSpy('promise_callback');
+        factions.baseFactions().then(this.cbk);
 
-          initBaseFactionsWith(['base_factions' ]);
+        initBaseFactionsWith(['base_factions' ]);
 
-          $rootScope.$digest();
-        }));
-
+        $rootScope.$digest();
+      }), function() {
         it('should resolve promise with data', function() {
           expect(this.cbk).toHaveBeenCalledWith(['base_factions']);
         });
