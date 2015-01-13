@@ -219,6 +219,80 @@ describe('service', function() {
         expect(res[1][1].lists_played).toBe(this.dummy_lists);
       });
     });
+
+    describe('updatePoints(<rounds>)', function() {
+      beforeEach(inject(function(rounds) {
+        this.coll = [
+          [
+            { name: 'toto1' },
+            { name: 'toto2' },
+            { name: 'toto3' },
+          ],
+          [
+            { name: 'tata1' },
+            { name: 'tata2' },
+          ]
+        ];
+
+        this.rounds = rounds;
+        this.dummy_points = [ 'toto' ];
+        spyOn(rounds, 'pointsForPlayer').and.returnValue(this.dummy_points);
+        this.dummy_opps = [ 'opps' ];
+        spyOn(rounds, 'opponentsForPlayer').and.returnValue(this.dummy_opps);
+
+        spyOn(players, 'sosFromPlayers').and.returnValue(45);
+      }));
+
+      it('should update points gained in <rounds>', function() {
+        var dummy_rounds = [ 'tata' ];
+
+        var res = players.updatePoints(this.coll, dummy_rounds);
+
+        expect(this.rounds.pointsForPlayer.calls.count()).toBe(5);
+        expect(res[0][2].points).toBe(this.dummy_points);
+        expect(res[1][1].points).toBe(this.dummy_points);
+      });
+
+      it('should update SoS gained in <rounds>', function() {
+        var dummy_rounds = [ 'tata' ];
+
+        var res = players.updatePoints(this.coll, dummy_rounds);
+
+        expect(this.rounds.opponentsForPlayer)
+          .toHaveBeenCalledWith(dummy_rounds, jasmine.any(String));
+        expect(this.rounds.opponentsForPlayer.calls.count()).toBe(5);
+
+        expect(players.sosFromPlayers)
+          .toHaveBeenCalledWith(jasmine.any(Object), this.dummy_opps);
+        expect(players.sosFromPlayers.calls.count()).toBe(5);
+
+        expect(res[0][2].points.sos).toBe(45);
+        expect(res[1][1].points.sos).toBe(45);
+      });
+    });
+
+    describe('sosFromPlayers(<players>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'toto1', points: { tournament: 1 } },
+            { name: 'toto2', points: { tournament: 2 } },
+            { name: 'toto3', points: { tournament: 3 } },
+          ],
+          [
+            { name: 'tata1', points: { tournament: 4 } },
+            { name: 'tata2', points: { tournament: 5 } },
+          ]
+        ];
+      });
+
+      it('should return SoS calculated from <players>', function() {
+        expect(players.sosFromPlayers(this.coll, ['toto1', 'toto3', 'tata2']))
+          .toEqual(9);
+        expect(players.sosFromPlayers(this.coll, ['toto2', 'tata1']))
+          .toEqual(6);
+      });
+    });
   });
 
 });

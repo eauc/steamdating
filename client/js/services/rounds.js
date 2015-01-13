@@ -172,7 +172,7 @@ angular.module('srApp.services')
       var round = {
         gameForPlayer: function(coll, p) {
           if(!_.isArray(coll) ||
-             coll.length === 0) return [];
+             coll.length === 0) return;
 
           return _.chain(coll)
             .map(_.partial(game.forPlayer, _, p))
@@ -234,33 +234,36 @@ angular.module('srApp.services')
           new_coll.splice(r, 1);
           return new_coll;
         },
-        // pointsFor: function(coll, p, bracket_start, base_weight) {
-        //   return _.chain(coll)
-        //     .mapWith(round.gameFor, p)
-        //     .map(function(g) {
-        //       if(!_.exists(g)) return game.create(0, p);
-        //       return g;
-        //     })
-        //     .mapWith(game.player, p)
-        //     .reduce(function(mem, r, i) {
-        //       var bracket_weight = base_weight >> (i - bracket_start);
-        //       return {
-        //         bracket: ((_.exists(bracket_start) && i >= bracket_start) ?
-        //                   mem.bracket + bracket_weight * r.tournament :
-        //                   mem.bracket),
-        //         tournament: mem.tournament + r.tournament,
-        //         control: mem.control + r.control,
-        //         army: mem.army + r.army
-        //       };
-        //     }, {
-        //       bracket: 0,
-        //       tournament: 0,
-        //       control: 0,
-        //       army: 0
-        //     })
-        //     .spy('pointsFor', p)
-        //     .value();
-        // },
+        pointsForPlayer: function(coll, p) {//, bracket_start, base_weight) {
+          return _.chain(coll)
+            .mapWith(round.gameForPlayer, p)
+            .map(function(g) {
+              if(!_.exists(g)) {
+                return { p1: { name: p, tournament: 0, control: 0, army: 0 } };
+              }
+              return g;
+            })
+            .mapWith(game.player, p)
+            .reduce(function(mem, r, i) {
+              // var bracket_weight = base_weight >> (i - bracket_start);
+              return {
+                // bracket: ((_.exists(bracket_start) && i >= bracket_start) ?
+                //           mem.bracket + bracket_weight * r.tournament :
+                //           mem.bracket),
+                tournament: mem.tournament + r.tournament,
+                control: mem.control + r.control,
+                army: mem.army + r.army,
+                sos: 0
+              };
+            }, {
+              // bracket: 0,
+              tournament: 0,
+              control: 0,
+              army: 0,
+              sos: 0
+            })
+            .value();
+        },
         // pointsForTeam: function(coll, t, bracket_start, base_weight) {
         //   return _.chain(coll)
         //     .mapWith(round.gameForTeam, t)
@@ -287,14 +290,14 @@ angular.module('srApp.services')
         //     .spy('pointsForTeam', t)
         //     .value();
         // },
-        // opponentsFor: function(coll, p) {
-        //   return _.chain(coll)
-        //     .mapWith(round.gameFor, p)
-        //     .without(undefined)
-        //     .mapWith(game.opponentFor, p)
-        //     .without(undefined)
-        //     .value();
-        // },
+        opponentsForPlayer: function(coll, p) {
+          return _.chain(coll)
+            .mapWith(round.gameForPlayer, p)
+            .without(undefined)
+            .mapWith(game.opponentForPlayer, p)
+            .without(undefined)
+            .value();
+        },
         // opponentsForTeam: function(coll, t) {
         //   return _.chain(coll)
         //     .mapWith(round.gameForTeam, t)

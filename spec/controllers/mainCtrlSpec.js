@@ -26,12 +26,14 @@ describe('controllers', function() {
         this.state.test.and.returnValue(this.dummy_state);
 
         this.factions = jasmine.createSpyObj('factions', ['init']);
+        this.players = jasmine.createSpyObj('players', ['updatePoints']);
 
         $controller('mainCtrl', { 
           '$scope': this.scope,
           '$state': this.router_state,
           'factions': this.factions,
-          'state': this.state
+          'state': this.state,
+          'players': this.players
         });
       }
     ]));
@@ -60,6 +62,26 @@ describe('controllers', function() {
       });
     });
 
+    describe('updatePoints()', function() {
+      beforeEach(function() {
+        this.state_players = [ 'players' ];
+        this.state_rounds = [ 'rounds' ];
+        this.scope.state.players = this.state_players;
+        this.scope.state.rounds = this.state_rounds;
+
+        this.dummy_players = [ 'new_players' ];
+        this.players.updatePoints.and.returnValue(this.dummy_players);
+      });
+
+      it('should update all players points', function() {
+        this.scope.updatePoints();
+
+        expect(this.scope.state.players).toEqual(this.dummy_players);
+        expect(this.players.updatePoints)
+          .toHaveBeenCalledWith(this.state_players,
+                                this.state_rounds);
+      });
+    });
   });
 
 });

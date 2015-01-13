@@ -94,6 +94,23 @@ describe('service', function() {
         });
       });        
     });
+
+    describe('updatePoints(<rounds>)', function() {
+      beforeEach(inject(function(rounds) {
+        this.rounds = rounds;
+        this.dummy_points = [ 'toto' ];
+        spyOn(rounds, 'pointsForPlayer').and.returnValue(this.dummy_points);
+      }));
+
+      it('should update points gained in <rounds>', function() {
+        var p = player.create('toto');
+        var dummy_rounds = [ 'tata' ];
+
+        expect(player.updatePoints(p, dummy_rounds).points)
+          .toBe(this.dummy_points);
+        expect(this.rounds.pointsForPlayer).toHaveBeenCalledWith(dummy_rounds, 'toto');
+      });
+    });
   });
 
 });

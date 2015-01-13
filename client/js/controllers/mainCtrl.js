@@ -9,7 +9,7 @@ angular.module('srApp.controllers')
     'factions',
     'state',
     // 'player',
-    // 'players',
+    'players',
     // 'rounds',
     // 'team',
     // 'teams',
@@ -18,9 +18,9 @@ angular.module('srApp.controllers')
              $q,
              // $window,
              factions,
-             state
+             state,
              // player,
-             // players,
+             players
              // rounds,
              // team,
              // teams
@@ -67,8 +67,8 @@ angular.module('srApp.controllers')
       // };
 
       $scope.updatePoints = function() {
-        // $scope.players = players.updatePoints($scope.state_players,
-        //                                       $scope.state.rounds);
+        $scope.state.players = players.updatePoints($scope.state.players,
+                                                    $scope.state.rounds);
       };
       $scope.storeState = function() {
         // state.store($scope.state);

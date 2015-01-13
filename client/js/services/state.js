@@ -86,6 +86,7 @@ angular.module('srApp.services')
               });
             });
           });
+          _st.players = players.updatePoints(_st.players, _st.rounds);
           return _st;
         },
         create: function(data) {

@@ -56,6 +56,15 @@ angular.module('srApp.services')
             .apply(lists.casters)
             .difference(p.lists_played)
             .value().length === 0;
+        },
+        updatePoints: function(p, rs) {
+          return _.chain(p)
+            .clone()
+            .apply(function(p) {
+              p.points = rounds.pointsForPlayer(rs, p.name);
+              return p;
+            })
+            .value();
         }
       };
     }
@@ -63,8 +72,10 @@ angular.module('srApp.services')
   .factory('players', [
     'player',
     'factions',
+    'rounds',
     function(player,
-             factions) {
+             factions,
+             rounds) {
       var players = {
         add: function playersAdd(coll, p, i) {
           coll[i] = _.cat(coll[i], p);
@@ -112,6 +123,22 @@ angular.module('srApp.services')
             })
             .value();
         },
+        updatePoints: function(coll, rs) {
+          var temp = _.chain(coll)
+            .map(function(g) {
+                return _.mapWith(g, player.updatePoints, rs);
+            })
+            .value();
+          return _.chain(temp)
+            .map(function(g) {
+              return _.map(g, function(p) {
+                var opponents = rounds.opponentsForPlayer(rs, p.name);
+                p.points.sos = players.sosFromPlayers(temp, opponents);
+                return p;
+              });
+            })
+            .value();
+        },
         // sortGroup: function(coll, i, state) {
         //   if(_.exists(state.bracket[i])) {
         //     return _.sortBy(coll.slice(), function(p) {
@@ -134,14 +161,15 @@ angular.module('srApp.services')
         //     return players.sortGroup(group, i, state);
         //   });
         // },
-        // sosFrom: function(coll, opponents) {
-        //   return _.chain(opponents)
-        //     .map(_.partial(players.player, coll))
-        //     .reduce(function(mem, o) {
-        //       return mem + _.getPath(o, 'points.tournament');
-        //     }, 0)
-        //     .value();
-        // },
+        sosFromPlayers: function(coll, opponents) {
+          return _.chain(opponents)
+            .map(_.partial(players.player, coll))
+            .without(undefined)
+            .reduce(function(mem, o) {
+              return mem + _.getPath(o, 'points.tournament');
+            }, 0)
+            .value();
+        },
         // inTeam: function(coll, t) {
         //   return _.chain(coll)
         //     .flatten()
