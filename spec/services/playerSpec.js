@@ -55,6 +55,45 @@ describe('service', function() {
       });
     });
 
+    describe('rank(<critFn>)', function() {
+      beforeEach(function() {
+        this.critFn = jasmine.createSpy('critFn');
+        this.dummy_player = {
+          points: {
+            tournament: 42,
+            sos: 71,
+            control: 69,
+            army: 83
+          }
+        };
+      });
+
+      it('should call <critFn> with player\'s points', function() {
+        player.rank(this.dummy_player, this.critFn);
+
+        expect(this.critFn).toHaveBeenCalledWith(42, 71, 69, 83);
+      });
+
+      when('critFn return without error', function() {
+        this.critFn.and.returnValue(2015);
+      }, function() {
+        it('should return the result of critFn', function() {
+          var result = player.rank(this.dummy_player, this.critFn);
+
+          expect(result).toBe(2015);
+        });
+      });        
+
+      when('critFn throws an error', function() {
+        this.critFn.and.callFake(function() { throw new Error('blah'); });
+      }, function() {
+        it('should return the error message', function() {
+          var result = player.rank(this.dummy_player, this.critFn);
+
+          expect(result).toBe('Error : blah');
+        });
+      });        
+    });
   });
 
 });

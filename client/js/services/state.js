@@ -7,11 +7,13 @@ angular.module('srApp.services')
     'game',
     'list',
     'lists',
+    'ranking',
     function(player,
              players,
              game,
              list,
-             lists) {
+             lists,
+             ranking) {
       var state = {
         init: function() {
           // var stored_state = $window.localStorage.getItem('srApp.state');
@@ -95,10 +97,10 @@ angular.module('srApp.services')
             players: [[]],
             rounds: [],
             // factions: [],
-            // ranking: {
-            //   player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
-            //   team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
-            // }
+            ranking: {
+              player: ranking.srPlayerCrit(),
+              team: ranking.srTeamCrit()
+            }
           });
           //   $scope.updatePoints();
           //   $scope.storeState();

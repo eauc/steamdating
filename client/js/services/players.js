@@ -13,13 +13,19 @@ angular.module('srApp.services')
         // inTeam: _.rcurry2(function(p, team) {
         //   return p.team === team;
         // }),
-        // rank: function(p, critFn) {
-        //   var rank = critFn(p.points.tournament,
-        //                     p.points.sos,
-        //                     p.points.control,
-        //                     p.points.army);
-        //   return rank;
-        // },
+        rank: function(p, critFn) {
+          var rank;
+          try {
+            rank = critFn(p.points.tournament,
+                          p.points.sos,
+                          p.points.control,
+                          p.points.army);
+          }
+          catch(e) {
+            return "Error : " + e.message;
+          }
+          return rank;
+        },
         create: function playerCreate(name, faction, city, team) {
           return {
             name: name,

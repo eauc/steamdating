@@ -53,12 +53,12 @@ angular.module('srApp', [
         controller: 'gameEditCtrl',
         data: {}
       })
-      // .state('ranking_edit', {
-      //   url: '/ranking_edit',
-      //   templateUrl: 'partials/ranking_edit.html',
-      //   controller: 'rankingEditCtrl',
-      //   data: {}
-      // })
+      .state('ranking_edit', {
+        url: '/ranking_edit',
+        templateUrl: 'partials/ranking_edit.html',
+        controller: 'rankingEditCtrl',
+        data: {}
+      })
       // .state('stats', {
       //   url: '/stats/:pane',
       //   templateUrl: 'partials/stats.html',
