@@ -10,9 +10,9 @@ angular.module('srApp.services')
         is: function(p, name) {
           return p.name === name;
         },
-        // inTeam: _.rcurry2(function(p, team) {
+        // inTeam: function(p, team) {
         //   return p.team === team;
-        // }),
+        // },
         rank: function(p, critFn) {
           var rank;
           try {
@@ -73,9 +73,11 @@ angular.module('srApp.services')
     'player',
     'factions',
     'rounds',
+    'ranking',
     function(player,
              factions,
-             rounds) {
+             rounds,
+             ranking) {
       var players = {
         add: function playersAdd(coll, p, i) {
           coll[i] = _.cat(coll[i], p);
@@ -139,28 +141,48 @@ angular.module('srApp.services')
             })
             .value();
         },
-        // sortGroup: function(coll, i, state) {
-        //   if(_.exists(state.bracket[i])) {
-        //     return _.sortBy(coll.slice(), function(p) {
-        //       return -p.points.bracket;
-        //     });
-        //   }
-        //   else {
-        //     var baseCritFn = new Function('tp', 'sos', 'cp', 'ap',
-        //                                   'n_players', 'n_rounds',
-        //                                   'return '+state.ranking.player+';');
-        //     var critFn = _.partial(baseCritFn, _, _, _, _,
-        //                            coll.length, state.rounds.length);
-        //     return _.sortBy(coll.slice(), function(p) {
-        //       return -player.rank(p, critFn);
-        //     });
-        //   }
-        // },
-        // sort: function(coll, state) {
-        //   return _.map(state.players, function(group, i) {
-        //     return players.sortGroup(group, i, state);
-        //   });
-        // },
+        sortGroup: function(coll, state) {
+          // if(_.exists(state.bracket[i])) {
+          //   return _.sortBy(coll.slice(), function(p) {
+          //     return -p.points.bracket;
+          //   });
+          // }
+          // else {
+          var critFn = ranking.buildPlayerCritFunction(state.ranking.player,
+                                                       state.rounds.length,
+                                                       coll.length);
+          if(!_.isFunction(critFn)) {
+            console.error('Error create ranking function', critFn);
+            return coll;
+          }
+          var by_rank;
+          var rank = 0;
+          return _.chain(coll)
+          // group players by rank criterion
+            .groupBy(_.partial(player.rank, _, critFn))
+          // store grouped players for later
+            .apply(function(g) {
+              by_rank = g;
+              return g;
+            })
+          // get list of rank and order it decrementally
+            .keys()
+            .sortBy(function(r) { return -parseFloat(r); })
+          // fold each rank list into final list
+            .reduce(function(mem, r) {
+              mem[rank+1] = by_rank[r];
+              rank += by_rank[r].length;
+              return mem;
+            }, {})
+            .spy('sort')
+            .value();
+          // }
+        },
+        sort: function(coll, state) {
+          return _.map(coll, function(group) {
+            return players.sortGroup(group, state);
+          });
+        },
         sosFromPlayers: function(coll, opponents) {
           return _.chain(opponents)
             .map(_.partial(players.player, coll))

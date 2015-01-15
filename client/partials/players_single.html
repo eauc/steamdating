@@ -1,4 +1,4 @@
-<div ng-repeat="gr in state.players">
+<div ng-repeat="gr in sorted_players">
   <h2 ng-if="::state | state:'hasPlayerGroups'"
       style="border-bottom:1px solid black;">
     Group{{::$index+1}}
@@ -23,7 +23,7 @@
   </h3> -->
   <table class="table">
     <tr>
-      <th>#</th>
+      <th>Rank</th>
       <th>
         Name
       </th>
@@ -36,33 +36,36 @@
       <th>AP</th>
       <th></th>
     </tr>
-    <tr ng-repeat="p in gr track by p.name"
-        style="cursor:pointer;"
-        ng-click="doEditPlayer(p)">
-      <td>{{::$index+1}}</td>
-      <td>{{::p.name}}</td>
-      <td>{{::p.city}}</td>
-      <td>
-        <img ng-src="{{::p.faction | factions:'iconFor'}}"
-             style="height:1.8em;"/>
-        {{::p.faction}}
-      </td>
-      <td style="font-size: 0.8em">
-        <span ng-repeat="l in ::p.lists">
-          {{::l.caster}} <br />
-        </span>
-      </td>
-      <td>{{::p.points.tournament}}</td>
-      <td>{{::p.points.sos}}</td>
-      <td>{{::p.points.control}}</td>
-      <td>{{::p.points.army}}</td>
-      <td>
-        <button ng-click="doDropPlayer(p, $event)"
-                class="btn btn-default">
-          <span class="glyphicon glyphicon-trash"></span>
-          Delete
-        </button>
-      </td>
-    </tr>
+    <tbody ng-repeat="(rank,ps) in ::gr"
+           style="border-width:0px">
+      <tr ng-repeat="p in ::ps"
+          style="cursor:pointer;"
+          ng-click="doEditPlayer(p)">
+        <td>{{::rank}}</td>
+        <td>{{::p.name}}</td>
+        <td>{{::p.city}}</td>
+        <td>
+          <img ng-src="{{::p.faction | factions:'iconFor'}}"
+               style="height:1.8em;"/>
+          {{::p.faction}}
+        </td>
+        <td style="font-size: 0.8em">
+          <span ng-repeat="l in ::p.lists">
+            {{::l.caster}} <br />
+          </span>
+        </td>
+        <td>{{::p.points.tournament}}</td>
+        <td>{{::p.points.sos}}</td>
+        <td>{{::p.points.control}}</td>
+        <td>{{::p.points.army}}</td>
+        <td>
+          <button ng-click="doDropPlayer(p, $event)"
+                  class="btn btn-default">
+            <span class="glyphicon glyphicon-trash"></span>
+            Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
   </table>
 </div>

@@ -80,6 +80,7 @@ angular.module('srApp.controllers')
       //   $scope.state.bracket = _.repeat(n_groups, undefined);
       //   $scope.storeState();
       // };
+      $scope.sorted_players = players.sort($scope.state.players, $scope.state);
     }
   ])
   .controller('playerEditCtrl', [
