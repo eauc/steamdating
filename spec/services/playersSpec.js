@@ -368,6 +368,34 @@ describe('service', function() {
         });
       });
     });
+
+    describe('areAllPaired(<round>)', function() {
+      beforeEach(inject(function(round) {
+        this.round = round;
+        spyOn(round, 'pairedPlayers');
+
+        this.coll = [
+          { name: 'p1' },
+          { name: 'p2' },
+          { name: 'p3' },
+        ];
+        this.dummy_round = [ 'round' ];
+      }));
+
+      it('should check whether all players are paired in <round>', function() {
+        this.round.pairedPlayers.and.returnValue([]);
+        expect(players.areAllPaired(this.coll, this.dummy_round)).toBe(false);
+
+        this.round.pairedPlayers.and.returnValue([ 'p1', 'p2' ]);
+        expect(players.areAllPaired(this.coll, this.dummy_round)).toBe(false);
+
+        this.round.pairedPlayers.and.returnValue([ 'p1', 'p2', 'p3' ]);
+        expect(players.areAllPaired(this.coll, this.dummy_round)).toBe(true);
+
+        this.round.pairedPlayers.and.returnValue([ 'p1', 'p2', 'p3', 'p4' ]);
+        expect(players.areAllPaired(this.coll, this.dummy_round)).toBe(true);
+      });
+    });
   });
 
 });

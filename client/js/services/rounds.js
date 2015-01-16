@@ -56,6 +56,10 @@ angular.module('srApp.services')
             .value();
         },
         tableForPlayer: _.partial(_.getPath, _, 'table'),
+        isValid: function(g) {
+          return (_.isString(g.p1.name) &&
+                  _.isString(g.p2.name));
+        },
         // winner: function(g) {
         //   return (g.p1.tournament === 1 ? g.p1.name :
         //           g.p2.tournament === 1 ? g.p2.name :
@@ -192,6 +196,46 @@ angular.module('srApp.services')
             .slice(start_index, end_index)
             .value();
         },
+        pairedPlayers: function(coll) {
+          return _.chain(coll)
+            .flatten()
+            .map(function(ga) {
+              return [ ga.p1.name, ga.p2.name ];
+            })
+            .flatten()
+            .uniq()
+            .without(null, undefined)
+            .value();
+        },
+        isPlayerPaired: function(coll, player) {
+          return (0 <= _.chain(coll)
+                  .apply(round.pairedPlayers)
+                  .indexOf(player.name)
+                  .value());
+        },
+        updatePlayer: function(coll, index, key) {
+          var name = coll[index][key].name;
+          return _.chain(coll)
+            .map(function(ga, i) {
+              if(i === index && key === 'p1') return ga;
+              if(ga.p1.name === name) {
+                var new_ga = _.snapshot(ga);
+                new_ga.p1.name = null;
+                return new_ga;
+              }
+              return ga;
+            })
+            .map(function(ga, i) {
+              if(i === index && key === 'p2') return ga;
+              if(ga.p2.name === name) {
+                var new_ga = _.snapshot(ga);
+                new_ga.p2.name = null;
+                return new_ga;
+              }
+              return ga;
+            })
+            .value();
+        },
         // gameForTeam: function(coll, t) {
         //   return _.find(coll, function(g) {
         //     return g.t1.name === t || g.t2.name === t;
@@ -229,6 +273,20 @@ angular.module('srApp.services')
         //   if(r >= coll.length) return [];
         //   return coll[r];
         // },
+        createNextRound: function(players) {
+          var table = 1;
+          return _.map(players, function(group) {
+            return _.chain(group.length/2)
+              .range()
+              .map(function() {
+                return game.create(table++);
+              })
+              .value();
+          });
+        },
+        registerNextRound: function(coll, next) {
+          return _.cat(coll, [_.flatten(next)]);
+        },
         drop: function(coll, r) {
           var new_coll = coll.slice();
           new_coll.splice(r, 1);
@@ -264,6 +322,22 @@ angular.module('srApp.services')
             })
             .value();
         },
+        opponentsForPlayer: function(coll, p) {
+          return _.chain(coll)
+            .mapWith(round.gameForPlayer, p)
+            .without(undefined)
+            .mapWith(game.opponentForPlayer, p)
+            .without(undefined)
+            .value();
+        },
+        listsForPlayer: function(coll, p) {
+          return _.chain(coll)
+            .mapWith(round.gameForPlayer, p)
+            .mapWith(game.listForPlayer, p)
+            .uniq()
+            .without(undefined, null)
+            .value();
+        },
         // pointsForTeam: function(coll, t, bracket_start, base_weight) {
         //   return _.chain(coll)
         //     .mapWith(round.gameForTeam, t)
@@ -290,14 +364,6 @@ angular.module('srApp.services')
         //     .spy('pointsForTeam', t)
         //     .value();
         // },
-        opponentsForPlayer: function(coll, p) {
-          return _.chain(coll)
-            .mapWith(round.gameForPlayer, p)
-            .without(undefined)
-            .mapWith(game.opponentForPlayer, p)
-            .without(undefined)
-            .value();
-        },
         // opponentsForTeam: function(coll, t) {
         //   return _.chain(coll)
         //     .mapWith(round.gameForTeam, t)
@@ -312,14 +378,6 @@ angular.module('srApp.services')
         //     .mapWith(game.tableFor, p)
         //     .value();
         // },
-        listsForPlayer: function(coll, p) {
-          return _.chain(coll)
-            .mapWith(round.gameForPlayer, p)
-            .mapWith(game.listForPlayer, p)
-            .uniq()
-            .without(undefined, null)
-            .value();
-        },
         // tablesForTeam: function(coll, t) {
         //   return _.chain(coll)
         //     .mapWith(round.gameForTeam, t)

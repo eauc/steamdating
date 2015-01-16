@@ -123,6 +123,15 @@ describe('service', function() {
         });
       });
     });
+
+    describe('isValid()', function() {
+      it('should check whether both players are defined', function() {
+        expect(game.isValid(game.create(3, null, null))).toBe(false);
+        expect(game.isValid(game.create(3, 'p1', null))).toBe(false);
+        expect(game.isValid(game.create(3, null, 'p2'))).toBe(false);
+        expect(game.isValid(game.create(3, 'p1', 'p2'))).toBe(true);
+      });
+    });
   });
 
 });

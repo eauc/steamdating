@@ -39,8 +39,14 @@ describe('controllers', function() {
           ctxt.dummy_players = ['tata'];
           ctxt.players.updateListsPlayed.and.returnValue(ctxt.dummy_players);
 
-          ctxt.round = jasmine.createSpyObj('round', [ 'gameForPlayer' ]);
-          ctxt.rounds = jasmine.createSpyObj('rounds', [ 'drop' ]);
+          ctxt.round = jasmine.createSpyObj('round', [ 'gameForPlayer', 'updatePlayer' ]);
+          ctxt.rounds = jasmine.createSpyObj('rounds', [
+            'drop',
+            'createNextRound',
+            'registerNextRound'
+          ]);
+          ctxt.dummy_next_round = [ 'next_round' ];
+          ctxt.rounds.createNextRound.and.returnValue(ctxt.dummy_next_round);
 
           $controller('roundsCtrl', { 
             '$scope': ctxt.scope,
@@ -67,6 +73,12 @@ describe('controllers', function() {
       expect(this.players.updateListsPlayed).toHaveBeenCalledWith(this.state_players,
                                                                   this.state_rounds);
       expect(this.scope.state.players).toBe(this.dummy_players);
+    });
+
+    it('should init next round', function() {
+      expect(this.scope.next_round).toBe(this.dummy_next_round);
+      expect(this.rounds.createNextRound)
+        .toHaveBeenCalledWith(this.scope.state.players);
     });
 
     describe('doGameEdit(<game>)', function() {
@@ -123,6 +135,46 @@ describe('controllers', function() {
           expect(this.scope.goToState).toHaveBeenCalledWith('rounds',
                                                             { pane: 'sum' });
         });
+      });
+    });
+    
+    describe('updateNextRound(<gr_index>,<ga_index>,<key>)', function() {
+      beforeEach(function() {
+        this.scope.next_round = [ 'group1', 'group2', 'group3' ];
+        this.dummy_updated_round = [ 'udpated_round' ];
+        this.round.updatePlayer.and.returnValue(this.dummy_updated_round);
+      });
+
+      it('should update player names in next round for <gr_index> group', function() {
+        this.scope.updateNextRound(2,3,'key');
+        expect(this.scope.next_round[2]).toBe(this.dummy_updated_round);
+        expect(this.round.updatePlayer).toHaveBeenCalledWith('group3', 3, 'key');
+      });
+    });
+    
+    describe('registerNextRound()', function() {
+      beforeEach(function() {
+        this.current_rounds = [ 'round1', 'round2' ];
+        this.scope.state.rounds = this.current_rounds;
+        this.new_rounds = [ 'round1', 'round2', 'round3' ];
+        this.rounds.registerNextRound.and.returnValue(this.new_rounds);
+
+        this.scope.registerNextRound();
+      });
+
+      it('should register next round', function() {
+        expect(this.rounds.registerNextRound)
+          .toHaveBeenCalledWith(this.current_rounds,
+                                this.scope.next_round);
+        expect(this.scope.state.rounds).toBe(this.new_rounds);
+      });
+
+      it('should store state', function() {
+        expect(this.scope.storeState).toHaveBeenCalled();
+      });
+
+      it('should go to last round\'s pane', function() {
+        expect(this.scope.goToState).toHaveBeenCalledWith('rounds', { pane: 2 });
       });
     });
   });

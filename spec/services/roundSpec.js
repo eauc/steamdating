@@ -53,6 +53,67 @@ describe('service', function() {
         ]);
       });
     });
+
+    describe('pairedPlayers()', function() {
+      it('should return list of paired players', function() {
+        expect(round.pairedPlayers([
+          [ { p1: { name: 'p1' }, p2: { name: 'p2' } },
+            { p1: { name: 'p3' }, p2: { name: 'p4' } } ],
+          [ { p1: { name: 'p5' }, p2: { name: 'p6' } } ]
+        ])).toEqual([ 'p1', 'p2', 'p3', 'p4', 'p5', 'p6' ]);
+        // uniq
+        expect(round.pairedPlayers([
+          { p1: { name: 'p1' }, p2: { name: 'p2' } },
+          { p1: { name: 'p2' }, p2: { name: 'p4' } },
+          { p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ])).toEqual([ 'p1', 'p2', 'p4', 'p5' ]);
+        // without null/undefined
+        expect(round.pairedPlayers([
+          { p1: { name: 'p1' }, p2: { name: 'p2' } },
+          { p1: { name: null }, p2: { name: 'p4' } },
+          { p1: { name: 'p5' }, p2: { name: undefined } }
+        ])).toEqual([ 'p1', 'p2', 'p4', 'p5' ]);
+      });
+    });
+
+    describe('isPlayerPaired(<player>)', function() {
+      it('should check whether <player> is paired', function() {
+        this.coll = [
+          { p1: { name: 'p1' }, p2: { name: 'p2' } },
+          { p1: { name: 'p2' }, p2: { name: null } },
+          { p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ];
+
+        expect(round.isPlayerPaired(this.coll, { name: 'p2' })).toBe(true);
+        expect(round.isPlayerPaired(this.coll, { name: 'p5' })).toBe(true);
+        expect(round.isPlayerPaired(this.coll, { name: 'p3' })).toBe(false);
+        expect(round.isPlayerPaired(this.coll, { name: null })).toBe(false);
+      });
+    });
+
+    describe('updatePlayer(<game_index>, <player_key>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          { p1: { name: 'p1' }, p2: { name: 'p2' } },
+          { p1: { name: 'p2' }, p2: { name: null } },
+          { p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ];
+      });
+
+      it('should remove game[<game_index>][<player_key>] player from all other games', function() {
+        expect(round.updatePlayer(this.coll, 1, 'p1')).toEqual([
+          { p1: { name: 'p1' }, p2: { name: null } },
+          { p1: { name: 'p2' }, p2: { name: null } },
+          { p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ]);
+
+        expect(round.updatePlayer(this.coll, 0, 'p2')).toEqual([
+          { p1: { name: 'p1' }, p2: { name: 'p2' } },
+          { p1: { name: null }, p2: { name: null } },
+          { p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ]);
+      });
+    });
   });
 
 });

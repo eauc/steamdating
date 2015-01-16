@@ -125,28 +125,7 @@ angular.module('srApp.controllers')
       // };
 
       // if(!$scope.isTeamTournament()) {
-      //   $scope.next_round = _.map($scope.state.players, function(group) {
-      //     return _.chain(group.length/2)
-      //       .range()
-      //       .map(function(i) {
-      //         return {
-      //           table: i+1,
-      //           p1: {
-      //             name: null,
-      //             tournament: null,
-      //             control: null,
-      //             army: null
-      //           },
-      //           p2: {
-      //             name: null,
-      //             tournament: null,
-      //             control: null,
-      //             army: null
-      //           }
-      //         };
-      //       })
-      //       .value();
-      //   });
+        $scope.next_round = rounds.createNextRound($scope.state.players);
       // }
       // else {
       //   $scope.next_round = _.map($scope.state.teams, function(group) {
@@ -192,12 +171,16 @@ angular.module('srApp.controllers')
       //   }
       //   $scope.next_round[i] = pairing.suggestRound($scope.state, i, $scope.bracket[i]);
       // };
-      // $scope.registerNextRound = function() {
-      //   $scope.state.bracket = $scope.bracket;
-      //   $scope.state.rounds.push(_.flatten($scope.next_round));
-      //   $scope.storeState();
-      //   $scope.goToState('rounds', { pane: $scope.state.rounds.length-1 });
-      // };
-
+      $scope.registerNextRound = function() {
+        // $scope.state.bracket = $scope.bracket;
+        $scope.state.rounds = rounds.registerNextRound($scope.state.rounds,
+                                                       $scope.next_round);
+        $scope.storeState();
+        $scope.goToState('rounds', { pane: $scope.state.rounds.length-1 });
+      };
+      $scope.updateNextRound = function(gr_index, ga_index, key) {
+        $scope.next_round[gr_index] =
+          round.updatePlayer($scope.next_round[gr_index], ga_index, key);
+      };
     }
   ]);

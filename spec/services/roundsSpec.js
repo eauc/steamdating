@@ -120,6 +120,36 @@ describe('service', function() {
           .toEqual([]);
       });
     });
+    
+    describe('createNextRound(<players>)', function() {
+      beforeEach(inject(function(game) {
+        spyOn(game, 'create').and.callFake(function(t) { return 'table'+t ; });
+        this.game = game;
+      }));
+
+      it('should create new games for each player groups', function() {
+        var round = rounds.createNextRound([
+          [ 'player1', 'player2', 'player3', 'player4' ],
+          [ ],
+          [ 'player5', 'player6' ],
+        ]);
+        expect(round).toEqual([
+          [ 'table1', 'table2' ],
+          [ ],
+          [ 'table3' ],
+        ]);
+        expect(this.game.create).toHaveBeenCalled();
+        expect(this.game.create.calls.count()).toBe(3);
+      });
+    });
+
+    describe('registerNextRound(<next_round>)', function() {
+      it('should append flattened <next_round> to <coll>', function() {
+        expect(rounds.registerNextRound([ ['round1'], ['round2'] ],
+                                        [ ['group1'], ['group2'] ]))
+          .toEqual([ ['round1'], ['round2'], ['group1', 'group2'] ]);
+      });
+    });
   });
 
 });

@@ -72,10 +72,12 @@ angular.module('srApp.services')
   .factory('players', [
     'player',
     'factions',
+    'round',
     'rounds',
     'ranking',
     function(player,
              factions,
+             round,
              rounds,
              ranking) {
       var players = {
@@ -191,6 +193,12 @@ angular.module('srApp.services')
               return mem + _.getPath(o, 'points.tournament');
             }, 0)
             .value();
+        },
+        areAllPaired: function(coll, rs) {
+          return _.chain(coll)
+            .apply(players.names)
+            .difference(round.pairedPlayers(rs))
+            .value().length === 0;
         },
         // inTeam: function(coll, t) {
         //   return _.chain(coll)
