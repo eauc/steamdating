@@ -87,11 +87,12 @@ describe('controllers', function() {
       });
 
       it('should go back to previous page', function() {
-        this.scope.edit.rounds_pane = 'toto';
+        this.scope.edit.back = 'titi';
+        this.scope.edit.pane = 'toto';
 
         this.scope.close(false);
 
-        expect(this.scope.goToState).toHaveBeenCalledWith('rounds',
+        expect(this.scope.goToState).toHaveBeenCalledWith('rounds.titi',
                                                           { pane: 'toto' });
       });
     });

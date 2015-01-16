@@ -42,9 +42,27 @@ angular.module('srApp', [
       //   data: {}
       // })
       .state('rounds', {
-        url: '/rounds/:pane',
+        url: '/rounds',
         templateUrl: 'partials/rounds.html',
         controller: 'roundsCtrl',
+        data: {}
+      })
+      .state('rounds.sum', {
+        url: '/sum',
+        templateUrl: 'partials/rounds_sum.html',
+        controller: 'roundsSumCtrl',
+        data: {}
+      })
+      .state('rounds.next', {
+        url: '/next',
+        templateUrl: 'partials/rounds_next.html',
+        controller: 'roundsNextCtrl',
+        data: {}
+      })
+      .state('rounds.nth', {
+        url: '/:pane',
+        templateUrl: 'partials/rounds_nth.html',
+        controller: 'roundsNthCtrl',
         data: {}
       })
       .state('game_edit', {

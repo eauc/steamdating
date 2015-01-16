@@ -1,26 +1,21 @@
 <div>
   <ul class="nav nav-tabs">
     <li ng-class="{
-        'active': pane==='sum'
+        'active': currentState()==='rounds.sum'
         }">
       <a href="#/rounds/sum">Summary</a>
     </li>
-    <li ng-repeat="r in ::state.rounds"
+    <li ng-repeat="r in state.rounds"
         ng-class="{
-        'active': pane===(''+$index)
+        'active': currentState()==='rounds.nth' && round.current===''+$index
         }">
-      <a href="#/rounds/{{::$index}}">Round{{::$index+1}}</a>
+      <a href="#/rounds/{{$index}}">Round{{$index+1}}</a>
     </li>
     <li ng-class="{
-        'active': pane==='next'
+        'active': currentState()==='rounds.next'
         }">
       <a href="#/rounds/next">Next</a>
     </li>
   </ul>
-  <!-- <div ng-if="isTeamTournament()"
-  ng-include="'partials/rounds_team.html'">
-  </div> -->
-  <!-- <div ng-if="!isTeamTournament()" -->
-  <div ng-include="'partials/rounds_single.html'">
-  </div>
+  <div ui-view></div>
 </div>

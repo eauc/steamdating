@@ -3,51 +3,17 @@
 angular.module('srApp.controllers')
   .controller('roundsCtrl', [
     '$scope',
-    '$stateParams',
-    '$window',
-    'players',
-    'rounds',
     'round',
-    'srPairing',
-    // 'teams',
-    // 'pairing',
     function($scope,
-             $stateParams,
-             $window,
-             players,
-             rounds,
-             round,
-             srPairing
-             // teams,
-             // pairing
-            ) {
+             round) {
       console.log('init roundsCtrl');
 
-      $scope.pane = $stateParams.pane;
-
-      $scope.state.players = players.updateListsPlayed($scope.state.players,
-                                                       $scope.state.rounds);
-
-      $scope.doGameEdit = function(r, p) {
+      $scope.round = {};
+      $scope.doGameEdit = function(r, p, back, pane) {
         $scope.edit.game = round.gameForPlayer(r, p);
-        $scope.edit.rounds_pane = $scope.pane;
+        $scope.edit.back = back;
+        $scope.edit.pane = pane;
         $scope.goToState('game_edit');
-      };
-
-      $scope.doDeleteRound = function(r) {
-        var conf = $window.confirm("You sure ?");
-        if(conf) {
-          $scope.state.rounds = rounds.drop($scope.state.rounds, r);
-          // _.each($scope.state.bracket, function(b, i) {
-          //   if(_.exists(b) &&
-          //      $scope.state.rounds.length <= b) {
-          //     $scope.state.bracket[i] = undefined;
-          //   }
-          // });
-          $scope.updatePoints();
-          $scope.storeState();
-          $scope.goToState('rounds', { pane: 'sum' });
-        }
       };
 
       // var nb_games = $scope.isTeamTournament() ?
@@ -127,7 +93,6 @@ angular.module('srApp.controllers')
       // };
 
       // if(!$scope.isTeamTournament()) {
-        $scope.next_round = rounds.createNextRound($scope.state.players);
       // }
       // else {
       //   $scope.next_round = _.map($scope.state.teams, function(group) {
@@ -160,6 +125,29 @@ angular.module('srApp.controllers')
       // if($scope.bracket.length !== n_groups) {
       //   $scope.bracket = _.repeat(n_groups, undefined);
       // }
+    }
+  ])
+  .controller('roundsSumCtrl', [
+    '$scope',
+    'players',
+    function($scope,
+             players) {
+      console.log('init roundsSumCtrl');
+      $scope.state.players = players.updateListsPlayed($scope.state.players,
+                                                       $scope.state.rounds);
+    }
+  ])
+  .controller('roundsNextCtrl', [
+    '$scope',
+    'round',
+    'rounds',
+    'srPairing',
+    function($scope,
+             round,
+             rounds,
+             srPairing) {
+      console.log('init roundsNextCtrl');
+      $scope.next_round = rounds.createNextRound($scope.state.players);
       $scope.suggestNextRound = function(i, type) {
         // if(bracket_start) {
         //   if(!_.exists($scope.bracket[i])) {
@@ -178,11 +166,44 @@ angular.module('srApp.controllers')
         $scope.state.rounds = rounds.registerNextRound($scope.state.rounds,
                                                        $scope.next_round);
         $scope.storeState();
-        $scope.goToState('rounds', { pane: $scope.state.rounds.length-1 });
+        $scope.goToState('rounds.nth', { pane: $scope.state.rounds.length-1 });
       };
       $scope.updateNextRound = function(gr_index, ga_index, key) {
         $scope.next_round[gr_index] =
           round.updatePlayer($scope.next_round[gr_index], ga_index, key);
+      };
+    }
+  ])
+  .controller('roundsNthCtrl', [
+    '$scope',
+    '$stateParams',
+    '$window',
+    'rounds',
+    function($scope,
+             $stateParams,
+             $window,
+             rounds) {
+      console.log('init roundsNthCtrl', $stateParams.pane);
+      $scope.round.current = $stateParams.pane;
+      $scope.r = $scope.state.rounds[$stateParams.pane];
+      if(!_.exists($scope.r)) {
+        $scope.goToState('rounds.sum');
+      }
+
+      $scope.doDeleteRound = function(r) {
+        var conf = $window.confirm("You sure ?");
+        if(conf) {
+          $scope.state.rounds = rounds.drop($scope.state.rounds, r);
+          // _.each($scope.state.bracket, function(b, i) {
+          //   if(_.exists(b) &&
+          //      $scope.state.rounds.length <= b) {
+          //     $scope.state.bracket[i] = undefined;
+          //   }
+          // });
+          $scope.updatePoints();
+          $scope.storeState();
+          $scope.goToState('rounds.sum');
+        }
       };
     }
   ]);
