@@ -48,13 +48,16 @@ describe('controllers', function() {
           ctxt.dummy_next_round = [ 'next_round' ];
           ctxt.rounds.createNextRound.and.returnValue(ctxt.dummy_next_round);
 
+          ctxt.srPairing = jasmine.createSpyObj('srPairing', [ 'suggestNextRound' ]);
+
           $controller('roundsCtrl', { 
             '$scope': ctxt.scope,
             '$stateParams': ctxt.$stateParams,
             '$window': ctxt.window,
             'players': ctxt.players,
             'rounds': ctxt.rounds,
-            'round': ctxt.round
+            'round': ctxt.round,
+            'srPairing': ctxt.srPairing
           });
         };
         initCtrlWith(this);
@@ -175,6 +178,22 @@ describe('controllers', function() {
 
       it('should go to last round\'s pane', function() {
         expect(this.scope.goToState).toHaveBeenCalledWith('rounds', { pane: 2 });
+      });
+    });
+    
+    describe('suggestNextRound(<group_index>,<type>)', function() {
+      when('type is "sr"', function() {
+        this.type = 'sr';
+        this.suggest = [ 'suggest' ];
+        this.srPairing.suggestNextRound.and.returnValue(this.suggest);
+      }, function() {
+        it('should suggest SR pairing for <group_index>', function() {
+          this.scope.suggestNextRound(1, this.type);
+
+          expect(this.srPairing.suggestNextRound)
+            .toHaveBeenCalledWith(this.scope.state, 1);
+          expect(this.scope.next_round[1]).toBe(this.suggest);
+        });
       });
     });
   });

@@ -338,6 +338,13 @@ angular.module('srApp.services')
             .without(undefined, null)
             .value();
         },
+        tablesForPlayer: function(coll, p) {
+          return _.chain(coll)
+            .mapWith(round.gameForPlayer, p)
+            .mapWith(game.tableForPlayer, p)
+            .without(undefined, null)
+            .value();
+        },
         // pointsForTeam: function(coll, t, bracket_start, base_weight) {
         //   return _.chain(coll)
         //     .mapWith(round.gameForTeam, t)
@@ -370,12 +377,6 @@ angular.module('srApp.services')
         //     .without(undefined)
         //     .mapWith(team_game.opponentForTeam, t)
         //     .without(undefined)
-        //     .value();
-        // },
-        // tablesFor: function(coll, p) {
-        //   return _.chain(coll)
-        //     .mapWith(round.gameFor, p)
-        //     .mapWith(game.tableFor, p)
         //     .value();
         // },
         // tablesForTeam: function(coll, t) {

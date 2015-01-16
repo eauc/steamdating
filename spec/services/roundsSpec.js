@@ -150,6 +150,44 @@ describe('service', function() {
           .toEqual([ ['round1'], ['round2'], ['group1', 'group2'] ]);
       });
     });
+
+    describe('tablesForPlayer(<name>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { table: 1, p1: { name: 'toto' }, p2: { name: 'tata' }, games: [] },
+            { table: 2, p1: { name: 'tutu' }, p2: { name: 'titi' }, games: [] },
+            { table: 3, p1: { name: 't1' }, p2: { name: 't2' },
+              games: [ { table: 31, p1: { name: 'p1'}, p2: { name: 'p2' }, games: [] },
+                       { table: 32, p1: { name: 'p3'}, p2: { name: 'p4' }, games: [] } ] }
+          ],
+          [
+            { table: 3, p1: { name: 'toto' }, p2: { name: 'tutu' }, games: [] },
+            { table: 2, p1: { name: 'tata' }, p2: { name: undefined }, games: [] },
+            { table: 1, p1: { name: 't1' }, p2: { name: 't2' },
+              games: [ { table: 31, p1: { name: 'p1' }, p2: { name: 'p3' }, games: [] },
+                       { table: 32, p1: { name: 'p2' }, p2: { name: 'p4' }, games: [] } ] }
+          ],
+        ];
+      });
+
+      it('should return tables played on by <name>', function() {
+        expect(rounds.tablesForPlayer(this.coll, 'toto'))
+          .toEqual([1, 3]);
+        // without null
+        expect(rounds.tablesForPlayer(this.coll, 'tata'))
+          .toEqual([1, 2]);
+        // missing a game
+        expect(rounds.tablesForPlayer(this.coll, 'titi'))
+          .toEqual([2]);
+        // sub-games
+        expect(rounds.tablesForPlayer(this.coll, 'p3'))
+          .toEqual([32, 31]);
+        // undefined player
+        expect(rounds.tablesForPlayer(this.coll, 'unknown'))
+          .toEqual([]);
+      });
+    });
   });
 
 });

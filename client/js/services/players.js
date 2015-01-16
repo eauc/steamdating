@@ -200,6 +200,14 @@ angular.module('srApp.services')
             .difference(round.pairedPlayers(rs))
             .value().length === 0;
         },
+        indexRangeForGroup: function(coll, i) {
+          var first_player = _.chain(coll)
+            .slice(0, i)
+            .flatten()
+            .value().length;
+          var next_player = first_player + coll[i].length;
+          return [first_player, next_player];
+        },
         // inTeam: function(coll, t) {
         //   return _.chain(coll)
         //     .flatten()

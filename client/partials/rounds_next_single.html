@@ -34,32 +34,42 @@
         <td>
           <select ng-model="g.p1.name"
                   ng-change="updateNextRound(gri, gai, 'p1')"
+                  ng-options="
+                  p.name
+                  as (!(next_round[gri] | round:'isPlayerPaired':p) ? '>'+p.name : p.name)
+                  for p in gr
+                  "
                   class="form-control">
-            <option ng-repeat="p in ::gr"
-                    value="{{p.name}}">
-              {{!(next_round[gri] | round:'isPlayerPaired':p) ? '>' : ''}} {{p.name}}
-            </option>
+            <!-- <option ng-repeat="p in gr track by p.name"
+            value="{{p.name}}">
+            {{!(next_round[gri] | round:'isPlayerPaired':p) ? '>' : ''}} {{p.name}}
+            </option> -->
           </select>
         </td>
         <td>{{::g.table}}</td>
         <td>
           <select ng-model="g.p2.name"
                   ng-change="updateNextRound(gri, gai, 'p2')"
+                  ng-options="
+                  p.name
+                  as (!(next_round[gri] | round:'isPlayerPaired':p) ? '>'+p.name : p.name)
+                  for p in gr
+                  "
                   class="form-control">
-            <option ng-repeat="p in ::gr"
-                    value={{p.name}}>
-              {{!(next_round[gri] | round:'isPlayerPaired':p) ? '>' : ''}} {{p.name}}
-            </option>
+            <!-- <option ng-repeat="p in gr track by p.name"
+            value={{p.name}}>
+            {{!(next_round[gri] | round:'isPlayerPaired':p) ? '>' : ''}} {{p.name}}
+            </option> -->
           </select>
         </td>
         <td></td>
         <td></td>
       </tr>
     </table>
-    <!-- <button class="btn btn-default"
-    ng-click="suggestNextRound(gr, false)">
-    Make SR Suggestion
-    </button> -->
+    <button class="btn btn-default"
+            ng-click="suggestNextRound(gri, 'sr')">
+      Make SR Suggestion
+    </button>
     <!-- <button class="btn btn-default"
     ng-click="suggestNextRound($index, false)"
     ng-if="!isBracketTournament($index)">

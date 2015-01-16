@@ -8,6 +8,7 @@ angular.module('srApp.controllers')
     'players',
     'rounds',
     'round',
+    'srPairing',
     // 'teams',
     // 'pairing',
     function($scope,
@@ -15,7 +16,8 @@ angular.module('srApp.controllers')
              $window,
              players,
              rounds,
-             round
+             round,
+             srPairing
              // teams,
              // pairing
             ) {
@@ -158,19 +160,19 @@ angular.module('srApp.controllers')
       // if($scope.bracket.length !== n_groups) {
       //   $scope.bracket = _.repeat(n_groups, undefined);
       // }
-      // $scope.suggestNextRound = function(i, bracket_start) {
-      //   if(bracket_start) {
-      //     if(!_.exists($scope.bracket[i])) {
-      //       $scope.bracket[i] = $scope.state.rounds.length;
-      //     }
-      //   }
-      //   else {
-      //     if(_.exists($scope.bracket[i])) {
-      //       $scope.bracket[i] = undefined;
-      //     }
-      //   }
-      //   $scope.next_round[i] = pairing.suggestRound($scope.state, i, $scope.bracket[i]);
-      // };
+      $scope.suggestNextRound = function(i, type) {
+        // if(bracket_start) {
+        //   if(!_.exists($scope.bracket[i])) {
+        //     $scope.bracket[i] = $scope.state.rounds.length;
+        //   }
+        // }
+        if('sr' === type) {
+          // if(_.exists($scope.bracket[i])) {
+          //   $scope.bracket[i] = undefined;
+          // }
+          $scope.next_round[i] = srPairing.suggestNextRound($scope.state, i);//, $scope.bracket[i]);
+        }
+      };
       $scope.registerNextRound = function() {
         // $scope.state.bracket = $scope.bracket;
         $scope.state.rounds = rounds.registerNextRound($scope.state.rounds,

@@ -396,6 +396,26 @@ describe('service', function() {
         expect(players.areAllPaired(this.coll, this.dummy_round)).toBe(true);
       });
     });
+
+    describe('indexRangeForGroup(<group>)', function() {
+      beforeEach(function() {
+        this.players = [
+          [ {},{},{},{} ],
+          [ {},{} ],
+          [ ],
+          [ {},{},{} ],
+          [ {},{} ]
+        ];
+      });
+
+      it('should return global players\' index range for <group>', function() {
+        expect(players.indexRangeForGroup(this.players, 0)).toEqual([ 0, 4 ]);
+        expect(players.indexRangeForGroup(this.players, 1)).toEqual([ 4, 6 ]);
+        expect(players.indexRangeForGroup(this.players, 2)).toEqual([ 6, 6 ]);
+        expect(players.indexRangeForGroup(this.players, 3)).toEqual([ 6, 9 ]);
+        expect(players.indexRangeForGroup(this.players, 4)).toEqual([ 9, 11 ]);
+      });
+    });
   });
 
 });
