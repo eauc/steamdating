@@ -19,7 +19,7 @@ describe('service', function() {
       }, function() {
         it('should return error message', function() {
           expect(ranking.buildPlayerCritFunction('toto=', 42, 71))
-            .toMatch(/Error : .*error.*/i);
+            .toMatch(/Error :/i);
         });
       });
 

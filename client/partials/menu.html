@@ -15,7 +15,7 @@
         <a href="#/players">Players</a>
       </li>
       <li ng-class="{
-          'active': currentState() === 'rounds'
+          'active': currentState().indexOf('rounds') >= 0
           }">
         <a href="#/rounds/sum">Rounds</a>
       </li>

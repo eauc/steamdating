@@ -219,12 +219,62 @@ angular.module('srApp.services')
         //     return _.reject(group, _.unary(player.inTeam(t)));
         //   });
         // },
-        // chunk: function(coll, size) {
-        //   return _.chain(coll)
-        //     .flatten()
-        //     .chunkAll(size)
-        //     .value();
-        // }
+        chunkGroups: function(coll, size) {
+          return _.chain(coll)
+            .flatten()
+            .chunkAll(size)
+            .value();
+        },
+        splitNewGroup: function(coll, ps) {
+          var new_group = _.map(ps, _.partial(players.player, coll));
+          return _.chain(coll)
+            .mapWith(_.difference, new_group)
+            .cat([new_group])
+            .reject(_.isEmpty)
+            .value();
+        },
+        groupForPlayer: function(coll, p) {
+          return _.chain(coll)
+            .map(function(gr) {
+              return _.findWhere(gr, { name: p });
+            })
+            .reduce(function(mem, val, i) {
+              return _.exists(mem) ? mem : (_.exists(val) ? i : null);
+            }, null)
+            .value();
+        },
+        movePlayerGroupFront: function(coll, p) {
+          var gr = players.groupForPlayer(coll, p);
+          if(0 === gr) return coll;
+          var pl = players.player(coll, p);
+          var new_coll = coll.slice();
+          new_coll[gr] = _.difference(coll[gr], [pl]);
+          new_coll[gr-1] = _.cat(coll[gr-1], pl);
+          return _.reject(new_coll, _.isEmpty);
+        },
+        movePlayerGroupBack: function(coll, p) {
+          var gr = players.groupForPlayer(coll, p);
+          if(coll.length === gr+1) return coll;
+          var pl = players.player(coll, p);
+          var new_coll = coll.slice();
+          new_coll[gr] = _.difference(coll[gr], [pl]);
+          new_coll[gr+1] = _.cat(coll[gr+1], pl);
+          return _.reject(new_coll, _.isEmpty);
+        },
+        moveGroupFront: function(coll, i) {
+          if(i === 0) return coll;
+          var new_coll = coll.slice();
+          new_coll.splice(i,1);
+          new_coll.splice(i-1, 0, coll[i]);
+          return new_coll;
+        },
+        moveGroupBack: function(coll, i) {
+          if(coll.length === i+1) return coll;
+          var new_coll = coll.slice();
+          new_coll.splice(i,1);
+          new_coll.splice(i+1, 0, coll[i]);
+          return new_coll;
+        }
       };
       return players;
     }

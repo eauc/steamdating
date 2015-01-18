@@ -416,6 +416,209 @@ describe('service', function() {
         expect(players.indexRangeForGroup(this.players, 4)).toEqual([ 9, 11 ]);
       });
     });
+
+    describe('chunkGroups(<size>)', function() {
+      it('should repartition players into group of <size> players', function() {
+        var coll = [
+          [ {}, {}, {} ],
+          [ {}, {}, {}, {} ],
+          [ {}, {} ]
+        ];
+        expect(players.chunkGroups(coll, 2)).toEqual([
+          [ {}, {} ],
+          [ {}, {} ],
+          [ {}, {} ],
+          [ {}, {} ],
+          [ {} ]
+        ]);
+        expect(players.chunkGroups(coll, 5)).toEqual([
+          [ {}, {}, {}, {}, {} ],
+          [ {}, {}, {}, {} ]
+        ]);
+      });
+    });
+
+    describe('splitNewGroup(<player_names>)', function() {
+      it('should create a new group from <player_names>', function() {
+        var coll = [
+          [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+          [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+          [ { name: 'p8' }, { name: 'p9' } ]
+        ];
+        expect(players.splitNewGroup(coll, [ 'p2', 'p5', 'p6' ]))
+          .toEqual([
+            [ { name: 'p1' }, { name: 'p3' } ],
+            [ { name: 'p4' }, { name: 'p7' } ],
+            [ { name: 'p8' }, { name: 'p9' } ],
+            [ { name: 'p2' }, { name: 'p5' }, { name: 'p6' } ]
+          ]);
+        // remove groups that end up empty
+        expect(players.splitNewGroup(coll, [ 'p2', 'p8', 'p9' ]))
+          .toEqual([
+            [ { name: 'p1' }, { name: 'p3' } ],
+            [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+            // third group was removed
+            [ { name: 'p2' }, { name: 'p8' }, { name: 'p9' } ]
+          ]);
+      });
+    });
+
+    describe('groupForPlayer(<player_name>)', function() {
+      it('should return group index for <player_name>', function() {
+        var coll = [
+          [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+          [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+          [ { name: 'p8' }, { name: 'p9' } ]
+        ];
+        expect(players.groupForPlayer(coll, 'p2')).toEqual(0);
+        expect(players.groupForPlayer(coll, 'p6')).toEqual(1);
+        expect(players.groupForPlayer(coll, 'p8')).toEqual(2);
+      });
+    });
+
+    describe('movePlayerGroupFront(<player_name>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+          [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+          [ { name: 'p8' }, { name: 'p9' } ]
+        ];
+      });
+
+      when('player is not in first group', function() {
+        this.player_name = 'p5';
+      }, function() {
+        it('should move <player_name> in previous group', function() {
+          expect(players.movePlayerGroupFront(this.coll, this.player_name))
+            .toEqual([
+              [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' }, { name: 'p5' } ],
+              [ { name: 'p4' }, { name: 'p6' }, { name: 'p7' } ],
+              [ { name: 'p8' }, { name: 'p9' } ]
+            ]);
+        });
+      });
+
+      when('player is already in first group', function() {
+        this.player_name = 'p2';
+      }, function() {
+        it('should not modify players', function() {
+          expect(players.movePlayerGroupFront(this.coll, this.player_name))
+            .toEqual([
+              [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+              [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+              [ { name: 'p8' }, { name: 'p9' } ]
+            ]);
+        });
+      });
+    });
+
+    describe('movePlayerGroupBack(<player_name>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+          [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+          [ { name: 'p8' }, { name: 'p9' } ]
+        ];
+      });
+
+      when('player is not in last group', function() {
+        this.player_name = 'p5';
+      }, function() {
+        it('should move <player_name> in previous group', function() {
+          expect(players.movePlayerGroupBack(this.coll, this.player_name))
+            .toEqual([
+              [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+              [ { name: 'p4' }, { name: 'p6' }, { name: 'p7' } ],
+              [ { name: 'p8' }, { name: 'p9' }, { name: 'p5' } ]
+            ]);
+        });
+      });
+
+      when('player is already in last group', function() {
+        this.player_name = 'p9';
+      }, function() {
+        it('should not modify players', function() {
+          expect(players.movePlayerGroupBack(this.coll, this.player_name))
+            .toEqual([
+              [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+              [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+              [ { name: 'p8' }, { name: 'p9' } ]
+            ]);
+        });
+      });
+    });
+
+    describe('moveGroupFront(<group_index>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+          [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+          [ { name: 'p8' }, { name: 'p9' } ]
+        ];
+      });
+
+      when('group is not in front', function() {
+        this.group_index = 1;
+      }, function() {
+        it('should move <group_index> one place front', function() {
+          expect(players.moveGroupFront(this.coll, this.group_index))
+            .toEqual([
+              [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+              [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+              [ { name: 'p8' }, { name: 'p9' } ]
+            ]);
+        });
+      });
+
+      when('group is already in front', function() {
+        this.group_index = 0;
+      }, function() {
+        it('should not modify players', function() {
+          expect(players.moveGroupFront(this.coll, this.group_index))
+            .toEqual([
+              [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+              [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+              [ { name: 'p8' }, { name: 'p9' } ]
+            ]);
+        });
+      });
+    });
+
+    describe('moveGroupBack(<group_index>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+          [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+          [ { name: 'p8' }, { name: 'p9' } ]
+        ];
+      });
+
+      when('group is not last', function() {
+        this.group_index = 1;
+      }, function() {
+        it('should move <group_index> one place back', function() {
+          expect(players.moveGroupBack(this.coll, this.group_index))
+            .toEqual([
+              [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+              [ { name: 'p8' }, { name: 'p9' } ],
+              [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ]
+            ]);
+        });
+      });
+
+      when('group is already last', function() {
+        this.group_index = 2;
+      }, function() {
+        it('should not modify players', function() {
+          expect(players.moveGroupBack(this.coll, this.group_index))
+            .toEqual([
+              [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
+              [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+              [ { name: 'p8' }, { name: 'p9' } ]
+            ]);
+        });
+      });
+    });
   });
 
 });

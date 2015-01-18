@@ -29,6 +29,12 @@ angular.module('srApp', [
         controller: 'playersCtrl',
         data: {}
       })
+      .state('groups_edit', {
+        url: '/groups_edit',
+        templateUrl: 'partials/groups_edit.html',
+        controller: 'groupEditCtrl',
+        data: {}
+      })
       .state('player_edit', {
         // url: '/players_edit',
         templateUrl: 'partials/player_edit.html',
