@@ -67,8 +67,7 @@ angular.module('srApp.controllers')
       // };
 
       $scope.updatePoints = function() {
-        $scope.state.players = players.updatePoints($scope.state.players,
-                                                    $scope.state.rounds);
+        $scope.state.players = state.updatePlayersPoints($scope.state);
       };
       $scope.storeState = function() {
         // state.store($scope.state);

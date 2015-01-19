@@ -132,6 +132,58 @@ describe('service', function() {
         expect(game.isValid(game.create(3, 'p1', 'p2'))).toBe(true);
       });
     });
+
+    describe('winner()', function() {
+      beforeEach(function() {
+        this.game = game.create(4, 'toto', 'titi');
+      });
+
+      when('result is not defined', function(){
+      }, function() {
+        it('should return undefined', function() {
+          expect(game.winner(this.game)).toBe(undefined);
+        });
+      });
+
+      when('result is defined', function() {
+      }, function() {
+        it('should return the winner\'s name', function() {
+          this.game.p1.tournament = 1;
+          this.game.p2.tournament = 0;
+          expect(game.winner(this.game)).toBe('toto');
+
+          this.game.p1.tournament = 0;
+          this.game.p2.tournament = 1;
+          expect(game.winner(this.game)).toBe('titi');
+        });
+      });
+    });
+
+    describe('loser()', function() {
+      beforeEach(function() {
+        this.game = game.create(4, 'toto', 'titi');
+      });
+
+      when('result is not defined', function(){
+      }, function() {
+        it('should return undefined', function() {
+          expect(game.loser(this.game)).toBe(undefined);
+        });
+      });
+
+      when('result is defined', function() {
+      }, function() {
+        it('should return the loser\'s name', function() {
+          this.game.p1.tournament = 1;
+          this.game.p2.tournament = 0;
+          expect(game.loser(this.game)).toBe('titi');
+
+          this.game.p1.tournament = 0;
+          this.game.p2.tournament = 1;
+          expect(game.loser(this.game)).toBe('toto');
+        });
+      });
+    });
   });
 
 });

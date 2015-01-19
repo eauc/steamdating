@@ -139,35 +139,40 @@ angular.module('srApp.controllers')
   ])
   .controller('roundsNextCtrl', [
     '$scope',
+    'state',
     'round',
     'rounds',
     'srPairing',
+    'bracketPairing',
     function($scope,
+             state,
              round,
              rounds,
-             srPairing) {
-      console.log('init roundsNextCtrl');
+             srPairing,
+             bracketPairing) {
+      $scope.new_state = _.clone($scope.state);
+      console.log('init roundsNextCtrl', $scope.new_state);
       $scope.next_round = rounds.createNextRound($scope.state.players);
+
       $scope.suggestNextRound = function(i, type) {
-        // if(bracket_start) {
-        //   if(!_.exists($scope.bracket[i])) {
-        //     $scope.bracket[i] = $scope.state.rounds.length;
-        //   }
-        // }
+        if('bracket' === type) {
+          $scope.new_state.bracket = state.setBracket($scope.new_state, i);
+          $scope.next_round[i] = bracketPairing.suggestRound($scope.new_state, i);
+        }
         if('sr' === type) {
-          // if(_.exists($scope.bracket[i])) {
-          //   $scope.bracket[i] = undefined;
-          // }
-          $scope.next_round[i] = srPairing.suggestNextRound($scope.state, i);//, $scope.bracket[i]);
+          $scope.new_state.bracket = state.resetBracket($scope.new_state, i);
+          $scope.next_round[i] = srPairing.suggestNextRound($scope.new_state, i);
         }
       };
+
       $scope.registerNextRound = function() {
-        // $scope.state.bracket = $scope.bracket;
-        $scope.state.rounds = rounds.registerNextRound($scope.state.rounds,
+        $scope.state.bracket = $scope.new_state.bracket;
+        $scope.state.rounds = rounds.registerNextRound($scope.new_state.rounds,
                                                        $scope.next_round);
         $scope.storeState();
         $scope.goToState('rounds.nth', { pane: $scope.state.rounds.length-1 });
       };
+
       $scope.updateNextRound = function(gr_index, ga_index, key) {
         $scope.next_round[gr_index] =
           round.updatePlayer($scope.next_round[gr_index], ga_index, key);

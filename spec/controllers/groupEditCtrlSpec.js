@@ -15,9 +15,11 @@ describe('controllers', function() {
       '$rootScope',
       '$controller',
       'players',
+      'state',
       function($rootScope,
                $controller,
-               players) {
+               players,
+               state) {
         this.scope = $rootScope.$new();
         this.scope.state = {
           players: [
@@ -39,6 +41,9 @@ describe('controllers', function() {
         spyOn(players, 'movePlayerGroupBack').and.returnValue(this.new_groups);
         spyOn(players, 'moveGroupFront').and.returnValue(this.new_groups);
         spyOn(players, 'moveGroupBack').and.returnValue(this.new_groups);
+
+        this.state = state;
+        spyOn(state, 'clearBracket');
 
         $controller('groupEditCtrl', { 
           '$scope': this.scope,
@@ -177,11 +182,16 @@ describe('controllers', function() {
 
       when('<validate>', function() {
         this.scope.players = this.new_groups;
-
+        this.state.clearBracket.and.returnValue(['new_bracket']);
         this.scope.doClose(true);
       }, function() {
         it('should update state.players', function() {
           expect(this.scope.state.players).toBe(this.new_groups);
+        });
+
+        it('should clear state.bracket', function() {
+          expect(this.scope.state.bracket).toEqual(['new_bracket']);
+          expect(this.state.clearBracket).toHaveBeenCalledWith(this.scope.state);
         });
 
         it('should update points', function() {

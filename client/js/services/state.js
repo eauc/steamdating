@@ -86,14 +86,15 @@ angular.module('srApp.services')
               });
             });
           });
-          _st.players = players.updatePoints(_st.players, _st.rounds);
+          _st.bracket = [undefined, 1];
+          _st.players = state.updatePlayersPoints(_st);
           return _st;
         },
         create: function(data) {
           var _data = _.clone(data || {});
           return _.defaults(_data, {
             // phantom: player.create('Phantom'),
-            // bracket: [],
+            bracket: [],
             // teams:[[]],
             players: [[]],
             rounds: [],
@@ -121,10 +122,80 @@ angular.module('srApp.services')
         isTeamTournament: function(st) {
           return _.flatten(st.teams).length !== 0;
         },
-        // $scope.isBracketTournament = function(g) {
-        //   return (g < $scope.state.bracket.length &&
-        //           _.exists($scope.state.bracket[g]));
-        // };
+        clearBracket: function(st) {
+          return _.repeat(st.players.length, undefined);
+        },
+        setBracketLength: function(st, length) {
+          return st.bracket.length >= length ? _.clone(st.bracket) :
+            _.cat(st.bracket, _.repeat(length - st.bracket.length, undefined));
+        },
+        setBracket: function(st, gri) {
+          var bracket = state.setBracketLength(st, gri+1);
+          bracket[gri] = _.exists(bracket[gri]) ? bracket[gri] : st.rounds.length;
+          return bracket;
+        },
+        resetBracket: function(st, gri) {
+          var bracket = state.setBracketLength(st, gri+1);
+          bracket[gri] = undefined;
+          return bracket;
+        },
+        canBeBracketTournament: function(st, gri) {
+          var n = st.players[gri].length;
+          while(0 === (n & 0x1)) n = n >> 1;
+          return n === 1;
+        },
+        isBracketTournament: function(st, gri, ri) {
+          var round = _.exists(ri) ? ri : st.rounds.length;
+          var bracket = state.setBracketLength(st, gri+1);
+          return (_.exists(st.bracket[gri]) &&
+                  round >= st.bracket[gri]);
+        },
+        bracketNbRounds: function(st, gri) {
+          var bracket = state.setBracketLength(st, gri+1);
+          return _.exists(bracket[gri]) ? st.rounds.length - bracket[gri] : 0;
+        },
+        bracketRoundOf: function(st, gri, ri) {
+          // var n = (state.isTeamTournament() ?
+          //          $scope.state.teams[g].length >> (r - $scope.state.bracket[g] + 1) :
+          //          $scope.state.players[g].length >> (r - $scope.state.bracket[g] + 1));
+          if(!_.exists(st.bracket[gri])) return 'Not in bracket';
+          var round = _.exists(ri) ? ri : st.rounds.length;
+          var n = st.players[gri].length >> (round - st.bracket[gri] + 1);
+          switch(n) {
+          case 0:
+            {
+              return 'Ended';
+            }
+          case 1:
+            {
+              return 'Final';
+            }
+          case 2:
+            {
+              return 'Semi-finals';
+            }
+          case 4:
+            {
+              return 'Quarter-finals';
+            }
+          default:
+            {
+              return 'Round of '+n;
+            }
+          }
+        },
+        updatePlayersPoints: function(st) {
+          var bracket = state.setBracketLength(st, st.players.length);
+          var bracket_weights = _.map(st.players, function(gr) { return gr.length/2; });
+          return players.updatePoints(st.players, st.rounds,
+                                      bracket, bracket_weights);
+        },
+        sortPlayers: function(st) {
+          var is_bracket = _.map(st.players, function(gr, gri) {
+            return state.isBracketTournament(st, gri);
+          });
+          return players.sort(st.players, st, is_bracket);
+        },
         // $scope.updatePoints = function() {
         //   _.each($scope.state.players, function(group, i) {
         //     var base_weight = group.length/2;
@@ -159,29 +230,6 @@ angular.module('srApp.services')
         //                                                              t.name));
         //       });
         //   });
-        // };
-        // $scope.bracketRoundOf = function(g, r) {
-        //   var n = ($scope.isTeamTournament() ?
-        //            $scope.state.teams[g].length >> (r - $scope.state.bracket[g] + 1) :
-        //            $scope.state.players[g].length >> (r - $scope.state.bracket[g] + 1));
-        //   switch(n) {
-        //   case 1:
-        //     {
-        //       return 'Final';
-        //     }
-        //   case 2:
-        //     {
-        //       return 'Semi-finals';
-        //     }
-        //   case 4:
-        //     {
-        //       return 'Quarter-finals';
-        //     }
-        //   default:
-        //     {
-        //       return 'Round of '+n;
-        //     }
-        //   }
         // };
       };
       return state;

@@ -114,6 +114,30 @@ describe('service', function() {
         ]);
       });
     });
+
+    describe('winners()', function() {
+      it('should extract list of winners', function() {
+        this.coll = [
+          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+          { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } },
+          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+        ];
+
+        expect(round.winners(this.coll)).toEqual(['p1', null, 'p5']);
+      });
+    });
+
+    describe('losers()', function() {
+      it('should extract list of winners', function() {
+        this.coll = [
+          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+          { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } },
+          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+        ];
+
+        expect(round.losers(this.coll)).toEqual(['p2', undefined, 'p6']);
+      });
+    });
   });
 
 });

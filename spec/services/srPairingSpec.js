@@ -14,26 +14,6 @@ describe('service', function() {
       srPairing = _srPairing;
     }]));
 
-    describe('tableRangeForGroup(<players>, <group_index>)', function() {
-      beforeEach(function() {
-        this.players = [
-          [ {},{},{},{} ],
-          [ {},{} ],
-          [ ],
-          [ {},{},{} ],
-          [ {},{} ]
-        ];
-      });
-
-      it('should calculate table range from groups length', function() {
-        expect(srPairing.tableRangeForGroup(this.players, 0)).toEqual([ 1, 2 ]);
-        expect(srPairing.tableRangeForGroup(this.players, 1)).toEqual([ 3 ]);
-        expect(srPairing.tableRangeForGroup(this.players, 2)).toEqual([]);
-        expect(srPairing.tableRangeForGroup(this.players, 3)).toEqual([ 4, 5]);
-        expect(srPairing.tableRangeForGroup(this.players, 4)).toEqual([ 6 ]);
-      });
-    });
-
     describe('sortPlayers(<players>)', function() {
       beforeEach(function() {
         this.players = [
@@ -169,7 +149,7 @@ describe('service', function() {
     });
 
     describe('suggestNextSingleRound(<state>, <group_index>)', function() {
-      beforeEach(function() {
+      beforeEach(inject(function(basePairing) {
         this.games = [{table: 3},{table: 1},{table: 2}];
         this.tables = [['tables1'],['tables2'],['tables3'],[]];
         this.players= [['players1'],['players2'],['players3'],[]];
@@ -180,8 +160,9 @@ describe('service', function() {
           i++;
           return ret;
         });
-        spyOn(srPairing, 'tableRangeForGroup').and.returnValue(this.tables[0]);
         spyOn(srPairing, 'sortPlayers').and.returnValue(this.players[0]);
+        this.basePairing = basePairing;
+        spyOn(basePairing, 'tableRangeForGroup').and.returnValue(this.tables[0]);
 
         this.state = {
           rounds: [ 'rounds' ],
@@ -192,10 +173,10 @@ describe('service', function() {
         };
 
         this.suggest = srPairing.suggestNextRound(this.state, 1);
-      });
+      }));
 
       it('should build table range', function() {
-        expect(srPairing.tableRangeForGroup)
+        expect(this.basePairing.tableRangeForGroup)
           .toHaveBeenCalledWith(this.state.players, 1);
       });
 

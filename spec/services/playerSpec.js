@@ -95,7 +95,7 @@ describe('service', function() {
       });        
     });
 
-    describe('updatePoints(<rounds>)', function() {
+    describe('updatePoints(<rounds>, <bracket_start>, <bracket_weight>)', function() {
       beforeEach(inject(function(rounds) {
         this.rounds = rounds;
         this.dummy_points = [ 'toto' ];
@@ -105,10 +105,13 @@ describe('service', function() {
       it('should update points gained in <rounds>', function() {
         var p = player.create('toto');
         var dummy_rounds = [ 'tata' ];
+        var bracket_start = 8;
+        var bracket_weight = 42;
 
-        expect(player.updatePoints(p, dummy_rounds).points)
+        expect(player.updatePoints(p, dummy_rounds, bracket_start, bracket_weight).points)
           .toBe(this.dummy_points);
-        expect(this.rounds.pointsForPlayer).toHaveBeenCalledWith(dummy_rounds, 'toto');
+        expect(this.rounds.pointsForPlayer)
+          .toHaveBeenCalledWith(dummy_rounds, 'toto', 8, 42);
       });
     });
   });

@@ -14,6 +14,26 @@ describe('service', function() {
       basePairing = _basePairing;
     }]));
 
+    describe('tableRangeForGroup(<players>, <group_index>)', function() {
+      beforeEach(function() {
+        this.players = [
+          [ {},{},{},{} ],
+          [ {},{} ],
+          [ ],
+          [ {},{},{} ],
+          [ {},{} ]
+        ];
+      });
+
+      it('should calculate table range from groups length', function() {
+        expect(basePairing.tableRangeForGroup(this.players, 0)).toEqual([ 1, 2 ]);
+        expect(basePairing.tableRangeForGroup(this.players, 1)).toEqual([ 3 ]);
+        expect(basePairing.tableRangeForGroup(this.players, 2)).toEqual([]);
+        expect(basePairing.tableRangeForGroup(this.players, 3)).toEqual([ 4, 5]);
+        expect(basePairing.tableRangeForGroup(this.players, 4)).toEqual([ 6 ]);
+      });
+    });
+
     describe('suggestTableFor(<rounds>, <availables>, <p1>, <p2>)', function() {
       beforeEach(inject(function(rounds) {
         this.dummy_rounds = [ 'rounds' ];

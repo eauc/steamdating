@@ -57,11 +57,12 @@ angular.module('srApp.services')
             .difference(p.lists_played)
             .value().length === 0;
         },
-        updatePoints: function(p, rs) {
+        updatePoints: function(p, rs, bracket_start, bracket_weight) {
           return _.chain(p)
             .clone()
             .apply(function(p) {
-              p.points = rounds.pointsForPlayer(rs, p.name);
+              p.points = rounds.pointsForPlayer(rs, p.name,
+                                                bracket_start, bracket_weight);
               return p;
             })
             .value();
@@ -127,10 +128,11 @@ angular.module('srApp.services')
             })
             .value();
         },
-        updatePoints: function(coll, rs) {
+        updatePoints: function(coll, rs, bracket_start, bracket_weight) {
           var temp = _.chain(coll)
-            .map(function(g) {
-                return _.mapWith(g, player.updatePoints, rs);
+            .map(function(g, i) {
+                return _.mapWith(g, player.updatePoints, rs,
+                                 bracket_start[i], bracket_weight[i]);
             })
             .value();
           return _.chain(temp)
@@ -143,25 +145,27 @@ angular.module('srApp.services')
             })
             .value();
         },
-        sortGroup: function(coll, state) {
-          // if(_.exists(state.bracket[i])) {
-          //   return _.sortBy(coll.slice(), function(p) {
-          //     return -p.points.bracket;
-          //   });
-          // }
-          // else {
-          var critFn = ranking.buildPlayerCritFunction(state.ranking.player,
-                                                       state.rounds.length,
-                                                       coll.length);
-          if(!_.isFunction(critFn)) {
-            console.error('Error create ranking function', critFn);
-            return coll;
+        sortGroup: function(coll, state, is_bracket) {
+          var rankFn;
+          if(is_bracket) {
+            rankFn = function(p) { return p.points.bracket; };
+          }
+          else {
+            var critFn = ranking.buildPlayerCritFunction(state.ranking.player,
+                                                         state.rounds.length,
+                                                         coll.length);
+            if(!_.isFunction(critFn)) {
+              console.error('Error create ranking function', critFn);
+              return coll;
+            }
+            rankFn = _.partial(player.rank, _, critFn);
           }
           var by_rank;
           var rank = 0;
           return _.chain(coll)
           // group players by rank criterion
-            .groupBy(_.partial(player.rank, _, critFn))
+            .groupBy(rankFn)
+            // .spy('sort groupBy')
           // store grouped players for later
             .apply(function(g) {
               by_rank = g;
@@ -170,19 +174,19 @@ angular.module('srApp.services')
           // get list of rank and order it decrementally
             .keys()
             .sortBy(function(r) { return -parseFloat(r); })
+            // .spy('sort keys')
           // fold each rank list into final list
             .reduce(function(mem, r) {
               mem[rank+1] = by_rank[r];
               rank += by_rank[r].length;
               return mem;
             }, {})
-            .spy('sort')
+            // .spy('sort end')
             .value();
-          // }
         },
-        sort: function(coll, state) {
-          return _.map(coll, function(group) {
-            return players.sortGroup(group, state);
+        sort: function(coll, state, is_bracket) {
+          return _.map(coll, function(group, i) {
+            return players.sortGroup(group, state, is_bracket[i]);
           });
         },
         sosFromPlayers: function(coll, opponents) {

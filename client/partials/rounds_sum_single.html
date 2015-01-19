@@ -1,14 +1,18 @@
-<div ng-repeat="gr in ::state.players">
-  <h2 ng-if="hasPlayerGroups()"
+<div ng-repeat="(gri, gr) in ::state.players">
+  <h2 ng-if="::state | state:'hasPlayerGroups'"
       style="border-bottom:1px solid black;">
-    Group{{::$index+1}}
+    Group{{::gri+1}}
   </h2>
   <table class="table">
     <tr>
       <th>Player</th>
       <th>Lists Played</th>
       <th ng-repeat="r in ::state.rounds">
-        Round{{::$index+1}}
+        {{
+        (state | state:'isBracketTournament':gri:$index) ?
+        (state | state:'bracketRoundOf':gri:$index) :
+        'Round'+(gri+1)
+        }}
       </th>
     </tr>
     <tr ng-repeat="p in ::gr track by p.name">

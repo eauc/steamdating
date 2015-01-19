@@ -15,7 +15,7 @@ describe('controllers', function() {
       function($rootScope,
                $controller) {
         this.scope = $rootScope.$new();
-        this.state = jasmine.createSpyObj('state', ['init', 'test']);
+        this.state = jasmine.createSpyObj('state', ['init', 'test', 'updatePlayersPoints']);
         this.router_state = { 
           current: { name: 'current_state' },
           go: jasmine.createSpy('stateGo')
@@ -70,16 +70,15 @@ describe('controllers', function() {
         this.scope.state.rounds = this.state_rounds;
 
         this.dummy_players = [ 'new_players' ];
-        this.players.updatePoints.and.returnValue(this.dummy_players);
+        this.state.updatePlayersPoints.and.returnValue(this.dummy_players);
       });
 
       it('should update all players points', function() {
         this.scope.updatePoints();
 
         expect(this.scope.state.players).toEqual(this.dummy_players);
-        expect(this.players.updatePoints)
-          .toHaveBeenCalledWith(this.state_players,
-                                this.state_rounds);
+        expect(this.state.updatePlayersPoints)
+          .toHaveBeenCalledWith(this.scope.state);
       });
     });
   });

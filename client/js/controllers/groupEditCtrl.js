@@ -5,9 +5,11 @@ angular.module('srApp.controllers')
     '$scope',
     '$window',
     'players',
+    'state',
     function($scope,
              $window,
-             players) {
+             players,
+             state) {
       console.log('init groupEditCtrl');
 
       $scope.players = _.map($scope.state.players, function(gr) {
@@ -59,6 +61,7 @@ angular.module('srApp.controllers')
       $scope.doClose = function(validate) {
         if(validate) {
           $scope.state.players = $scope.players;
+          $scope.state.bracket = state.clearBracket($scope.state);
           $scope.updatePoints();
           $scope.storeState();
         }

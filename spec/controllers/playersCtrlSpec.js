@@ -20,10 +20,10 @@ describe('controllers', function() {
         this.scope.state = { players: this.state_players };
         this.scope.goToState = jasmine.createSpy('goToState');
 
-        this.state = jasmine.createSpyObj('state', ['store']);
-        this.players = jasmine.createSpyObj('players', ['drop', 'sort']);
+        this.state = jasmine.createSpyObj('state', ['store', 'sortPlayers']);
         this.dummy_sorted_players = [];
-        this.players.sort.and.returnValue(this.dummy_sorted_players);
+        this.state.sortPlayers.and.returnValue(this.dummy_sorted_players);
+        this.players = jasmine.createSpyObj('players', ['drop', 'sort']);
 
         this.player = jasmine.createSpyObj('player', ['create']);
         this.window = jasmine.createSpyObj('$window', ['confirm']);
@@ -46,8 +46,7 @@ describe('controllers', function() {
 
     it('should init sorted players list', function() {
       expect(this.scope.sorted_players).toBe(this.dummy_sorted_players);
-      expect(this.players.sort).toHaveBeenCalledWith(this.scope.state.players,
-                                                     this.scope.state);
+      expect(this.state.sortPlayers).toHaveBeenCalledWith(this.scope.state);
     });
 
     describe('doAddPlayer', function () {

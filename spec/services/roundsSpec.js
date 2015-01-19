@@ -72,13 +72,51 @@ describe('service', function() {
         ];
       });
 
-      it('should sum points for <name>', function() {
-        // uniq
-        expect(rounds.pointsForPlayer(this.coll, 'toto')).toEqual({
-          tournament : 111,
-          control: 222,
-          army: 333,
-          sos: 0
+      when('bracket is not defined', function() {
+      }, function(){
+        it('should sum points for <name>', function() {
+          // uniq
+          expect(rounds.pointsForPlayer(this.coll, 'toto',
+                                        undefined, 32)).toEqual({
+                                          bracket: 0,
+                                          tournament : 111,
+                                          control: 222,
+                                          army: 333,
+                                          sos: 0
+                                        });
+        });
+      });
+
+      when('bracket is defined', function() {
+      }, function(){
+        it('should sum points for <name>', function() {
+          // bracket from start
+          expect(rounds.pointsForPlayer(this.coll, 'toto',
+                                        0, 32)).toEqual({
+                                          bracket: 392,
+                                          tournament : 111,
+                                          control: 222,
+                                          army: 333,
+                                          sos: 0
+                                        });
+          // started after a few rounds
+          expect(rounds.pointsForPlayer(this.coll, 'toto',
+                                        2, 32)).toEqual({
+                                          bracket: 800,
+                                          tournament : 111,
+                                          control: 222,
+                                          army: 333,
+                                          sos: 0
+                                        });
+          // not yet started
+          expect(rounds.pointsForPlayer(this.coll, 'toto',
+                                        6, 32)).toEqual({
+                                          bracket: 0,
+                                          tournament : 111,
+                                          control: 222,
+                                          army: 333,
+                                          sos: 0
+                                        });
         });
       });
     });

@@ -1,8 +1,11 @@
-<div ng-repeat="gr in sorted_players">
+<div ng-repeat="(gri,gr) in sorted_players">
   <h2 ng-if="::state | state:'hasPlayerGroups'"
       style="border-bottom:1px solid black;">
-    Group{{::$index+1}}
+    Group{{::gri+1}}
   </h2>
+    <h3 ng-if="::state | state:'isBracketTournament':gri">
+      Bracket - {{::state | state:'bracketRoundOf':gri:state.rounds.length-1}}
+    </h3>
   <!-- <button class="btn btn-default"
   ng-click="doAddTeam($index)"
   ng-hide="

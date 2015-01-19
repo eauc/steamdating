@@ -3,8 +3,15 @@
 angular.module('srApp.services')
   .factory('basePairing', [
     'rounds',
-    function(rounds) {
+    'players',
+    function(rounds,
+             players) {
       var basePairing = {
+        tableRangeForGroup: function(ps, i) {
+          var group_range = players.indexRangeForGroup(ps, i);
+          return _.range(Math.round(group_range[0]/2+1),
+                         Math.round(group_range[1]/2+1));
+        },
         suggestTableFor: function(rs, available_tables, p1, p2) {
           var p1_tables = rounds.tablesForPlayer(rs, p1);
           var p2_tables = rounds.tablesForPlayer(rs, p2);
@@ -21,92 +28,82 @@ angular.module('srApp.services')
       return basePairing;
     }
   ])
-  // .factory('bracketPairing', [
-  //   'basePairing',
-  //   'game',
-  //   'team_game',
-  //   'round',
-  //   'players',
-  //   'teams',
-  //   function(basePairing,
-  //            game,
-  //            team_game,
-  //            round,
-  //            players,
-  //            teams) {
-  //     var bracketPairing = {
-  //       indices: function(n) {
-  //         if(2 === n) return [[1, 2]];
-  //         return _.chain(bracketPairing.indices(n/2))
-  //           .map(function(val) {
-  //             return [[val[0], n+1-val[0]], [n+1-val[1], val[1]]];
-  //           })
-  //           .reduce(function(mem, val) {
-  //             return _.cat(mem, val);
-  //           }, [])
-  //           .value();
-  //       },
-  //       suggestFirstSingleRound: function(state, i) {
-  //         var n_games = _.flatten(state.players).length/2;
-  //         var first_table = _.chain(state.players)
-  //           .slice(0, i)
-  //           .flatten()
-  //           .value().length / 2 + 1;
-  //         var last_table = first_table + state.players[i].length / 2;
-  //         var tables = _.range(first_table, last_table);
-  //         var group = state.players[i];
-  //         var ps = players.sortGroup(group, i, state);
-  //         return _.chain(group.length)
-  //           .apply(bracketPairing.indices)
-  //           .map(function(ind) {
-  //             var p1 = ps[ind[0]-1].name;
-  //             var p2 = ps[ind[1]-1].name;
-  //             var table = basePairing.suggestTableFor(state.rounds, tables, p1, p2);
-  //             tables = _.without(tables, table);
-  //             return game.create(table, p1, p2);
-  //           })
-  //           .value();
-  //       },
-  //       suggestNextSingleRound: function(state, i) {
-  //         var n_games = _.flatten(state.players[i]).length/2;
-  //         var first_table = _.chain(state.players)
-  //           .slice(0, i)
-  //           .flatten()
-  //           .value().length / 2 + 1;
-  //         var last_table = first_table + state.players[i].length / 2;
-  //         var tables = _.range(first_table, last_table);
-  //         var group = state.players[i];
-  //         var nb_bracket_rounds = state.rounds.length - state.bracket[i];
-  //         var start_index = _.chain(state.players)
-  //             .slice(0, i)
-  //             .flatten()
-  //             .value().length / 2;
-  //         var end_index = start_index + group.length / 2;
-  //         return _.chain(state.rounds)
-  //           .last()
-  //           .slice(start_index, end_index)
-  //           .chunk(n_games / (1 << nb_bracket_rounds-1))
-  //           .reduce(function(mem, r) {
-  //             var winners = _.chain(r)
-  //                 .apply(round.winners)
-  //                 .value();
-  //             var losers = _.chain(r)
-  //                 .apply(round.losers)
-  //                 .value();
-  //             var pairs = _.chain(winners)
-  //                 .cat(losers)
-  //                 .chunk(2)
-  //                 .value();
-  //             return  _.cat(mem, _.map(pairs, function(p) {
-  //               var table = basePairing.suggestTableFor(state.rounds,
-  //                                                       tables,
-  //                                                       p[0], p[1]);
-  //               tables = _.without(tables, table);
-  //               return game.create(table, p[0], p[1]);
-  //             }));
-  //           }, [])
-  //           .value();
-  //       },
+  .factory('bracketPairing', [
+    'basePairing',
+    'players',
+    'game',
+    'round',
+    'state',
+    // 'team_game',
+    // 'teams',
+    function(basePairing,
+             players,
+             game,
+             round,
+             state
+             // team_game,
+             // teams
+            ) {
+      var bracketPairing = {
+        indices: function(n) {
+          if(2 === n) return [[1, 2]];
+          return _.chain(bracketPairing.indices(n/2))
+            .map(function(val) {
+              return [[val[0], n+1-val[0]], [n+1-val[1], val[1]]];
+            })
+            .reduce(function(mem, val) {
+              return _.cat(mem, val);
+            }, [])
+            .value();
+        },
+        suggestFirstSingleRound: function(st, gri) {
+          var tables = basePairing.tableRangeForGroup(st.players, gri);
+          var group = st.players[gri];
+          var ps = _.flatten(players.sortGroup(group, st, false));
+          return _.chain(ps.length)
+            .apply(bracketPairing.indices)
+            .map(function(ind) {
+              var p1 = ps[ind[0]-1].name;
+              var p2 = ps[ind[1]-1].name;
+              var table = basePairing.suggestTableFor(st.rounds, tables, p1, p2);
+              tables = _.without(tables, table);
+              return game.create(table, p1, p2);
+            })
+            .value();
+        },
+        suggestNextSingleRound: function(st, gri) {
+          var tables = basePairing.tableRangeForGroup(st.players, gri);
+          var nb_bracket_rounds = state.bracketNbRounds(st, gri);
+          return _.chain(st.rounds)
+            .last()
+            .apply(round.gamesForGroup, st.players, gri)
+            // .spy('games')
+            .chunk(st.players[gri].length / (1 << nb_bracket_rounds))
+            // .spy('chunk')
+            .reduce(function(mem, r) {
+              var winners = _.chain(r)
+                  .apply(round.winners)
+                  .value();
+              // console.log('winners', winners);
+              var losers = _.chain(r)
+                  .apply(round.losers)
+                  .value();
+              // console.log('losers', losers);
+              var pairs = _.chain(winners)
+                  .cat(losers)
+                  .chunk(2)
+                  .value();
+              // console.log('pairs', pairs);
+              return  _.cat(mem, _.map(pairs, function(p) {
+                var table = basePairing.suggestTableFor(st.rounds,
+                                                        tables,
+                                                        p[0], p[1]);
+                tables = _.without(tables, table);
+                return game.create(table, p[0], p[1]);
+              }));
+            }, [])
+            .value();
+        },
   //       suggestFirstTeamRound: function(state, i) {
   //         var n_games = _.flatten(state.teams).length/2;
   //         var first_table = _.chain(state.teams)
@@ -174,35 +171,34 @@ angular.module('srApp.services')
   //           }, [])
   //           .value();
   //       },
-  //       suggestFirstRound: function(state, i) {
+        suggestFirstRound: function(state, gri) {
   //         if(_.flatten(state.teams).length === 0) {
-  //           return bracketPairing.suggestFirstSingleRound(state, i);
+            return bracketPairing.suggestFirstSingleRound(state, gri);
   //         }
   //         else {
   //           return bracketPairing.suggestFirstTeamRound(state, i);
   //         }
-  //       },
-  //       suggestNextRound: function(state, i) {
+        },
+        suggestNextRound: function(state, gri) {
   //         if(_.flatten(state.teams).length === 0) {
-  //           return bracketPairing.suggestNextSingleRound(state, i);
+            return bracketPairing.suggestNextSingleRound(state, gri);
   //         }
   //         else {
   //           return bracketPairing.suggestNextTeamRound(state, i);
   //         }
-  //       },
-  //       suggestRound: function(state, i, bracket) {
-  //         var last_round = state.rounds.length;
-  //         if(bracket === last_round) {
-  //           return bracketPairing.suggestFirstRound(state, i);
-  //         }
-  //         else {
-  //           return bracketPairing.suggestNextRound(state, i);
-  //         }
-  //       }
-  //     };
-  //     return bracketPairing;
-  //   }
-  // ])
+        },
+        suggestRound: function(st, gri) {
+          if(0 === state.bracketNbRounds(st, gri)) {
+            return bracketPairing.suggestFirstRound(st, gri);
+          }
+          else {
+            return bracketPairing.suggestNextRound(st, gri);
+          }
+        }
+      };
+      return bracketPairing;
+    }
+  ])
   .factory('srPairing', [
     'basePairing',
     'players',
@@ -218,11 +214,6 @@ angular.module('srApp.services')
       //        team_game
             ) {
       var srPairing = {
-        tableRangeForGroup: function(ps, i) {
-          var group_range = players.indexRangeForGroup(ps, i);
-          return _.range(Math.round(group_range[0]/2+1),
-                         Math.round(group_range[1]/2+1));
-        },
         sortPlayers: function(ps) {
           var by_tp;
           return _.chain(ps)
@@ -275,7 +266,7 @@ angular.module('srApp.services')
           return [ game.create(table, p1.name, p2.name), sorted_players, tables ];
         },
         suggestNextSingleRound: function(state, i) {
-          var tables = srPairing.tableRangeForGroup(state.players, i);
+          var tables = basePairing.tableRangeForGroup(state.players, i);
           var sorted_players = srPairing.sortPlayers(state.players[i]);
           return _.chain(state.players[i].length/2)
             .range()

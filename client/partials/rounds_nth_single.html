@@ -4,17 +4,14 @@
     <span class="glyphicon glyphicon-trash"></span>
     Delete Round
   </button>
-  <div ng-repeat="gr in ::state.players">
+  <div ng-repeat="(gri,gr) in ::state.players">
     <h2 ng-if="::state | state:'hasPlayerGroups'"
         style="border-bottom:1px solid black;">
-      Group{{::$index+1}}
+      Group{{::gri+1}}
     </h2>
-    <!-- <h3 ng-if="
-    isBracketTournament($index) &&
-    r >= state.bracket[$index]
-    ">
-    Bracket - {{::bracketRoundOf($index, r)}}
-    </h3> -->
+    <h3 ng-if="::state | state:'isBracketTournament':gri:round.current">
+      Bracket - {{::state | state:'bracketRoundOf':gri:round.current}}
+    </h3>
     <table class="table text-center">
       <tr>
         <th class="text-center" colspan="4">Player1</th>

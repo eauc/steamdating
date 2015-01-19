@@ -60,17 +60,19 @@ angular.module('srApp.services')
           return (_.isString(g.p1.name) &&
                   _.isString(g.p2.name));
         },
-        // winner: function(g) {
-        //   return (g.p1.tournament === 1 ? g.p1.name :
-        //           g.p2.tournament === 1 ? g.p2.name :
-        //           undefined);
-        // },
-        // loser: function(g) {
-        //   return _.chain(g)
-        //     .apply(game.winner)
-        //     .apply(function(w) { return game.opponentFor(g, w); })
-        //     .value();
-        // }
+        winner: function(g) {
+          return (g.p1.tournament === 1 ? g.p1.name :
+                  g.p2.tournament === 1 ? g.p2.name :
+                  undefined);
+        },
+        loser: function(g) {
+          return _.chain(g)
+            .apply(game.winner)
+            .apply(function(w) {
+              return _.exists(w) ? game.opponentForPlayer(g, w) : undefined;
+            })
+            .value();
+        }
       };
       return game;
     }
@@ -246,12 +248,12 @@ angular.module('srApp.services')
         //     return g.t1.name === t || g.t2.name === t;
         //   });
         // },
-        // winners: function(coll) {
-        //   return _.map(coll, game.winner);
-        // },
-        // losers: function(coll) {
-        //   return _.map(coll, game.loser);
-        // },
+        winners: function(coll) {
+          return _.map(coll, game.winner);
+        },
+        losers: function(coll) {
+          return _.map(coll, game.loser);
+        },
         // winnerTeams: function(coll) {
         //   return _.map(coll, team_game.winner);
         // },
@@ -292,7 +294,7 @@ angular.module('srApp.services')
           new_coll.splice(r, 1);
           return new_coll;
         },
-        pointsForPlayer: function(coll, p) {//, bracket_start, base_weight) {
+        pointsForPlayer: function(coll, p, bracket_start, base_weight) {
           return _.chain(coll)
             .mapWith(round.gameForPlayer, p)
             .map(function(g) {
@@ -303,18 +305,18 @@ angular.module('srApp.services')
             })
             .mapWith(game.player, p)
             .reduce(function(mem, r, i) {
-              // var bracket_weight = base_weight >> (i - bracket_start);
+              var bracket_weight = base_weight >> (i - bracket_start);
               return {
-                // bracket: ((_.exists(bracket_start) && i >= bracket_start) ?
-                //           mem.bracket + bracket_weight * r.tournament :
-                //           mem.bracket),
+                bracket: ((_.exists(bracket_start) && i >= bracket_start) ?
+                          mem.bracket + bracket_weight * r.tournament :
+                          mem.bracket),
                 tournament: mem.tournament + r.tournament,
                 control: mem.control + r.control,
                 army: mem.army + r.army,
                 sos: 0
               };
             }, {
-              // bracket: 0,
+              bracket: 0,
               tournament: 0,
               control: 0,
               army: 0,

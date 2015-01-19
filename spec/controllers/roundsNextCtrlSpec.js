@@ -33,16 +33,25 @@ describe('controllers', function() {
         this.dummy_next_round = [ 'next_round' ];
         this.rounds.createNextRound.and.returnValue(this.dummy_next_round);
 
+        this.state = jasmine.createSpyObj('state', [ 'resetBracket', 'setBracket' ]);
         this.srPairing = jasmine.createSpyObj('srPairing', [ 'suggestNextRound' ]);
+        this.bracketPairing = jasmine.createSpyObj('bracketPairing', [ 'suggestRound' ]);
 
         $controller('roundsNextCtrl', { 
           '$scope': this.scope,
+          'state': this.state,
           'rounds': this.rounds,
           'round': this.round,
-          'srPairing': this.srPairing
+          'srPairing': this.srPairing,
+          'bracketPairing': this.bracketPairing
         });
       }
     ]));
+
+    it('should make a copy of current state', function() {
+      expect(this.scope.new_state).not.toBe(this.scope.state);
+      expect(this.scope.new_state).toEqual(this.scope.state);
+    });
 
     it('should init next round', function() {
       expect(this.scope.next_round).toBe(this.dummy_next_round);
@@ -66,17 +75,21 @@ describe('controllers', function() {
     
     describe('registerNextRound()', function() {
       beforeEach(function() {
-        this.current_rounds = [ 'round1', 'round2' ];
-        this.scope.state.rounds = this.current_rounds;
+        this.scope.new_state.rounds = [ 'round1', 'round2' ];
+        this.scope.new_state.bracket = [ 'new_bracket' ];
         this.new_rounds = [ 'round1', 'round2', 'round3' ];
         this.rounds.registerNextRound.and.returnValue(this.new_rounds);
 
         this.scope.registerNextRound();
       });
 
+      it('should update bracket', function() {
+        expect(this.scope.state.bracket).toEqual([ 'new_bracket' ]);
+      });
+
       it('should register next round', function() {
         expect(this.rounds.registerNextRound)
-          .toHaveBeenCalledWith(this.current_rounds,
+          .toHaveBeenCalledWith(this.scope.new_state.rounds,
                                 this.scope.next_round);
         expect(this.scope.state.rounds).toBe(this.new_rounds);
       });
@@ -95,12 +108,34 @@ describe('controllers', function() {
         this.type = 'sr';
         this.suggest = [ 'suggest' ];
         this.srPairing.suggestNextRound.and.returnValue(this.suggest);
-      }, function() {
-        it('should suggest SR pairing for <group_index>', function() {
-          this.scope.suggestNextRound(1, this.type);
 
+        this.scope.suggestNextRound(1, this.type);
+      }, function() {
+        it('should reset bracket for this group', function() {
+          expect(this.state.resetBracket).toHaveBeenCalledWith(this.scope.new_state, 1);
+        });
+
+        it('should suggest SR pairing for <group_index>', function() {
           expect(this.srPairing.suggestNextRound)
-            .toHaveBeenCalledWith(this.scope.state, 1);
+            .toHaveBeenCalledWith(this.scope.new_state, 1);
+          expect(this.scope.next_round[1]).toBe(this.suggest);
+        });
+      });
+
+      when('type is "bracket"', function() {
+        this.type = 'bracket';
+        this.suggest = [ 'suggest' ];
+        this.bracketPairing.suggestRound.and.returnValue(this.suggest);
+
+        this.scope.suggestNextRound(1, this.type);
+      }, function() {
+        it('should reset bracket for this group', function() {
+          expect(this.state.setBracket).toHaveBeenCalledWith(this.scope.new_state, 1);
+        });
+
+        it('should suggest SR pairing for <group_index>', function() {
+          expect(this.bracketPairing.suggestRound)
+            .toHaveBeenCalledWith(this.scope.new_state, 1);
           expect(this.scope.next_round[1]).toBe(this.suggest);
         });
       });

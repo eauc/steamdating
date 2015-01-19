@@ -1,22 +1,20 @@
 <div class="text-center">
   <button class="btn btn-default"
           ng-class="{
-          'btn-info': (state.players | players:'areAllPaired':next_round)
+          'btn-info': (new_state.players | players:'areAllPaired':next_round)
           }"
-          ng-disabled="!(state.players | players:'areAllPaired':next_round)"
+          ng-disabled="!(new_state.players | players:'areAllPaired':next_round)"
           ng-click="registerNextRound()">
     Register Round
   </button>
-  <div ng-repeat="(gri,gr) in ::state.players">
-    <h2 ng-if="::state | state:'hasPlayerGroups'"
+  <div ng-repeat="(gri,gr) in ::new_state.players">
+    <h2 ng-if="::new_state | state:'hasPlayerGroups'"
         style="border-bottom:1px solid black;">
       Group{{::$index+1}}
     </h2>
-    <!-- <h3 ng-if="
-    isBracketTournament($index)
-    ">
-    Bracket - {{::bracketRoundOf($index, state.rounds.length)}}
-    </h3> -->
+    <h3 ng-if="new_state | state:'isBracketTournament':gri">
+      Bracket - {{::new_state | state:'bracketRoundOf':gri}}
+    </h3>
     <table class="table text-center">
       <tr ng-class="{
           'info': (gr | players:'areAllPaired':next_round[gri])
@@ -67,18 +65,15 @@
       </tr>
     </table>
     <button class="btn btn-default"
-            ng-click="suggestNextRound(gri, 'sr')">
+            ng-click="suggestNextRound(gri, 'sr')"
+            ng-if="::!(state | state:'isBracketTournament':gri:state.rounds.length-1)">
       Make SR Suggestion
     </button>
-    <!-- <button class="btn btn-default"
-    ng-click="suggestNextRound($index, false)"
-    ng-if="!isBracketTournament($index)">
-    Make SR Suggestion
-    </button> -->
-    <!-- <button class="btn btn-default"
-    ng-click="suggestNextRound($index, true)"
-    >
-    Make Bracket Suggestion
-    </button> -->
+    <button class="btn btn-default"
+            ng-click="suggestNextRound(gri, 'bracket')"
+            ng-if="::state | state:'canBeBracketTournament':gri"
+            >
+      Make Bracket Suggestion
+    </button>
   </div>
 </div>
