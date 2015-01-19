@@ -198,7 +198,7 @@ angular.module('srApp.controllers')
       $scope.doDeleteRound = function(r) {
         var conf = $window.confirm("You sure ?");
         if(conf) {
-          $scope.state.rounds = rounds.drop($scope.state.rounds, r);
+          $scope.state.rounds = rounds.drop($scope.state.rounds, parseFloat(r));
           // _.each($scope.state.bracket, function(b, i) {
           //   if(_.exists(b) &&
           //      $scope.state.rounds.length <= b) {
