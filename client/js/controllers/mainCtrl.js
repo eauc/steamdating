@@ -28,8 +28,8 @@ angular.module('srApp.controllers')
       console.log('init mainCtrl');
 
       factions.init();
-      $scope.resetState = function() {
-        $scope.state = state.create();
+      $scope.resetState = function(data) {
+        $scope.state = state.create(data);
       };
       $scope.state = state.init();
       // $scope.state = state.test($scope.state);

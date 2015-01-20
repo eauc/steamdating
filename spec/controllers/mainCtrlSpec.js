@@ -59,12 +59,13 @@ describe('controllers', function() {
       expect(this.router_state.go).toHaveBeenCalledWith('argument');
     });
 
-    describe('resetState()', function() {
-      it('should create a new state', function() {
+    describe('resetState(<data>)', function() {
+      it('should create a new state from <data>', function() {
         this.scope.state = undefined;
-        this.scope.resetState();
+        var data = [ 'data' ];
+        this.scope.resetState(data);
         expect(this.scope.state).toBe(this.dummy_state);
-        expect(this.state.create).toHaveBeenCalled();
+        expect(this.state.create).toHaveBeenCalledWith(data);
       });
     });
 

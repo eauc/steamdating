@@ -3,6 +3,7 @@
   "newcap": false,
   "globals": {
     "_": false,
+    "s": false,
     "$": false,
     "angular": false,
     "console": false,

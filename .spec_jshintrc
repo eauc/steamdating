@@ -4,6 +4,7 @@
   "globals": {
     "angular": false,
     "_": false,
+    "s": false,
     "jasmine": false,
     "console": false,
     "window": false,

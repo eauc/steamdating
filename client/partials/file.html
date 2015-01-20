@@ -46,9 +46,11 @@
         onchange="angular.element(this).scope().importT3File(this.files[0])" /> -->
         <input id="import-file"
                type="file"
-               ea-file="importT3File(file)" />
+               ea-file="doImportT3File(file)" />
       </div>
-      <strong class="text-danger">{{import_t3_result}}</strong>
+      <div ng-repeat="err in import_t3_result">
+        <strong class="text-warning">{{::err}}</strong><br />
+      </div>
     </fieldset>
     <!-- <fieldset style="margin-top:10px">
     <legend>  
