@@ -84,6 +84,8 @@ describe('controllers', function() {
       });
 
       when('user confirms', function() {
+        this.scope.sorted_players = undefined;
+        this.state.sortPlayers.calls.reset();
         this.window.confirm.and.returnValue(true);
 
         this.scope.doDropPlayer(this.player, this.event);
@@ -95,6 +97,11 @@ describe('controllers', function() {
 
         it('should store new state', function() {
           expect(this.state.store).toHaveBeenCalledWith(this.scope.state);
+        });
+
+        it('should refresh sorted players list', function() {
+          expect(this.state.sortPlayers).toHaveBeenCalledWith(this.scope.state);
+          expect(this.scope.sorted_players).toBe(this.dummy_sorted_players);
         });
       });
     });

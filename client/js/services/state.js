@@ -141,6 +141,7 @@ angular.module('srApp.services')
         },
         canBeBracketTournament: function(st, gri) {
           var n = st.players[gri].length;
+          if(0 === n) return false;
           while(0 === (n & 0x1)) n = n >> 1;
           return n === 1;
         },

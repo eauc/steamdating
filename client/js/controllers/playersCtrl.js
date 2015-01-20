@@ -38,6 +38,7 @@ angular.module('srApp.controllers')
         if(conf) {
           $scope.state.players = players.drop($scope.state.players, p);
           state.store($scope.state);
+          $scope.sorted_players = state.sortPlayers($scope.state);
         }
         event.stopPropagation();
       };

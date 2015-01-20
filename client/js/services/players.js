@@ -90,6 +90,10 @@ angular.module('srApp.services')
           return _.chain(coll)
             .mapWith(_.reject, _.partial(player.is, _, p.name))
             .reject(_.isEmpty)
+            .apply(function(c) {
+              if(0 === c.length) return [[]];
+              return c;
+            })
             .value();
         },
         player: function(coll, name) {

@@ -94,6 +94,11 @@ describe('service', function() {
           ]
         ]);
       });
+
+      it('should leave at least one group', function() {
+        expect(players.drop([ [{ name: 'toto1' }] ], { name: 'toto1' }))
+          .toEqual([[]]);
+      });
     });
 
     describe('player(<name>)', function() {

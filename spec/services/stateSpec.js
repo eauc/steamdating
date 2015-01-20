@@ -189,6 +189,9 @@ describe('service', function() {
     describe('canBeBracketTournament(<st>, <group_index>)', function() {
       it('should test whether group\'s length is a power of 2', function() {
         expect(state.canBeBracketTournament({
+          players: [ [] ]
+        }, 0)).toBe(false);
+        expect(state.canBeBracketTournament({
           players: [ _.repeat(1, {}) ]
         }, 0)).toBe(true);
         expect(state.canBeBracketTournament({
