@@ -15,15 +15,21 @@ describe('controllers', function() {
       function($rootScope,
                $controller) {
         this.scope = $rootScope.$new();
-        this.state = jasmine.createSpyObj('state', ['init', 'test', 'updatePlayersPoints']);
         this.router_state = { 
           current: { name: 'current_state' },
           go: jasmine.createSpy('stateGo')
         };
 
         this.dummy_state = {};
+        this.state = jasmine.createSpyObj('state', [
+          'init',
+          'test',
+          'create',
+          'updatePlayersPoints'
+        ]);
         this.state.init.and.returnValue(this.dummy_state);
         this.state.test.and.returnValue(this.dummy_state);
+        this.state.create.and.returnValue(this.dummy_state);
 
         this.factions = jasmine.createSpyObj('factions', ['init']);
         this.players = jasmine.createSpyObj('players', ['updatePoints']);
@@ -51,6 +57,15 @@ describe('controllers', function() {
       expect(this.scope.currentState()).toBe('current_state');
       this.scope.goToState('argument');
       expect(this.router_state.go).toHaveBeenCalledWith('argument');
+    });
+
+    describe('resetState()', function() {
+      it('should create a new state', function() {
+        this.scope.state = undefined;
+        this.scope.resetState();
+        expect(this.scope.state).toBe(this.dummy_state);
+        expect(this.state.create).toHaveBeenCalled();
+      });
     });
 
     describe('doEditPlayer(<p>)', function() {

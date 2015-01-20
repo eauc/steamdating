@@ -15,6 +15,13 @@ angular.module('srApp.services')
              lists,
              ranking) {
       var state = {
+        isEmpty: function(st) {
+          // return (st.teams.length === 0 &&
+          //         st.players.length === 0 &&
+          //         st.rounds.length === 0);
+          return (_.flatten(st.players).length === 0 &&
+                  _.flatten(st.rounds).length === 0);
+        },
         init: function() {
           // var stored_state = $window.localStorage.getItem('srApp.state');
           // if(stored_state) {

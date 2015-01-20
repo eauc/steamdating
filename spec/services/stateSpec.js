@@ -14,6 +14,14 @@ describe('service', function() {
       state = _state;
     }]));
 
+    describe('isEmpty()', function() {
+      it('should test whether teams players and rounds are empty', function() {
+        expect(state.isEmpty({ players: [[],[]], rounds: [[]] })).toBe(true);
+        expect(state.isEmpty({ players: [[],[1]], rounds: [[]] })).toBe(false);
+        expect(state.isEmpty({ players: [[],[]], rounds: [[1]] })).toBe(false);
+      });
+    });
+
     describe('create(<data>)', function() {
       beforeEach(function() {
         this.data = {

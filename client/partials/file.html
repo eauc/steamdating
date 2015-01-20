@@ -4,33 +4,33 @@
     New Tournament
   </button>
   <form class="form-inline">
-    <fieldset style="margin-top:10px">
-      <legend>  
-        <span class="glyphicon glyphicon-open"></span>
-        Open
-      </legend>
-      <div class="form-group">
-        <label class="control-label"
-               for="import-file">
-          Choose file
-        </label>
-        <input id="import-file"
-               type="file"
-               onchange="angular.element(this).scope().openFile(this.files[0])" />
-      </div>
-      <strong class="text-danger">{{open_result}}</strong>
-    </fieldset>
-    <fieldset style="margin-top:10px">
-      <legend>  
-        <span class="glyphicon glyphicon-save"></span>
-        Save
-      </legend>
-      <a ng-if="save_url"
-         ng-href="{{::save_url}}"
-         download="{{::save_name}}">
-        Download File
-      </a>
-    </fieldset>
+    <!-- <fieldset style="margin-top:10px">
+    <legend>  
+    <span class="glyphicon glyphicon-open"></span>
+    Open
+    </legend>
+    <div class="form-group">
+    <label class="control-label"
+    for="import-file">
+    Choose file
+    </label>
+    <input id="import-file"
+    type="file"
+    onchange="angular.element(this).scope().openFile(this.files[0])" />
+    </div>
+    <strong class="text-danger">{{open_result}}</strong>
+    </fieldset> -->
+    <!-- <fieldset style="margin-top:10px">
+    <legend>  
+    <span class="glyphicon glyphicon-save"></span>
+    Save
+    </legend>
+    <a ng-if="save_url"
+    ng-href="{{::save_url}}"
+    download="{{::save_name}}">
+    Download File
+    </a>
+    </fieldset> -->
     <fieldset style="margin-top:10px">
       <legend>  
         <span class="glyphicon glyphicon-log-in"></span>
@@ -41,27 +41,30 @@
                for="import-file">
           T3 Players File
         </label>
+        <!-- <input id="import-file"
+        type="file"
+        onchange="angular.element(this).scope().importT3File(this.files[0])" /> -->
         <input id="import-file"
                type="file"
-               onchange="angular.element(this).scope().importT3File(this.files[0])" />
+               ea-file="importT3File(file)" />
       </div>
       <strong class="text-danger">{{import_t3_result}}</strong>
     </fieldset>
-    <fieldset style="margin-top:10px">
-      <legend>  
-        <span class="glyphicon glyphicon-log-out"></span>
-        Export
-      </legend>
-      <a ng-if="csv_url"
-         ng-href="{{::csv_url}}"
-         download="{{::csv_name}}">
-        Download CSV File
-      </a><br />
-      <a ng-if="bb_url"
-         ng-href="{{::bb_url}}"
-         download="{{::bb_name}}">
-        Download BB File
-      </a>
-    </fieldset>
+    <!-- <fieldset style="margin-top:10px">
+    <legend>  
+    <span class="glyphicon glyphicon-log-out"></span>
+    Export
+    </legend>
+    <a ng-if="csv_url"
+    ng-href="{{::csv_url}}"
+    download="{{::csv_name}}">
+    Download CSV File
+    </a><br />
+    <a ng-if="bb_url"
+    ng-href="{{::bb_url}}"
+    download="{{::bb_name}}">
+    Download BB File
+    </a>
+    </fieldset> -->
   </form>
 </div>
