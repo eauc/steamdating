@@ -46,11 +46,7 @@ describe('controllers', function() {
     ]));
 
     it('should init factions', function() {
-      expect(this.scope.factions).toEqual({
-        'cryx': 'gros vilains',
-        'scyrah': 'petits poneys',
-        'blight': 'best of the beast'
-      });
+      expect(this.scope.factions).toEqual(this.dummy_factions);
     });
 
     describe('doReset()', function() {
@@ -85,30 +81,30 @@ describe('controllers', function() {
       });
     });
 
-    describe('doImportT3File(file)', function() {
-      beforeEach(inject(function(t3Import) {
+    describe('doImportFile(<type>, <file>)', function() {
+      beforeEach(inject(function(fileImport) {
         var ctxt = this;
-        this.t3Import = t3Import;
-        spyOn(t3Import, 'read').and.returnValue({
+        this.fileImport = fileImport;
+        spyOn(fileImport, 'read').and.returnValue({
           then: function(onSuccess, onError) {
             ctxt.onSuccess = onSuccess; 
             ctxt.onError = onError;
           }
         });
         
-        this.scope.doImportT3File('file');
+        this.scope.doImportFile('toto', 'file');
       }));
 
       it('should try to import file', function() {
-        expect(this.t3Import.read)
-          .toHaveBeenCalledWith('file', this.scope.factions);
+        expect(this.fileImport.read)
+          .toHaveBeenCalledWith('toto', 'file', this.scope.factions);
       });
 
       describe('on error', function() {
         it('should set error feedback string', function() {
           this.onError([ 'errors' ]);
 
-          expect(this.scope.import_t3_result).toEqual([ 'errors' ]);
+          expect(this.scope.import_toto_result).toEqual([ 'errors' ]);
         });
       });
 
@@ -123,11 +119,11 @@ describe('controllers', function() {
         });
 
         it('should set error feedback string', function() {
-          expect(this.scope.import_t3_result[0]).toEqual('errors');
+          expect(this.scope.import_toto_result[0]).toEqual('errors');
         });
 
         it('should inform about nb of players read', function() {
-          expect(this.scope.import_t3_result[1])
+          expect(this.scope.import_toto_result[1])
             .toEqual('1 players have been read successfully');
         });
 

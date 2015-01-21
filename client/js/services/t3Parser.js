@@ -36,7 +36,11 @@ angular.module('srApp.services')
         validateNameNotAlready
       ];
       return {
-        parse: function(string, factions) {
+        parse: function(string, base_factions) {
+          var factions = _.reduce(base_factions, function(mem, f) {
+            mem[f.t3] = f.name;
+            return mem;
+          }, {});
           var ctxt = {
             error: [],
             names: []
@@ -70,39 +74,6 @@ angular.module('srApp.services')
             })
             .value();
           return [res, ctxt.error];
-        }
-      };
-    }
-  ])
-  .factory('t3Import', [
-    '$window',
-    '$q',
-    't3Parser',
-    function($window,
-             $q,
-             t3Parser) {
-      return {
-        read: function(file, factions) {
-          var reader = new $window.FileReader();
-          var defer = $q.defer();
-          reader.onload = function(e) {
-            var data;
-            try {
-              data = t3Parser.parse(e.target.result, factions);
-              defer.resolve(data);
-            }
-            catch (event) {
-              defer.reject(['invalid file']);
-            }
-          };
-          reader.onerror = function(e) {
-            defer.reject(['error reading file']);
-          };
-          reader.onabort = function(e) {
-            defer.reject(['abort reading file']);
-          };
-          reader.readAsText(file);
-          return defer.promise;
         }
       };
     }

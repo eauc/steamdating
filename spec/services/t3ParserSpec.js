@@ -17,9 +17,9 @@ describe('service', function() {
     describe('parse(<string>, <factions>)', function() {
       beforeEach(function() {
         this.factions = {
-          'Cryx': 'Cryx',
-          'Menoth': 'The Protectorate of Menoth',
-          'Everblight': 'Legion of Everblight'
+          'Cryx': { name: 'Cryx', t3: 'Cryx' },
+          'The Protectorate of Menoth': { name: 'The Protectorate of Menoth', t3: 'Menoth' },
+          'Legion of Everblight': { name: 'Legion of Everblight', t3: 'Everblight' }
         };
       });
 

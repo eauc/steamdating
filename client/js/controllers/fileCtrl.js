@@ -6,7 +6,7 @@ angular.module('srApp.controllers')
     '$q',
     '$window',
     'state',
-    't3Import',
+    'fileImport',
     'factions',
     // 'backup',
     // 'exporter',
@@ -14,7 +14,7 @@ angular.module('srApp.controllers')
              $q,
              $window,
              state,
-             t3Import,
+             fileImport,
              factions
              // backup,
              // exporter
@@ -50,9 +50,7 @@ angular.module('srApp.controllers')
       $scope.factions = {};
       $q.when(factions.baseFactions())
         .then(function(base_factions) {
-          _.each(base_factions, function(f) {
-            $scope.factions[f.t3] = f.name;
-          });
+          $scope.factions = base_factions;
         });
 
       $scope.doReset = function() {
@@ -61,18 +59,23 @@ angular.module('srApp.controllers')
         if(conf) $scope.resetState();
       };
 
-      $scope.doImportT3File = function(file) {
-        console.log('importT3File', file);
-        t3Import.read(file, $scope.factions)
+      $scope.doImportFile = function(type, file) {
+        console.log('importFile', type, file);
+        fileImport.read(type, file, $scope.factions)
           .then(function(data) {
             var players = data[0];
             var error = data[1];
             $scope.resetState({ players: [players] });
-            $scope.import_t3_result = error;
-            if(_.isEmpty(error)) $scope.goToState('players');
-            else $scope.import_t3_result.push(players.length+' players have been read successfully');
+            $scope['import_'+type+'_result'] = error;
+            if(_.isEmpty(error)) {
+              $scope.goToState('players');
+            }
+            else {
+              $scope['import_'+type+'_result'].push(players.length+
+                                                    ' players have been read successfully');
+            }
           }, function(error) {
-            $scope.import_t3_result = error;
+            $scope['import_'+type+'_result'] = error;
           });
       };
     }

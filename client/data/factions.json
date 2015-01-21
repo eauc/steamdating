@@ -5,7 +5,7 @@
     "color": "#5963a2",
     "casters": {
       "blaize1": {
-        "name": "Constance Blaize, Knight of the Prophet"
+       "name": "Constance Blaize, Knights of the Prophet"
       },
       "siege1": {
         "name": "Major Markus 'Siege' Brisbane"
@@ -29,10 +29,10 @@
         "name": "Captain Jeremiah Kraye"
       },
       "nemo1": {
-        "name": "Commander Adept Sebastian Nemo"
+        "name": "Commander Adept Nemo"
       },
       "nemo2": {
-        "name": "General Adept Sebastian Nemo"
+        "name": "General Adept Nemo"
       },
       "nemo3": {
         "name": "Artificer General Nemo"
@@ -70,7 +70,7 @@
         "name": "Intercessor Kreoss"
       },
       "reclaimer1": {
-        "name": "High Reclaimer"
+        "name": "The High Reclaimer"
       },
       "reclaimer2": {
         "name": "Testament of Menoth"
@@ -88,7 +88,7 @@
         "name": "Feora, Protector of the Flame"
       },
       "amon1": {
-        "name": "High Allegiant Amon Ad'Raza"
+        "name": "High Allegiant Amon Ad-Raza"
       },
       "harbinger1": {
         "name": "Harbinger of Menoth"
@@ -114,7 +114,7 @@
     "color": "#a94a4a",
     "casters": {
       "butcher1": {
-        "name": "Orsus Zoktavir, Butcher of Khardov"
+        "name": "The Butcher of Khardov"
       },
       "butcher2": {
         "name": "Kommander Orsus Zoktavir"
@@ -135,22 +135,22 @@
         "name": "Karchev the Terrible"
       },
       "sorscha1": {
-        "name": "Kommander Sorscha Kratikoff"
+        "name": "Kommander Sorscha"
       },
       "sorscha2": {
-        "name": "Forward Kommander Sorscha Kratikoff"
+        "name": "Forward Kommander Sorscha"
       },
       "strakhov1": {
         "name": "Kommander Strakhov"
       },
       "theoldwitch1": {
-        "name": "Zevanna Agha, Old Witch of Khador"
+        "name": "Zevanna Agha, the Old Witch of Khador"
       },
       "vlad1": {
-        "name": "Vladimir Tzepesci, The Dark Prince"
+        "name": "Vladimir, The Dark Prince"
       },
       "vlad2": {
-        "name": "Vladimir Tzepesci, The Dark Champion"
+        "name": "Vladimir Tzepesci, the Dark Champion"
       },
       "vlad3": {
         "name": "Vladimir Tzepesci, Great Prince of Umbrey"
@@ -176,7 +176,7 @@
         "name": "Asphyxious the Hellbringer"
       },
       "deneghra1": {
-        "name": "War Witch Deneghra"
+        "name": "Warwitch Deneghra"
       },
       "deneghra2": {
         "name": "Wraith Witch Deneghra"
@@ -197,13 +197,13 @@
         "name": "Lord Exhumator Scaverous"
       },
       "skarre1": {
-        "name": "Skarre, the Pirate Queen"
+        "name": "Pirate Queen Skarre"
       },
       "skarre2": {
         "name": "Skarre, Queen of the Broken Coast"
       },
       "sturgis2": {
-        "name": "Sturgis the Corrupted"
+        "name": "Sturgis The Corrupted"
       },
       "terminus1": {
         "name": "Lich Lord Terminus"
@@ -235,13 +235,13 @@
         "name": "Lord Arcanist Ossyan"
       },
       "rahn1": {
-        "name": "AdeptisRahn"
+        "name": "Adeptis Rahn Shyeel"
       },
       "ravyn1": {
         "name": "Ravyn, Eternal Light"
       },
       "vyros1": {
-        "name": "DawnlordVyros"
+        "name": "Dawnlord Vyros"
       },
       "vyros2": {
         "name": "Vyros, Incissar of the Dawnguard"
@@ -264,7 +264,7 @@
         "name": "Calandra Truthsayer, Oracle of the Glimmerwood"
       },
       "grim1": {
-        "name": "GrimAngus"
+        "name": "Grim Angus"
       },
       "grim2": {
         "name": "Hunters Grim"
@@ -279,13 +279,13 @@
         "name": "Captain Gunnbjorn"
       },
       "hoarluk1": {
-        "name": "Hoarluk Doomshaper, Shaman of the Gnarls"
+        "name": "Hoarluk Doomshaper"
       },
       "hoarluk2": {
         "name": "Hoarluk Doomshaper, Rage of Dhunia"
       },
       "jarl1": {
-        "name": "Jarl Skuld, Devil of the Thornwood"
+        "name": "Jarl Skuld, Devil Of Thornwood"
       },
       "madrak1": {
         "name": "Chief Madrak Ironhide"
@@ -320,7 +320,7 @@
         "name": "Kaya the Wildborne"
       },
       "kaya2": {
-        "name": "Kayathe Moonhunter and Laris"
+        "name": "Kaya the Moonhunter & Laris"
       },
       "kromac1": {
         "name": "Kromac the Ravenous"
@@ -332,7 +332,7 @@
         "name": "Krueger the Stormlord"
       },
       "mohsar1": {
-        "name": "Mohsar the Desert walker"
+        "name": "Mohsar the Desertwalker"
       },
       "morvahna1": {
         "name": "Morvahna the Autumnblade"
@@ -361,7 +361,7 @@
         "name": "Supreme Archdomina Makeda"
       },
       "makeda3": {
-        "name": "Makeda & the Exalted Court"
+        "name": "Makeda and the Exalted Court"
       },
       "mordikaar1": {
         "name": "Void Seer Mordikaar"
@@ -385,7 +385,7 @@
         "name": "Xerxis, Fury of Halaak"
       },
       "zaal1": {
-        "name": "Supreme Aptimus Zaal"
+        "name": "Supreme Aptimus Zaal & Kovaas"
       }
     },
     "icon": "skorne.png"
@@ -402,7 +402,7 @@
         "name": "Absylonia, Daughter of Everblight"
       },
       "bethayne1": {
-        "name": "Bethayne, Voice of Everblight"
+        "name": "Bethayne & Belphagor"
       },
       "kallus1": {
         "name": "Kallus, Wrath of Everblight"
@@ -426,7 +426,7 @@
         "name": "Thagrosh, Prophet of Everblight"
       },
       "thagrosh2": {
-        "name": "Thagrosh, Messiah of Everblight"
+        "name": "Thagrosh, the Messiah"
       },
       "vayl1": {
         "name": "Vayl, Disciple of Everblight"
@@ -443,13 +443,19 @@
     "color": "#959571",
     "casters": {
       "ashlynn1": {
-        "name": "Ashlynn D'Elyse"
+        "name": "Ashlynn d'Elyse"
       },
       "bartolo1": {
         "name": "Captain Bartolo Montador"
       },
+      "blaize1": {
+       "name": "Constance Blaize, Knights of the Prophet"
+      },
       "damiano1": {
         "name": "Captain Damiano"
+      },
+      "exulon1": {
+        "name": "Exulon Thexus"
       },
       "fiona1": {
         "name": "Fiona the Black"
@@ -458,7 +464,7 @@
         "name": "Gorten Grundback"
       },
       "macbain1": {
-        "name": "Drake Mac Bain"
+        "name": "Drake MacBain"
       },
       "madhammer1": {
         "name": "Durgen Madhammer"
@@ -484,13 +490,13 @@
     "color": "#889751",
     "casters": {
       "arkadius1": {
-        "name": "Dr.Arkadius"
+        "name": "Dr. Arkadius"
       },
       "barnabas1": {
         "name": "Bloody Barnabas"
       },
       "calaban1": {
-        "name": "Calaban the Gravewalker"
+        "name": "Calaban, the Gravewalker"
       },
       "carver1": {
         "name": "Lord Carver"
@@ -502,7 +508,7 @@
         "name": "Jaga-Jaga, the Death Charmer"
       },
       "maelok1": {
-        "name": "Maelok the Dreadbound"
+        "name": "Maelok, the Dreadbound"
       },
       "midas1": {
         "name": "Midas"
@@ -511,7 +517,7 @@
         "name": "Rask"
       },
       "sturm&drang1": {
-        "name": "Sturm & Drang"
+        "name": "Sturm and Drang"
       }
     },
     "icon": "minions.png"

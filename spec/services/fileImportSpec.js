@@ -6,15 +6,15 @@ describe('service', function() {
     module('srApp.services');
   });
 
-  describe('t3Import', function() {
+  describe('fileImport', function() {
 
-    var t3Import;
+    var fileImport;
 
-    beforeEach(inject([ 't3Import', function(_t3Import) {
-      t3Import = _t3Import;
+    beforeEach(inject([ 'fileImport', function(_fileImport) {
+      fileImport = _fileImport;
     }]));
 
-    describe('read(<file>, <factions>)', function() {
+    describe('read(<type>, <file>, <factions>)', function() {
       beforeEach(inject(function($window) {
         var ctxt = this;
         this.window = $window;
@@ -27,7 +27,7 @@ describe('service', function() {
       }));
 
       it('should use a file reader to read file', function() {
-        t3Import.read('file', 'factions');
+        fileImport.read('t3', 'file', 'factions');
 
         expect(this.window.FileReader).toHaveBeenCalled();
         expect(this.FileReader.readAsText).toHaveBeenCalledWith('file');
@@ -37,7 +37,7 @@ describe('service', function() {
         beforeEach(inject(function($rootScope) {
           this.successCbk = jasmine.createSpy('successCbk');
           this.errorCbk = jasmine.createSpy('errorCbk');
-          t3Import.read('file', 'factions')
+          fileImport.read('t3', 'file', 'factions')
             .then(this.successCbk, this.errorCbk);
 
           this.reader.onerror('error');
@@ -54,7 +54,7 @@ describe('service', function() {
         beforeEach(inject(function($rootScope) {
           this.successCbk = jasmine.createSpy('successCbk');
           this.errorCbk = jasmine.createSpy('errorCbk');
-          t3Import.read('file', 'factions')
+          fileImport.read('t3', 'file', 'factions')
             .then(this.successCbk, this.errorCbk);
 
           this.reader.onabort('error');
@@ -68,15 +68,18 @@ describe('service', function() {
       });
 
       describe('on load', function() {
-        beforeEach(inject(function($rootScope, t3Parser) {
+        beforeEach(inject(function($rootScope, t3Parser, fkParser) {
           var ctxt = this;
 
           this.t3Parser = t3Parser;
           spyOn(t3Parser, 'parse');
 
+          this.fkParser = fkParser;
+          spyOn(fkParser, 'parse');
+
           this.successCbk = jasmine.createSpy('successCbk');
           this.errorCbk = jasmine.createSpy('errorCbk');
-          t3Import.read('file', 'factions')
+          fileImport.read('t3', 'file', 'factions')
             .then(this.successCbk, this.errorCbk);
 
           this.testOnLoad = function() {
@@ -85,10 +88,16 @@ describe('service', function() {
           };
         }));
 
-        it('should try to parse T3 file', function() {
+        it('should try to parse file using <type> parser', function() {
           this.testOnLoad();
 
           expect(this.t3Parser.parse).toHaveBeenCalledWith('result', 'factions');
+
+          fileImport.read('fk', 'file', 'factions')
+            .then(this.successCbk, this.errorCbk);
+          this.testOnLoad();
+
+          expect(this.fkParser.parse).toHaveBeenCalledWith('result', 'factions');
         });
 
         when('a parse error happens', function() {
