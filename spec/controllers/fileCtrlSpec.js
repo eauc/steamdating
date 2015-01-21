@@ -15,14 +15,21 @@ describe('controllers', function() {
       '$window',
       'state',
       'factions',
+      'fileExport',
       function($rootScope,
                $controller,
                $window,
                state,
-               factions) {
+               factions,
+               fileExport) {
         this.scope = $rootScope.$new();
         this.scope.resetState = jasmine.createSpy('resetState');
         this.scope.goToState = jasmine.createSpy('goToState');
+        spyOn(this.scope, '$on');
+
+        this.scope.state = {
+          players: ['players']
+        };
 
         this.state = state;
         spyOn(state, 'isEmpty');
@@ -38,6 +45,10 @@ describe('controllers', function() {
         ];
         spyOn(factions, 'baseFactions').and.returnValue(this.dummy_factions);
 
+        this.fileExport = fileExport;
+        spyOn(this.fileExport, 'generate');
+        spyOn(this.fileExport, 'cleanup');
+
         $controller('fileCtrl', { 
           '$scope': this.scope,
         });
@@ -47,6 +58,30 @@ describe('controllers', function() {
 
     it('should init factions', function() {
       expect(this.scope.factions).toEqual(this.dummy_factions);
+    });
+
+    it('should init exports', function() {
+      expect(this.scope.exports).toBeAn('Object');
+      expect(_.keys(this.scope.exports).length).not.toBe(0);
+    });
+
+    describe('on destroy', function() {
+      beforeEach(function() {
+        var ctxt = this;
+        _.each(this.scope.$on.calls.all(), function(c) {
+          if(c.args[0] === '$destroy') {
+            ctxt.onDestroy = c.args[1];
+          }
+        });
+
+        expect(this.onDestroy).toBeA('Function');
+      });
+
+      it('should cleanup export urls', function() {
+        this.scope.exports = { test: { url: 'test' } };
+        this.onDestroy();
+        expect(this.fileExport.cleanup).toHaveBeenCalledWith('test');
+      });
     });
 
     describe('doReset()', function() {
@@ -110,6 +145,8 @@ describe('controllers', function() {
 
       describe('on success', function() {
         beforeEach(function() {
+          spyOn(this.scope, 'updateExports');
+
           this.onSuccess([[ 'players' ], [ 'errors' ]]);
         });
 
@@ -132,6 +169,11 @@ describe('controllers', function() {
             .not.toHaveBeenCalled();
         });
 
+        it('should update exports', function() {
+          expect(this.scope.updateExports)
+            .toHaveBeenCalled();
+        });
+
         when('no error during import', function() {
           this.onSuccess([[ 'players' ], [ ]]);
         }, function() {
@@ -140,6 +182,26 @@ describe('controllers', function() {
               .toHaveBeenCalledWith('players');
           });
         });
+      });
+    });
+    
+    describe('updateExports', function() {
+      beforeEach(function() {
+        this.fileExport.generate.calls.reset();
+        this.fileExport.generate.and.callFake(function(type) {
+          return type+'_url';
+        });
+
+        this.scope.updateExports();
+      });
+
+      it('should generate export for fk players list', function() {
+        expect(this.fileExport.generate)
+          .toHaveBeenCalledWith('fk', this.scope.state.players);
+
+        expect(this.scope.exports.fk.name).toMatch(/^players_\d+\.txt$/);
+        expect(this.scope.exports.fk.url).toBe('fk_url');
+        expect(this.scope.exports.fk.label).toBe('FK players list');
       });
     });
   });

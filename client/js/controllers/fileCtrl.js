@@ -6,6 +6,7 @@ angular.module('srApp.controllers')
     '$q',
     '$window',
     'state',
+    'fileExport',
     'fileImport',
     'factions',
     // 'backup',
@@ -14,6 +15,7 @@ angular.module('srApp.controllers')
              $q,
              $window,
              state,
+             fileExport,
              fileImport,
              factions
              // backup,
@@ -21,31 +23,23 @@ angular.module('srApp.controllers')
             ) {
       console.log('init fileCtrl');
 
-      // $scope.openFile = function(file) {
-      //   backup.read(file).then(function(data) {
-      //     $scope.newState(data);
-      //     $scope.goToState('players');
-      //   }, function(error) {
-      //     $scope.open_result = error;
-      //   });
-      // };
+      $scope.$on('$destroy', function() {
+        _.each($scope.exports, function(f) {
+          fileExport.cleanup(f.url);
+        });
+      });
 
-      // var today = new Date();
-
-      // $scope.save_name = 'dating_' + today.getTime() + '.txt';
-      // $scope.save_url = backup.generate($scope.state);
-
-      // $scope.csv_name = 'dating_' + today.getTime() + '.csv';
-      // $scope.csv_url = exporter.generate('csv', $scope.state);
-
-      // $scope.bb_name = 'dating_' + today.getTime() + '.txt';
-      // $scope.bb_url = exporter.generate('bb', $scope.state);
-
-      // $scope.$on('$destroy', function() {
-      //   backup.cleanup($scope.save_url);
-      //   backup.cleanup($scope.csv_url);
-      //   backup.cleanup($scope.bb_url);
-      // });
+      $scope.updateExports = function() {
+        var now = (new Date()).getTime();
+        $scope.exports = {
+          fk: {
+            name: 'players_'+now+'.txt',
+            url: fileExport.generate('fk', $scope.state.players),
+            label: 'FK players list'
+          }
+        };
+      };
+      $scope.updateExports();
 
       $scope.factions = {};
       $q.when(factions.baseFactions())
@@ -73,6 +67,7 @@ angular.module('srApp.controllers')
             else {
               $scope['import_'+type+'_result'].push(players.length+
                                                     ' players have been read successfully');
+              $scope.updateExports();
             }
           }, function(error) {
             $scope['import_'+type+'_result'] = error;

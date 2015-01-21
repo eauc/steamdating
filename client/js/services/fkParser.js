@@ -47,7 +47,7 @@ angular.module('srApp.services')
                 ctxt.state = error_state;
                 return;
               }
-              console.log('new player', value);
+              // console.log('new player', value);
               ctxt.players.push(value);
               ctxt.player = { name: value };
               ctxt.state = player_state;
@@ -60,7 +60,7 @@ angular.module('srApp.services')
                 ctxt.state = error_state;
                 return;
               }
-              console.log('new list for player', ctxt.player.name);
+              // console.log('new list for player', ctxt.player.name);
               ctxt.list = { content: [], faction: ctxt.player.faction };
               ctxt.state = list_state;
               return;
@@ -77,8 +77,8 @@ angular.module('srApp.services')
           switch(key) {
           case 'Faction':
             {
-              console.log('faction', value);
-              console.log('factions', _.keys(ctxt.factions));
+              // console.log('faction', value);
+              // console.log('factions', _.keys(ctxt.factions));
               if(0 > _.indexOf(_.keys(ctxt.factions), value)) {
                 ctxt.error.push('line '+ctxt.nline+' unknown faction "'+value+'"');
               }
@@ -87,7 +87,7 @@ angular.module('srApp.services')
             }
           case 'City':
             {
-              console.log('city', value);
+              // console.log('city', value);
               ctxt.player.city = value;
               return;
             }
@@ -98,7 +98,7 @@ angular.module('srApp.services')
           }
         },
         onSeparator: function(ctxt) {
-          console.log('create player', ctxt.player.name);
+          // console.log('create player', ctxt.player.name);
           ctxt.res.push(player.create(ctxt.player.name,
                                       ctxt.player.faction,
                                       ctxt.player.city));
@@ -124,7 +124,7 @@ angular.module('srApp.services')
           }
         },
         onSeparator: function(ctxt) {
-          console.log('create list for player', ctxt.player.name);
+          // console.log('create list for player', ctxt.player.name);
           var l = list.create(ctxt.list.faction,
                               ctxt.list.caster,
                               ctxt.list.theme,
@@ -147,7 +147,7 @@ angular.module('srApp.services')
             caster = line.replace(/\(.*\)/, '');
             ctxt.error.push('line '+ctxt.nline+' unknown caster "'+caster+'"');
           }
-          console.log('found caster', caster);
+          // console.log('found caster', caster);
           ctxt.list.caster = caster;
           ctxt.list.content.push(line);
           ctxt.state = list_content_state;

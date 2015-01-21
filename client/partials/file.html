@@ -62,21 +62,18 @@
         <strong class="text-warning">{{::err}}</strong><br />
       </div>
     </fieldset>
-    <!-- <fieldset style="margin-top:10px">
-    <legend>  
-    <span class="glyphicon glyphicon-log-out"></span>
-    Export
-    </legend>
-    <a ng-if="csv_url"
-    ng-href="{{::csv_url}}"
-    download="{{::csv_name}}">
-    Download CSV File
-    </a><br />
-    <a ng-if="bb_url"
-    ng-href="{{::bb_url}}"
-    download="{{::bb_name}}">
-    Download BB File
-    </a>
-    </fieldset> -->
+    <fieldset style="margin-top:10px">
+      <legend>  
+        <span class="glyphicon glyphicon-log-out"></span>
+        Export
+      </legend>
+      <div ng-repeat="f in exports">
+        <a ng-if="f.url"
+           ng-href="{{f.url}}"
+           download="{{f.name}}">
+          Download {{f.label}} File
+        </a>
+      </div>
+    </fieldset>
   </form>
 </div>
