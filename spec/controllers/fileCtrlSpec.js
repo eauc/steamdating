@@ -33,6 +33,7 @@ describe('controllers', function() {
 
         this.state = state;
         spyOn(state, 'isEmpty');
+        spyOn(state, 'rankingTables');
 
         this.window = $window;
         spyOn($window, 'confirm');
@@ -191,17 +192,29 @@ describe('controllers', function() {
         this.fileExport.generate.and.callFake(function(type) {
           return type+'_url';
         });
-
+        this.state.rankingTables.and.returnValue(['ranking']);
         this.scope.updateExports();
       });
 
       it('should generate export for fk players list', function() {
         expect(this.fileExport.generate)
           .toHaveBeenCalledWith('fk', this.scope.state.players);
+        expect(this.fileExport.generate)
+          .toHaveBeenCalledWith('csv', ['ranking']);
+        expect(this.fileExport.generate)
+          .toHaveBeenCalledWith('bb', ['ranking']);
 
         expect(this.scope.exports.fk.name).toMatch(/^players_\d+\.txt$/);
         expect(this.scope.exports.fk.url).toBe('fk_url');
         expect(this.scope.exports.fk.label).toBe('FK players list');
+
+        expect(this.scope.exports.csv_rank.name).toMatch(/^ranking_\d+\.csv$/);
+        expect(this.scope.exports.csv_rank.url).toBe('csv_url');
+        expect(this.scope.exports.csv_rank.label).toBe('CSV Ranking');
+
+        expect(this.scope.exports.bb_rank.name).toMatch(/^ranking_\d+\.txt$/);
+        expect(this.scope.exports.bb_rank.url).toBe('bb_url');
+        expect(this.scope.exports.bb_rank.label).toBe('BB Ranking');
       });
     });
   });

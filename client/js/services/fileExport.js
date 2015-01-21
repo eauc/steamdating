@@ -301,15 +301,17 @@ angular.module('srApp.services')
   .factory('fileExport', [
     '$window',
     'fkStringifier',
-    // 'csvStringifier',
-    // 'bbStringifier',
+    'csvStringifier',
+    'bbStringifier',
     function($window,
-             fkStringifier) {
+             fkStringifier,
+             csvStringifier,
+             bbStringifier) {
       $window.URL = $window.URL || $window.webkitURL;
       var stringifiers = {
         fk: fkStringifier,
-        // csv: csvStringifier,
-        // bb: bbStringifier,
+        csv: csvStringifier,
+        bb: bbStringifier,
       };
       return {
         generate: function(type, data) {

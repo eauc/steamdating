@@ -204,6 +204,29 @@ angular.module('srApp.services')
           });
           return players.sort(st.players, st, is_bracket);
         },
+        rankingTables: function(st) {
+          return _.chain(st)
+            .apply(state.sortPlayers)
+            .map(function(gr) {
+              return _.chain(gr)
+                .map(function(ps, r) {
+                  return _.map(ps, function(p) {
+                    return [ r, p.name, p.city, p.faction,
+                             p.points.tournament, p.points.sos,
+                             p.points.control, p.points.army ];
+                  });
+                })
+                .flatten()
+                .chunk(8)
+                .value();
+            })
+            .map(function(gr) {
+              return _.cat([[ 'Rank', 'Name', 'City', 'Faction',
+                              'TP', 'SoS', 'CP', 'AP' ]], gr);
+            })
+            .spy('tables')
+            .value();
+        },
         // $scope.updatePoints = function() {
         //   _.each($scope.state.players, function(group, i) {
         //     var base_weight = group.length/2;

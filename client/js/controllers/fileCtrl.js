@@ -36,6 +36,16 @@ angular.module('srApp.controllers')
             name: 'players_'+now+'.txt',
             url: fileExport.generate('fk', $scope.state.players),
             label: 'FK players list'
+          },
+          csv_rank: {
+            name: 'ranking_'+now+'.csv',
+            url: fileExport.generate('csv', state.rankingTables($scope.state)),
+            label: 'CSV Ranking'
+          },
+          bb_rank: {
+            name: 'ranking_'+now+'.txt',
+            url: fileExport.generate('bb', state.rankingTables($scope.state)),
+            label: 'BB Ranking'
           }
         };
       };
