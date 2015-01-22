@@ -664,6 +664,14 @@ describe('service', function() {
         });
       });
     });
+
+    describe('groupSizeIsEven(<group>)', function() {
+      it('should check whether <group> size is even', function() {
+        expect(players.groupSizeIsEven([ [], [] ])).toBe(true);
+        expect(players.groupSizeIsEven([ [] ])).toBe(false);
+        expect(players.groupSizeIsEven([ ])).toBe(true);
+      });
+    });
   });
 
 });

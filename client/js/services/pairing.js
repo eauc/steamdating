@@ -231,10 +231,12 @@ angular.module('srApp.services')
         sortAvailablePlayersFor: function(available_players, p1) {
           var by_tp;
           return _.chain(available_players)
-            .groupBy(function(p) { return p.points.tournament; })
+            .groupBy(_.partial(_.getPath, _, 'points.tournament'))
             .apply(function(c) { by_tp = c; return c; })
             .keys()
-            .sortBy(function(k) { return parseFloat(k); })
+            .spy('keys')
+            .sortBy(function(k) { return "undefined" === k ? -1 : parseFloat(k); })
+            .spy('keys_sort')
             .map(function(key) {
               var other_cities = _.filter(by_tp[key], function(p) { return p.city !== p1.city; });
               var same_city = _.filter(by_tp[key], function(p) { return p.city === p1.city; });
@@ -268,6 +270,7 @@ angular.module('srApp.services')
         suggestNextSingleRound: function(state, i) {
           var tables = basePairing.tableRangeForGroup(state.players, i);
           var sorted_players = srPairing.sortPlayers(state.players[i]);
+          if(1 === (sorted_players.length & 0x1)) sorted_players.push({ name: '_phantom_' });
           return _.chain(state.players[i].length/2)
             .range()
             .map(function(i) {

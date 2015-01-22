@@ -67,6 +67,14 @@ describe('service', function() {
         expect(srPairing.sortAvailablePlayersFor(this.players, this.for_player))
           .toEqual([ 'p2', 'p1', 'p4', 'p3' ]);
       });
+
+      it('should handle phantom player corrrectly', function() {
+        this.players.push({ name: '_phantom_' });
+        // phantom player is injected by suggestNextRound when group size is odd
+        // should be placed at the end of the availables
+        expect(srPairing.sortAvailablePlayersFor(this.players, this.for_player))
+          .toEqual([ 'p2', 'p1', 'p4', 'p3', '_phantom_' ]);
+      });
     });
 
     describe('suggestOpponentFor(<opponents>, <availables>)', function() {
@@ -152,12 +160,12 @@ describe('service', function() {
       beforeEach(inject(function(basePairing) {
         this.games = [{table: 3},{table: 1},{table: 2}];
         this.tables = [['tables1'],['tables2'],['tables3'],[]];
-        this.players= [['players1'],['players2'],['players3'],[]];
-        var i = 0;
+        this.players= [['player11','player12'],['players2'],['players3'],[]];
+        this.i = 0;
         var ctxt = this;
         spyOn(srPairing, 'findNextPairing').and.callFake(function() {
-          var ret = [ ctxt.games[i], ctxt.players[i+1], ctxt.tables[i+1] ];
-          i++;
+          var ret = [ ctxt.games[ctxt.i], ctxt.players[ctxt.i+1], ctxt.tables[ctxt.i+1] ];
+          ctxt.i++;
           return ret;
         });
         spyOn(srPairing, 'sortPlayers').and.returnValue(this.players[0]);
@@ -191,7 +199,7 @@ describe('service', function() {
 
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
-                                this.players[0],
+                                ['player11', 'player12'],
                                 this.tables[0]);
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
@@ -201,6 +209,21 @@ describe('service', function() {
           .toHaveBeenCalledWith(this.state.rounds,
                                 this.players[2],
                                 this.tables[2]);
+      });
+
+      when('group size is odd', function() {
+        srPairing.findNextPairing.calls.reset();
+        srPairing.sortPlayers.and.returnValue(['player11']);
+        this.i = 0;
+
+        this.suggest = srPairing.suggestNextRound(this.state, 1);
+      }, function() {
+        it('should insert phantom player', function() {
+          expect(srPairing.findNextPairing)
+            .toHaveBeenCalledWith(this.state.rounds,
+                                  ['player11', { name:'_phantom_' }],
+                                  this.tables[0]);
+        });
       });
 
       it('should return sorted game list', function() {

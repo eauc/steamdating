@@ -52,6 +52,20 @@ describe('service', function() {
           { table: 3 }
         ]);
       });
+
+      it('should handle groups with odd length', function() {
+        var coll = [
+          { table: 1 },
+          { table: 2 },
+          { table: 3 },
+          { table: 4 },
+        ];
+        var players = [ [ {}, {}, {} ], [ {}, {}, {} ], [ {}, {} ] ];
+        expect(round.gamesForGroup(coll, players, 1)).toEqual([
+          { table: 3 },
+          { table: 4 }
+        ]);
+      });
     });
 
     describe('pairedPlayers()', function() {

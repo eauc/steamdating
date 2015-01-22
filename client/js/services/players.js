@@ -282,6 +282,9 @@ angular.module('srApp.services')
           new_coll.splice(i,1);
           new_coll.splice(i+1, 0, coll[i]);
           return new_coll;
+        },
+        groupSizeIsEven: function(gr) {
+          return (gr.length & 1) === 0;
         }
       };
       return players;

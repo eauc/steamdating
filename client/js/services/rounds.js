@@ -187,13 +187,13 @@ angular.module('srApp.services')
             .value();
         },
         gamesForGroup: function(coll, ps, i) {
-          var start_index = _.chain(ps)
-            .slice(0, i)
-            .flatten()
-            .value()
-            .length / 2;
-          var end_index = (start_index +
-                           ps[i].length / 2);
+          var start_index = Math.ceil(_.chain(ps)
+                                      .slice(0, i)
+                                      .flatten()
+                                      .value()
+                                      .length / 2);
+          var end_index = Math.ceil(start_index +
+                                    ps[i].length / 2);
           return _.chain(coll)
             .slice(start_index, end_index)
             .value();

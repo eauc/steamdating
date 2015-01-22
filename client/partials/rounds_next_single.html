@@ -15,6 +15,11 @@
     <h3 ng-if="new_state | state:'isBracketTournament':gri">
       Bracket - {{::new_state | state:'bracketRoundOf':gri}}
     </h3>
+    <strong class="text-danger"
+            ng-if="::!(gr | players:'groupSizeIsEven')">
+      Odd number of players !<br />
+      (add a phantom player)
+    </strong>
     <table class="table text-center">
       <tr ng-class="{
           'info': (gr | players:'areAllPaired':next_round[gri])
