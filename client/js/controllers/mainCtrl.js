@@ -32,8 +32,8 @@ angular.module('srApp.controllers')
         $scope.state = state.create(data);
       };
       $scope.state = state.init();
-      // $scope.state = state.test($scope.state);
-      console.log('state', $scope.state);
+      // $scope.state = state.test(state.create());
+      // console.log('test state', $scope.state);
 
       $scope.goToState = _.bind($state.go, $state);
       $scope.currentState = _.bind(_.getPath, _, $state, 'current.name');
@@ -70,7 +70,7 @@ angular.module('srApp.controllers')
         $scope.state.players = state.updatePlayersPoints($scope.state);
       };
       $scope.storeState = function() {
-        // state.store($scope.state);
+        state.store($scope.state);
       };
     }
   ]);

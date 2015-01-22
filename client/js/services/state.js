@@ -2,18 +2,23 @@
 
 angular.module('srApp.services')
   .factory('state', [
+    '$window',
+    'jsonStringifier',
     'player',
     'players',
     'game',
     'list',
     'lists',
     'ranking',
-    function(player,
+    function($window,
+             jsonStringifier,
+             player,
              players,
              game,
              list,
              lists,
              ranking) {
+      var STORAGE_KEY = 'sdApp.state';
       var state = {
         isEmpty: function(st) {
           // return (st.teams.length === 0 &&
@@ -23,17 +28,17 @@ angular.module('srApp.services')
                   _.flatten(st.rounds).length === 0);
         },
         init: function() {
-          // var stored_state = $window.localStorage.getItem('srApp.state');
-          // if(stored_state) {
-          //   try {
-          //     stored_state = JSON.parse(stored_state);
-          //     console.log('restoring stored state');
-          //     return state.create(stored_state);
-          //   }
-          //   catch(e) {
-          //     console.log('error parsing stored state', e);
-          //   }
-          // }
+          var stored_state = $window.localStorage.getItem(STORAGE_KEY);
+          if(_.exists(stored_state)) {
+            try {
+              stored_state = JSON.parse(stored_state);
+              console.log('restoring stored state');
+              return state.create(stored_state);
+            }
+            catch(e) {
+              console.log('error parsing stored state', e.message);
+            }
+          }
           return state.create();
         },
         test: function(st) {
@@ -100,7 +105,7 @@ angular.module('srApp.services')
         },
         create: function(data) {
           var _data = _.clone(data || {});
-          return _.defaults(_data, {
+          var st = _.defaults(_data, {
             // phantom: player.create('Phantom'),
             bracket: [],
             // teams:[[]],
@@ -112,14 +117,15 @@ angular.module('srApp.services')
               team: ranking.srTeamCrit()
             }
           });
-          //   $scope.updatePoints();
-          //   $scope.storeState();
-          //   console.log('state', $scope.state);
+          st.players = state.updatePlayersPoints(st);
+          state.store(st);
+          console.log('state', st);
+          return st;
         },
         store: function(st) {
-          // $window.localStorage.setItem('srApp.state',
-          //                              JSON.stringify(st));
-          // console.log('state stored');
+          $window.localStorage.setItem(STORAGE_KEY,
+                                       jsonStringifier.stringify(st));
+          console.log('state stored');
         },
         hasPlayers: function(st) {
           return _.flatten(st.players).length !== 0;

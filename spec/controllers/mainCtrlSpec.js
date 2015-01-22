@@ -25,7 +25,8 @@ describe('controllers', function() {
           'init',
           'test',
           'create',
-          'updatePlayersPoints'
+          'updatePlayersPoints',
+          'store'
         ]);
         this.state.init.and.returnValue(this.dummy_state);
         this.state.test.and.returnValue(this.dummy_state);
@@ -95,6 +96,14 @@ describe('controllers', function() {
         expect(this.scope.state.players).toEqual(this.dummy_players);
         expect(this.state.updatePlayersPoints)
           .toHaveBeenCalledWith(this.scope.state);
+      });
+    });
+
+    describe('storeState()', function() {
+      it('should store state', function() {
+        this.scope.storeState();
+
+        expect(this.state.store).toHaveBeenCalledWith(this.scope.state);
       });
     });
   });

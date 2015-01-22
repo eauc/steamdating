@@ -1,16 +1,8 @@
 'use strict';
 
 angular.module('srApp.services')
-  .factory('fileExport', [
-    '$window',
-    'fkStringifier',
-    'csvStringifier',
-    'bbStringifier',
-    function($window,
-             fkStringifier,
-             csvStringifier,
-             bbStringifier) {
-      $window.URL = $window.URL || $window.webkitURL;
+  .factory('jsonStringifier', [
+    function() {
       var jsonStringifier = {
         stringify: function(data) {
           return JSON.stringify(data, function(key,value) {
@@ -21,6 +13,21 @@ angular.module('srApp.services')
           });
         }
       };
+      return jsonStringifier;
+    }
+  ])
+  .factory('fileExport', [
+    '$window',
+    'fkStringifier',
+    'csvStringifier',
+    'bbStringifier',
+    'jsonStringifier',
+    function($window,
+             fkStringifier,
+             csvStringifier,
+             bbStringifier,
+             jsonStringifier) {
+      $window.URL = $window.URL || $window.webkitURL;
       var stringifiers = {
         fk: fkStringifier,
         csv: csvStringifier,

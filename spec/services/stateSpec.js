@@ -3,6 +3,12 @@
 describe('service', function() {
 
   beforeEach(function() {
+    angular.module('srApp.services')
+      .factory('$window', function() {
+        return {
+          localStorage: jasmine.createSpyObj('localStorage', ['getItem', 'setItem' ])
+        };
+      });
     module('srApp.services');
   });
 
@@ -24,20 +30,34 @@ describe('service', function() {
 
     describe('create(<data>)', function() {
       beforeEach(function() {
+        spyOn(state, 'updatePlayersPoints').and.returnValue(['updated_players']);
+        spyOn(state, 'store');
         this.data = {
           test: 'value'
         };
         this.result = state.create(this.data);
       });
 
-      it('should not modify data', function() {
-        expect(this.data).toEqual({ test: 'value' });
-        expect(this.result).not.toBe(this.data);
+      it('should update players points', function() {
+        expect(state.updatePlayersPoints).toHaveBeenCalled();
+        expect(this.result.players).toEqual(['updated_players']);
       });
 
-      it('should add default fields', function() {
-        expect(this.result.players).toEqual([[]]);
-        expect(this.result.rounds).toEqual([]);
+      it('should create default state', function() {
+        expect(this.result).toEqual({
+          test: 'value',
+          players: ['updated_players'],
+          rounds: [],
+          bracket: [],
+          ranking: {
+            player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
+            team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
+          }
+        });
+      });
+
+      it('should store state', function() {
+        expect(state.store).toHaveBeenCalledWith(this.result);
       });
 
       when('expected fields exist in data', function() {
@@ -54,26 +74,57 @@ describe('service', function() {
         this.result = state.create(this.data);
       }, function() {
         it('should not modify them', function() {
-          expect(this.result).toEqual(this.data);
+          expect(this.result).toEqual(_.extend(this.data, {
+            players: ['updated_players']
+          }));
         });
       });
     });
 
     describe('init()', function() {
-      beforeEach(function() {
+      beforeEach(inject(function($window) {
+        spyOn(state, 'create').and.returnValue(['new_state']);
+        this.window = $window;
+      }));
+
+      when('stored data is valid', function() {
+        this.window.localStorage.getItem.and.returnValue('["stored_state"]');
+
         this.result = state.init();
+      }, function() {
+        it('should retrieve stored state', function() {
+          expect(this.window.localStorage.getItem)
+            .toHaveBeenCalledWith('sdApp.state');
+        });
+        
+        it('should create new state with stored data', function() {
+          expect(state.create)
+            .toHaveBeenCalledWith(['stored_state']);
+        });
       });
 
-      it('should create default state', function() {
-        expect(this.result).toEqual({
-          players: [[]],
-          rounds: [],
-          bracket: [],
-          ranking: {
-            player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
-            team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
-          }
+      when('stored data is invalid', function() {
+        this.window.localStorage.getItem.and.returnValue('["stored_state');
+
+        this.result = state.init();
+      }, function() {
+        it('should create new empty state', function() {
+          expect(state.create)
+            .toHaveBeenCalledWith();
         });
+      });
+    });
+
+    describe('store()', function() {
+      beforeEach(inject(function($window) {
+        this.window = $window;
+      }));
+
+      it('should store state in localStorage', function() {
+        state.store([ 'state' ]);
+
+        expect(this.window.localStorage.setItem)
+          .toHaveBeenCalledWith('sdApp.state', '["state"]');
       });
     });
 
