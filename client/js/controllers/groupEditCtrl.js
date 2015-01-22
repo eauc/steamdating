@@ -10,11 +10,19 @@ angular.module('srApp.controllers')
              $window,
              players,
              state) {
-      console.log('init groupEditCtrl');
+      $scope.new_state = _.clone($scope.state);
+      $scope.new_state.players = _.chain($scope.state)
+        .apply(state.sortPlayers)
+        .map(function(gr) {
+          return _.chain(gr)
+            .mapWith(_.getPath, 'players')
+            .flatten()
+            .value();
+        })
+        .value();
 
-      $scope.players = _.map($scope.state.players, function(gr) {
-        return _.clone(gr);
-      });
+      console.log('init groupEditCtrl', $scope.new_state);
+
       $scope.selection= {};
       $scope.isSelectionEmpty = function() {
         return !_.chain($scope.selection)
@@ -26,42 +34,48 @@ angular.module('srApp.controllers')
       $scope.chunkGroups = function() {
         var size = parseFloat($window.prompt('Groups size'));
         if(_.isNaN(size)) return;
-        $scope.players = players.chunkGroups($scope.players,
-                                             parseFloat(size));
+        $scope.new_state.players = players.chunkGroups($scope.new_state.players,
+                                                       parseFloat(size));
+        $scope.new_state.bracket = state.clearBracket($scope.new_state);
       };
       $scope.splitSelection = function() {
         var ps = _.reduce($scope.selection, function(mem, is, name) {
           return is ? _.cat(mem, name) : mem;
         }, []);
-        $scope.players = players.splitNewGroup($scope.players, ps);
+        $scope.new_state.players = players.splitNewGroup($scope.new_state.players, ps);
+        $scope.new_state.bracket = state.clearBracket($scope.new_state);
       };
       $scope.moveSelectionFront = function() {
         var ps = _.reduce($scope.selection, function(mem, is, name) {
           return is ? _.cat(mem, name) : mem;
         }, []);
         _.each(ps, function(p) {
-          $scope.players = players.movePlayerGroupFront($scope.players, p);
+          $scope.new_state.players = players.movePlayerGroupFront($scope.new_state.players, p);
         });
+        $scope.new_state.bracket = state.clearBracket($scope.new_state);
       };
       $scope.moveSelectionBack = function() {
         var ps = _.reduce($scope.selection, function(mem, is, name) {
           return is ? _.cat(mem, name) : mem;
         }, []);
         _.each(ps, function(p) {
-          $scope.players = players.movePlayerGroupBack($scope.players, p);
+          $scope.new_state.players = players.movePlayerGroupBack($scope.new_state.players, p);
         });
+        $scope.new_state.bracket = state.clearBracket($scope.new_state);
       };
       $scope.moveGroupFront = function(gr) {
-        $scope.players = players.moveGroupFront($scope.players, gr);
+        $scope.new_state.players = players.moveGroupFront($scope.new_state.players, gr);
+        $scope.new_state.bracket = state.clearBracket($scope.new_state);
       };
       $scope.moveGroupBack = function(gr) {
-        $scope.players = players.moveGroupBack($scope.players, gr);
+        $scope.new_state.players = players.moveGroupBack($scope.new_state.players, gr);
+        $scope.new_state.bracket = state.clearBracket($scope.new_state);
       };
 
       $scope.doClose = function(validate) {
         if(validate) {
-          $scope.state.players = $scope.players;
-          $scope.state.bracket = state.clearBracket($scope.state);
+          $scope.state.players = $scope.new_state.players;
+          $scope.state.bracket = $scope.new_state.bracket;
           $scope.updatePoints();
           $scope.storeState();
         }

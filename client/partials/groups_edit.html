@@ -1,5 +1,13 @@
 <div class="container">
   <h2>Edit Groups</h2>
+  <button class="btn btn-default"
+          ng-click="doClose(true)">
+    Save
+  </button>
+  <button class="btn btn-default"
+          ng-click="doClose(false)">
+    Cancel
+  </button>
   <h3 style="border-bottom:1px solid black;">
     Selection
   </h3>
@@ -24,7 +32,7 @@
     <span class="glyphicon glyphicon-chevron-down"></span>
     Move Selection down
   </button>
-  <div ng-repeat="gr in players">
+  <div ng-repeat="gr in new_state.players">
     <h3 style="border-bottom:1px solid black;">
       Group{{$index+1}}
       <button class="btn"
@@ -36,6 +44,9 @@
         <span class="glyphicon glyphicon-chevron-down"></span>
       </button>
     </h3>
+    Bracket after round : <input style="width:5em"
+                                 type="number"
+                                 ng-model="new_state.bracket[$index]" />
     <table class="table">
       <tr>
         <th>Player</th>
@@ -50,15 +61,5 @@
         <td style="vertical-align:middle">{{p.name}}</td>
       </tr>
     </table>
-  </div>
-  <div class="text-center">
-    <button class="btn btn-default"
-            ng-click="doClose(true)">
-      Save
-    </button>
-    <button class="btn btn-default"
-            ng-click="doClose(false)">
-      Cancel
-    </button>
   </div>
 </div>

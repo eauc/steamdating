@@ -21,13 +21,7 @@ describe('controllers', function() {
                players,
                state) {
         this.scope = $rootScope.$new();
-        this.scope.state = {
-          players: [
-            [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
-            [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
-            [ { name: 'p8' }, { name: 'p9' } ]
-          ]
-        };
+        this.scope.state = { players: ['players'], bracket: ['bracket'] };
         this.scope.goToState = jasmine.createSpy('goToState');
         this.scope.updatePoints = jasmine.createSpy('updatePoints');
         this.scope.storeState = jasmine.createSpy('storeState');
@@ -43,7 +37,18 @@ describe('controllers', function() {
         spyOn(players, 'moveGroupBack').and.returnValue(this.new_groups);
 
         this.state = state;
-        spyOn(state, 'clearBracket');
+        this.sorted_players = [
+          [ { rank: 1, players: [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ] },
+            { rank: 2, players: [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ] } ],
+          [ { rank: 3, players: [ { name: 'p8' }, { name: 'p9' } ] } ]
+        ];
+        this.new_state_players = [
+          [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' },
+          { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
+          [ { name: 'p8' }, { name: 'p9' } ]
+        ];
+        spyOn(state, 'sortPlayers').and.returnValue(this.sorted_players);
+        spyOn(state, 'clearBracket').and.returnValue(['new_bracket']);
 
         $controller('groupEditCtrl', { 
           '$scope': this.scope,
@@ -56,13 +61,16 @@ describe('controllers', function() {
       expect(this.scope.selection).toEqual({});
     });
 
-    it('should make a copy of players list', function() {
-      expect(this.scope.players).toEqual(this.scope.state.players);
-      expect(this.scope.players).not.toBe(this.scope.state.players);
-      var ctxt = this;
-      _.each(this.scope.state.players, function(gr, i) {
-        expect(ctxt.scope.players[i]).not.toBe(gr);
-      });
+    it('should make a copy the state', function() {
+      expect(this.scope.new_state).toBeAn('Object');
+      expect(this.scope.new_state).not.toBe(this.scope.state);
+      expect(this.scope.new_state.bracket).toEqual(this.scope.state.bracket);
+    });
+
+    it('should sort players', function() {
+      expect(this.state.sortPlayers)
+        .toHaveBeenCalledWith(this.scope.state);
+      expect(this.scope.new_state.players).toEqual(this.new_state_players);
     });
 
     describe('isSelectionEmpty()', function() {
@@ -88,19 +96,25 @@ describe('controllers', function() {
 
         this.new_groups = [ 'new groups' ];
         this.players.chunkGroups.and.returnValue(this.new_groups);
+
+        this.scope.chunkGroups();
       }, function() {
         it('should chunk groups', function() {
-          this.scope.chunkGroups();
-
-          expect(this.scope.players).toBe(this.new_groups);
+          expect(this.scope.new_state.players).toBe(this.new_groups);
           expect(this.players.chunkGroups)
-            .toHaveBeenCalledWith(this.scope.state.players, 5);
+            .toHaveBeenCalledWith(this.new_state_players, 5);
+        });
+
+        it('should reset bracket', function() {
+          expect(this.scope.new_state.bracket).toEqual(['new_bracket']);
+          expect(this.state.clearBracket)
+            .toHaveBeenCalledWith(this.scope.new_state);
         });
       });
     });
 
     describe('splitSelection()', function() {
-      it('should split selection into new group', function() {
+      beforeEach(function() {
         this.scope.selection = {
           'p1': true,
           'p2': false,
@@ -108,15 +122,23 @@ describe('controllers', function() {
           'p4': false,
         };
         this.scope.splitSelection();
+      });
 
-        expect(this.scope.players).toBe(this.new_groups);
+      it('should split selection into new group', function() {
+        expect(this.scope.new_state.players).toBe(this.new_groups);
         expect(this.players.splitNewGroup)
-          .toHaveBeenCalledWith(this.scope.state.players, ['p1','p3']);
+          .toHaveBeenCalledWith(this.new_state_players, ['p1','p3']);
+      });
+
+      it('should reset bracket', function() {
+        expect(this.scope.new_state.bracket).toEqual(['new_bracket']);
+        expect(this.state.clearBracket)
+          .toHaveBeenCalledWith(this.scope.new_state);
       });
     });
 
     describe('moveSelectionFront()', function() {
-      it('should move players in selection to front', function() {
+      beforeEach(function() {
         this.scope.selection = {
           'p1': true,
           'p2': false,
@@ -124,18 +146,26 @@ describe('controllers', function() {
           'p4': false,
         };
         this.scope.moveSelectionFront();
+      });
 
-        expect(this.scope.players).toBe(this.new_groups);
+      it('should move players in selection to front', function() {
+        expect(this.scope.new_state.players).toBe(this.new_groups);
         expect(this.players.movePlayerGroupFront.calls.count()).toBe(2);
         expect(this.players.movePlayerGroupFront)
-          .toHaveBeenCalledWith(this.scope.state.players, 'p1');
+          .toHaveBeenCalledWith(this.new_state_players, 'p1');
         expect(this.players.movePlayerGroupFront)
           .toHaveBeenCalledWith(this.new_groups, 'p3');
+      });
+
+      it('should reset bracket', function() {
+        expect(this.scope.new_state.bracket).toEqual(['new_bracket']);
+        expect(this.state.clearBracket)
+          .toHaveBeenCalledWith(this.scope.new_state);
       });
     });
 
     describe('moveSelectionBack()', function() {
-      it('should move players in selection to back', function() {
+      beforeEach(function() {
         this.scope.selection = {
           'p1': true,
           'p2': false,
@@ -143,33 +173,57 @@ describe('controllers', function() {
           'p4': false,
         };
         this.scope.moveSelectionBack();
+      });
 
-        expect(this.scope.players).toBe(this.new_groups);
+      it('should move players in selection to back', function() {
+        expect(this.scope.new_state.players).toBe(this.new_groups);
         expect(this.players.movePlayerGroupBack.calls.count()).toBe(2);
         expect(this.players.movePlayerGroupBack)
-          .toHaveBeenCalledWith(this.scope.state.players, 'p1');
+          .toHaveBeenCalledWith(this.new_state_players, 'p1');
         expect(this.players.movePlayerGroupBack)
           .toHaveBeenCalledWith(this.new_groups, 'p3');
+      });
+
+      it('should reset bracket', function() {
+        expect(this.scope.new_state.bracket).toEqual(['new_bracket']);
+        expect(this.state.clearBracket)
+          .toHaveBeenCalledWith(this.scope.new_state);
       });
     });
 
     describe('moveGroupFront(<group_index>)', function() {
-      it('should move <group_index> to front', function() {
+      beforeEach(function() {
         this.scope.moveGroupFront(4);
+      });
 
-        expect(this.scope.players).toBe(this.new_groups);
+      it('should move <group_index> to front', function() {
+        expect(this.scope.new_state.players).toBe(this.new_groups);
         expect(this.players.moveGroupFront)
-          .toHaveBeenCalledWith(this.scope.state.players, 4);
+          .toHaveBeenCalledWith(this.new_state_players, 4);
+      });
+
+      it('should reset bracket', function() {
+        expect(this.scope.new_state.bracket).toEqual(['new_bracket']);
+        expect(this.state.clearBracket)
+          .toHaveBeenCalledWith(this.scope.new_state);
       });
     });
 
     describe('moveGroupBack(<group_index>)', function() {
-      it('should move <group_index> to back', function() {
+      beforeEach(function() {
         this.scope.moveGroupBack(4);
+      });
 
-        expect(this.scope.players).toBe(this.new_groups);
+      it('should move <group_index> to back', function() {
+        expect(this.scope.new_state.players).toBe(this.new_groups);
         expect(this.players.moveGroupBack)
-          .toHaveBeenCalledWith(this.scope.state.players, 4);
+          .toHaveBeenCalledWith(this.new_state_players, 4);
+      });
+
+      it('should reset bracket', function() {
+        expect(this.scope.new_state.bracket).toEqual(['new_bracket']);
+        expect(this.state.clearBracket)
+          .toHaveBeenCalledWith(this.scope.new_state);
       });
     });
 
@@ -181,17 +235,17 @@ describe('controllers', function() {
       });
 
       when('<validate>', function() {
-        this.scope.players = this.new_groups;
-        this.state.clearBracket.and.returnValue(['new_bracket']);
+        this.scope.new_state.players = this.new_groups;
+        this.scope.new_state.bracket = ['new_bracket'];
+
         this.scope.doClose(true);
       }, function() {
         it('should update state.players', function() {
           expect(this.scope.state.players).toBe(this.new_groups);
         });
 
-        it('should clear state.bracket', function() {
+        it('should update state.bracket', function() {
           expect(this.scope.state.bracket).toEqual(['new_bracket']);
-          expect(this.state.clearBracket).toHaveBeenCalledWith(this.scope.state);
         });
 
         it('should update points', function() {
