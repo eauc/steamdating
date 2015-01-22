@@ -64,6 +64,8 @@ describe('controllers', function() {
     it('should init exports', function() {
       expect(this.scope.exports).toBeAn('Object');
       expect(_.keys(this.scope.exports).length).not.toBe(0);
+      expect(this.scope.save).toBeAn('Object');
+      expect(_.keys(this.scope.exports).length).not.toBe(0);
     });
 
     describe('on destroy', function() {
@@ -113,6 +115,60 @@ describe('controllers', function() {
           this.scope.doReset();
 
           expect(this.scope.resetState).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('doOpenFile(<file>)', function() {
+      beforeEach(inject(function(fileImport) {
+        var ctxt = this;
+        this.fileImport = fileImport;
+        spyOn(fileImport, 'read').and.returnValue({
+          then: function(onSuccess, onError) {
+            ctxt.onSuccess = onSuccess; 
+            ctxt.onError = onError;
+          }
+        });
+        
+        this.scope.doOpenFile('file');
+      }));
+
+      it('should try to import file', function() {
+        expect(this.fileImport.read)
+          .toHaveBeenCalledWith('json', 'file', this.scope.factions);
+      });
+
+      describe('on error', function() {
+        it('should set error feedback string', function() {
+          this.onError([ 'errors' ]);
+
+          expect(this.scope.open_result).toEqual([ 'errors' ]);
+        });
+      });
+
+      describe('on success', function() {
+        beforeEach(function() {
+          spyOn(this.scope, 'updateExports');
+
+          this.onSuccess([[ 'state' ], [ 'errors' ]]);
+        });
+
+        it('should reset state', function() {
+          expect(this.scope.resetState)
+            .toHaveBeenCalledWith(['state']);
+        });
+
+        it('should set error feedback string', function() {
+          expect(this.scope.open_result[0]).toEqual('errors');
+        });
+
+        when('no error during import', function() {
+          this.onSuccess([[ 'players' ], [ ]]);
+        }, function() {
+          it('should automatically display players list', function() {
+            expect(this.scope.goToState)
+              .toHaveBeenCalledWith('players');
+          });
         });
       });
     });
@@ -193,16 +249,26 @@ describe('controllers', function() {
           return type+'_url';
         });
         this.state.rankingTables.and.returnValue(['ranking']);
+
+        this.scope.exports = null;
+        this.scope.save = null;
+
         this.scope.updateExports();
       });
 
       it('should generate export for fk players list', function() {
+        expect(this.fileExport.generate)
+          .toHaveBeenCalledWith('json', this.scope.state);
+
         expect(this.fileExport.generate)
           .toHaveBeenCalledWith('fk', this.scope.state.players);
         expect(this.fileExport.generate)
           .toHaveBeenCalledWith('csv', ['ranking']);
         expect(this.fileExport.generate)
           .toHaveBeenCalledWith('bb', ['ranking']);
+
+        expect(this.scope.save.name).toMatch(/^steamdating_\d+\.txt$/);
+        expect(this.scope.save.url).toBe('json_url');
 
         expect(this.scope.exports.fk.name).toMatch(/^players_\d+\.txt$/);
         expect(this.scope.exports.fk.url).toBe('fk_url');

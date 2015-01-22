@@ -12,7 +12,12 @@ angular.module('srApp.services')
              fkParser) {
       var parsers = {
         't3': t3Parser,
-        'fk': fkParser
+        'fk': fkParser,
+        'json': {
+          parse: function(string) {
+            return [JSON.parse(string), []];
+          }
+        }
       };
       return {
         read: function(type, file, factions) {
@@ -25,7 +30,7 @@ angular.module('srApp.services')
               defer.resolve(data);
             }
             catch (event) {
-              defer.reject(['invalid file']);
+              defer.reject(['invalid file : '+event.message]);
             }
           };
           reader.onerror = function(e) {

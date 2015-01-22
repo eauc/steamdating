@@ -106,7 +106,7 @@ describe('service', function() {
           this.testOnLoad();
         }, function() {
           it('should reject promise', function() {
-            expect(this.errorCbk).toHaveBeenCalledWith(['invalid file']);
+            expect(this.errorCbk).toHaveBeenCalledWith(['invalid file : parse error']);
           });
         });
 

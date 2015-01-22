@@ -31,6 +31,10 @@ angular.module('srApp.controllers')
 
       $scope.updateExports = function() {
         var now = (new Date()).getTime();
+        $scope.save = {
+          name: 'steamdating_'+now+'.txt',
+          url: fileExport.generate('json', $scope.state)
+        };
         $scope.exports = {
           fk: {
             name: 'players_'+now+'.txt',
@@ -61,6 +65,20 @@ angular.module('srApp.controllers')
         var conf = state.isEmpty($scope.state);
         if(!conf) conf = $window.confirm('You sure ?');
         if(conf) $scope.resetState();
+      };
+
+      $scope.doOpenFile = function(file) {
+        console.log('openFile', file);
+        fileImport.read('json', file, $scope.factions)
+          .then(function(data) {
+            var state = data[0];
+            var error = data[1];
+            $scope.resetState(state);
+            $scope['open_result'] = error;
+            $scope.goToState('players');
+          }, function(error) {
+            $scope['open_result'] = error;
+          });
       };
 
       $scope.doImportFile = function(type, file) {

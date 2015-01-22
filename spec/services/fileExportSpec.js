@@ -35,8 +35,11 @@ describe('service', function() {
 
         expect(this.window.Blob)
           .toHaveBeenCalledWith(['fk_string'], {type: 'text/plain'});
-        expect(this.window.URL.createObjectURL)
-          .toHaveBeenCalledWith({ blob: 'blob' });
+        // bug in SpecRunner
+        // expect(this.window.URL.createObjectURL)
+        //   .toHaveBeenCalledWith({ blob: 'blob' });
+        expect(this.window.URL.createObjectURL).toHaveBeenCalled();
+        expect(this.window.URL.createObjectURL.calls.first().args[0].blob).toBe('blob');
       });
     });
   });
