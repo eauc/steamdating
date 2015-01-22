@@ -95,6 +95,7 @@ angular.module('srApp.services')
           });
           _st.bracket = [undefined, 1];
           _st.players = state.updatePlayersPoints(_st);
+          // _st.players[0].length = 3;
           return _st;
         },
         create: function(data) {
@@ -209,9 +210,9 @@ angular.module('srApp.services')
             .apply(state.sortPlayers)
             .map(function(gr) {
               return _.chain(gr)
-                .map(function(ps, r) {
-                  return _.map(ps, function(p) {
-                    return [ r, p.name, p.city, p.faction,
+                .map(function(rank) {
+                  return _.map(rank.players, function(p) {
+                    return [ rank.rank, p.name, p.city, p.faction,
                              p.points.tournament, p.points.sos,
                              p.points.control, p.points.army ];
                   });

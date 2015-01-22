@@ -7,11 +7,11 @@
     <tr>
       <th>Player</th>
       <th>Lists Played</th>
-      <th ng-repeat="r in ::state.rounds">
+      <th ng-repeat="(ri,r) in ::state.rounds">
         {{
         (state | state:'isBracketTournament':gri:$index) ?
         (state | state:'bracketRoundOf':gri:$index) :
-        'Round'+(gri+1)
+        'Round'+(ri+1)
         }}
       </th>
     </tr>

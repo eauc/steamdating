@@ -48,8 +48,8 @@ describe('service', function() {
         };
         this.gri = 1;
         this.sorted_players = [
-          { name: 'p1' }, { name: 'p2' }, { name: 'p3' }, { name: 'p4' },
-          { name: 'p5' }, { name: 'p6' }, { name: 'p7' }, { name: 'p8' },
+          { rank: 1, players: [{ name: 'p1' }, { name: 'p2' }, { name: 'p3' }, { name: 'p4' }] },
+          { rank: 2, players: [{ name: 'p5' }, { name: 'p6' }, { name: 'p7' }, { name: 'p8' }] },
         ];
         this.players.sortGroup.and.returnValue(this.sorted_players);
 

@@ -181,10 +181,10 @@ angular.module('srApp.services')
             // .spy('sort keys')
           // fold each rank list into final list
             .reduce(function(mem, r) {
-              mem[rank+1] = by_rank[r];
+              mem.push({ rank: rank+1, players: by_rank[r] });
               rank += by_rank[r].length;
               return mem;
-            }, {})
+            }, [])
             // .spy('sort end')
             .value();
         },

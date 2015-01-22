@@ -359,43 +359,62 @@ describe('service', function() {
         it('should sort group using <state.ranking.player> criterion', function() {
           this.state.ranking.player = 'sos';
           var res = players.sortGroup(this.coll, this.state);
-          expect(res).toEqual({
-            1: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } }],
-            2: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } }],
-            3: [{ name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } }],
-            4: [{ name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } }],
-            5: [{ name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }],
-          });
+          expect(res).toEqual([
+{ rank: 1,
+  players: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } }] },
+{ rank: 2,
+  players: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } }] },
+{ rank: 3,
+  players: [{ name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } }] },
+{ rank: 4,
+  players: [{ name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } }] },
+{ rank: 5,
+  players: [{ name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }] },
+          ]);
 
           this.state.ranking.player = 'tp';
           res = players.sortGroup(this.coll, this.state);
-          expect(res).toEqual({
-            1: [{ name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }],
-            2: [{ name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } }],
-            3: [{ name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } }],
-            4: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } }],
-            5: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } }],
-          });
+          expect(res).toEqual([
+{ rank: 1, 
+  players: [{ name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }] },
+{ rank: 2, 
+  players: [{ name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } }] },
+{ rank: 3, 
+  players: [{ name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } }] },
+{ rank: 4, 
+  players: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } }] },
+{ rank: 5, 
+  players: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } }] },
+          ]);
 
           this.state.ranking.player = 'cp';
           res = players.sortGroup(this.coll, this.state);
-          expect(res).toEqual({
-            1: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } }],
-            2: [{ name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }],
-            3: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } }],
-            4: [{ name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } }],
-            5: [{ name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } }],
-          });
+          expect(res).toEqual([
+{ rank: 1, 
+  players: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } }] },
+{ rank: 2, 
+  players: [{ name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }] },
+{ rank: 3, 
+  players: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } }] },
+{ rank: 4, 
+  players: [{ name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } }] },
+{ rank: 5, 
+  players: [{ name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } }] },
+          ]);
 
           this.state.ranking.player = 'ap';
           res = players.sortGroup(this.coll, this.state);
-          expect(res).toEqual({
-            1: [{ name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }],
-            2: [{ name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } },
-                { name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } }],
-            4: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } }],
-            5: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } }],
-          });
+          expect(res).toEqual([
+{ rank: 1, 
+  players: [{ name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }] },
+{ rank: 2, 
+  players: [{ name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } },
+            { name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } }] },
+{ rank: 4, 
+  players: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } }] },
+{ rank: 5, 
+  players: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } }] },
+          ]);
         });
       });
 
@@ -403,13 +422,15 @@ describe('service', function() {
       }, function() {
         it('should sort group using <player.points.bracket>', function() {
           var res = players.sortGroup(this.coll, this.state, true);
-          expect(res).toEqual({
-            1: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } },
-                { name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } } ],
-            3: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } },
-                { name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } },
-                { name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }]
-          });
+          expect(res).toEqual([
+{ rank: 1, 
+  players: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } },
+            { name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } } ] },
+{ rank: 3, 
+  players: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } },
+            { name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } },
+            { name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }] },
+          ]);
         });
       });
     });

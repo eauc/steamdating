@@ -39,12 +39,12 @@
       <th>AP</th>
       <th></th>
     </tr>
-    <tbody ng-repeat="(rank,ps) in ::gr"
+    <tbody ng-repeat="rank in ::gr"
            style="border-width:0px">
-      <tr ng-repeat="p in ::ps"
+      <tr ng-repeat="p in ::rank.players"
           style="cursor:pointer;"
           ng-click="doEditPlayer(p)">
-        <td>{{::rank}}</td>
+        <td>{{::rank.rank}}</td>
         <td>{{::p.name}}</td>
         <td>{{::p.city}}</td>
         <td>

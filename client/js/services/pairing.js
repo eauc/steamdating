@@ -59,7 +59,11 @@ angular.module('srApp.services')
         suggestFirstSingleRound: function(st, gri) {
           var tables = basePairing.tableRangeForGroup(st.players, gri);
           var group = st.players[gri];
-          var ps = _.flatten(players.sortGroup(group, st, false));
+          var ps = _.chain(group)
+            .apply(players.sortGroup, st, false)
+            .mapWith(_.getPath, 'players')
+            .flatten()
+            .value();
           return _.chain(ps.length)
             .apply(bracketPairing.indices)
             .map(function(ind) {

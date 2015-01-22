@@ -335,9 +335,9 @@ describe('service', function() {
         var res = state.rankingTables(st);
         expect(res).toEqual([[
           [ 'Rank', 'Name', 'City', 'Faction', 'TP', 'SoS', 'CP', 'AP' ],
-          [ '1', 'p1', 'c1', 'f1', 5, 4, 15, 32 ],
-          [ '2', 'p3', 'c3', 'f3', 3, 7, 12, 48 ],
-          [ '3', 'p2', 'c2', 'f2', 3, 4, 12, 32 ]
+          [ 1, 'p1', 'c1', 'f1', 5, 4, 15, 32 ],
+          [ 2, 'p3', 'c3', 'f3', 3, 7, 12, 48 ],
+          [ 3, 'p2', 'c2', 'f2', 3, 4, 12, 32 ]
         ]]);
       });
     });
