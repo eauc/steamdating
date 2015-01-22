@@ -24,7 +24,11 @@ describe('controllers', function() {
           rounds: this.state_rounds
         };
 
-        this.round = jasmine.createSpyObj('round', [ 'gameForPlayer', 'updatePlayer' ]);
+        this.round = jasmine.createSpyObj('round', [
+          'gameForPlayer',
+          'updatePlayer',
+          'isPlayerPaired'
+        ]);
         this.rounds = jasmine.createSpyObj('rounds', [
           'drop',
           'createNextRound',
@@ -58,18 +62,55 @@ describe('controllers', function() {
       expect(this.rounds.createNextRound)
         .toHaveBeenCalledWith(this.scope.state.players);
     });
-    
+
+    it('should init players options lists', function() {
+      expect(this.scope.players_options).not.toBe(undefined);
+    });
+
     describe('updateNextRound(<gr_index>,<ga_index>,<key>)', function() {
       beforeEach(function() {
         this.scope.next_round = [ 'group1', 'group2', 'group3' ];
         this.dummy_updated_round = [ 'udpated_round' ];
         this.round.updatePlayer.and.returnValue(this.dummy_updated_round);
+
+        spyOn(this.scope, 'updatePlayersOptions');
+
+        this.scope.updateNextRound(2,3,'key');
       });
 
       it('should update player names in next round for <gr_index> group', function() {
-        this.scope.updateNextRound(2,3,'key');
         expect(this.scope.next_round[2]).toBe(this.dummy_updated_round);
         expect(this.round.updatePlayer).toHaveBeenCalledWith('group3', 3, 'key');
+      });
+
+      it('should update players options lists', function() {
+        expect(this.scope.updatePlayersOptions).toHaveBeenCalled();
+      });
+    });
+
+    describe('updatePlayersOptions()', function() {
+      beforeEach(function() {
+        this.scope.players_options = null;
+        this.scope.new_state.players = [
+          [ { name: 'paired11' }, { name: 'not_paired12' }, { name: 'not_paired13' } ],
+          [ { name: 'not_paired21' }, { name: 'paired22' } ],
+        ];
+        this.scope.next_round = [ 'group1', 'group2' ];
+        this.round.isPlayerPaired.and.callFake(function(r, p) {
+          return s.startsWith(p.name, 'paired');
+        });
+      });
+
+      it('should update players options lists', function() {
+        this.scope.updatePlayersOptions();
+
+        expect(this.scope.players_options).toEqual([
+          [ ['paired11', 'paired11'],
+            ['not_paired12', '> not_paired12'],
+            ['not_paired13', '> not_paired13'] ],
+          [ ['not_paired21', '> not_paired21'],
+            ['paired22', 'paired22'] ]
+        ]);
       });
     });
     
@@ -109,6 +150,8 @@ describe('controllers', function() {
         this.suggest = [ 'suggest' ];
         this.srPairing.suggestNextRound.and.returnValue(this.suggest);
 
+        spyOn(this.scope, 'updatePlayersOptions');
+
         this.scope.suggestNextRound(1, this.type);
       }, function() {
         it('should reset bracket for this group', function() {
@@ -120,12 +163,18 @@ describe('controllers', function() {
             .toHaveBeenCalledWith(this.scope.new_state, 1);
           expect(this.scope.next_round[1]).toBe(this.suggest);
         });
+
+        it('should update players options lists', function() {
+          expect(this.scope.updatePlayersOptions).toHaveBeenCalled();
+        });
       });
 
       when('type is "bracket"', function() {
         this.type = 'bracket';
         this.suggest = [ 'suggest' ];
         this.bracketPairing.suggestRound.and.returnValue(this.suggest);
+
+        spyOn(this.scope, 'updatePlayersOptions');
 
         this.scope.suggestNextRound(1, this.type);
       }, function() {
@@ -137,6 +186,10 @@ describe('controllers', function() {
           expect(this.bracketPairing.suggestRound)
             .toHaveBeenCalledWith(this.scope.new_state, 1);
           expect(this.scope.next_round[1]).toBe(this.suggest);
+        });
+
+        it('should update players options lists', function() {
+          expect(this.scope.updatePlayersOptions).toHaveBeenCalled();
         });
       });
     });

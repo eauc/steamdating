@@ -32,11 +32,7 @@
         <td>
           <select ng-model="g.p1.name"
                   ng-change="updateNextRound(gri, gai, 'p1')"
-                  ng-options="
-                  p.name
-                  as (!(next_round[gri] | round:'isPlayerPaired':p) ? '>'+p.name : p.name)
-                  for p in gr
-                  "
+                  ng-options="p[0] as p[1] for p in players_options[gri]"
                   class="form-control">
             <!-- <option ng-repeat="p in gr track by p.name"
             value="{{p.name}}">
@@ -48,11 +44,7 @@
         <td>
           <select ng-model="g.p2.name"
                   ng-change="updateNextRound(gri, gai, 'p2')"
-                  ng-options="
-                  p.name
-                  as (!(next_round[gri] | round:'isPlayerPaired':p) ? '>'+p.name : p.name)
-                  for p in gr
-                  "
+                  ng-options="p[0] as p[1] for p in players_options[gri]"
                   class="form-control">
             <!-- <option ng-repeat="p in gr track by p.name"
             value={{p.name}}>

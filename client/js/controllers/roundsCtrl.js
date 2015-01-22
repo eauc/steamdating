@@ -154,6 +154,17 @@ angular.module('srApp.controllers')
       console.log('init roundsNextCtrl', $scope.new_state);
       $scope.next_round = rounds.createNextRound($scope.state.players);
 
+      $scope.updatePlayersOptions = function() {
+        $scope.players_options = _.map($scope.new_state.players, function(gr, gri) {
+          return _.map(gr, function(p) {
+            var paired = round.isPlayerPaired($scope.next_round[gri], p);
+            var label = paired ? p.name : '> '+p.name;
+            return [ p.name, label ];
+          });
+        });
+      };
+      $scope.updatePlayersOptions();
+
       $scope.suggestNextRound = function(i, type) {
         if('bracket' === type) {
           $scope.new_state.bracket = state.setBracket($scope.new_state, i);
@@ -163,6 +174,7 @@ angular.module('srApp.controllers')
           $scope.new_state.bracket = state.resetBracket($scope.new_state, i);
           $scope.next_round[i] = srPairing.suggestNextRound($scope.new_state, i);
         }
+        $scope.updatePlayersOptions();
       };
 
       $scope.registerNextRound = function() {
@@ -176,6 +188,7 @@ angular.module('srApp.controllers')
       $scope.updateNextRound = function(gr_index, ga_index, key) {
         $scope.next_round[gr_index] =
           round.updatePlayer($scope.next_round[gr_index], ga_index, key);
+        $scope.updatePlayersOptions();
       };
     }
   ])
