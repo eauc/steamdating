@@ -9,6 +9,7 @@ class SRApp < Sinatra::Base
 
   set :server, :thin
   set :public_folder, File.join(File.dirname(__FILE__), '..', 'client')
+  set :static_cache_control, [:no_cache, :must_revalidate]
   set :views, File.join(File.dirname(__FILE__), '..', 'client')
 
   get '/' do
