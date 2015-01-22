@@ -1,0 +1,430 @@
+Player: Manu74
+City: Chambery
+Faction: Legion of Everblight
+
+System: Hordes
+Faction: Legion of Everblight
+Casters: 1/1
+Points: 50/50
+Thagrosh, the Messiah (*3pts)
+* Raek (4pts)
+* Raek (4pts)
+* Raek (4pts)
+* Shredder (2pts)
+* Scythean (9pts)
+* Scythean (9pts)
+* Seraph (8pts)
+Blackfrost Shard (5pts)
+Swamp Gobber Bellows Crew (Leader and 1 Grunt) (1pts)
+1 Spell Martyr (1pts)
+Succubus (2pts)
+The Forsaken (2pts)
+The Forsaken (2pts)
+
+System: Hordes
+Faction: Saeryn - Fallen Angels
+Casters: 1/1
+Points: 50/50
+Tiers: 4
+Saeryn, Omen of Everblight (*5pts)
+* Harrier (2pts)
+* Nephilim Bloodseer (0pts)
+* Nephilim Protector (0pts)
+* Nephilim Protector (5pts)
+* Nephilim Soldier (0pts)
+* Nephilim Soldier (5pts)
+* Angelius (9pts)
+* Angelius (9pts)
+* Seraph (8pts)
+Blighted Nyss Shepherd (1pts)
+Blighted Nyss Shepherd (1pts)
+Blighted Nyss Sorceress and Hellion (4pts)
+1 Spell Martyr (1pts)
+
+Player: Helwinter
+City: Saint-Etienne
+Faction: Khador
+
+System: Warmachine
+Faction: Khador
+Supreme Kommandant Irusk (*5pts)
+* Behemoth (13pts)
+* War dog (1pts)
+Doom Reavers (Leader and 5 Grunts) (6pts)
+* Greylord Escort (2pts)
+Great Bears of Gallowswood (5pts)
+Iron Fang Pikemen (Leader and 9 Grunts) (8pts)
+* Iron Fang Pikemen Officer & Standard (2pts)
+Man-o-war Shocktroopers (Leader and 4 Grunts) (9pts)
+Widowmakers (Leader and 3 Grunts) (4pts)
+Winter Guard Mortar Crew (Leader and Grunt) (3pts)
+Iron Fang Kovnik (2pts)
+
+System: Warmachine
+Faction: Khador
+Zevanna Agha, the Old Witch of Khador (*3pts)
+* Scrapjack (0pts)
+* Conquest (19pts)
+* War dog (1pts)
+Battle Mechaniks (Leader and 3 Grunts) (2pts)
+Doom Reavers (Leader and 5 Grunts) (6pts)
+* Greylord Escort (2pts)
+Winter Guard Infantry (Leader and 9 Grunts) (6pts)
+* Winter Guard Infantry Officer & Standard (2pts)
+* 3 Winter Guard Infantry Rocketeers (3pts)
+Kovnik Andrei Malakov (3pts)
+* Juggernaut (7pts)
+Kovnik Jozef Grigorovich (2pts)
+Ville
+
+Player: legaga
+City: Saint-Etienne
+Faction: Skorne
+
+System: Hordes
+Faction: Skorne
+Master Tormentor Morghoul (*7pts)
+* Bronzeback Titan (10pts)
+* Mammoth (20pts)
+* Titan Cannoneer (9pts)
+Cataphract Incindiarii (Leader and 5 Grunts) (9pts)
+Paingiver Beast Handlers (Leader and 5 Grunts) (3pts)
+Agonizer (2pts)
+Extoler Soulward (2pts)
+Mortitheurge Willbreaker (2pts)
+
+System: Hordes
+Faction: Skorne
+Archdomina Makeda (*5pts)
+* Bronzeback Titan (10pts)
+* Molik Karn (11pts)
+* Titan Cannoneer (9pts)
+Cataphract Incindiarii (Leader and 5 Grunts) (9pts)
+Immortals (Leader and 9 Grunts) (8pts)
+Paingiver Beast Handlers (Leader and 5 Grunts) (3pts)
+Agonizer (2pts)
+Ancestral Guardian (3pts)
+
+Player: Dojititi
+City: Saint-Etienne
+Faction: Skorne
+
+System: Hordes
+Faction: Skorne
+Tyrant Xerxis (*5pts)
+* Cyclops Raider (5pts)
+* Cyclops Shaman (5pts)
+* Tiberion (bond) (11pts)
+* Titan Cannoneer (9pts)
+Cataphract Cetrati (Leader and 5 Grunts) (11pts)
+Nihilators (Leader and 9 Grunts) (8pts)
+Paingiver Beast Handlers (Leader and 3 Grunts) (2pts)
+Paingiver Beast Handlers (Leader and 3 Grunts) (2pts)
+Mortitheurge Willbreaker (2pts)
+
+System: Hordes
+Faction: Skorne
+Supreme Archdomina Makeda (*5pts)
+* Archidon (7pts)
+* Molik Karn (11pts)
+* Titan Gladiator (8pts)
+Cataphract Cetrati (Leader and 5 Grunts) (11pts)
+* Tyrant Vorkesh (3pts)
+Paingiver Beast Handlers (Leader and 5 Grunts) (3pts)
+Praetorian Swordsmen (Leader and 9 Grunts) (6pts)
+* Praetorian Swordsmen Officer & Standard (2pts)
+Extoler Soulward (2pts)
+Mortitheurge Willbreaker (2pts)
+
+==============================================
+
+Player: Will
+City: Grenoble
+Faction: Circle Orboros
+
+System: Hordes
+Faction: Circle Orboros
+Krueger the Stormwrath (*5pts)
+*Argus Moonhound (4pts)
+* Woldwyrd (5pts)
+* Warpwolf Stalker (10pts)
+* Woldwarden (9pts)
+Druids of Orboros (Leader and 5 Grunts) (7pts)
+* Druid of Orboros Overseer (2pts)
+Stoneward and 5 Woldstalkers (5pts)
+Stoneward and 5 Woldstalkers (5pts)
+Tharn Bloodweavers (Leader and 5 Grunts) (5pts)
+Feralgeist (1pts)
+Gallows Grove (1pts)
+Gallows Grove (1pts)
+
+System: Hordes
+Faction: Circle Orboros
+Krueger the Stormlord (*5pts)
+* Gorax (4pts)
+* Woldwyrd (5pts)
+* Megalith (11pts)
+* Warpwolf Stalker (10pts)
+* Woldwarden (9pts)
+Druids of Orboros (Leader and 5 Grunts) (7pts)
+* Druid of Orboros Overseer (2pts)
+Stoneward and 5 Woldstalkers (5pts)
+Blackclad Wayfarer (2pts)
+
+Player: Weeskahs
+City: Grenoble
+Faction: Circle Orboros
+
+System: Hordes
+Faction: Circle Orboros
+Cassius the Oathkeeper (*6pts)
+* Gorax (4pts)
+* Ghetorix (11pts)
+* Warpwolf Stalker (10pts)
+Druids of Orboros (Leader and 5 Grunts) (7pts)
+* Druid of Orboros Overseer (2pts)
+Farrow Bone Grinders (Leader and 3 Grunts) (2pts)
+Farrow Slaughterhousers (Leader and 5 Grunt) (6pts)
+Farrow Slaughterhousers (Leader and 5 Grunt) (6pts)
+Shifting Stones (2pts)
+* Stone keeper (1pts)
+Shifting Stones (2pts)
+Swamp Gobber Bellows Crew (Leader and 1 Grunt) (1pts)
+Gallows Grove (1pts)
+Gallows Grove (1pts)
+
+System: Hordes
+Faction: Circle Orboros
+Morvahna the Dawnshadow (*5pts)
+* Gorax (4pts)
+* Warpwolf Stalker (10pts)
+Shifting Stones (2pts)
+* Stone keeper (1pts)
+Tharn Blood Pack (Leader and 5 Grunts) (10pts)
+Tharn Bloodtrackers (Leader and 9 Grunts) (8pts)
+* Nuala the Huntress (2pts)
+Warpborn Skinwalkers (Leader and 4 Grunts) (8pts)
+* Warpborn Alpha (3pts)
+Gallows Grove (1pts)
+Gallows Grove (1pts)
+Gatorman Witch Doctor (3pts)
+Professor Victor Pendrake (2pts)
+
+Player: Cheveu
+City: Grenoble
+Faction: Cryx
+
+System: Warmachine
+Faction: Cryx
+Wraith Witch Deneghra (*6pts)
+* Deathripper (4pts)
+* Deathjack (12pts)
+* Leviathan (9pts)
+Cylena Raefyll & Nyss Hunters (Cylena and 9 Grunts) (10pts)
+The Withershadow Combine (5pts)
+Aiakos, Scourge of Meredius (3pts)
+* Leviathan (9pts)
+Necrotech & 1 Scrap Thrall (1pts)
+Necrotech & 1 Scrap Thrall (1pts)
+Warwitch Siren (2pts)
+
+System: Warmachine
+Faction: Cryx
+Pirate Queen Skarre (*6pts)
+* Kraken (19pts)
+* Skarlock Thrall (2pts)
+Necrosurgeon & 3 Stitch Thralls (2pts)
+Satyxis Blood Witches (Leader and 5 Grunts) (4pts)
+* Satyxis Blood Hag (2pts)
+Satyxis Raiders (Leader and 9 Grunts) (8pts)
+* Satyxis Raider Sea Witch (2pts)
+Soulhunters (Leader and 4 Grunts) (9pts)
+Darragh Wrathe (4pts)
+Gorman di Wulfe, Rogue Alchemist (2pts)
+Satyxis Raider Captain (2pts)
+
+Player: Eloi de Murphy
+City: Grenoble
+Faction: Minion Theme Forces
+
+System: Warmachine
+Faction: Butcher's Block
+Midas (*5pts)
+* Gun Boar (5pts)
+* Gun Boar (5pts)
+* Razor Boar (2pts)
+* Razor Boar (2pts)
+* Road Hog (9pts)
+* Road Hog (9pts)
+* War Hog (gratuit et mort)
+Farrow Bone Grinders (Leader and 3 Grunts) (2pts)
+Farrow Bone Grinders (Leader and 3 Grunts) (2pts)
+Farrow Bone Grinders (Leader and 3 Grunts) (2pts)
+Farrow Brigands (Leader and 5 Grunts) (5pts)
+Farrow Slaughterhousers (Leader and 5 Grunt) (6pts)
+Farrow Slaughterhousers (Leader and 5 Grunt) (6pts)
+Bonus de tiers 1 : Bone Grinders Fa : U, Boneswarm autorisée.
+Bonus de tiers 2 : Pour chaque unités de Bone Grinders, une warbeast gagne Advance Move.
+Bonus de tiers 3 : Pour chaque unités de SlaughterHousers, une Boneswarm gagne 3 token.
+Bonus de tiers 4 : Une warbeast farrow est ajouté gratuitement au battlegroup de Midas et commence la partie morte.
+
+System: Warmachine
+Faction: Nature of the Beast (NQ)
+Dr. Arkadius (*6pts)
+* Road Hog (9pts)
+* Road Hog (9pts)
+* Road Hog (9pts)
+* Road Hog (9pts)
+* War Hog (8pts)
+* Gorax (4pts)
+* Gorax (4pts)
+* Razor Boar (gratuit)
+* Razor Boar (gratuit)
+* Razor Boar (gratuit)
+* Razor Boar (gratuit)
+* Razor Boar (gratuit)
+* Targ (2pts)
+Farrow Bone Grinders (Leader and 3 Grunts) (2pts)
+Bonus de tiers 1 : Gorax en friendly faction models, ils gagnent shield guard.
+Bonus de tiers 2 : +2" de déploiement
+Bonus de tiers 3 : Un Razor Boar gratuit pour chaque Gun Boar/War Hog/Road Hog. Donc 5 Razor Boars gratuit ici.
+Bonus de tiers 4 : Les warbeasts de l'armée courent gratuitement au premier tour.
+
+Player: Torphine
+City: Grenoble
+Faction: Retribution of Scyrah
+
+System: Warmachine
+Faction: Retribution of Scyrah
+Issyria, Sibyl of Dawn (*6pts)
+* Chimera (6pts)
+* Discordia (10pts)
+Dawnguard Sentinels (Leader and 9 Grunts) (9pts)
+* Dawnguard Sentinel Officer & Standard (2pts)
+* Soulless Escort (1pts)
+House Shyeel Battle Mages (Leader and 5 Grunts) (5pts)
+Lady Aiyana & Master Holt (4pts)
+Mage Hunter Strikeforce (Leader and 9 Grunts) (8pts)
+* Mage Hunter Commander (2pts)
+Stormfall Archers (Leader and 3 Grunts) (5pts)
+Mage Hunter Assassin (2pts)
+Mage Hunter Assassin (2pts
+
+System: Warmachine
+Faction: Retribution of Scyrah
+Dawnlord Vyros (*6pts)
+* Griffon (4pts)
+* Banshee (10pts)
+* Imperatus (12pts)
+Dawnguard Sentinels (Leader and 9 Grunts) (9pts)
+* Dawnguard Sentinel Officer & Standard (2pts)
+Mage Hunter Strikeforce (Leader and 9 Grunts) (8pts)
+* Mage Hunter Commander (2pts)
+Arcanist (1pts)
+Arcanist (1pts)
+Fane Knight Skeryth Issyen (5pts)
+Lanyssa Ryssyll, Nyss Sorceress (2pts)
+
+Player: Gaspaccio
+City: Grenoble
+Faction: Convergence of Cyriss
+
+System: Warmachine
+Faction: Convergence of Cyriss
+Father Lucant, Divinity Architect (*5pts)
+* Corollary (3pts)
+* Cipher (9pts)
+* Cipher (9pts)
+Optifex Directive (Leader and 2 Grunts) (2pts)
+Reciprocators (Leader and 4 Grunts) (9pts)
+Reciprocators (Leader and 4 Grunts) (9pts)
+Reductors (Leader and 9 Grunts) (6pts)
+Attunement Servitors (2pts)
+Enigma Foundry (3pts)
+Enigma Foundry (3pts)
+
+System: Warmachine
+Faction: Sustained Attack
+Axis, the Harmonic Enforcer (*6pts)
+* Corollary (3pts)
+* Conservator (7pts)
+* Conservator (7pts)
+* Conservator (7pts)
+Obstructors (Leader and 9 Grunts) (6pts)
+Obstructors (Leader and 9 Grunts) (6pts)
+Optifex Directive (Leader and 2 Grunts) (2pts)
+Reductors (Leader and 9 Grunts) (6pts)
+Reductors (Leader and 5 Grunts) (4pts)
+Enigma Foundry (2pts)
+Enigma Foundry (2pts)
+Enigma Foundry (2pts)
+Enigma Foundry (2pts)
+
+Player: Max
+City: Grenoble
+Faction: Skorne
+
+System: Hordes
+Faction: Skorne
+Lord Tyrant Hexeris (*6pts)
+* Molik Karn (11pts)
+* Titan Gladiator (8pts)
+Cataphract Arcuarii (Leader and 5 Grunts) (9pts)
+Cataphract Cetrati (Leader and 5 Grunts) (11pts)
+* Tyrant Vorkesh (3pts)
+Immortals (Leader and 9 Grunts) (8pts)
+Paingiver Beast Handlers (Leader and 5 Grunts) (3pts)
+Tyrant Commander & Standard Bearer (3pts)
+
+System: Hordes
+Faction: Skorne
+Tyrant Xerxis (*5pts)
+* Basilisk Krea (4pts)
+* Titan Gladiator (8pts)
+Cataphract Arcuarii (Leader and 5 Grunts) (9pts)
+Cataphract Cetrati (Leader and 5 Grunts) (11pts)
+Immortals (Leader and 9 Grunts) (8pts)
+Paingiver Beast Handlers (Leader and 5 Grunts) (3pts)
+Tyrant Commander & Standard Bearer (3pts)
+Tyrant Zaadesh (3pts)
+* Reptile Hound (2pts)
+* Reptile Hound (2pts)
+* Reptile Hound (2pts)
+
+Player: Raclure
+City: Grenoble
+Faction: Khador
+
+System: Warmachine
+Faction: Khador
+Kommander Zoktavir, The Butcher Unleashed (*4pts)
+* Behemoth (13pts)
+* War dog (1pts)
+Doom Reavers (Leader and 5 Grunts) (6pts)
+* Greylord Escort (2pts)
+Iron Fang Pikemen (Leader and 9 Grunts) (8pts)
+* Iron Fang Pikemen Officer & Standard (2pts)
+Kayazy Eliminators (Leader and Grunt) (3pts)
+Widowmakers (Leader and 3 Grunts) (4pts)
+Eiryss, Angel of Retribution (3pts)
+Iron Fang Kovnik (2pts)
+Kell Bailoch (2pts)
+Madelyn Corbeau, Ordic Courtesan (2pts)
+Man-o-war Drakhun (without dismount) (4pts)
+Saxon Orrik (2pts)
+
+System: Warmachine
+Faction: Khador
+Forward Kommander Sorscha (*6pts)
+* Conquest (bond) (19pts)
+* Sylys Wyshnalyrr, the Seeker (2pts)
+Doom Reavers (Leader and 5 Grunts) (6pts)
+* Greylord Escort (2pts)
+Great Bears of Gallowswood (5pts)
+Lady Aiyana & Master Holt (4pts)
+Widowmakers (Leader and 3 Grunts) (4pts)
+Winter Guard Infantry (Leader and 9 Grunts) (6pts)
+* Winter Guard Infantry Officer & Standard (2pts)
+* 3 Winter Guard Infantry Rocketeers (3pts)
+Goblin Tinker (1pts)
+Kovnik Jozef Grigorovich (2pts)
