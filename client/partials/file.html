@@ -18,8 +18,13 @@
                type="file"
                ea-file="doOpenFile(file)" />
       </div>
-      <div ng-repeat="err in open_result">
-        <strong class="text-warning">{{::err}}</strong><br />
+      <div style="
+           max-height: 300px;
+           overflow-y: auto;
+           ">
+        <div ng-repeat="err in open_result">
+          <strong class="text-warning">{{::err}}</strong><br />
+        </div>
       </div>
     </fieldset>
     <fieldset style="margin-top:10px">
@@ -47,8 +52,13 @@
                type="file"
                ea-file="doImportFile('t3', file)" />
       </div>
-      <div ng-repeat="err in import_t3_result">
-        <strong class="text-warning">{{::err}}</strong><br />
+      <div style="
+           max-height: 300px;
+           overflow-y: auto;
+           ">
+        <div ng-repeat="err in import_t3_result">
+          <strong class="text-warning">{{::err}}</strong><br />
+        </div>
       </div>
       <br />
       <div class="form-group">
@@ -60,8 +70,13 @@
                type="file"
                ea-file="doImportFile('fk', file)" />
       </div>
-      <div ng-repeat="err in import_fk_result">
-        <strong class="text-warning">{{::err}}</strong><br />
+      <div style="
+           max-height: 300px;
+           overflow-y: auto;
+           ">
+        <div ng-repeat="err in import_fk_result">
+          <strong class="text-warning">{{::err}}</strong><br />
+        </div>
       </div>
     </fieldset>
     <fieldset style="margin-top:10px">

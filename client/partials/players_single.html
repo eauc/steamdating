@@ -3,9 +3,14 @@
       style="border-bottom:1px solid black;">
     Group{{::gri+1}}
   </h2>
-    <h3 ng-if="::state | state:'isBracketTournament':gri">
-      Bracket - {{::state | state:'bracketRoundOf':gri:state.rounds.length-1}}
-    </h3>
+  <h3 ng-if="::state | state:'isBracketTournament':gri">
+    Bracket - {{::state | state:'bracketRoundOf':gri:state.rounds.length-1}}
+  </h3>
+  <button class="btn btn-default"
+          ng-click="doAddPlayer($index)">
+    <span class="glyphicon glyphicon-plus"></span>
+    Add Player
+  </button>
   <!-- <button class="btn btn-default"
   ng-click="doAddTeam($index)"
   ng-hide="
@@ -15,29 +20,25 @@
   <span class="glyphicon glyphicon-plus"></span>
   Add Team
   </button> -->
-  <button class="btn btn-default"
-          ng-click="doAddPlayer($index)">
-    <span class="glyphicon glyphicon-plus"></span>
-    Add Player
-  </button>
   <!-- <h3 ng-if="isBracketTournament($index)"
   class="text-center">
   Bracket - {{::bracketRoundOf($index, state.rounds.length-1)}}
   </h3> -->
-  <table class="table">
+  <table class="table"
+         style="table-layout:fixed">
     <tr>
-      <th>Rank</th>
+      <th style="width:4em;">Rank</th>
       <th>
         Name
       </th>
       <th>City</th>
       <th>Faction</th>
       <th>Lists</th>
-      <th>TP</th>
-      <th>SoS</th>
-      <th>CP</th>
-      <th>AP</th>
-      <th></th>
+      <th style="width:4.5em;">TP</th>
+      <th style="width:4.5em;">SoS</th>
+      <th style="width:4.5em;">CP</th>
+      <th style="width:4.5em;">AP</th>
+      <th style="width:10em;"></th>
     </tr>
     <tbody ng-repeat="rank in ::gr"
            style="border-width:0px">
@@ -45,14 +46,14 @@
           style="cursor:pointer;"
           ng-click="doEditPlayer(p)">
         <td>{{::rank.rank}}</td>
-        <td>{{::p.name}}</td>
-        <td>{{::p.city}}</td>
-        <td>
+        <td style="word-wrap:break-word;">{{::p.name}}</td>
+        <td style="word-wrap:break-word;">{{::p.city}}</td>
+        <td style="word-wrap:break-word;">
           <img ng-src="{{::p.faction | factions:'iconFor'}}"
                style="height:1.8em;"/>
           {{::p.faction}}
         </td>
-        <td style="font-size: 0.8em">
+        <td style="font-size: 0.8em;word-wrap:break-word;">
           <span ng-repeat="l in ::p.lists">
             {{::l.caster}} <br />
           </span>

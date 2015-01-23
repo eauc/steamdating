@@ -686,6 +686,34 @@ describe('service', function() {
       });
     });
 
+    describe('size()', function() {
+      beforeEach(function() {
+        this.coll = [
+          [ {}, {} ],
+          [],
+          [ {}, {}, {} ]
+        ];
+      });
+
+      it('should return the number of players', function() {
+        expect(players.size(this.coll)).toEqual(5);
+      });
+    });
+
+    describe('nbGroups()', function() {
+      beforeEach(function() {
+        this.coll = [
+          [ {}, {} ],
+          [],
+          [ {}, {}, {} ]
+        ];
+      });
+
+      it('should return the number of groups', function() {
+        expect(players.nbGroups(this.coll)).toEqual(3);
+      });
+    });
+
     describe('groupSizeIsEven(<group>)', function() {
       it('should check whether <group> size is even', function() {
         expect(players.groupSizeIsEven([ [], [] ])).toBe(true);

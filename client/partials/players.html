@@ -3,6 +3,10 @@
           ng-click="goToState('groups_edit')">
     Edit Groups
   </button>
+  <h4 style="display:inline;">
+    {{::state.players | players:'size'}} Players /
+    {{::state.players | players:'nbGroups'}} Groups
+  </h4>
   <div ng-if="isTeamTournament()"
        ng-include="'partials/players_team.html'">
   </div>
