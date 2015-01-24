@@ -12,8 +12,10 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
+      '$window',
       function($rootScope,
-               $controller) {
+               $controller,
+               $window) {
         this.scope = $rootScope.$new();
         spyOn(this.scope, '$watch');
         this.scope.goToState = jasmine.createSpy('goToState');
@@ -25,19 +27,14 @@ describe('controllers', function() {
           }
         };
 
-        this.ranking = jasmine.createSpyObj('ranking', [
-          'buildPlayerCritFunction',
-          'srPlayerCrit'
-        ]);
-        this.player = jasmine.createSpyObj('player', ['rank']);
+        this.rankingService = spyOnService('ranking');
+        this.playerService = spyOnService('player');
 
-        this.window = jasmine.createSpyObj('$window', [ 'alert' ]);
+        this.window = $window;
+        spyOn($window, 'alert');
 
         $controller('rankingEditCtrl', { 
           '$scope': this.scope,
-          '$window': this.window,
-          'ranking': this.ranking,
-          'player': this.player
         });
       }
     ]));
@@ -76,12 +73,12 @@ describe('controllers', function() {
       it('should try to build crit function', function() {
         computePlayerTestRankings();
 
-        expect(this.ranking.buildPlayerCritFunction)
+        expect(this.rankingService.buildPlayerCritFunction)
           .toHaveBeenCalledWith('ranking', 4, 32);
       });
 
       when('critFun build fails', function() {
-        this.ranking.buildPlayerCritFunction.and.returnValue('error');
+        this.rankingService.buildPlayerCritFunction.and.returnValue('error');
       }, function() {
         it('should set player_test error state', function() {
           computePlayerTestRankings();
@@ -95,22 +92,22 @@ describe('controllers', function() {
 
       when('critFun build succeeds', function() {
         this.critFun = jasmine.createSpy('critFun');
-        this.ranking.buildPlayerCritFunction.and.returnValue(this.critFun);
+        this.rankingService.buildPlayerCritFunction.and.returnValue(this.critFun);
       }, function() {
         it('should try to rank both test players', function() {
           computePlayerTestRankings();
 
-          expect(this.player.rank)
+          expect(this.playerService.rank)
             .toHaveBeenCalledWith(this.scope.player_test.player1,
                                   this.critFun);
-          expect(this.player.rank)
+          expect(this.playerService.rank)
             .toHaveBeenCalledWith(this.scope.player_test.player2,
                                   this.critFun);
         });
 
         when('player1 ranking fails', function() {
           var ctxt = this;
-          this.player.rank.and.callFake(function(p) {
+          this.playerService.rank.and.callFake(function(p) {
             return (p.name === 'p1') ? 'Error' : 4;
           });
         }, function() {
@@ -126,7 +123,7 @@ describe('controllers', function() {
 
         when('player2 ranking fails', function() {
           var ctxt = this;
-          this.player.rank.and.callFake(function(p) {
+          this.playerService.rank.and.callFake(function(p) {
             return (p.name === 'p2') ? 'Error' : 4;
           });
         }, function() {
@@ -142,7 +139,7 @@ describe('controllers', function() {
 
         when('both rankings succeed', function() {
           var ctxt = this;
-          this.player.rank.and.callFake(function(p) {
+          this.playerService.rank.and.callFake(function(p) {
             return (p.name === 'p1') ? 1 : 4;
           });
         }, function() {
@@ -160,7 +157,7 @@ describe('controllers', function() {
 
     describe('doReset(<type>)', function() {
       when('<type> is "player"', function() {
-        this.ranking.srPlayerCrit.and.returnValue('toto');
+        this.rankingService.srPlayerCrit.and.returnValue('toto');
       }, function() {
         it('should reset player ranking crit to SR default', function() {
           this.scope.player_test.ranking = 'toto';

@@ -13,15 +13,9 @@ describe('controllers', function() {
       '$rootScope',
       '$controller',
       '$window',
-      'state',
-      'factions',
-      'fileExport',
       function($rootScope,
                $controller,
-               $window,
-               state,
-               factions,
-               fileExport) {
+               $window) {
         this.scope = $rootScope.$new();
         this.scope.resetState = jasmine.createSpy('resetState');
         this.scope.goToState = jasmine.createSpy('goToState');
@@ -31,24 +25,19 @@ describe('controllers', function() {
           players: ['players']
         };
 
-        this.state = state;
-        spyOn(state, 'isEmpty');
-        spyOn(state, 'rankingTables');
+        this.stateService = spyOnService('state');
+        this.factionsService = spyOnService('factions');
+        this.fileExportService = spyOnService('fileExport');
+        this.fileImportService = spyOnService('fileImport');
 
-        this.window = $window;
+        this.windowService = $window;
         spyOn($window, 'confirm');
 
-        this.factions = factions;
-        this.dummy_factions = [
+        this.factionsService.baseFactions._retVal = [
           { name: 'gros vilains', t3: 'cryx' },
           { name: 'petits poneys', t3: 'scyrah' },
           { name: 'best of the beast', t3: 'blight' },
         ];
-        spyOn(factions, 'baseFactions').and.returnValue(this.dummy_factions);
-
-        this.fileExport = fileExport;
-        spyOn(this.fileExport, 'generate');
-        spyOn(this.fileExport, 'cleanup');
 
         $controller('fileCtrl', { 
           '$scope': this.scope,
@@ -58,7 +47,8 @@ describe('controllers', function() {
     ]));
 
     it('should init factions', function() {
-      expect(this.scope.factions).toEqual(this.dummy_factions);
+      expect(this.scope.factions)
+        .toEqual(this.factionsService.baseFactions._retVal);
     });
 
     it('should init exports', function() {
@@ -83,22 +73,23 @@ describe('controllers', function() {
       it('should cleanup export urls', function() {
         this.scope.exports = { test: { url: 'test' } };
         this.onDestroy();
-        expect(this.fileExport.cleanup).toHaveBeenCalledWith('test');
+        expect(this.fileExportService.cleanup)
+          .toHaveBeenCalledWith('test');
       });
     });
 
     describe('doReset()', function() {
       when('state is not empty', function() {
-        this.state.isEmpty.and.returnValue(false);
+        this.stateService.isEmpty.and.returnValue(false);
       }, function() {
         it('should ask user for confirmation', function() {
           this.scope.doReset();
 
-          expect(this.window.confirm).toHaveBeenCalled();
+          expect(this.windowService.confirm).toHaveBeenCalled();
         });
 
         when('user confirms', function() {
-          this.window.confirm.and.returnValue(true);
+          this.stateService.isEmpty.and.returnValue(true);
         }, function() {
           it('should reset state', function() {
             this.scope.doReset();
@@ -109,7 +100,7 @@ describe('controllers', function() {
       });
 
       when('state is not empty', function() {
-        this.state.isEmpty.and.returnValue(true);
+        this.stateService.isEmpty.and.returnValue(true);
       }, function() {
         it('should reset state', function() {
           this.scope.doReset();
@@ -120,21 +111,20 @@ describe('controllers', function() {
     });
 
     describe('doOpenFile(<file>)', function() {
-      beforeEach(inject(function(fileImport) {
+      beforeEach(function() {
         var ctxt = this;
-        this.fileImport = fileImport;
-        spyOn(fileImport, 'read').and.returnValue({
+        this.fileImportService.read._retVal = {
           then: function(onSuccess, onError) {
             ctxt.onSuccess = onSuccess; 
             ctxt.onError = onError;
           }
-        });
+        };
         
         this.scope.doOpenFile('file');
-      }));
+      });
 
       it('should try to import file', function() {
-        expect(this.fileImport.read)
+        expect(this.fileImportService.read)
           .toHaveBeenCalledWith('json', 'file', this.scope.factions);
       });
 
@@ -174,21 +164,20 @@ describe('controllers', function() {
     });
 
     describe('doImportFile(<type>, <file>)', function() {
-      beforeEach(inject(function(fileImport) {
+      beforeEach(function() {
         var ctxt = this;
-        this.fileImport = fileImport;
-        spyOn(fileImport, 'read').and.returnValue({
+        this.fileImportService.read._retVal = {
           then: function(onSuccess, onError) {
             ctxt.onSuccess = onSuccess; 
             ctxt.onError = onError;
           }
-        });
+        };
         
         this.scope.doImportFile('toto', 'file');
-      }));
+      });
 
       it('should try to import file', function() {
-        expect(this.fileImport.read)
+        expect(this.fileImportService.read)
           .toHaveBeenCalledWith('toto', 'file', this.scope.factions);
       });
 
@@ -244,11 +233,10 @@ describe('controllers', function() {
     
     describe('updateExports', function() {
       beforeEach(function() {
-        this.fileExport.generate.calls.reset();
-        this.fileExport.generate.and.callFake(function(type) {
+        this.fileExportService.generate.calls.reset();
+        this.fileExportService.generate.and.callFake(function(type) {
           return type+'_url';
         });
-        this.state.rankingTables.and.returnValue(['ranking']);
 
         this.scope.exports = null;
         this.scope.save = null;
@@ -256,31 +244,36 @@ describe('controllers', function() {
         this.scope.updateExports();
       });
 
-      it('should generate export for fk players list', function() {
-        expect(this.fileExport.generate)
+      it('should generate export for the save file', function() {
+        expect(this.fileExportService.generate)
           .toHaveBeenCalledWith('json', this.scope.state);
-
-        expect(this.fileExport.generate)
-          .toHaveBeenCalledWith('fk', this.scope.state.players);
-        expect(this.fileExport.generate)
-          .toHaveBeenCalledWith('csv', ['ranking']);
-        expect(this.fileExport.generate)
-          .toHaveBeenCalledWith('bb', ['ranking']);
 
         expect(this.scope.save.name).toMatch(/^steamdating_\d+\.txt$/);
         expect(this.scope.save.url).toBe('json_url');
+      });
+
+      it('should generate export for fk players list', function() {
+        expect(this.fileExportService.generate)
+          .toHaveBeenCalledWith('fk', this.scope.state.players);
 
         expect(this.scope.exports.fk.name).toMatch(/^players_\d+\.txt$/);
         expect(this.scope.exports.fk.url).toBe('fk_url');
         expect(this.scope.exports.fk.label).toBe('FK players list');
+      });
 
-        expect(this.scope.exports.csv_rank.name).toMatch(/^ranking_\d+\.csv$/);
-        expect(this.scope.exports.csv_rank.url).toBe('csv_url');
-        expect(this.scope.exports.csv_rank.label).toBe('CSV Ranking');
-
-        expect(this.scope.exports.bb_rank.name).toMatch(/^ranking_\d+\.txt$/);
-        expect(this.scope.exports.bb_rank.url).toBe('bb_url');
-        expect(this.scope.exports.bb_rank.label).toBe('BB Ranking');
+      using([
+        [ 'type' , 'name'               , 'label'       ],
+        [ 'csv'  , /^ranking_\d+\.csv$/ , 'CSV Ranking' ],
+        [ 'bb'   , /^ranking_\d+\.txt$/ , 'BB Ranking'  ]
+      ], function(exple) {
+        it('should generate export for '+exple.type+' ranking', function() {
+          expect(this.fileExportService.generate)
+            .toHaveBeenCalledWith(exple.type, 'state.rankingTables.returnValue');
+                  
+          expect(this.scope.exports[exple.type+'_rank'].name).toMatch(exple.name);
+          expect(this.scope.exports[exple.type+'_rank'].url).toBe(exple.type+'_url');
+          expect(this.scope.exports[exple.type+'_rank'].label).toBe(exple.label);
+        });
       });
     });
   });

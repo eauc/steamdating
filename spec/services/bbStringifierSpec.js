@@ -12,7 +12,7 @@ describe('service', function() {
 
     beforeEach(inject([
       'bbStringifier',
-      function(_bbStringifier, _player, _list) {
+      function(_bbStringifier) {
         bbStringifier = _bbStringifier;
       }
     ]));

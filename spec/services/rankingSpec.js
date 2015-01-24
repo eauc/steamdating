@@ -31,26 +31,28 @@ describe('service', function() {
         });
 
         describe('critFn', function() {
-          it('should bind <n_rounds> and <n_players>', function() {
-            var critFn = ranking.buildPlayerCritFunction('n_rounds', 42, 71);
-            expect(critFn()).toBe(42);
-
-            critFn = ranking.buildPlayerCritFunction('n_players', 42, 71);
-            expect(critFn()).toBe(71);
+          using([
+            [ 'criterion' , 'rankin' ],
+            [ 'n_rounds'  , 42       ],
+            [ 'n_players' , 71       ],
+          ], function(e, d) {
+            it('should bind <n_rounds> and <n_players>, '+d, function() {
+              var critFn = ranking.buildPlayerCritFunction(e.players, 42, 71);
+              expect(critFn()).toBe(e.ranking);
+            });
           });
 
-          it('should take arguments <tp>,<sos>,<cp>,<ap>', function() {
-            var critFn = ranking.buildPlayerCritFunction('tp', 42, 71);
-            expect(critFn(1,2,3,4)).toBe(1);
-
-            critFn = ranking.buildPlayerCritFunction('sos', 42, 71);
-            expect(critFn(1,2,3,4)).toBe(2);
-
-            critFn = ranking.buildPlayerCritFunction('cp', 42, 71);
-            expect(critFn(1,2,3,4)).toBe(3);
-
-            critFn = ranking.buildPlayerCritFunction('ap', 42, 71);
-            expect(critFn(1,2,3,4)).toBe(4);
+          using([
+            [ 'criterion' , 'ranking' ],
+            [ 'tp'        , 1         ],
+            [ 'sos'       , 2         ],
+            [ 'cp'        , 3         ],
+            [ 'ap'        , 4         ],
+          ], function(e, d) {
+            it('should take arguments <tp>,<sos>,<cp>,<ap>, '+d, function() {
+              var critFn = ranking.buildPlayerCritFunction(e.criterion, 42, 71);
+              expect(critFn(1,2,3,4)).toBe(e.ranking);
+            });
           });
         });
       });

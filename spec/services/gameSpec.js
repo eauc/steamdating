@@ -125,11 +125,16 @@ describe('service', function() {
     });
 
     describe('isValid()', function() {
-      it('should check whether both players are defined', function() {
-        expect(game.isValid(game.create(3, null, null))).toBe(false);
-        expect(game.isValid(game.create(3, 'p1', null))).toBe(false);
-        expect(game.isValid(game.create(3, null, 'p2'))).toBe(false);
-        expect(game.isValid(game.create(3, 'p1', 'p2'))).toBe(true);
+      using([
+        [ 'p1' , 'p2' , 'isValid' ],
+        [ null , null , false     ],
+        [ 'p1' , null , false     ],
+        [ null , 'p2' , false     ],
+        [ 'p1' , 'p2' , true      ],
+      ], function(e, d) {
+        it('should check whether both players are defined, '+d, function() {
+          expect(game.isValid(game.create(3, e.p1, e.p2))).toBe(e.isValid);
+        });
       });
     });
 
@@ -147,14 +152,16 @@ describe('service', function() {
 
       when('result is defined', function() {
       }, function() {
-        it('should return the winner\'s name', function() {
-          this.game.p1.tournament = 1;
-          this.game.p2.tournament = 0;
-          expect(game.winner(this.game)).toBe('toto');
-
-          this.game.p1.tournament = 0;
-          this.game.p2.tournament = 1;
-          expect(game.winner(this.game)).toBe('titi');
+        using([
+          [ 'p1_tp' , 'p2_tp' , 'winner' ],
+          [ 1       , 0       , 'toto'   ],
+          [ 0       , 1       , 'titi'   ],
+        ], function(e, d) {
+          it('should return the winner\'s name, '+d, function() {
+            this.game.p1.tournament = e.p1_tp;
+            this.game.p2.tournament = e.p2_tp;
+            expect(game.winner(this.game)).toBe(e.winner);
+          });
         });
       });
     });
@@ -173,14 +180,16 @@ describe('service', function() {
 
       when('result is defined', function() {
       }, function() {
-        it('should return the loser\'s name', function() {
-          this.game.p1.tournament = 1;
-          this.game.p2.tournament = 0;
-          expect(game.loser(this.game)).toBe('titi');
-
-          this.game.p1.tournament = 0;
-          this.game.p2.tournament = 1;
-          expect(game.loser(this.game)).toBe('toto');
+        using([
+          [ 'p1_tp' , 'p2_tp' , 'loser' ],
+          [ 1       , 0       , 'titi'  ],
+          [ 0       , 1       , 'toto'  ],
+        ], function(e, d) {
+          it('should return the loser\'s name, '+d, function() {
+            this.game.p1.tournament = e.p1_tp;
+            this.game.p2.tournament = e.p2_tp;
+            expect(game.loser(this.game)).toBe(e.loser);
+          });
         });
       });
     });

@@ -68,14 +68,11 @@ describe('service', function() {
       });
 
       describe('on load', function() {
-        beforeEach(inject(function($rootScope, t3Parser, fkParser) {
+        beforeEach(inject(function($rootScope) {
           var ctxt = this;
 
-          this.t3Parser = t3Parser;
-          spyOn(t3Parser, 'parse');
-
-          this.fkParser = fkParser;
-          spyOn(fkParser, 'parse');
+          this.t3ParserService = spyOnService('t3Parser');
+          this.fkParserService = spyOnService('fkParser');
 
           this.successCbk = jasmine.createSpy('successCbk');
           this.errorCbk = jasmine.createSpy('errorCbk');
@@ -88,35 +85,42 @@ describe('service', function() {
           };
         }));
 
-        it('should try to parse file using <type> parser', function() {
-          this.testOnLoad();
+        using([
+          [ 'type' ],
+          [ 't3'   ],
+          [ 'fk'   ],
+        ], function(e, d) {
+          it('should try to parse file using <type> parser, '+d, function() {
+            this[e.type+'ParserService'].parse.calls.reset();
+            fileImport.read(e.type, 'file', 'factions')
+              .then(this.successCbk, this.errorCbk);
 
-          expect(this.t3Parser.parse).toHaveBeenCalledWith('result', 'factions');
+            this.testOnLoad();
 
-          fileImport.read('fk', 'file', 'factions')
-            .then(this.successCbk, this.errorCbk);
-          this.testOnLoad();
-
-          expect(this.fkParser.parse).toHaveBeenCalledWith('result', 'factions');
+            expect(this[e.type+'ParserService'].parse)
+              .toHaveBeenCalledWith('result', 'factions');
+          });
         });
 
         when('a parse error happens', function() {
-          this.t3Parser.parse.and.throwError('parse error');
+          this.t3ParserService.parse.and.throwError('parse error');
 
           this.testOnLoad();
         }, function() {
           it('should reject promise', function() {
-            expect(this.errorCbk).toHaveBeenCalledWith(['invalid file : parse error']);
+            expect(this.errorCbk)
+              .toHaveBeenCalledWith(['invalid file : parse error']);
           });
         });
 
         when('a parse succeeds', function() {
-          this.t3Parser.parse.and.returnValue([ 'players', 'errors' ]);
+          this.t3ParserService.parse.and.returnValue([ 'players', 'errors' ]);
 
           this.testOnLoad();
         }, function() {
           it('should resolve promise', function() {
-            expect(this.successCbk).toHaveBeenCalledWith(['players', 'errors']);
+            expect(this.successCbk)
+              .toHaveBeenCalledWith(['players', 'errors']);
           });
         });
       });

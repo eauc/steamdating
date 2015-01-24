@@ -22,21 +22,19 @@ describe('controllers', function() {
           rounds: this.state_rounds
         };
 
-        this.players = jasmine.createSpyObj('players', [ 'updateListsPlayed' ]);
-        this.dummy_players = ['tata'];
-        this.players.updateListsPlayed.and.returnValue(this.dummy_players);
+        this.playersService = spyOnService('players');
 
         $controller('roundsSumCtrl', { 
           '$scope': this.scope,
-          'players': this.players,
         });
       }
     ]));
 
     it('should refresh players\' played lists', function() {
-      expect(this.players.updateListsPlayed).toHaveBeenCalledWith(this.state_players,
-                                                                  this.state_rounds);
-      expect(this.scope.state.players).toBe(this.dummy_players);
+      expect(this.playersService.updateListsPlayed)
+        .toHaveBeenCalledWith(this.state_players, this.state_rounds);
+      expect(this.scope.state.players)
+        .toBe('players.updateListsPlayed.returnValue');
     });
   });
 

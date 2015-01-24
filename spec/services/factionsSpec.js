@@ -77,13 +77,16 @@ describe('service', function() {
           f2: { icon: undefined }
         });
       }));
-      
-      it('should retrieve icon for faction <f> if it exists', function() {
-        expect(factions.iconFor('f1')).toBe('data/icons/i1.svg');
-        // icon is not defined
-        expect(factions.iconFor('f2')).toBe('');
-        // faction is not defined
-        expect(factions.iconFor('f3')).toBe('');
+
+      using([
+        [ 'f'  , 'icon' ],
+        [ 'f1' , 'data/icons/i1.svg' ],
+        [ 'f2' , '' ], // icon is not defined
+        [ 'f3' , '' ], // faction is not defined
+      ], function(e, d) {
+        it('should retrieve icon for faction <f> if it exists, '+d, function() {
+          expect(factions.iconFor(e.f)).toBe(e.icon);
+        });
       });
     });
 
@@ -95,12 +98,15 @@ describe('service', function() {
         });
       }));
       
-      it('should retrieve casters list for faction <f> if it exists', function() {
-        expect(factions.castersFor('f1')).toEqual(['Caster1','Caster2']);
-        // casters is not defined
-        expect(factions.iconFor('f2')).toBe('');
-        // faction is not defined
-        expect(factions.iconFor('f3')).toBe('');
+      using([
+        [ 'f'  , 'casters' ],
+        [ 'f1' , ['Caster1','Caster2'] ],
+        [ 'f2' , undefined ], // icon is not defined
+        [ 'f3' , undefined ], // faction is not defined
+      ], function(e, d) {
+        it('should retrieve casters list for faction <f> if it exists, '+d, function() {
+          expect(factions.castersFor(e.f)).toEqual(e.casters);
+        });
       });
     });
   });

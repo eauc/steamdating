@@ -98,7 +98,7 @@ describe('service', function() {
     });
 
     describe('findNextPairing(<rounds>, <players>, <tables>)', function() {
-      beforeEach(inject(function(rounds, basePairing) {
+      beforeEach(function() {
         this.tables = [ 41, 42, 43 ];
         this.sorted_players = [
           { name: 'p5', city: 'same', points: { tournament: 2 } },
@@ -109,12 +109,11 @@ describe('service', function() {
         ];
         this.dummy_rounds = ['rounds'];
         this.opponents = [ 'p4', 'p1' ];
-        this.rounds = rounds;
-        spyOn(rounds, 'opponentsForPlayer').and.returnValue(this.opponents);
+        this.roundsService = spyOnService('rounds');
+        this.roundsService.opponentsForPlayer._retVal = this.opponents;
 
-        this.table = 42;
-        this.basePairing = basePairing;
-        spyOn(basePairing, 'suggestTableFor').and.returnValue(this.table);
+        this.basePairingService = spyOnService('basePairing');
+        this.basePairingService.suggestTableFor._retVal = 42;
 
         var res = srPairing.findNextPairing(this.dummy_rounds,
                                             this.sorted_players,
@@ -122,10 +121,10 @@ describe('service', function() {
         this.res_game = res[0];
         this.res_players = res[1];
         this.res_tables = res[2];
-      }));
+      });
 
       it('should request opponents list for first player', function() {
-        expect(this.rounds.opponentsForPlayer)
+        expect(this.roundsService.opponentsForPlayer)
           .toHaveBeenCalledWith(this.dummy_rounds, 'p5');
       });
 
@@ -135,7 +134,7 @@ describe('service', function() {
       });
 
       it('should request table suggestion for both players', function() {
-        expect(this.basePairing.suggestTableFor)
+        expect(this.basePairingService.suggestTableFor)
           .toHaveBeenCalledWith(this.dummy_rounds, this.tables, 'p5', 'p3');
       });
 
@@ -157,7 +156,7 @@ describe('service', function() {
     });
 
     describe('suggestNextSingleRound(<state>, <group_index>)', function() {
-      beforeEach(inject(function(basePairing) {
+      beforeEach(function() {
         this.games = [{table: 3},{table: 1},{table: 2}];
         this.tables = [['tables1'],['tables2'],['tables3'],[]];
         this.players= [['player11','player12'],['players2'],['players3'],[]];
@@ -169,8 +168,9 @@ describe('service', function() {
           return ret;
         });
         spyOn(srPairing, 'sortPlayers').and.returnValue(this.players[0]);
-        this.basePairing = basePairing;
-        spyOn(basePairing, 'tableRangeForGroup').and.returnValue(this.tables[0]);
+        
+        this.basePairingService = spyOnService('basePairing');
+        // this.basePairingService.tableRangeForGroup._retVal = this.tables[0];
 
         this.state = {
           rounds: [ 'rounds' ],
@@ -181,10 +181,10 @@ describe('service', function() {
         };
 
         this.suggest = srPairing.suggestNextRound(this.state, 1);
-      }));
+      });
 
       it('should build table range', function() {
-        expect(this.basePairing.tableRangeForGroup)
+        expect(this.basePairingService.tableRangeForGroup)
           .toHaveBeenCalledWith(this.state.players, 1);
       });
 
@@ -200,7 +200,7 @@ describe('service', function() {
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
                                 ['player11', 'player12'],
-                                this.tables[0]);
+                                'basePairing.tableRangeForGroup.returnValue');
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
                                 this.players[1],
@@ -222,7 +222,7 @@ describe('service', function() {
           expect(srPairing.findNextPairing)
             .toHaveBeenCalledWith(this.state.rounds,
                                   ['player11', { name:'_phantom_' }],
-                                  this.tables[0]);
+                                  'basePairing.tableRangeForGroup.returnValue');
         });
       });
 

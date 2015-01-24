@@ -13,8 +13,18 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
+      '$window',
       function($rootScope,
-               $controller) {
+               $controller,
+               $window) {
+        this.factionsService = spyOnService('factions');
+        this.playersService = spyOnService('players');
+        this.listService = spyOnService('list');
+        this.listsService = spyOnService('lists');
+
+        this.window = $window;
+        spyOn($window, 'alert');
+
         initController = function(ctxt, player) {
           ctxt.scope = $rootScope.$new();
           ctxt.scope.goToState = jasmine.createSpy('goToState');
@@ -27,42 +37,12 @@ describe('controllers', function() {
           };
           ctxt.scope.state = _.clone(ctxt.current_state);
 
-          ctxt.players = jasmine.createSpyObj('players', [
-            'factions',
-            'cities',
-            'names',
-            'add'
-          ]);
-          ctxt.players.factions.and.returnValue('factions');
-          ctxt.players.cities.and.returnValue('cities');
-          ctxt.players.add.and.returnValue('new_players');
-
-          ctxt.factions = jasmine.createSpyObj('factions', [ 'baseFactions' ]);
-          ctxt.base_factions = [ 'base_factions' ];
-          ctxt.factions.baseFactions.and.returnValue(ctxt.base_factions);
-
-          ctxt.list = jasmine.createSpyObj('list', ['create']);
-          ctxt.lists = jasmine.createSpyObj('list', ['add', 'drop']);
-          ctxt.dummy_list = [ 'titi' ];
-          ctxt.list.create.and.returnValue(ctxt.dummy_list);
-          ctxt.dummy_lists = [ ['1'], ['2'] ];
-          ctxt.lists.add.and.returnValue(ctxt.dummy_lists);
-          ctxt.lists.drop.and.returnValue(ctxt.dummy_lists);
-
-          ctxt.window = jasmine.createSpyObj('window', ['alert']);
-
           $controller('playerEditCtrl', { 
             '$scope': ctxt.scope,
-            '$window': ctxt.window,
-            'state': ctxt.state,
-            'players': ctxt.players,
-            'factions': ctxt.factions,
-            'list': ctxt.list,
-            'lists': ctxt.lists
           });
+          $rootScope.$digest();
         };
         initController(this, { name: 'player', lists:[] });
-        $rootScope.$digest();
       }
     ]));
 
@@ -82,16 +62,20 @@ describe('controllers', function() {
     });
 
     it('should init factions & cities', function() {
-      expect(this.players.factions).toHaveBeenCalledWith(this.scope.state.players,
-                                                         this.base_factions);
-      expect(this.players.cities).toHaveBeenCalledWith(this.scope.state.players);
-      expect(this.scope.factions).toBe('factions');
-      expect(this.scope.cities).toBe('cities');
+      expect(this.playersService.factions)
+        .toHaveBeenCalledWith(this.scope.state.players,
+                              'factions.baseFactions.returnValue');
+      expect(this.playersService.cities)
+        .toHaveBeenCalledWith(this.scope.state.players);
+
+      expect(this.scope.factions).toBe('players.factions.returnValue');
+      expect(this.scope.cities).toBe('players.cities.returnValue');
     });
 
     describe('doSwitchToList(<i>)', function() {
       it('should change list tab index', function() {
         this.scope.doSwitchToList(5);
+
         expect(this.scope.list).toBe(5);
       });
     });
@@ -112,10 +96,12 @@ describe('controllers', function() {
       });
 
       it('should add a new list to player.lists', function() {
-        expect(this.list.create).toHaveBeenCalledWith(this.scope.edit.player.faction);
-        expect(this.lists.add).toHaveBeenCalledWith(this.scope.edit.player.lists,
-                                                    this.dummy_list);
-        expect(this.scope.player.lists).toBe(this.dummy_lists);
+        expect(this.listService.create)
+          .toHaveBeenCalledWith(this.scope.edit.player.faction);
+        expect(this.listsService.add)
+          .toHaveBeenCalledWith(this.scope.edit.player.lists,
+                                'list.create.returnValue');
+        expect(this.scope.player.lists).toBe('lists.add.returnValue');
       });
     });
 
@@ -131,9 +117,9 @@ describe('controllers', function() {
       });
 
       it('should drop list <i> from player.lists', function() {
-        expect(this.lists.drop).toHaveBeenCalledWith(this.scope.edit.player.lists,
-                                                     2);
-        expect(this.scope.player.lists).toBe(this.dummy_lists);
+        expect(this.listsService.drop)
+          .toHaveBeenCalledWith(this.scope.edit.player.lists, 2);
+        expect(this.scope.player.lists).toBe('lists.drop.returnValue');
       });
     });
 
@@ -149,20 +135,23 @@ describe('controllers', function() {
 
       when('validate', function() {
       }, function() {
-        it('should validate player\'s name', function() {
-          this.scope.player.name = null;
-          this.scope.doClose(true);
-          expect(this.window.alert).toHaveBeenCalledWith('invalid player name');
+        using([
+          [ 'name' ],
+          [ null   ],
+          [ ''     ],
+        ], function(e, d) {
+          it('should validate player\'s name, '+d, function() {
+            this.scope.player.name = e.anme;
 
-          this.window.alert.calls.reset();
-          this.scope.player.name = '';
-          this.scope.doClose(true);
-          expect(this.window.alert).toHaveBeenCalledWith('invalid player name');
+            this.scope.doClose(true);
+
+            expect(this.window.alert).toHaveBeenCalledWith('invalid player name');
+          });
         });
 
         when('editing an existing player', function() {
           initController(this, { name: 'titi', lists:[] });
-          this.players.names.and.returnValue([ 'titi', 'toto' ]);
+          this.playersService.names.and.returnValue([ 'titi', 'toto' ]);
         }, function() {
           it('should check that the new name does not already exists', function() {
             // no change
@@ -202,7 +191,7 @@ describe('controllers', function() {
 
         when('creating a new player', function() {
           initController(this, { name: undefined, lists:[] });
-          this.players.names.and.returnValue([ 'titi', 'toto' ]);
+          this.playersService.names.and.returnValue([ 'titi', 'toto' ]);
         }, function() {
           it('should check that the new name does not already exists', function() {
             // new name
@@ -227,10 +216,11 @@ describe('controllers', function() {
 
             this.scope.doClose(true);
 
-            expect(this.players.add).toHaveBeenCalledWith(this.current_state.players,
-                                                          this.scope.player,
-                                                          this.scope.edit.group);
-            expect(this.scope.state.players).toBe('new_players');
+            expect(this.playersService.add)
+              .toHaveBeenCalledWith(this.current_state.players,
+                                    this.scope.player,
+                                    this.scope.edit.group);
+            expect(this.scope.state.players).toBe('players.add.returnValue');
           });
         });
 

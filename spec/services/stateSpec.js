@@ -21,10 +21,16 @@ describe('service', function() {
     }]));
 
     describe('isEmpty()', function() {
-      it('should test whether teams players and rounds are empty', function() {
-        expect(state.isEmpty({ players: [[],[]], rounds: [[]] })).toBe(true);
-        expect(state.isEmpty({ players: [[],[1]], rounds: [[]] })).toBe(false);
-        expect(state.isEmpty({ players: [[],[]], rounds: [[1]] })).toBe(false);
+      using([
+        [ 'players' , 'rounds' , 'isEmpty' ],
+        [ [[],[]]   , [[]]     , true      ],
+        [ [[],[1]]  , [[]]     , false     ],
+        [ [[],[]]   , [[1]]    , false     ],
+      ], function(e, d) {
+        it('should test whether teams players and rounds are empty, '+d, function() {
+          expect(state.isEmpty({ players: e.players, rounds: e.rounds }))
+            .toBe(e.isEmpty);
+        });
       });
     });
 
@@ -84,16 +90,16 @@ describe('service', function() {
     describe('init()', function() {
       beforeEach(inject(function($window) {
         spyOn(state, 'create').and.returnValue(['new_state']);
-        this.window = $window;
+        this.windowService = $window;
       }));
 
       when('stored data is valid', function() {
-        this.window.localStorage.getItem.and.returnValue('["stored_state"]');
+        this.windowService.localStorage.getItem.and.returnValue('["stored_state"]');
 
         this.result = state.init();
       }, function() {
         it('should retrieve stored state', function() {
-          expect(this.window.localStorage.getItem)
+          expect(this.windowService.localStorage.getItem)
             .toHaveBeenCalledWith('sdApp.state');
         });
         
@@ -104,7 +110,7 @@ describe('service', function() {
       });
 
       when('stored data is invalid', function() {
-        this.window.localStorage.getItem.and.returnValue('["stored_state');
+        this.windowService.localStorage.getItem.and.returnValue('["stored_state');
 
         this.result = state.init();
       }, function() {
@@ -117,13 +123,13 @@ describe('service', function() {
 
     describe('store()', function() {
       beforeEach(inject(function($window) {
-        this.window = $window;
+        this.windowService = $window;
       }));
 
       it('should store state in localStorage', function() {
         state.store([ 'state' ]);
 
-        expect(this.window.localStorage.setItem)
+        expect(this.windowService.localStorage.setItem)
           .toHaveBeenCalledWith('sdApp.state', '["state"]');
       });
     });
@@ -161,9 +167,12 @@ describe('service', function() {
         this.coll = { bracket: [ undefined, 4, 5 ] };
       }, function() {
         it('should return bracket', function() {
-          expect(state.setBracketLength(this.coll, 1)).toEqual(this.coll.bracket);
-          expect(state.setBracketLength(this.coll, 2)).toEqual(this.coll.bracket);
-          expect(state.setBracketLength(this.coll, 3)).toEqual(this.coll.bracket);
+          expect(state.setBracketLength(this.coll, 1))
+            .toEqual(this.coll.bracket);
+          expect(state.setBracketLength(this.coll, 2))
+            .toEqual(this.coll.bracket);
+          expect(state.setBracketLength(this.coll, 3))
+            .toEqual(this.coll.bracket);
         });
       });
 
@@ -246,44 +255,38 @@ describe('service', function() {
     });
 
     describe('canBeBracketTournament(<st>, <group_index>)', function() {
-      it('should test whether group\'s length is a power of 2', function() {
-        expect(state.canBeBracketTournament({
-          players: [ [] ]
-        }, 0)).toBe(false);
-        expect(state.canBeBracketTournament({
-          players: [ _.repeat(1, {}) ]
-        }, 0)).toBe(true);
-        expect(state.canBeBracketTournament({
-          players: [ _.repeat(2, {}) ]
-        }, 0)).toBe(true);
-        expect(state.canBeBracketTournament({
-          players: [ _.repeat(3, {}) ]
-        }, 0)).toBe(false);
-        expect(state.canBeBracketTournament({
-          players: [ _.repeat(4, {}) ]
-        }, 0)).toBe(true);
-        expect(state.canBeBracketTournament({
-          players: [ _.repeat(5, {}) ]
-        }, 0)).toBe(false);
-        expect(state.canBeBracketTournament({
-          players: [ _.repeat(7, {}) ]
-        }, 0)).toBe(false);
-        expect(state.canBeBracketTournament({
-          players: [ _.repeat(8, {}) ]
-        }, 0)).toBe(true);
+      using([
+        [ 'players'           , 'can' ],
+        [ [ [] ]              , false ],
+        [ [ _.repeat(1, {}) ] , true  ],
+        [ [ _.repeat(2, {}) ] , true  ],
+        [ [ _.repeat(3, {}) ] , false ],
+        [ [ _.repeat(4, {}) ] , true  ],
+        [ [ _.repeat(5, {}) ] , false ],
+        [ [ _.repeat(7, {}) ] , false ],
+        [ [ _.repeat(8, {}) ] , true  ],
+      ], function(e, d) {
+        it('should test whether group\'s length is a power of 2, '+d, function() {
+          expect(state.canBeBracketTournament({
+            players: e.players
+          }, 0)).toBe(e.can);
+        });
       });
     });
 
     describe('bracketNbRounds(<st>, <group_index>)', function() {
       when('bracket is set', function() {
       }, function() {
-        it('should return number of rounds since bracket start', function() {
-          expect(state.bracketNbRounds({ bracket: [ 2 ], rounds: [ [], [] ] }, 0))
-            .toBe(0);
-          expect(state.bracketNbRounds({ bracket: [ 2 ], rounds: [ [], [], [] ] }, 0))
-            .toBe(1);
-          expect(state.bracketNbRounds({ bracket: [ 2 ], rounds: [ [], [], [], [], [] ] }, 0))
-            .toBe(3);
+        using([
+          [ 'rounds'               , 'nb' ],
+          [ [ [], [] ]             , 0    ],
+          [ [ [], [], [] ]         , 1    ],
+          [ [ [], [], [], [], [] ] , 3    ],
+        ], function(e, d) {
+          it('should return number of rounds since bracket start, '+d, function() {
+            expect(state.bracketNbRounds({ bracket: [ 2 ], rounds: e.rounds }, 0))
+              .toBe(e.nb);
+          });
         });
       });
 
@@ -306,36 +309,28 @@ describe('service', function() {
 
       when('bracket is set', function() {
       }, function() {
-        it('should return a description of the bracket round', function() {
-          expect(state.bracketRoundOf({
-            bracket: [0],
-            players: [ _.repeat(16, {}) ]
-          }, 0, 0)).toMatch(/round of 8/i);
-          expect(state.bracketRoundOf({
-            bracket: [0],
-            players: [ _.repeat(16, {}) ]
-          }, 0, 1)).toMatch(/quarter-finals/i);
-          expect(state.bracketRoundOf({
-            bracket: [0],
-            players: [ _.repeat(16, {}) ]
-          }, 0, 2)).toMatch(/semi-finals/i);
-          expect(state.bracketRoundOf({
-            bracket: [0],
-            players: [ _.repeat(16, {}) ]
-          }, 0, 3)).toMatch(/final/i);
-          expect(state.bracketRoundOf({
-            bracket: [0],
-            players: [ _.repeat(16, {}) ]
-          }, 0, 4)).toMatch(/ended/i);
+        using([
+          [ 'round_index' , 'desc'            ],
+          [ 0             , /round of 8/i     ],
+          [ 1             , /quarter-finals/i ],
+          [ 2             , /semi-finals/i    ],
+          [ 3             , /final/i          ],
+          [ 4             , /ended/i          ],
+        ], function(e, d) {
+          it('should return a description of the bracket round, '+d, function() {
+            expect(state.bracketRoundOf({
+              bracket: [0],
+              players: [ _.repeat(16, {}) ]
+            }, 0, e.round_index)).toMatch(e.desc);
+          });
         });
       });
     });
 
     describe('updatePlayersPoints()', function() {
-      beforeEach(inject(function(players) {
-        this.players = players;
-        spyOn(players, 'updatePoints').and.returnValue([ 'new_players' ]);
-      }));
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+      });
 
       it('should call players.updatePoints with bracket information', function() {
         var dummy_players = [ _.repeat(4, {}), _.repeat(2, {}), _.repeat(5, {}) ];
@@ -345,18 +340,17 @@ describe('service', function() {
           bracket: dummy_bracket,
           players: dummy_players,
           rounds: ['rounds']
-        })).toEqual([ 'new_players' ]);
-        expect(this.players.updatePoints)
+        })).toBe('players.updatePoints.returnValue');
+        expect(this.playersService.updatePoints)
           .toHaveBeenCalledWith(dummy_players, [ 'rounds' ],
                                 dummy_bracket, [ 2, 1, 2.5 ]);
       });
     });
 
     describe('sortPlayers()', function() {
-      beforeEach(inject(function(players) {
-        this.players = players;
-        spyOn(players, 'sort').and.returnValue([ 'new_players' ]);
-      }));
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+      });
 
       it('should call players.sort with bracket information', function() {
         var dummy_players = [ _.repeat(4, {}), _.repeat(2, {}), _.repeat(5, {}) ];
@@ -367,8 +361,9 @@ describe('service', function() {
           rounds: _.repeat(3, {})
         };
 
-        expect(state.sortPlayers(st)).toEqual([ 'new_players' ]);
-        expect(this.players.sort)
+        expect(state.sortPlayers(st))
+          .toBe('players.sort.returnValue');
+        expect(this.playersService.sort)
           .toHaveBeenCalledWith(dummy_players, st, [ false, false, true ]);
       });
     });

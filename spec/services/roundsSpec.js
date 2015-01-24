@@ -34,15 +34,20 @@ describe('service', function() {
         ];
       });
 
-      it('should return lists played by <name>', function() {
+      using([
+        [ 'name'   , 'lists'                ],
         // uniq
-        expect(rounds.listsForPlayer(this.coll, 'toto')).toEqual(['caster1']);
+        [ 'toto'   , ['caster1']            ],
         // without null
-        expect(rounds.listsForPlayer(this.coll, 'titi')).toEqual(['caster5']);
+        [ 'titi'   , ['caster5']            ],
         // sub-games
-        expect(rounds.listsForPlayer(this.coll, 'p3')).toEqual(['caster1','caster3']);
+        [ 'p3'     , ['caster1', 'caster3'] ],
         // undefined player
-        expect(rounds.listsForPlayer(this.coll, 'unknown')).toEqual([]);
+        [ 'unkown' , []                     ],
+      ], function(e, d) {
+        it('should return lists played by <name>, '+d, function() {
+          expect(rounds.listsForPlayer(this.coll, e.name)).toEqual(e.lists);
+        });
       });
     });
 
@@ -89,34 +94,32 @@ describe('service', function() {
 
       when('bracket is defined', function() {
       }, function(){
-        it('should sum points for <name>', function() {
+        using([
+          [ 'bracket_start' , 'points' ],
           // bracket from start
-          expect(rounds.pointsForPlayer(this.coll, 'toto',
-                                        0, 32)).toEqual({
-                                          bracket: 392,
-                                          tournament : 111,
-                                          control: 222,
-                                          army: 333,
-                                          sos: 0
-                                        });
+          [ 0               , { bracket: 392,
+                                tournament : 111,
+                                control: 222,
+                                army: 333,
+                                sos: 0 } ],
           // started after a few rounds
-          expect(rounds.pointsForPlayer(this.coll, 'toto',
-                                        2, 32)).toEqual({
-                                          bracket: 800,
-                                          tournament : 111,
-                                          control: 222,
-                                          army: 333,
-                                          sos: 0
-                                        });
+          [ 2               , { bracket: 800,
+                                tournament : 111,
+                                control: 222,
+                                army: 333,
+                                sos: 0 } ],
           // not yet started
-          expect(rounds.pointsForPlayer(this.coll, 'toto',
-                                        6, 32)).toEqual({
-                                          bracket: 0,
-                                          tournament : 111,
-                                          control: 222,
-                                          army: 333,
-                                          sos: 0
-                                        });
+          [ 6               , { bracket: 0,
+                                tournament : 111,
+                                control: 222,
+                                army: 333,
+                                sos: 0 } ],
+        ], function(e, d) {
+          it('should sum points for <name>, '+d, function() {
+            expect(rounds.pointsForPlayer(this.coll, 'toto',
+                                          e.bracket_start, 32))
+              .toEqual(e.points);
+          });
         });
       });
     });
@@ -141,21 +144,22 @@ describe('service', function() {
         ];
       });
 
-      it('should return opponents played by <name>', function() {
-        expect(rounds.opponentsForPlayer(this.coll, 'toto'))
-          .toEqual(['tata', 'tutu']);
+      using([
+        [ 'name'    , 'opponents'      ],
+        [ 'toto'    , ['tata', 'tutu'] ],
         // without null
-        expect(rounds.opponentsForPlayer(this.coll, 'tata'))
-          .toEqual(['toto']);
+        [ 'tata'    , ['toto']         ],
         // missing a game
-        expect(rounds.opponentsForPlayer(this.coll, 'titi'))
-          .toEqual(['tutu']);
+        [ 'titi'    , ['tutu']         ],
         // sub-games
-        expect(rounds.opponentsForPlayer(this.coll, 'p3'))
-          .toEqual(['p4','p1']);
+        [ 'p3'      , ['p4','p1']      ],
         // undefined player
-        expect(rounds.opponentsForPlayer(this.coll, 'unknown'))
-          .toEqual([]);
+        [ 'unknown' , []               ],
+      ], function(e, d) {
+        it('should return opponents played by <name>, '+d, function() {
+          expect(rounds.opponentsForPlayer(this.coll, e.name))
+            .toEqual(e.opponents);
+        });
       });
     });
     
@@ -209,21 +213,22 @@ describe('service', function() {
         ];
       });
 
-      it('should return tables played on by <name>', function() {
-        expect(rounds.tablesForPlayer(this.coll, 'toto'))
-          .toEqual([1, 3]);
+      using([
+        [ 'name'    , 'tables' ],
+        [ 'toto'    , [1, 3]   ],
         // without null
-        expect(rounds.tablesForPlayer(this.coll, 'tata'))
-          .toEqual([1, 2]);
+        [ 'tata'    , [1, 2]   ],
         // missing a game
-        expect(rounds.tablesForPlayer(this.coll, 'titi'))
-          .toEqual([2]);
+        [ 'titi'    , [2]      ],
         // sub-games
-        expect(rounds.tablesForPlayer(this.coll, 'p3'))
-          .toEqual([32, 31]);
+        [ 'p3'      , [32, 31] ],
         // undefined player
-        expect(rounds.tablesForPlayer(this.coll, 'unknown'))
-          .toEqual([]);
+        [ 'unknown' , []       ],
+      ], function(e, d) {
+        it('should return tables played on by <name>, '+d, function() {
+          expect(rounds.tablesForPlayer(this.coll, e.name))
+            .toEqual(e.tables);
+        });
       });
     });
   });

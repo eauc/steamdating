@@ -14,8 +14,15 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
+      '$window',
       function($rootScope,
-               $controller) {
+               $controller,
+               $window) {
+        this.window = $window;
+        spyOn($window, 'confirm');
+
+        this.roundsService = spyOnService('rounds');
+
         initCtrlWith = function(ctxt, pane, rounds) {
           ctxt.pane = pane || 'sum';
           ctxt.state_rounds = rounds || [];
@@ -31,29 +38,27 @@ describe('controllers', function() {
           ctxt.$stateParams = {
             pane: ctxt.pane
           };
-          ctxt.window = jasmine.createSpyObj('$window', [ 'confirm' ]);
-
-          ctxt.rounds = jasmine.createSpyObj('rounds', [ 'drop' ]);
 
           $controller('roundsNthCtrl', { 
             '$scope': ctxt.scope,
             '$stateParams': ctxt.$stateParams,
             '$window': ctxt.window,
-            'rounds': ctxt.rounds,
           });
         };
         initCtrlWith(this);
       }
     ]));
 
-    it('should init pane & r from stateParams', function() {
-      initCtrlWith(this, '0', [ 'rounds0', 'rounds1' ]);
-      expect(this.scope.round.current).toBe('0');
-      expect(this.scope.r).toBe('rounds0');
-
-      initCtrlWith(this, '1', [ 'rounds0', 'rounds1' ]);
-      expect(this.scope.round.current).toBe('1');
-      expect(this.scope.r).toBe('rounds1');
+    using([
+      [ 'pane' , 'r'       ],
+      [ '0'    , 'rounds0' ],
+      [ '1'    , 'rounds1' ],
+    ], function(e, d) {
+      it('should init pane & r from stateParams, '+d, function() {
+        initCtrlWith(this, e.pane, [ 'rounds0', 'rounds1' ]);
+        expect(this.scope.round.current).toBe(e.pane);
+        expect(this.scope.r).toBe(e.r);
+      });
     });
 
     describe('doDeleteRound(<index>)', function() {
@@ -66,14 +71,14 @@ describe('controllers', function() {
       when('user confirms', function() {
         this.scope.state.rounds = [ 'rounds' ];
         this.window.confirm.and.returnValue(true);
-        this.dummy_rounds = [ 'dummy' ];
-        this.rounds.drop.and.returnValue(this.dummy_rounds);
 
         this.scope.doDeleteRound(4);
       }, function() {
         it('should drop round <index>', function() {
-          expect(this.rounds.drop).toHaveBeenCalledWith([ 'rounds' ], 4);
-          expect(this.scope.state.rounds).toBe(this.dummy_rounds);
+          expect(this.roundsService.drop)
+            .toHaveBeenCalledWith([ 'rounds' ], 4);
+          expect(this.scope.state.rounds)
+            .toBe('rounds.drop.returnValue');
         });
 
         it('should update points', function() {
@@ -85,7 +90,8 @@ describe('controllers', function() {
         });
 
         it('should return to rounds summary page', function() {
-          expect(this.scope.goToState).toHaveBeenCalledWith('rounds.sum');
+          expect(this.scope.goToState)
+            .toHaveBeenCalledWith('rounds.sum');
         });
       });
     });

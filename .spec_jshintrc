@@ -17,6 +17,7 @@
     "it": false,
     "xit": false,
     "spyOn": false,
+    "spyOnService": false,
     "expect": false,
     "module": false,
     "inject": false,

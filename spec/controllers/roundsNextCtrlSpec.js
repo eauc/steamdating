@@ -24,30 +24,15 @@ describe('controllers', function() {
           rounds: this.state_rounds
         };
 
-        this.round = jasmine.createSpyObj('round', [
-          'gameForPlayer',
-          'updatePlayer',
-          'isPlayerPaired'
-        ]);
-        this.rounds = jasmine.createSpyObj('rounds', [
-          'drop',
-          'createNextRound',
-          'registerNextRound'
-        ]);
-        this.dummy_next_round = [ 'next_round' ];
-        this.rounds.createNextRound.and.returnValue(this.dummy_next_round);
-
-        this.state = jasmine.createSpyObj('state', [ 'resetBracket', 'setBracket' ]);
-        this.srPairing = jasmine.createSpyObj('srPairing', [ 'suggestNextRound' ]);
-        this.bracketPairing = jasmine.createSpyObj('bracketPairing', [ 'suggestRound' ]);
+        this.stateService = spyOnService('state');
+        this.srPairingService = spyOnService('srPairing');
+        this.bracketPairingService = spyOnService('bracketPairing');
+        this.roundService = spyOnService('round');
+        this.roundsService = spyOnService('rounds');
+        this.roundsService.createNextRound._retVal = ['rounds.createNextRound.returnValue'];
 
         $controller('roundsNextCtrl', { 
           '$scope': this.scope,
-          'state': this.state,
-          'rounds': this.rounds,
-          'round': this.round,
-          'srPairing': this.srPairing,
-          'bracketPairing': this.bracketPairing
         });
       }
     ]));
@@ -58,8 +43,9 @@ describe('controllers', function() {
     });
 
     it('should init next round', function() {
-      expect(this.scope.next_round).toBe(this.dummy_next_round);
-      expect(this.rounds.createNextRound)
+      expect(this.scope.next_round)
+        .toEqual([ 'rounds.createNextRound.returnValue' ]);
+      expect(this.roundsService.createNextRound)
         .toHaveBeenCalledWith(this.scope.state.players);
     });
 
@@ -71,7 +57,7 @@ describe('controllers', function() {
       beforeEach(function() {
         this.scope.next_round = [ 'group1', 'group2', 'group3' ];
         this.dummy_updated_round = [ 'udpated_round' ];
-        this.round.updatePlayer.and.returnValue(this.dummy_updated_round);
+        this.roundService.updatePlayer.and.returnValue(this.dummy_updated_round);
 
         spyOn(this.scope, 'updatePlayersOptions');
 
@@ -80,7 +66,7 @@ describe('controllers', function() {
 
       it('should update player names in next round for <gr_index> group', function() {
         expect(this.scope.next_round[2]).toBe(this.dummy_updated_round);
-        expect(this.round.updatePlayer).toHaveBeenCalledWith('group3', 3, 'key');
+        expect(this.roundService.updatePlayer).toHaveBeenCalledWith('group3', 3, 'key');
       });
 
       it('should update players options lists', function() {
@@ -96,7 +82,7 @@ describe('controllers', function() {
           [ { name: 'not_paired21' }, { name: 'paired22' } ],
         ];
         this.scope.next_round = [ 'group1', 'group2' ];
-        this.round.isPlayerPaired.and.callFake(function(r, p) {
+        this.roundService.isPlayerPaired.and.callFake(function(r, p) {
           return s.startsWith(p.name, 'paired');
         });
       });
@@ -119,7 +105,7 @@ describe('controllers', function() {
         this.scope.new_state.rounds = [ 'round1', 'round2' ];
         this.scope.new_state.bracket = [ 'new_bracket' ];
         this.new_rounds = [ 'round1', 'round2', 'round3' ];
-        this.rounds.registerNextRound.and.returnValue(this.new_rounds);
+        this.roundsService.registerNextRound.and.returnValue(this.new_rounds);
 
         this.scope.registerNextRound();
       });
@@ -129,7 +115,7 @@ describe('controllers', function() {
       });
 
       it('should register next round', function() {
-        expect(this.rounds.registerNextRound)
+        expect(this.roundsService.registerNextRound)
           .toHaveBeenCalledWith(this.scope.new_state.rounds,
                                 this.scope.next_round);
         expect(this.scope.state.rounds).toBe(this.new_rounds);
@@ -147,21 +133,20 @@ describe('controllers', function() {
     describe('suggestNextRound(<group_index>,<type>)', function() {
       when('type is "sr"', function() {
         this.type = 'sr';
-        this.suggest = [ 'suggest' ];
-        this.srPairing.suggestNextRound.and.returnValue(this.suggest);
-
         spyOn(this.scope, 'updatePlayersOptions');
 
         this.scope.suggestNextRound(1, this.type);
       }, function() {
         it('should reset bracket for this group', function() {
-          expect(this.state.resetBracket).toHaveBeenCalledWith(this.scope.new_state, 1);
+          expect(this.stateService.resetBracket)
+            .toHaveBeenCalledWith(this.scope.new_state, 1);
         });
 
         it('should suggest SR pairing for <group_index>', function() {
-          expect(this.srPairing.suggestNextRound)
+          expect(this.srPairingService.suggestNextRound)
             .toHaveBeenCalledWith(this.scope.new_state, 1);
-          expect(this.scope.next_round[1]).toBe(this.suggest);
+          expect(this.scope.next_round[1])
+            .toBe('srPairing.suggestNextRound.returnValue');
         });
 
         it('should update players options lists', function() {
@@ -171,21 +156,20 @@ describe('controllers', function() {
 
       when('type is "bracket"', function() {
         this.type = 'bracket';
-        this.suggest = [ 'suggest' ];
-        this.bracketPairing.suggestRound.and.returnValue(this.suggest);
-
         spyOn(this.scope, 'updatePlayersOptions');
 
         this.scope.suggestNextRound(1, this.type);
       }, function() {
         it('should reset bracket for this group', function() {
-          expect(this.state.setBracket).toHaveBeenCalledWith(this.scope.new_state, 1);
+          expect(this.stateService.setBracket)
+            .toHaveBeenCalledWith(this.scope.new_state, 1);
         });
 
         it('should suggest SR pairing for <group_index>', function() {
-          expect(this.bracketPairing.suggestRound)
+          expect(this.bracketPairingService.suggestRound)
             .toHaveBeenCalledWith(this.scope.new_state, 1);
-          expect(this.scope.next_round[1]).toBe(this.suggest);
+          expect(this.scope.next_round[1])
+            .toBe('bracketPairing.suggestRound.returnValue');
         });
 
         it('should update players options lists', function() {

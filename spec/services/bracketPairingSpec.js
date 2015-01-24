@@ -12,35 +12,37 @@ describe('service', function() {
     
     beforeEach(inject([
       'bracketPairing',
-      'basePairing',
       function(_bracketPairing, basePairing) {
         bracketPairing = _bracketPairing;
 
-        this.basePairing = basePairing;
-        spyOn(this.basePairing, 'tableRangeForGroup');
-        spyOn(this.basePairing, 'suggestTableFor');
+        this.basePairingService = spyOnService('basePairing');
       }
     ]));
 
     describe('indices(<n>)', function() {
-      it('should compute indices pair to start bracket', function() {
-        expect(bracketPairing.indices(2)).toEqual([[1,2]]);
-        expect(bracketPairing.indices(4)).toEqual([[1,4],[3,2]]);
-        expect(bracketPairing.indices(8)).toEqual([[1,8],[5,4],[3,6],[7,2]]);
+      using([
+        [ 'nb_players' , 'indices'                 ],
+        [ 2            , [[1,2]]                   ],
+        [ 4            , [[1,4],[3,2]]             ],
+        [ 8            , [[1,8],[5,4],[3,6],[7,2]] ],
+      ], function(e, d) {
+        it('should compute indices pairs to start bracket, '+d, function() {
+          expect(bracketPairing.indices(e.nb_players)).toEqual(e.indices);
+        });
       });
     });
 
     describe('suggestFirstSingleRound(<state>, <group_index>)', function() {
-      beforeEach(inject(function(players) {
+      beforeEach(function() {
         var ctxt = this;
 
-        this.players = players;
-        spyOn(this.players, 'sortGroup');
+        this.playersService = spyOnService('players');
 
         this.tables = [42,43,44,45];
-        this.basePairing.tableRangeForGroup.and.returnValue(this.tables);
+        this.basePairingService.tableRangeForGroup._retVal = this.tables;
+
         var tables_i = 0;
-        this.basePairing.suggestTableFor.and
+        this.basePairingService.suggestTableFor.and
           .callFake(function() { return ctxt.tables[tables_i++]; });
 
         this.state = {
@@ -51,56 +53,53 @@ describe('service', function() {
           { rank: 1, players: [{ name: 'p1' }, { name: 'p2' }, { name: 'p3' }, { name: 'p4' }] },
           { rank: 2, players: [{ name: 'p5' }, { name: 'p6' }, { name: 'p7' }, { name: 'p8' }] },
         ];
-        this.players.sortGroup.and.returnValue(this.sorted_players);
+        this.playersService.sortGroup._retVal = this.sorted_players;
 
         this.res = bracketPairing.suggestFirstSingleRound(this.state, this.gri);
-      }));
+      });
 
       it('should request table range for group', function() {
-        expect(this.basePairing.tableRangeForGroup)
+        expect(this.basePairingService.tableRangeForGroup)
           .toHaveBeenCalledWith(this.state.players, this.gri);
       });
 
       it('should sort group using SR criterion', function() {
-        expect(this.players.sortGroup)
+        expect(this.playersService.sortGroup)
           .toHaveBeenCalledWith(this.state.players[this.gri], this.state, false);
       });
 
-      it('should create games with correct pairing', function() {
-        expect(this.res[0].table).toBe(42);
-        expect(this.res[0].p1.name).toBe('p1');
-        expect(this.res[0].p2.name).toBe('p8');
-
-        expect(this.res[1].table).toBe(43);
-        expect(this.res[1].p1.name).toBe('p5');
-        expect(this.res[1].p2.name).toBe('p4');
-
-        expect(this.res[2].table).toBe(44);
-        expect(this.res[2].p1.name).toBe('p3');
-        expect(this.res[2].p2.name).toBe('p6');
-
-        expect(this.res[3].table).toBe(45);
-        expect(this.res[3].p1.name).toBe('p7');
-        expect(this.res[3].p2.name).toBe('p2');
+      using([
+        [ 'game' , 'table' , 'p1' , 'p2' ],
+        [ 0      , 42      , 'p1' , 'p8' ],
+        [ 1      , 43      , 'p5' , 'p4' ],
+        [ 2      , 44      , 'p3' , 'p6' ],
+        [ 3      , 45      , 'p7' , 'p2' ],
+      ], function(e, d) {
+        it('should create games with correct pairing, '+d, function() {
+          expect(this.res[e.game].table).toBe(e.table);
+          expect(this.res[e.game].p1.name).toBe(e.p1);
+          expect(this.res[e.game].p2.name).toBe(e.p2);
+        });
       });
     });
 
     describe('suggestNextSingleRound(<state>, <group_index>)', function() {
-      beforeEach(inject(function(state, round) {
+      beforeEach(function() {
         var ctxt = this;
 
-        this.state = state;
+        this.stateService = spyOnService('state');
         this.nb_rounds = 1;
-        spyOn(this.state, 'bracketNbRounds').and.callFake(function() {
+        this.stateService.bracketNbRounds.and.callFake(function() {
           return ctxt.nb_rounds;
         });
-        this.round = round;
-        spyOn(this.round, 'gamesForGroup');
+        this.roundService = spyOnService('round');
+        this.roundService.winners.and.callThrough();
+        this.roundService.losers.and.callThrough();
 
         this.tables = [42,43,44,45];
-        this.basePairing.tableRangeForGroup.and.returnValue(this.tables);
+        this.basePairingService.tableRangeForGroup._retVal = this.tables;
         this.tables_i = 0;
-        this.basePairing.suggestTableFor.and
+        this.basePairingService.suggestTableFor.and
           .callFake(function() { return ctxt.tables[ctxt.tables_i++]; });
 
         this.st = {
@@ -114,78 +113,59 @@ describe('service', function() {
           { p1: { name: 'p3', tournament: 1 }, p2: { name: 'p6', tournament: 0 } },
           { p1: { name: 'p7', tournament: 0 }, p2: { name: 'p2', tournament: 1 } },
         ];
-        this.round.gamesForGroup.and.returnValue(this.games);
-      }));
+        this.roundService.gamesForGroup._retVal = this.games;
+      });
 
       it('should request table range for group', function() {
         this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
 
-        expect(this.basePairing.tableRangeForGroup)
+        expect(this.basePairingService.tableRangeForGroup)
           .toHaveBeenCalledWith(this.st.players, this.gri);
       });
 
       it('should request last round\'s game for group', function() {
         this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
 
-        expect(this.round.gamesForGroup)
+        expect(this.roundService.gamesForGroup)
           .toHaveBeenCalledWith(['last_round'], this.st.players, this.gri);
       });
 
-      it('should create games with correct pairing', function() {
-        this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
+      using([
+        [ 'nb_rounds' , 'game' , 'table' , 'p1' , 'p2' ],
+        [ 1           , 0      , 42      , 'p1' , 'p4' ],
+        [ 1           , 1      , 43      , 'p3' , 'p2' ],
+        [ 1           , 2      , 44      , 'p8' , 'p5' ],
+        [ 1           , 3      , 45      , 'p6' , 'p7' ],
+        [ 2           , 0      , 42      , 'p1' , 'p4' ],
+        [ 2           , 1      , 43      , 'p8' , 'p5' ],
+        [ 2           , 2      , 44      , 'p3' , 'p2' ],
+        [ 2           , 3      , 45      , 'p6' , 'p7' ],
+      ], function(e, d) {
+        it('should create games with correct pairing, '+d, function() {
+          this.tables_i = 0;
+          this.nb_rounds = e.nb_rounds;
+          this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
 
-        expect(this.res[0].table).toBe(42);
-        expect(this.res[0].p1.name).toBe('p1');
-        expect(this.res[0].p2.name).toBe('p4');
-
-        expect(this.res[1].table).toBe(43);
-        expect(this.res[1].p1.name).toBe('p3');
-        expect(this.res[1].p2.name).toBe('p2');
-
-        expect(this.res[2].table).toBe(44);
-        expect(this.res[2].p1.name).toBe('p8');
-        expect(this.res[2].p2.name).toBe('p5');
-
-        expect(this.res[3].table).toBe(45);
-        expect(this.res[3].p1.name).toBe('p6');
-        expect(this.res[3].p2.name).toBe('p7');
-
-        this.tables_i = 0;
-        this.nb_rounds = 2;
-        this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
-
-        expect(this.res[0].table).toBe(42);
-        expect(this.res[0].p1.name).toBe('p1');
-        expect(this.res[0].p2.name).toBe('p4');
-
-        expect(this.res[1].table).toBe(43);
-        expect(this.res[1].p1.name).toBe('p8');
-        expect(this.res[1].p2.name).toBe('p5');
-
-        expect(this.res[2].table).toBe(44);
-        expect(this.res[2].p1.name).toBe('p3');
-        expect(this.res[2].p2.name).toBe('p2');
-
-        expect(this.res[3].table).toBe(45);
-        expect(this.res[3].p1.name).toBe('p6');
-        expect(this.res[3].p2.name).toBe('p7');
+          expect(this.res[e.game].table).toBe(e.table);
+          expect(this.res[e.game].p1.name).toBe(e.p1);
+          expect(this.res[e.game].p2.name).toBe(e.p2);
+        });
       });
     });
 
     describe('suggestRound(<state>, <group_index>)', function() {
-      beforeEach(inject(function(state) {
-        this.state = state;
-        spyOn(this.state, 'bracketNbRounds');
+      beforeEach(function() {
+        this.stateService = spyOnService('state');
 
         spyOn(bracketPairing, 'suggestFirstSingleRound').and.returnValue('first');
         spyOn(bracketPairing, 'suggestNextSingleRound').and.returnValue('next');
 
         this.st = [ 'state' ];
         this.gri = 4;
-      }));
+      });
 
       when('bracket is in first round', function() {
-        this.state.bracketNbRounds.and.returnValue(0);
+        this.stateService.bracketNbRounds.and.returnValue(0);
       }, function() {
         it('should call suggestFirstSingleRound()', function() {
           bracketPairing.suggestRound(this.st, this.gri);
@@ -196,7 +176,7 @@ describe('service', function() {
       });
 
       when('bracket is not in first round', function() {
-        this.state.bracketNbRounds.and.returnValue(3);
+        this.stateService.bracketNbRounds.and.returnValue(3);
       }, function() {
         it('should call suggestFirstSingleRound()', function() {
           bracketPairing.suggestRound(this.st, this.gri);

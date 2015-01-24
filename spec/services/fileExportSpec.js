@@ -15,26 +15,27 @@ describe('service', function() {
     }]));
 
     describe('generate(<type>, <data>)', function() {
-      beforeEach(inject(function($window, fkStringifier) {
+      beforeEach(inject(function($window) {
         this.window = $window;
         spyOn($window, 'Blob').and.callFake(function() { this.blob = 'blob'; });
         spyOn($window.URL, 'createObjectURL').and.returnValue('test_url');
 
-        this.fkStringifier = fkStringifier;
-        spyOn(fkStringifier, 'stringify').and.returnValue('fk_string');
+        this.fkStringifierService = spyOnService('fkStringifier');
       }));
 
       it('should call <type> stringifier', function() {
         fileExport.generate('fk', 'data');
 
-        expect(this.fkStringifier.stringify).toHaveBeenCalledWith('data');
+        expect(this.fkStringifierService.stringify)
+          .toHaveBeenCalledWith('data');
       });
 
       it('should generate URL from string', function() {
         expect(fileExport.generate('fk', 'data')).toBe('test_url');
 
         expect(this.window.Blob)
-          .toHaveBeenCalledWith(['fk_string'], {type: 'text/plain'});
+          .toHaveBeenCalledWith(['fkStringifier.stringify.returnValue'],
+                                {type: 'text/plain'});
         // bug in SpecRunner
         // expect(this.window.URL.createObjectURL)
         //   .toHaveBeenCalledWith({ blob: 'blob' });

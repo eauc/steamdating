@@ -15,26 +15,26 @@ describe('service', function() {
     }]));
 
     describe('gameForPlayer(<name>)', function() {
-      beforeEach(function() {
-        this.coll = [
-          { p1: { name: 'toto'}, p2: {name: 'tata' }, games: [] },
-          { p1: { name: 'tutu'}, p2: {name: 'titi' }, games: [] },
-          { p1: { name: 't1' }, p2: { name: 't2' },
-            games: [ { p1: { name: 'p1'}, p2: {name: 'p2' }, games: [] },
-                     { p1: { name: 'p3'}, p2: {name: 'p4' }, games: [] } ] }
-        ];
-      });
+      var coll = [
+        { p1: { name: 'toto'}, p2: {name: 'tata' }, games: [] },
+        { p1: { name: 'tutu'}, p2: {name: 'titi' }, games: [] },
+        { p1: { name: 't1' }, p2: { name: 't2' },
+          games: [ { p1: { name: 'p1'}, p2: {name: 'p2' }, games: [] },
+                   { p1: { name: 'p3'}, p2: {name: 'p4' }, games: [] } ] }
+      ];
 
-      it('should return game involving <name>', function() {
-        expect(round.gameForPlayer(this.coll, 'toto')).toBe(this.coll[0]);
-        expect(round.gameForPlayer(this.coll, 'titi')).toBe(this.coll[1]);
-
-        expect(round.gameForPlayer(this.coll, 't2')).toBe(this.coll[2]);
-
-        expect(round.gameForPlayer(this.coll, 'p1')).toBe(this.coll[2].games[0]);
-        expect(round.gameForPlayer(this.coll, 'p4')).toBe(this.coll[2].games[1]);
-
-        expect(round.gameForPlayer(this.coll, 'unknown')).toBe(undefined);
+      using([
+        [ 'name'    , 'game'           ],
+        [ 'toto'    , coll[0]          ],
+        [ 'titi'    , coll[1]          ],
+        [ 't2'      , coll[2]          ],
+        [ 'p1'      , coll[2].games[0] ],
+        [ 'p4'      , coll[2].games[1] ],
+        [ 'unknown' , undefined        ],
+      ], function(e, d) {
+        it('should return game involving <name>, '+d, function() {
+          expect(round.gameForPlayer(coll, e.name)).toBe(e.game);
+        });
       });
     });
 
@@ -91,17 +91,22 @@ describe('service', function() {
     });
 
     describe('isPlayerPaired(<player>)', function() {
-      it('should check whether <player> is paired', function() {
-        this.coll = [
-          { p1: { name: 'p1' }, p2: { name: 'p2' } },
-          { p1: { name: 'p2' }, p2: { name: null } },
-          { p1: { name: 'p5' }, p2: { name: 'p1' } }
-        ];
+      using([
+        [ 'name' , 'isPaired' ],
+        [ 'p2'   , true       ],
+        [ 'p5'   , true       ],
+        [ 'p3'   , false      ],
+        [ null   , false      ],
+      ], function(e, d) {
+        it('should check whether <player> is paired, '+d, function() {
+          this.coll = [
+            { p1: { name: 'p1' }, p2: { name: 'p2' } },
+            { p1: { name: 'p2' }, p2: { name: null } },
+            { p1: { name: 'p5' }, p2: { name: 'p1' } }
+          ];
 
-        expect(round.isPlayerPaired(this.coll, { name: 'p2' })).toBe(true);
-        expect(round.isPlayerPaired(this.coll, { name: 'p5' })).toBe(true);
-        expect(round.isPlayerPaired(this.coll, { name: 'p3' })).toBe(false);
-        expect(round.isPlayerPaired(this.coll, { name: null })).toBe(false);
+          expect(round.isPlayerPaired(this.coll, { name: e.name })).toBe(e.isPaired);
+        });
       });
     });
 
