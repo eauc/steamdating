@@ -55,7 +55,7 @@
     },
     "icon": "cygnar.png"
   },
-  "The Protectorate of Menoth": {
+  "Protectorate of Menoth": {
     "name": "The Protectorate of Menoth",
     "t3": "Menoth",
     "color" : "#ecc76d",
@@ -308,7 +308,7 @@
         "name": "Baldur the Stonesoul"
       },
       "dragibus1": {
-        "name": "Bradigus Thorle the Runecarver"
+        "name": "Bradigus"
       },
       "cassius1": {
         "name": "Cassius the Oathkeeper"
