@@ -81,9 +81,14 @@ describe('controllers', function() {
           [ { name: 'paired11' }, { name: 'not_paired12' }, { name: 'not_paired13' } ],
           [ { name: 'not_paired21' }, { name: 'paired22' } ],
         ];
-        this.scope.next_round = [ 'group1', 'group2' ];
+        this.scope.new_state.rounds = ['rounds'];
+        this.scope.next_round = [ [ 'gr1g1', 'gr1g2' ], [ 'gr2g1' ] ];
         this.roundService.isPlayerPaired.and.callFake(function(r, p) {
           return s.startsWith(p.name, 'paired');
+        });
+        this.roundsService.pairAlreadyExists.calls.reset();
+        this.roundsService.pairAlreadyExists.and.callFake(function(r, g) {
+          return 'rounds.pairAlreadyExists.returnValue('+g+')';
         });
       });
 
@@ -96,6 +101,22 @@ describe('controllers', function() {
             ['not_paired13', '> not_paired13'] ],
           [ ['not_paired21', '> not_paired21'],
             ['paired22', 'paired22'] ]
+        ]);
+      });
+
+      it('should warn about paired already played', function() {
+        this.scope.updatePlayersOptions();
+
+        expect(this.roundsService.pairAlreadyExists)
+          .toHaveBeenCalledWith(['rounds'], 'gr1g1');
+        expect(this.roundsService.pairAlreadyExists)
+          .toHaveBeenCalledWith(['rounds'], 'gr1g2');
+        expect(this.roundsService.pairAlreadyExists)
+          .toHaveBeenCalledWith(['rounds'], 'gr2g1');
+        expect(this.scope.pairs_already).toEqual([
+          [ 'rounds.pairAlreadyExists.returnValue(gr1g1)',
+            'rounds.pairAlreadyExists.returnValue(gr1g2)' ],
+          [ 'rounds.pairAlreadyExists.returnValue(gr2g1)' ]
         ]);
       });
     });

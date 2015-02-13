@@ -162,6 +162,12 @@ angular.module('srApp.controllers')
             return [ p.name, label ];
           });
         });
+        $scope.pairs_already = _.map($scope.next_round, function(gr) {
+          return _.map(gr, function(g) {
+            return rounds.pairAlreadyExists($scope.new_state.rounds, g);
+          });
+        });
+        // console.log('already', $scope.pairs_already);
       };
       $scope.updatePlayersOptions();
 

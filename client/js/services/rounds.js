@@ -332,6 +332,17 @@ angular.module('srApp.services')
             .without(undefined)
             .value();
         },
+        pairAlreadyExists: function(coll, g) {
+          if(!_.exists(_.getPath(g, 'p1.name')) ||
+             !_.exists(_.getPath(g, 'p2.name'))) return false;
+          // console.log(g);
+          return (_.chain(coll)
+                  .apply(rounds.opponentsForPlayer, g.p1.name)
+                  // .spy('opps')
+                  .indexOf(g.p2.name)
+                  // .spy('index')
+                  .value() >= 0);
+        },
         listsForPlayer: function(coll, p) {
           return _.chain(coll)
             .mapWith(round.gameForPlayer, p)

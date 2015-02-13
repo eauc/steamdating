@@ -238,9 +238,9 @@ angular.module('srApp.services')
             .groupBy(_.partial(_.getPath, _, 'points.tournament'))
             .apply(function(c) { by_tp = c; return c; })
             .keys()
-            .spy('keys')
+            // .spy('keys')
             .sortBy(function(k) { return "undefined" === k ? -1 : parseFloat(k); })
-            .spy('keys_sort')
+            // .spy('keys_sort')
             .map(function(key) {
               var other_cities = _.filter(by_tp[key], function(p) { return p.city !== p1.city; });
               var same_city = _.filter(by_tp[key], function(p) { return p.city === p1.city; });

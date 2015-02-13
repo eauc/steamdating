@@ -162,6 +162,42 @@ describe('service', function() {
         });
       });
     });
+
+    describe('pairAlreadyExist(<game>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { p1: { name: 'toto' }, p2: { name: 'tata' }, games: [] },
+            { p1: { name: 'tutu' }, p2: { name: 'titi' }, games: [] },
+            { p1: { name: 't1' }, p2: { name: 't2' },
+              games: [ { p1: { name: 'p1'}, p2: { name: 'p2' }, games: [] },
+                       { p1: { name: 'p3'}, p2: { name: 'p4' }, games: [] } ] }
+          ],
+          [
+            { p1: { name: 'toto' }, p2: { name: 'tutu' }, games: [] },
+            { p1: { name: 'tata' }, p2: { name: undefined }, games: [] },
+            { p1: { name: 't1' }, p2: { name: 't2' },
+              games: [ { p1: { name: 'p1' }, p2: { name: 'p3' }, games: [] },
+                       { p1: { name: 'p2' }, p2: { name: 'p4' }, games: [] } ] }
+          ],
+        ];
+      });
+
+      using([
+        [ 'game'                                         , 'already' ],
+        [ { p1: { name: 'toto' }, p2: { name: null } }   , false     ],
+        [ { p1: { name: null }, p2: { name: 'tata' } }   , false     ],
+        [ { p1: { name: 'toto' }, p2: { name: 'tata' } } , true      ],
+        [ { p1: { name: 'toto' }, p2: { name: 'titi' } } , false     ],
+        [ { p1: { name: 'p3' }, p2: { name: 'p4' } }     , true      ],
+        [ { p1: { name: 'p3' }, p2: { name: 'p2' } }     , false     ],
+      ], function(e, d) {
+        it('should check whether the players of <game> have already beeen paired, '+d, function() {
+          expect(rounds.pairAlreadyExists(this.coll, e.game))
+            .toBe(e.already);
+        });
+      });
+    });
     
     describe('createNextRound(<players>)', function() {
       beforeEach(inject(function(game) {

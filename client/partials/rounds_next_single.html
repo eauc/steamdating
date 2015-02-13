@@ -30,7 +30,8 @@
       </tr>
       <tr ng-repeat="(gai, g) in next_round[gri]"
           ng-class="{
-          'info': (g | game:'isValid')
+          'info': (g | game:'isValid'),
+          'warning': pairs_already[gri][gai]
           }">
         <td></td>
         <td></td>
