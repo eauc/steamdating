@@ -8,6 +8,8 @@
     <title>SteamDating Webmachine</title>
   </head>
   <body ng-controller="mainCtrl">
+    <prompt>
+    </prompt>
     <div ng-include="'partials/menu.html'"></div>
     <div ui-view></div>
 
@@ -50,8 +52,9 @@
     <script src="js/filters/factionFilters.js"></script>
     <script src="js/filters/playerFilters.js"></script>
     <script src="js/filters/roundFilters.js"></script>
-    <script src="js/directives/eaFile.js"></script>
     <script src="js/directives/autofocus.js"></script>
+    <script src="js/directives/eaFile.js"></script>
+    <script src="js/directives/prompt.js"></script>
     <!-- <script src="js/directives/appCacheProgressBar.js"></script> -->
   </body>
 </html>

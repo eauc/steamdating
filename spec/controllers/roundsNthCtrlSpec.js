@@ -4,6 +4,7 @@ describe('controllers', function() {
 
   beforeEach(function() {
     module('srApp.services');
+    module('srApp.directives');
     module('srApp.controllers');
   });
 
@@ -14,12 +15,10 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
-      '$window',
       function($rootScope,
-               $controller,
-               $window) {
-        this.window = $window;
-        spyOn($window, 'confirm');
+               $controller) {
+        this.promptService = spyOnService('prompt');
+        mockReturnPromise(this.promptService.prompt);
 
         this.roundsService = spyOnService('rounds');
 
@@ -42,7 +41,6 @@ describe('controllers', function() {
           $controller('roundsNthCtrl', { 
             '$scope': ctxt.scope,
             '$stateParams': ctxt.$stateParams,
-            '$window': ctxt.window,
           });
         };
         initCtrlWith(this);
@@ -65,14 +63,15 @@ describe('controllers', function() {
       it('should ask user confirmation', function() {
         this.scope.doDeleteRound(1);
 
-        expect(this.window.confirm).toHaveBeenCalled();
+        expect(this.promptService.prompt)
+          .toHaveBeenCalledWith('confirm', jasmine.any(String));
       });
 
       when('user confirms', function() {
         this.scope.state.rounds = [ 'rounds' ];
-        this.window.confirm.and.returnValue(true);
 
         this.scope.doDeleteRound(4);
+        this.promptService.prompt.resolve();
       }, function() {
         it('should drop round <index>', function() {
           expect(this.roundsService.drop)

@@ -4,6 +4,7 @@ describe('controllers', function() {
 
   beforeEach(function() {
     module('srApp.services');
+    module('srApp.directives');
     module('srApp.controllers');
   });
 
@@ -14,18 +15,16 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
-      '$window',
       function($rootScope,
-               $controller,
-               $window) {
+               $controller) {
         this.scope = $rootScope.$new();
         this.scope.state = { players: ['players'], bracket: ['bracket'] };
         this.scope.goToState = jasmine.createSpy('goToState');
         this.scope.updatePoints = jasmine.createSpy('updatePoints');
         this.scope.storeState = jasmine.createSpy('storeState');
 
-        this.window = $window;
-        spyOn($window, 'prompt');
+        this.promptService = spyOnService('prompt');
+        mockReturnPromise(this.promptService.prompt);
 
         this.playersService = spyOnService('players');
         this.stateService = spyOnService('state');
@@ -81,13 +80,13 @@ describe('controllers', function() {
       it('should prompt for new groups size', function() {
         this.scope.chunkGroups();
 
-        expect(this.window.prompt).toHaveBeenCalledWith('Groups size');
+        expect(this.promptService.prompt)
+          .toHaveBeenCalledWith('prompt', 'Groups size');
       });
 
       when('user enter new groups size', function() {
-        this.window.prompt.and.returnValue('5');
-
         this.scope.chunkGroups();
+        this.promptService.prompt.resolve('5');
       }, function() {
         it('should chunk groups', function() {
           expect(this.scope.new_state.players)

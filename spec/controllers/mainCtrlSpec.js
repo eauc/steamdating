@@ -17,7 +17,8 @@ describe('controllers', function() {
         this.scope = $rootScope.$new();
         this.router_state = { 
           current: { name: 'current_state' },
-          go: jasmine.createSpy('stateGo')
+          go: jasmine.createSpy('stateGo'),
+          is: jasmine.createSpy('stateIs')
         };
 
         this.stateService = spyOnService('state');
@@ -41,8 +42,12 @@ describe('controllers', function() {
 
     it('should bind Router $state', function() {
       expect(this.scope.currentState()).toBe('current_state');
+
       this.scope.goToState('argument');
       expect(this.router_state.go).toHaveBeenCalledWith('argument');
+
+      this.scope.stateIs('state?');
+      expect(this.router_state.is).toHaveBeenCalledWith('state?');
     });
 
     describe('resetState(<data>)', function() {

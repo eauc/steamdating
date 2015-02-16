@@ -4,6 +4,7 @@ describe('controllers', function() {
 
   beforeEach(function() {
     module('srApp.services');
+    module('srApp.directives');
     module('srApp.controllers');
   });
 
@@ -12,10 +13,8 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
-      '$window',
       function($rootScope,
-               $controller,
-               $window) {
+               $controller) {
         this.scope = $rootScope.$new();
         spyOn(this.scope, '$watch');
         this.scope.goToState = jasmine.createSpy('goToState');
@@ -30,8 +29,8 @@ describe('controllers', function() {
         this.rankingService = spyOnService('ranking');
         this.playerService = spyOnService('player');
 
-        this.window = $window;
-        spyOn($window, 'alert');
+        this.promptService = spyOnService('prompt');
+        mockReturnPromise(this.promptService.prompt);
 
         $controller('rankingEditCtrl', { 
           '$scope': this.scope,
@@ -177,7 +176,8 @@ describe('controllers', function() {
           this.scope.doClose(true);
         }, function() {
           it('should warn user', function() {
-            expect(this.window.alert).toHaveBeenCalled();
+            expect(this.promptService.prompt)
+              .toHaveBeenCalledWith('alert', jasmine.any(String));
           });
 
           it('should display player ranking pane', function() {

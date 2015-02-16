@@ -4,6 +4,7 @@ describe('controllers', function() {
 
   beforeEach(function() {
     module('srApp.services');
+    module('srApp.directives');
     module('srApp.controllers');
   });
 
@@ -12,10 +13,8 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
-      '$window',
       function($rootScope,
-               $controller,
-               $window) {
+               $controller) {
         this.scope = $rootScope.$new();
         this.scope.resetState = jasmine.createSpy('resetState');
         this.scope.goToState = jasmine.createSpy('goToState');
@@ -30,8 +29,8 @@ describe('controllers', function() {
         this.fileExportService = spyOnService('fileExport');
         this.fileImportService = spyOnService('fileImport');
 
-        this.windowService = $window;
-        spyOn($window, 'confirm');
+        this.promptService = spyOnService('prompt');
+        mockReturnPromise(this.promptService.prompt);
 
         this.factionsService.baseFactions._retVal = [
           { name: 'gros vilains', t3: 'cryx' },
@@ -85,21 +84,23 @@ describe('controllers', function() {
         it('should ask user for confirmation', function() {
           this.scope.doReset();
 
-          expect(this.windowService.confirm).toHaveBeenCalled();
+          expect(this.promptService.prompt)
+            .toHaveBeenCalledWith('confirm', jasmine.any(String));
         });
 
         when('user confirms', function() {
-          this.stateService.isEmpty.and.returnValue(true);
+          this.stateService.isEmpty.and.returnValue(false);
+          this.scope.doReset();
+
+          this.promptService.prompt.resolve();
         }, function() {
           it('should reset state', function() {
-            this.scope.doReset();
-
             expect(this.scope.resetState).toHaveBeenCalled();
           });
         });
       });
 
-      when('state is not empty', function() {
+      when('state is empty', function() {
         this.stateService.isEmpty.and.returnValue(true);
       }, function() {
         it('should reset state', function() {

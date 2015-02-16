@@ -4,7 +4,7 @@ angular.module('srApp.controllers')
   .controller('fileCtrl', [
     '$scope',
     '$q',
-    '$window',
+    'prompt',
     'state',
     'fileExport',
     'fileImport',
@@ -13,7 +13,7 @@ angular.module('srApp.controllers')
     // 'exporter',
     function($scope,
              $q,
-             $window,
+             prompt,
              state,
              fileExport,
              fileImport,
@@ -62,9 +62,14 @@ angular.module('srApp.controllers')
         });
 
       $scope.doReset = function() {
-        var conf = state.isEmpty($scope.state);
-        if(!conf) conf = $window.confirm('You sure ?');
-        if(conf) $scope.resetState();
+        if(state.isEmpty($scope.state)) {
+          $scope.resetState();
+          return;
+        }
+        prompt.prompt('confirm', 'You sure ?')
+          .then(function() {
+            $scope.resetState();
+          });
       };
 
       $scope.doOpenFile = function(file) {

@@ -201,11 +201,11 @@ angular.module('srApp.controllers')
   .controller('roundsNthCtrl', [
     '$scope',
     '$stateParams',
-    '$window',
+    'prompt',
     'rounds',
     function($scope,
              $stateParams,
-             $window,
+             prompt,
              rounds) {
       console.log('init roundsNthCtrl', $stateParams.pane);
       $scope.round.current = $stateParams.pane;
@@ -215,19 +215,19 @@ angular.module('srApp.controllers')
       }
 
       $scope.doDeleteRound = function(r) {
-        var conf = $window.confirm("You sure ?");
-        if(conf) {
-          $scope.state.rounds = rounds.drop($scope.state.rounds, parseFloat(r));
-          // _.each($scope.state.bracket, function(b, i) {
-          //   if(_.exists(b) &&
-          //      $scope.state.rounds.length <= b) {
-          //     $scope.state.bracket[i] = undefined;
-          //   }
-          // });
-          $scope.updatePoints();
-          $scope.storeState();
-          $scope.goToState('rounds.sum');
-        }
+        prompt.prompt('confirm', 'You sure ?')
+          .then(function() {
+            $scope.state.rounds = rounds.drop($scope.state.rounds, parseFloat(r));
+            // _.each($scope.state.bracket, function(b, i) {
+            //   if(_.exists(b) &&
+            //      $scope.state.rounds.length <= b) {
+            //     $scope.state.bracket[i] = undefined;
+            //   }
+            // });
+            $scope.updatePoints();
+            $scope.storeState();
+            $scope.goToState('rounds.sum');
+          });
       };
     }
   ]);

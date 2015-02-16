@@ -4,6 +4,7 @@ describe('controllers', function() {
 
   beforeEach(function() {
     module('srApp.services');
+    module('srApp.directives');
     module('srApp.controllers');
   });
 
@@ -13,17 +14,15 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
-      '$window',
       function($rootScope,
-               $controller,
-               $window) {
+               $controller) {
         this.factionsService = spyOnService('factions');
         this.playersService = spyOnService('players');
         this.listService = spyOnService('list');
         this.listsService = spyOnService('lists');
 
-        this.window = $window;
-        spyOn($window, 'alert');
+        this.promptService = spyOnService('prompt');
+        mockReturnPromise(this.promptService.prompt);
 
         initController = function(ctxt, player) {
           ctxt.scope = $rootScope.$new();
@@ -145,7 +144,8 @@ describe('controllers', function() {
 
             this.scope.doClose(true);
 
-            expect(this.window.alert).toHaveBeenCalledWith('invalid player name');
+            expect(this.promptService.prompt)
+              .toHaveBeenCalledWith('alert', 'invalid player name');
           });
         });
 
@@ -155,21 +155,21 @@ describe('controllers', function() {
         }, function() {
           it('should check that the new name does not already exists', function() {
             // no change
-            this.window.alert.calls.reset();
+            this.promptService.prompt.calls.reset();
             this.scope.player.name = 'titi';
             this.scope.doClose(true);
-            expect(this.window.alert).not.toHaveBeenCalled();
+            expect(this.promptService.prompt).not.toHaveBeenCalled();
             // new name
-            this.window.alert.calls.reset();
+            this.promptService.prompt.calls.reset();
             this.scope.player.name = 'new';
             this.scope.doClose(true);
-            expect(this.window.alert).not.toHaveBeenCalled();
+            expect(this.promptService.prompt).not.toHaveBeenCalled();
             // existing name
-            this.window.alert.calls.reset();
+            this.promptService.prompt.calls.reset();
             this.scope.player.name = 'toto';
             this.scope.doClose(true);
-            expect(this.window.alert)
-              .toHaveBeenCalledWith('a player with the same name already exists');
+            expect(this.promptService.prompt)
+              .toHaveBeenCalledWith('alert', 'a player with the same name already exists');
           });
 
           it('should update existing player', function() {
@@ -195,16 +195,16 @@ describe('controllers', function() {
         }, function() {
           it('should check that the new name does not already exists', function() {
             // new name
-            this.window.alert.calls.reset();
+            this.promptService.prompt.calls.reset();
             this.scope.player.name = 'new';
             this.scope.doClose(true);
-            expect(this.window.alert).not.toHaveBeenCalled();
+            expect(this.promptService.prompt).not.toHaveBeenCalled();
             // existing name
-            this.window.alert.calls.reset();
+            this.promptService.prompt.calls.reset();
             this.scope.player.name = 'toto';
             this.scope.doClose(true);
-            expect(this.window.alert)
-              .toHaveBeenCalledWith('a player with the same name already exists');
+            expect(this.promptService.prompt)
+              .toHaveBeenCalledWith('alert', 'a player with the same name already exists');
           });
 
           it('should add player to state', function() {

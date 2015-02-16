@@ -37,6 +37,7 @@ angular.module('srApp.controllers')
 
       $scope.goToState = _.bind($state.go, $state);
       $scope.currentState = _.bind(_.getPath, _, $state, 'current.name');
+      $scope.stateIs = _.bind($state.is, $state);
 
       $scope.edit = {};
       $scope.doEditPlayer = function(player) {

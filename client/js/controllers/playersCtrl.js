@@ -3,7 +3,7 @@
 angular.module('srApp.controllers')
   .controller('playersCtrl', [
     '$scope',
-    '$window',
+    'prompt',
     'state',
     // '$state',
     'players',
@@ -11,7 +11,7 @@ angular.module('srApp.controllers')
     // 'team',
     // 'teams',
     function($scope,
-             $window,
+             prompt,
              state,
              // $state,
              players,
@@ -34,12 +34,12 @@ angular.module('srApp.controllers')
       // };
 
       $scope.doDropPlayer = function(p, event) {
-        var conf = $window.confirm("You sure ?");
-        if(conf) {
-          $scope.state.players = players.drop($scope.state.players, p);
-          state.store($scope.state);
-          $scope.sorted_players = state.sortPlayers($scope.state);
-        }
+        prompt.prompt('confirm', 'You sure ?')
+          .then(function()  {
+            $scope.state.players = players.drop($scope.state.players, p);
+            state.store($scope.state);
+            $scope.sorted_players = state.sortPlayers($scope.state);
+          });
         event.stopPropagation();
       };
       // $scope.doDeleteTeam = function(t, event) {
@@ -87,7 +87,7 @@ angular.module('srApp.controllers')
   .controller('playerEditCtrl', [
     '$scope',
     '$q',
-    '$window',
+    'prompt',
     'factions',
     'state',
     'players',
@@ -96,7 +96,7 @@ angular.module('srApp.controllers')
     'lists',
     function($scope,
              $q,
-             $window,
+             prompt,
              factions,
              state,
              players,
@@ -117,7 +117,7 @@ angular.module('srApp.controllers')
         if(validate) {
           if(!_.isString($scope.player.name) ||
              0 >= $scope.player.name) {
-            $window.alert('invalid player name');
+            prompt.prompt('alert', 'invalid player name');
             return;
           }
         //   if($scope.isTeamTournament() &&
@@ -131,7 +131,7 @@ angular.module('srApp.controllers')
             existing_players = _.without(existing_players, $scope.edit.player.name);
           }
           if(0 <= _.indexOf(existing_players, $scope.player.name)) {
-            $window.alert('a player with the same name already exists');
+            prompt.prompt('alert', 'a player with the same name already exists');
             return;
           }
           if(!_.exists($scope.edit.player.name)) {

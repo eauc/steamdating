@@ -69,18 +69,21 @@ angular.module('srApp.directives')
       controller: [
         '$scope',
         '$window',
+        'prompt',
         'appCache',
         function($scope,
                  $window,
+                 prompt,
                  appCache) {
           $scope.appCache = appCache;
           appCache.onProgress = function() {
             $scope.$digest();
           };
           appCache.onUpdateReady = function() {
-            if($window.confirm('A new version of this site is available. Load it?')) {
-              $window.location.reload();
-            }
+            prompt.prompt('confirm', 'A new version of this site is available. Load it?')
+              .then(function() {
+                $window.location.reload();
+              });
           };
         }
       ],

@@ -3,11 +3,11 @@
 angular.module('srApp.controllers')
   .controller('rankingEditCtrl', [
     '$scope',
-    '$window',
+    'prompt',
     'ranking',
     'player',
     function($scope,
-             $window,
+             prompt,
              ranking,
              player
             ) {
@@ -149,7 +149,7 @@ angular.module('srApp.controllers')
       $scope.doClose = function(validate) {
         if(validate) {
           if(!$scope.player_ranking_valid) {
-            $window.alert('current player ranking is invalid !');
+            prompt.prompt('alert', 'current player ranking is invalid !');
             $scope.pane = 'player';
             return;
           }

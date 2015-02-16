@@ -4,6 +4,7 @@ describe('controllers', function() {
 
   beforeEach(function() {
     module('srApp.services');
+    module('srApp.directives');
     module('srApp.controllers');
   });
 
@@ -12,10 +13,8 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
-      '$window',
       function($rootScope,
-               $controller,
-               $window) {
+               $controller) {
         this.scope = $rootScope.$new();
         this.state_players = [ 'titi' ];
         this.scope.edit = { };
@@ -26,8 +25,8 @@ describe('controllers', function() {
         this.playerService = spyOnService('player');
         this.playersService = spyOnService('players');
 
-        this.window = $window;
-        spyOn($window, 'confirm');
+        this.promptService = spyOnService('prompt');
+        mockReturnPromise(this.promptService.prompt);
 
         $controller('playersCtrl', { 
           '$scope': this.scope,
@@ -76,15 +75,16 @@ describe('controllers', function() {
       it('should ask confirmation', function() {
         this.scope.doDropPlayer(this.player, this.event);
 
-        expect(this.window.confirm).toHaveBeenCalled();
+        expect(this.promptService.prompt)
+          .toHaveBeenCalledWith('confirm', jasmine.any(String));
       });
 
       when('user confirms', function() {
         this.scope.sorted_players = undefined;
         this.stateService.sortPlayers.calls.reset();
-        this.window.confirm.and.returnValue(true);
 
         this.scope.doDropPlayer(this.player, this.event);
+        this.promptService.prompt.resolve();
       }, function() {
         it('should drop player from state', function() {
           expect(this.playersService.drop)

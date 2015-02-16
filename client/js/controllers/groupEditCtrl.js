@@ -3,11 +3,11 @@
 angular.module('srApp.controllers')
   .controller('groupEditCtrl', [
     '$scope',
-    '$window',
+    'prompt',
     'players',
     'state',
     function($scope,
-             $window,
+             prompt,
              players,
              state) {
       $scope.new_state = _.clone($scope.state);
@@ -32,11 +32,14 @@ angular.module('srApp.controllers')
       };
 
       $scope.chunkGroups = function() {
-        var size = parseFloat($window.prompt('Groups size'));
-        if(_.isNaN(size)) return;
-        $scope.new_state.players = players.chunkGroups($scope.new_state.players,
-                                                       parseFloat(size));
-        $scope.new_state.bracket = state.clearBracket($scope.new_state);
+        prompt.prompt('prompt', 'Groups size')
+          .then(function(value) {
+            var size = parseFloat(value);
+            if(_.isNaN(size)) return;
+            $scope.new_state.players = players.chunkGroups($scope.new_state.players,
+                                                           parseFloat(size));
+            $scope.new_state.bracket = state.clearBracket($scope.new_state);
+          });
       };
       $scope.splitSelection = function() {
         var ps = _.reduce($scope.selection, function(mem, is, name) {

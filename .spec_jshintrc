@@ -18,6 +18,7 @@
     "xit": false,
     "spyOn": false,
     "spyOnService": false,
+    "mockReturnPromise": false,
     "expect": false,
     "module": false,
     "inject": false,
