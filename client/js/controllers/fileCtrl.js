@@ -32,7 +32,7 @@ angular.module('srApp.controllers')
       $scope.updateExports = function() {
         var now = (new Date()).getTime();
         $scope.save = {
-          name: 'steamdating_'+now+'.txt',
+          name: 'steamdating_'+now+'.json',
           url: fileExport.generate('json', $scope.state)
         };
         $scope.exports = {

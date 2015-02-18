@@ -249,7 +249,7 @@ describe('controllers', function() {
         expect(this.fileExportService.generate)
           .toHaveBeenCalledWith('json', this.scope.state);
 
-        expect(this.scope.save.name).toMatch(/^steamdating_\d+\.txt$/);
+        expect(this.scope.save.name).toMatch(/^steamdating_\d+\.json$/);
         expect(this.scope.save.url).toBe('json_url');
       });
 
