@@ -83,12 +83,12 @@ angular.module('srApp', [
         controller: 'rankingEditCtrl',
         data: {}
       })
-      // .state('stats', {
-      //   url: '/stats/:pane',
-      //   templateUrl: 'partials/stats.html',
-      //   controller: 'statsCtrl',
-      //   data: {}
-      // })
+      .state('stats', {
+        url: '/stats',
+        templateUrl: 'partials/stats.html',
+        controller: 'statsCtrl',
+        data: {}
+      })
     ;
   }
 ]).config([

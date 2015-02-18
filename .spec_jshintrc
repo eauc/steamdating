@@ -19,6 +19,8 @@
     "spyOn": false,
     "spyOnService": false,
     "mockReturnPromise": false,
+    "filterCallsByArgs": false,
+    "findCallByArgs": false,
     "expect": false,
     "module": false,
     "inject": false,

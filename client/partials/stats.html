@@ -1,97 +1,111 @@
-<div>
-  <div class="container">
-    <ul class="nav nav-tabs">
-      <li ng-class="{
-          'active': pane==='players'
-          }">
-        <a href="#/stats/players">Players</a>
-      </li>
-      <li ng-class="{
-          'active': pane==='games'
-          }">
-        <a href="#/stats/games">Games</a>
-      </li>
-    </ul>
-    <div ng-if="pane === 'players'"
-         class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">Per Faction</div>
-      </div>
-      <div class="panel-body">
-        <div class="col-sm-4 text-right">
-          <ul style="list-style-type: none;">
-            <li ng-repeat="f in player_stats.factions">
-              {{::f.name}}
-              <svg width="10px" height="10px">
-                <rect x="0" y="0" width="10" height="10"
-                      style="
-                      stroke-width:1;
-                      stroke:#000;
-                      "
-                      ng-style="{
-                      'fill': f.color
-                      }" />
-              </svg>
-            </li>              
-          </ul>
-        </div>
-        <div class="col-sm-8 text-left">
-          <svg width="200px" height="200px">
-            <path ng-repeat="(id,f) in player_stats.factions"
-                  d="
-                  M100,100
-                  L{{::f.start.x}},{{::f.start.y}}
-                  A75,75 0 0,1 {{::f.end.x}},{{::f.end.y}}
-                  L100,100
-                  "
-                  style="
-                  stroke:#000;
-                  stroke-width:0.5;
-                  "
-                  ng-style="{
-                  'fill': f.color
-                  }" />
-          </svg>
-        </div>
+<div class="container">
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label for="type" class="col-sm-2 control-label">Type</label>
+      <div class="col-sm-10">
+        <select if="type"
+                class="form-control"
+                ng-model="selection.type">
+          <option value="player">Players</option>
+          <option value="faction">Factions</option>
+          <option value="caster">Casters</option>
+        </select>
       </div>
     </div>
-    <div ng-if="pane === 'games'"
-         class="panel panel-default">
-      <div class="panel-heading">
-        <div class="panel-title">Wins/Loss Per Faction</div>
+    <div class="form-group"
+         ng-show="selection.type === 'faction'">
+      <label for="faction" class="col-sm-2 control-label">Faction</label>
+      <div class="col-sm-10">
+        <select if="faction"
+                class="form-control"
+                ng-model="selection.faction"
+                ng-options="f as f for f in factions">
+        </select>
       </div>
-      <div class="panel-body">
-        <table class="table">
-          <tr ng-repeat="f in faction_win_loss">
-            <td class="text-right"
-                style="vertical-align:middle">
-              {{::f.name}}
-            </td>
-            <td>
-              <svg width="430px" height="50px">
-                <rect x="0" y="0" width="{{::400*f.wl[0]/f.wl[2]}}" height="25"
-                      style="
-                      fill:#5F5;
-                      stroke:#000;
-                      stroke-width:0.5;
-                      " />
-                <text x="{{400*f.wl[0]/f.wl[2]+10}}" y="20">
-                  {{::f.wl[0]}}
-                </text>
-                <rect x="0" y="25" width="{{::400*f.wl[1]/f.wl[2]}}" height="25"
-                      style="
-                      fill:#F55;
-                      stroke:#000;
-                      stroke-width:0.5;
-                      " />
-                <text x="{{::400*f.wl[1]/f.wl[2]+10}}" y="45">
-                  {{::f.wl[1]}}
-                </text>
-              </svg>
-            </td>
-          </tr>
-        </table>
+    </div>
+    <div class="form-group"
+         ng-show="selection.type === 'player'">
+      <label for="player" class="col-sm-2 control-label">Player</label>
+      <div class="col-sm-10">
+        <select if="palyer"
+                class="form-control"
+                ng-model="selection.player"
+                ng-options="p as p for p in players">
+        </select>
       </div>
+    </div>
+    <div class="form-group"
+         ng-show="selection.type === 'caster'">
+      <label for="caster" class="col-sm-2 control-label">Caster</label>
+      <div class="col-sm-10">
+        <select if="caster"
+                class="form-control"
+                ng-model="selection.caster"
+                ng-options="
+                c.name as c.name
+                group by c.faction
+                for c in casters
+                ">
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="group" class="col-sm-2 control-label">Group By</label>
+      <div class="col-sm-10">
+        <select if="group"
+                class="form-control"
+                ng-model="selection.group_by">
+          <option value="total">Total</option>
+          <option value="opp_faction">Opp. Factions</option>
+          <option value="opp_caster">Opp. Casters</option>
+        </select>
+      </div>
+    </div>
+  </form>
+  <ul class="nav nav-tabs">
+    <li ng-repeat="s in getStats()"
+        ng-class="{
+        'active': group === s[0]
+        }">
+      <a ng-click="setGroup(s[0])">{{s[0]}}</a>
+    </li>
+  </ul>
+  <div ng-repeat="s in getStats()"
+       ng-show="group === s[0]">
+    <div class="section">Points :</div>
+    <div>
+      <stacks style="display:flex;"
+              stacks-values="s[1].points"></stacks>
+    </div>
+    <div class="section">Casters :</div>
+    <div ng-repeat="c in s[1].casters">
+      <div class="text-center">
+        <strong>{{c[0]}}</strong>
+      </div>
+      <bars style="display:flex;"
+            bars-values="c[1]"
+            bars-hue="{{c[2][0]}}"
+            bars-saturation="{{c[2][1]}}"></bars>
+    </div>
+    <div class="section">Opp. Casters :</div>
+    <div ng-repeat="oc in s[1].opp_casters">
+      <div class="text-center">
+        <strong>{{oc[0]}}</strong>
+      </div>
+      <bars style="display:flex;"
+            bars-values="oc[1]"
+            bars-hue="{{oc[2][0]}}"
+            bars-saturation="{{oc[2][1]}}"></bars>
+    </div>
+    <div class="section">Tiers :</div>
+    <div>
+      <bars style="display:flex;"
+            bars-values="s[1].tiers"></bars>
+    </div>
+    <div class="section">References :</div>
+    <div>
+      <bars style="display:flex;"
+            bars-values="s[1].references"></bars>
     </div>
   </div>
 </div>

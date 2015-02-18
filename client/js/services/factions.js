@@ -48,6 +48,14 @@ angular.module('srApp.services')
             })
             .value();              
         },
+        hueFor: function(f) {
+          return _.chain(f)
+            .apply(function(f) {
+              var base = base_factions || {};
+              return _.exists(base[f]) ? base[f].hue : undefined;
+            })
+            .value();              
+        },
         castersFor: function(f) {
           return _.chain(f)
             .apply(function(f) {
@@ -55,6 +63,15 @@ angular.module('srApp.services')
               return _.exists(base[f]) ? base[f].casters : undefined;
             })
             .value();              
+        },
+        casterNameFor: function(f, c) {
+          return _.chain(f)
+            .apply(function(f) {
+              var base = base_factions || {};
+              return _.exists(base[f]) ? base[f].casters : undefined;
+            })
+            .apply(_.getPath, c+'.name')
+            .value();
         }
       };
     }

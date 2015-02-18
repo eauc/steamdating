@@ -76,11 +76,13 @@ angular.module('srApp.services')
     'round',
     'rounds',
     'ranking',
+    'lists',
     function(player,
              factions,
              round,
              rounds,
-             ranking) {
+             ranking,
+             lists) {
       var players = {
         add: function playersAdd(coll, p, i) {
           coll[i] = _.cat(coll[i], p);
@@ -106,6 +108,7 @@ angular.module('srApp.services')
           return _.chain(coll)
             .flatten()
             .mapWith(_.getPath, 'name')
+            .sortBy(_.identity)
             .value();
         },
         factions: function(coll, base_factions) {
@@ -115,6 +118,50 @@ angular.module('srApp.services')
             .cat(_.keys(base_factions))
             .uniq()
             .without(undefined)
+            .sortBy(_.identity)
+            .value();
+        },
+        forFaction: function(coll, f) {
+          return _.chain(coll)
+            .flatten()
+            .filter(function(p) {
+              return (_.getPath(p, 'faction') === f);
+            })
+            .value();
+        },
+        casters: function(coll) {
+          return _.chain(coll)
+            .flatten()
+            .mapWith(_.getPath, 'lists')
+            .flatten()
+            .without(undefined, null)
+            .map(function(l) {
+              return (_.exists(l.caster) ?
+                      { faction: l.faction || '',
+                        name: l.caster || '' } : undefined);
+            })
+            .without(undefined, null)
+            .uniq(false, _.partial(_.getPath, _, 'name'))
+            .apply(function(cs) {
+              return cs.sort(function(a,b) {
+                var comp = a.faction.localeCompare(b.faction);
+                if(comp !== 0) return comp;
+                return a.name.localeCompare(b.name);
+              });
+            })
+            .value();
+        },
+        forCaster: function(coll, c) {
+          return _.chain(coll)
+            .flatten()
+          // .spy('ps', c)
+            .filter(function(p) {
+              return _.chain(p)
+                .getPath('lists')
+                .apply(lists.containsCaster, c)
+                .value();
+            })
+            // .spy('ps')
             .value();
         },
         cities: function(coll) {
@@ -123,6 +170,7 @@ angular.module('srApp.services')
             .mapWith(_.getPath, 'city')
             .uniq()
             .without(undefined)
+            .sortBy(_.identity)
             .value();
         },
         updateListsPlayed: function(coll, rs) {

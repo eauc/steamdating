@@ -90,6 +90,26 @@ describe('service', function() {
       });
     });
 
+    describe('hueFor(<f>)', function() {
+      beforeEach(inject(function($rootScope) {
+        initBaseFactionsWith({
+          f1: { hue: ['hue1'] },
+          f2: { hue: undefined }
+        });
+      }));
+
+      using([
+        [ 'f'  , 'hue'     ],
+        [ 'f1' , ['hue1']  ],
+        [ 'f2' , undefined ], // hue is not defined
+        [ 'f3' , undefined ], // faction is not defined
+      ], function(e, d) {
+        it('should retrieve icon for faction <f> if it exists, '+d, function() {
+          expect(factions.hueFor(e.f)).toEqual(e.hue);
+        });
+      });
+    });
+
     describe('castersFor(<f>)', function() {
       beforeEach(inject(function($rootScope) {
         initBaseFactionsWith({
@@ -101,11 +121,33 @@ describe('service', function() {
       using([
         [ 'f'  , 'casters' ],
         [ 'f1' , ['Caster1','Caster2'] ],
-        [ 'f2' , undefined ], // icon is not defined
+        [ 'f2' , undefined ], // casters is not defined
         [ 'f3' , undefined ], // faction is not defined
       ], function(e, d) {
         it('should retrieve casters list for faction <f> if it exists, '+d, function() {
           expect(factions.castersFor(e.f)).toEqual(e.casters);
+        });
+      });
+    });
+
+    describe('casterNameFor(<f>)', function() {
+      beforeEach(inject(function($rootScope) {
+        initBaseFactionsWith({
+          f1: { casters: { caster1: { name: 'Caster1Name' }, caster2: { name: 'Caster2Name' } } },
+          f2: { casters: undefined }
+        });
+      }));
+      
+      using([
+        [ 'f'  , 'c'       , 'name'        ],
+        [ 'f1' , 'caster1' , 'Caster1Name' ],
+        [ 'f1' , 'caster2' , 'Caster2Name' ],
+        [ 'f1' , 'caster3' , undefined     ], // c is not defined
+        [ 'f2' , 'caster1' , undefined     ], // casters are not defined
+        [ 'f3' , 'caster1' , undefined     ], // f is not defined
+      ], function(e, d) {
+        it('should retrieve casters list for faction <f> if it exists, '+d, function() {
+          expect(factions.casterNameFor(e.f, e.c)).toBe(e.name);
         });
       });
     });

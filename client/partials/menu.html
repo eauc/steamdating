@@ -5,12 +5,12 @@
   <div class="collapse navbar-collapse">
     <ul class="nav navbar-nav">
       <li ng-class="{
-          'active': currentState() === 'file'
+          'active': stateIs('file')
           }">
         <a href="#/file">File</a>
       </li>
       <li ng-class="{
-          'active': currentState() === 'players'
+          'active': stateIs('players')
           }">
         <a href="#/players">Players</a>
       </li>
@@ -19,13 +19,13 @@
           }">
         <a href="#/rounds/sum">Rounds</a>
       </li>
-      <!-- <li ng-class="{
-      'active': currentState() === 'stats'
-      }">
-      <a href="#/stats/players">Stats</a>
-      </li> -->
       <li ng-class="{
-          'active': currentState() === 'ranking_edit'
+          'active': stateIs('stats')
+          }">
+        <a href="#/stats">Stats</a>
+      </li>
+      <li ng-class="{
+          'active': stateIs('ranking_edit')
           }">
         <a href="#/ranking_edit">Ranking</a>
       </li>

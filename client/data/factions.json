@@ -3,6 +3,7 @@
     "name": "Cygnar",
     "t3": "Cygnar",
     "color": "#5963a2",
+    "hue": [210,75],
     "casters": {
       "blaize1": {
        "name": "Constance Blaize, Knights of the Prophet"
@@ -59,6 +60,7 @@
     "name": "The Protectorate of Menoth",
     "t3": "Menoth",
     "color" : "#ecc76d",
+    "hue": [60,75],
     "casters": {
       "kreoss1": {
         "name": "High Exemplar Kreoss"
@@ -112,6 +114,7 @@
     "name": "Khador",
     "t3": "Khador",
     "color": "#a94a4a",
+    "hue": [0,50],
     "casters": {
       "butcher1": {
         "name": "The Butcher of Khardov"
@@ -165,6 +168,7 @@
     "name": "Cryx",
     "t3": "Cryx",
     "color": "#3a4c3f",
+    "hue": [30,5],
     "casters": {
       "asphyxious1": {
         "name": "Iron Lich Asphyxious"
@@ -221,6 +225,7 @@
     "name": "Retribution of Scyrah",
     "t3": "Scyrah",
     "color": "#85d1bd",
+    "hue": [180,75],
     "casters": {
       "garryth1": {
         "name": "Garryth, Blade of Retribution"
@@ -253,6 +258,7 @@
     "name": "Trollbloods",
     "t3": "Trollblood",
     "color": "#81beaa",
+    "hue": [210,30],
     "casters": {
       "borka1": {
         "name": "Borka Kegslayer"
@@ -300,6 +306,7 @@
     "name": "Circle Orboros",
     "t3": "Orboros",
     "color": "#5ab36e",
+    "hue": [120,45],
     "casters": {
       "baldur1": {
         "name": "Baldur the Stonecleaver"
@@ -347,6 +354,7 @@
     "name": "Skorne",
     "t3": "Skorne",
     "color": "#5963a2",
+    "hue": [30,75],
     "casters": {
       "hexeris1": {
         "name": "Lord Tyrant Hexeris"
@@ -394,6 +402,7 @@
     "name": "Legion of Everblight",
     "t3": "Everblight",
     "color": "#a9bae0",
+    "hue": [270,45],
     "casters": {
       "absylonia1": {
         "name": "Absylonia, Terror of Everblight"
@@ -441,6 +450,7 @@
     "name": "Mercenary Theme Forces",
     "t3": "Merc",
     "color": "#959571",
+    "hue": [30,25],
     "casters": {
       "ashlynn1": {
         "name": "Ashlynn d'Elyse"
@@ -488,6 +498,7 @@
     "name": "Minion Theme Forces",
     "t3": "Min",
     "color": "#889751",
+    "hue": [120,25],
     "casters": {
       "arkadius1": {
         "name": "Dr. Arkadius"
@@ -526,6 +537,7 @@
     "name": "Convergence of Cyriss",
     "t3": "Cyriss",
     "color": "#00b8c2",
+    "hue": [180,35],
     "casters": {
       "aurora1": {
         "name": "Aurora, Numen of Aerogenesis"

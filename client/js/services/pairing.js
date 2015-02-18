@@ -248,7 +248,7 @@ angular.module('srApp.services')
             })
             .flatten()
             .reverse()
-            .apply(players.names)
+            .mapWith(_.partial(_.getPath, _, 'name'))
             .value();
         },
         suggestOpponentFor: function(opp_names, available_player_names) {

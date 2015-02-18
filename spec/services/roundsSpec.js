@@ -14,6 +14,52 @@ describe('service', function() {
       rounds = _rounds;
     }]));
 
+    describe('gamesForPlayer(<name>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { p1: { name: 'toto', list: 'caster1' }, p2: {name: 'tata' }, games: [] },
+            { p1: { name: 'tutu'}, p2: {name: 'titi', list: 'caster5'  }, games: [] },
+            { p1: { name: 't1' }, p2: { name: 't2' },
+              games: [ { p1: { name: 'p1'}, p2: {name: 'p2' }, games: [] },
+                       { p1: { name: 'p3', list: 'caster1' }, p2: {name: 'p4' }, games: [] } ] }
+          ],
+          [
+            { p1: { name: 'toto', list: 'caster1' }, p2: {name: 'tata' }, games: [] },
+            { p1: { name: 'tutu'}, p2: {name: 'titi', list: null  }, games: [] },
+            { p1: { name: 't1' }, p2: { name: 't2' },
+              games: [ { p1: { name: 'p1'}, p2: {name: 'p2' }, games: [] },
+                       { p1: { name: 'p3', list: 'caster3' }, p2: {name: 'p4' }, games: [] } ] }
+          ],
+        ];
+      });
+
+      using([
+        [ 'name'   , 'games' ],
+        // uniq
+        [ 'toto'   , [{ p1 : { name : 'toto', list : 'caster1' },
+                        p2 : { name : 'tata' }, games : [  ] },
+                      { p1 : { name : 'toto', list : 'caster1' },
+                        p2 : { name : 'tata' }, games : [  ] }] ],
+        // without null
+        [ 'titi'   , [{ p1 : { name : 'tutu' },
+                        p2 : { name : 'titi', list : 'caster5' }, games : [  ] },
+                      { p1 : { name : 'tutu' },
+                        p2 : { name : 'titi', list : null }, games : [  ] }] ],
+        // sub-games
+        [ 'p3'     , [{ p1 : { name : 'p3', list : 'caster1' },
+                        p2 : { name : 'p4' }, games : [  ] },
+                      { p1 : { name : 'p3', list : 'caster3' },
+                        p2 : { name : 'p4' }, games : [  ] }] ],
+        // undefined player
+        [ 'unkown' , []                     ],
+      ], function(e, d) {
+        it('should return games played by <name>, '+d, function() {
+          expect(rounds.gamesForPlayer(this.coll, e.name)).toEqual(e.games);
+        });
+      });
+    });
+
     describe('listForPlayer(<name>)', function() {
       beforeEach(function() {
         this.coll = [

@@ -1,18 +1,18 @@
 <div>
   <ul class="nav nav-tabs">
     <li ng-class="{
-        'active': currentState()==='rounds.sum'
+        'active': stateIs('rounds.sum')
         }">
       <a href="#/rounds/sum">Summary</a>
     </li>
     <li ng-repeat="r in state.rounds"
         ng-class="{
-        'active': currentState()==='rounds.nth' && round.current===''+$index
+        'active': stateIs('rounds.nth') && round.current===''+$index
         }">
       <a href="#/rounds/{{$index}}">Round{{$index+1}}</a>
     </li>
     <li ng-class="{
-        'active': currentState()==='rounds.next'
+        'active': stateIs('rounds.next')
         }">
       <a href="#/rounds/next">Next</a>
     </li>

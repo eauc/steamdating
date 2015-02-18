@@ -1,0 +1,39 @@
+<table class="col-xs-12"
+       style="width:100%">
+  <tr ng-repeat="s in stacks"
+      style="
+      vertical-align:middle;
+      padding:0;
+      margin:0;
+      "
+      >
+    <td class="text-right"
+        style="
+        padding:0 10px 0 0;
+        margin:0;
+        "
+        >
+      {{::s.name}}
+    </td>
+    <td style="
+        padding:0;
+        margin:0;
+        width:{{::width+40}}px;
+        "
+        >
+      <svg ng-attr-width="{{::width+40}}px" height="25px">
+        <rect ng-repeat="l in ::s.layers"
+              ng-attr-x="{{::l.x}}" y="0" ng-attr-width="{{::l.width}}" height="25"
+              style="
+              fill:{{::l.color}};
+              stroke:#000;
+              stroke-width:0.5;
+              " />
+        <text ng-repeat="l in ::s.layers"
+              ng-attr-x="{{::l.x+5}}" y="20">
+          {{::l.value}}
+        </text>
+      </svg>
+    </td>
+  </tr>
+</table>

@@ -114,20 +114,20 @@ describe('service', function() {
       beforeEach(function() {
         this.coll = [
           [
+            { name: 'toto3' },
             { name: 'toto1' },
             { name: 'toto2' },
-            { name: 'toto3' },
           ],
           [
-            { name: 'tata1' },
             { name: 'tata2' },
+            { name: 'tata1' },
           ]
         ];
       });
 
-      it('should return player names list', function() {
+      it('should return sorted player names list', function() {
         expect(players.names(this.coll)).toEqual([
-          'toto1', 'toto2', 'toto3', 'tata1', 'tata2'
+          'tata1', 'tata2', 'toto1', 'toto2', 'toto3'
         ]);
       });
     });
@@ -151,9 +151,9 @@ describe('service', function() {
         ];
       });
 
-      it('should return uniq city names list', function() {
+      it('should return sorted uniq city names list', function() {
         expect(players.cities(this.coll)).toEqual([
-          'toto1', 'toto2', 'tata1', 'tutu2'
+          'tata1', 'toto1', 'toto2', 'tutu2'
         ]);
       });
     });
@@ -177,10 +177,46 @@ describe('service', function() {
         ];
       });
 
-      it('should return uniq faction names list appended with base factions', function() {
+      it('should return sorted uniq faction names list appended with base factions', function() {
         expect(players.factions(this.coll, { toto2: {}, base1: {} })).toEqual([
-          'toto1', 'toto2', 'tata1', 'tutu2', 'base1'
+          'base1', 'tata1', 'toto1', 'toto2', 'tutu2'
         ]);
+      });
+    });
+
+    describe('forFaction(<f>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'player1', faction: 'f1' },
+            { name: 'player2', faction: 'f2' },
+            { name: 'player3', faction: 'f1' },
+          ],
+          [
+            { name: 'player4', faction: 'f1' },
+            { name: 'player5', faction: undefined },
+          ],
+          [
+            { name: 'player6', faction: 'f1' },
+            { name: 'player7', faction: 'f2' },
+          ]
+        ];
+      });
+
+      using([
+        [ 'f' , 'players' ],
+        [ 'f1' , [ { name: 'player1', faction: 'f1' },
+                   { name: 'player3', faction: 'f1' },
+                   { name: 'player4', faction: 'f1' },
+                   { name: 'player6', faction: 'f1' } ] ],
+        [ 'f2' , [ { name: 'player2', faction: 'f2' },
+                   { name: 'player7', faction: 'f2' } ] ],
+        // unplayed faction
+        [ 'f3' , [ ] ],
+      ], function(e, d) {
+        it('should return list of players for faction <f>, '+d, function() {
+          expect(players.forFaction(this.coll, e.f)).toEqual(e.players);
+        });
       });
     });
 
@@ -211,6 +247,93 @@ describe('service', function() {
           .toBe('rounds.listsForPlayer.returnValue');
         expect(res[1][1].lists_played)
           .toBe('rounds.listsForPlayer.returnValue');
+      });
+    });
+
+    describe('casters()', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { lists: [ { faction: 'faction1',
+                         caster: 'caster1' },
+                       { faction: 'faction2',
+                         caster: 'caster2' } ] },
+            // ingored
+            { lists: null },
+            { lists: [ { faction: 'faction1',
+                         caster: 'caster3' },
+                       // caster names should be unique
+                       // -> merged with faction1/caster1
+                       { faction: 'faction2',
+                         caster: 'caster1' } ] },
+          ],
+          [
+            { lists: [ // caster name cannot be null
+                       // ->ignored
+                       { faction: 'faction1',
+                         caster: null },
+                       // faction name can be null
+                       // -> ''
+                       { faction: null,
+                         caster: 'caster4' },
+                       // ignored
+                       { faction: null,
+                         caster: null } ] },
+            // ignored
+            { lists: [ ] },
+          ]
+        ];
+      });
+
+      it('should return sorted uniq caster names list', function() {
+        expect(players.casters(this.coll)).toEqual([
+          { faction: '', name: 'caster4' },
+          { faction: 'faction1', name: 'caster1' },
+          { faction: 'faction1', name: 'caster3' },
+          { faction: 'faction2', name: 'caster2' },
+        ]);
+      });
+    });
+
+    describe('forCaster(<c>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'player1', lists: [ { faction: 'faction1',
+                                          caster: 'caster1' },
+                                        { faction: 'faction2',
+                                          caster: 'caster2' } ] },
+            { name: 'player2', lists: null },
+            { name: 'player3', lists: [ { faction: 'faction1',
+                                          caster: 'caster3' },
+                                        { faction: 'faction2',
+                                          caster: 'caster1' } ] },
+          ],
+          [
+            { name: 'player4', lists: [ { faction: 'faction1',
+                                          caster: null },
+                                        { faction: null,
+                                          caster: 'caster4' },
+                                        { faction: null,
+                                          caster: null } ] },
+            { name: 'player5', lists: [ ] },
+          ]
+        ];
+      });
+
+      using([
+        [ 'c' , 'players' ],
+        [ 'caster1', [ { name : 'player1', lists : [ { faction : 'faction1', caster : 'caster1' },
+                                                     { faction : 'faction2', caster : 'caster2' } ] },
+                       { name : 'player3', lists : [ { faction : 'faction1', caster : 'caster3' },
+                                                     { faction : 'faction2', caster : 'caster1' }] }] ],
+        [ 'caster2', [ { name : 'player1', lists : [ { faction : 'faction1', caster : 'caster1' },
+                                                     { faction : 'faction2', caster : 'caster2' }] }] ],
+        [ 'caster5', [ ] ],
+      ], function(e,d) {
+        it('should return players list for caster <c>', function() {
+          expect(players.forCaster(this.coll, e.c)).toEqual(e.players);
+        });
       });
     });
 
