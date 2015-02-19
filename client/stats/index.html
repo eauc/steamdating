@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"
+      ng-app="srAppStats">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/app.css">
+    <title>SteamAffinity Webmachine</title>
+  </head>
+  <body ng-controller="mainCtrl">
+    <prompt>
+    </prompt>
+    <div ng-include="'partials/menu.html'"></div>
+    <div ui-view></div>
+
+    <script src="/lib/underscore/underscore-min.js"></script>
+    <script src="/lib/underscore/underscore-contrib.min.js"></script>
+    <script src="/lib/underscore.string/underscore.string.min.js"></script>
+    <script src="/lib/angular/angular.min.js"></script>
+    <script src="/lib/angular-ui-router/angular-ui-router.min.js"></script>
+
+    <script src="js/app.min.js"></script>
+  </body>
+</html>

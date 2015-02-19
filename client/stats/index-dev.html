@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"
+      ng-app="srAppStats">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/app.css">
+    <title>SteamAffinity Webmachine</title>
+  </head>
+  <body ng-controller="mainCtrl">
+    <prompt>
+    </prompt>
+    <div ng-include="'partials/menu.html'"></div>
+    <div ui-view></div>
+
+    <script src="/lib/underscore/underscore.js"></script>
+    <script src="/lib/underscore/underscore-contrib.js"></script>
+    <script src="/lib/underscore.string/underscore.string.js"></script>
+    <script src="/js/mixins/apply.js"></script>
+    <script src="/js/mixins/mapWith.js"></script>
+    <script src="/js/mixins/spy.js"></script>
+    <script src="/lib/angular/angular.js"></script>
+    <script src="/lib/angular-ui-router/angular-ui-router.js"></script>
+
+    <script src="js/app.js"></script>
+    <script src="js/controllers/mainCtrl.js"></script>
+    <script src="js/controllers/fileCtrl.js"></script>
+    <script src="js/controllers/statsCtrl.js"></script>
+    <script src="js/services/stats.js"></script>
+
+    <script src="/js/services/players.js"></script>
+    <script src="/js/services/rounds.js"></script>
+    <script src="/js/services/games.js"></script>
+    <script src="/js/services/lists.js"></script>
+    <script src="/js/services/ranking.js"></script>
+    <script src="/js/services/fileImport.js"></script>
+    <script src="/js/services/fkParser.js"></script>
+    <script src="/js/services/t3Parser.js"></script>
+    <script src="/js/services/fileExport.js"></script>
+    <script src="/js/services/factions.js"></script>
+    <script src="/js/services/statsEntry.js"></script>
+    <script src="/js/services/statsGroupBy.js"></script>
+    <script src="/js/services/statsSelector.js"></script>
+    <script src="/js/directives/eaFile.js"></script>
+    <script src="/js/directives/prompt.js"></script>
+    <script src="/js/directives/bars.js"></script>
+    <script src="/js/directives/stacks.js"></script>
+  </body>
+</html>

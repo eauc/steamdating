@@ -26,6 +26,10 @@ class SRApp < Sinatra::Base
     redirect '/index.html'
   end
 
+  get '/stats/' do
+    redirect '/stats/index.html'
+  end
+
   get '/manifest.appcache' do
     content_type :manifest
     erb :manifest_appcache
@@ -33,5 +37,9 @@ class SRApp < Sinatra::Base
 
   get '/title.html' do
     erb :title
+  end
+
+  get '/stats/title.html' do
+    erb :'stats/title'
   end
 end

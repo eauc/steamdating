@@ -111,7 +111,7 @@ describe('controllers', function() {
       });
     });
 
-    describe('doOpenFile(<file>)', function() {
+    describe('doOpenFile(<files>)', function() {
       beforeEach(function() {
         var ctxt = this;
         this.fileImportService.read._retVal = {
@@ -121,7 +121,7 @@ describe('controllers', function() {
           }
         };
         
-        this.scope.doOpenFile('file');
+        this.scope.doOpenFile(['file']);
       });
 
       it('should try to import file', function() {

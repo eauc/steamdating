@@ -15,7 +15,8 @@ angular.module('srApp.directives')
       link: function(scope, element, attrs) {
         element[0].onchange = function() {
           // console.log('ea-file', element, element[0].files[0]);
-          scope.eaFile({ file: element[0].files[0] });
+          var files = element[0].files;
+          scope.eaFile({ file: files });
         };
       }
     };

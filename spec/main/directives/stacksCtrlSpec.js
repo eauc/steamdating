@@ -40,16 +40,19 @@ describe('controllers', function() {
     it('should build stacks', function() {
       expect(this.scope.stacks).toEqual([
         { name : 'value1',
-          layers : [ { x : 0, width : 66.66666666666667, color : 'color1', value : 1 },
-                     { x : 66.66666666666667, width : 133.33333333333334, color : 'color2', value : 2 }
+          layers : [ { x : 0, width : 66.66666666666667, color : 'color1', value : '1.00' },
+                     { x : 66.66666666666667, width : 133.33333333333334,
+                       color : 'color2', value : '2.00' }
                    ] },
         { name : 'value2',
-          layers : [ { x : 0, width : 85.71428571428571, color : 'color1', value : 3 },
-                     { x : 85.71428571428571, width : 114.28571428571429, color : 'color2', value : 4 }
+          layers : [ { x : 0, width : 85.71428571428571, color : 'color1', value : '3.00' },
+                     { x : 85.71428571428571, width : 114.28571428571429,
+                       color : 'color2', value : '4.00' }
                    ] },
         { name : 'value3',
-          layers : [ { x : 0, width : 90.9090909090909, color : 'color1', value : 5 },
-                     { x : 90.9090909090909, width : 109.0909090909091, color : 'color2', value : 6 }
+          layers : [ { x : 0, width : 90.9090909090909, color : 'color1', value : '5.00' },
+                     { x : 90.9090909090909, width : 109.0909090909091,
+                       color : 'color2', value : '6.00' }
                    ] }
       ]);
     });

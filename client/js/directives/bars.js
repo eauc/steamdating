@@ -55,7 +55,7 @@ angular.module('srApp.directives')
     function() {
       return {
         restrict: 'E',
-        templateUrl: 'partials/directives/bars.html',
+        templateUrl: '/partials/directives/bars.html',
         scope: {
           values: '=barsValues',
           hues: '=barsHues',

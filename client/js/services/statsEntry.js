@@ -38,14 +38,26 @@ angular.module('srApp.services')
                 return {
                   'Win/Loss': [pts[0].tournament,
                                pts[1].tournament],
-                  'Control': [Math.round(pts[0].control/total*100)/100,
-                              Math.round(pts[1].control/total*100)/100],
-                  'Army': [Math.round(pts[0].army/total*100)/100,
-                           Math.round(pts[1].army/total*100)/100],
+                  'Control': [pts[0].control/total,
+                              pts[1].control/total],
+                  'Army': [pts[0].army/total,
+                           pts[1].army/total],
                 };
               })
               .value()
           };
+        },
+        sum: function(base, other) {
+          var ret = _.clone(base);
+          ret.values = {
+            'Win/Loss': [ base.values['Win/Loss'][0] + other.values['Win/Loss'][0],
+                          base.values['Win/Loss'][1] + other.values['Win/Loss'][1] ],
+            'Control': [ (base.values.Control[0] + other.values.Control[0])/2,
+                         (base.values.Control[1] + other.values.Control[1])/2 ],
+            'Army': [ (base.values.Army[0] + other.values.Army[0])/2,
+                      (base.values.Army[1] + other.values.Army[1])/2 ],
+          };
+          return ret;
         }
       };
       return statsPointsEntry;
@@ -80,14 +92,21 @@ angular.module('srApp.services')
                      factions.hueFor(f)];
             })
             .value();
-          // return _.chain(sel)
-          //   .map(function(gs) {
-          //     return _.mapWith(gs[1], game.listForPlayer, gs[0]);
-          //   })
-          //   .flatten()
-          //   .without(undefined, null)
-          //   .countBy(_.identity)
-          //   .value();
+        },
+        sum: function(base, other) {
+          return _.reduce(other, function(mem, f) {
+            var mem_f = _.find(mem, function(mf) { return mf[0] === f[0]; });
+            if(!_.exists(mem_f)) {
+              mem.push(f);
+              return mem;
+            }
+            _.reduce(f[1], function(m, count, c) {
+              if(_.exists(m[c])) m[c] += count;
+              else m[c] = count;
+              return m;
+            }, mem_f[1]);
+            return mem;
+          }, _.snapshot(base));
         }
       };
       return statsCastersEntry;
@@ -123,6 +142,21 @@ angular.module('srApp.services')
                      factions.hueFor(f)];
             })
             .value();
+        },
+        sum: function(base, other) {
+          return _.reduce(other, function(mem, f) {
+            var mem_f = _.find(mem, function(mf) { return mf[0] === f[0]; });
+            if(!_.exists(mem_f)) {
+              mem.push(f);
+              return mem;
+            }
+            _.reduce(f[1], function(m, count, c) {
+              if(_.exists(m[c])) m[c] += count;
+              else m[c] = count;
+              return m;
+            }, mem_f[1]);
+            return mem;
+          }, _.snapshot(base));
         }
       };
       return statsCastersEntry;
@@ -158,6 +192,13 @@ angular.module('srApp.services')
             .without(null, undefined)
             .countBy(_.identity)
             .value();
+        },
+        sum: function(base, other) {
+          return _.reduce(other, function(mem, count, t) {
+            if(_.exists(mem[t])) mem[t] += count;
+            else mem[t] = count;
+            return mem;
+          }, _.snapshot(base));
         }
       };
       return statsTiersEntry;
@@ -196,6 +237,13 @@ angular.module('srApp.services')
             .flatten()
             .countBy(_.identity)
             .value();
+        },
+        sum: function(base, other) {
+          return _.reduce(other, function(mem, count, t) {
+            if(_.exists(mem[t])) mem[t] += count;
+            else mem[t] = count;
+            return mem;
+          }, _.snapshot(base));
         }
       };
       return statsReferencesEntry;

@@ -20,7 +20,7 @@ describe('service', function() {
         factions = _factions;
         $httpBackend = _$httpBackend;
         initBaseFactionsWith = function(data) {
-          $httpBackend.expectGET('data/factions.json')
+          $httpBackend.expectGET('/data/factions.json')
             .respond(200, data);
           factions.init();
           $httpBackend.flush();
@@ -30,7 +30,7 @@ describe('service', function() {
 
     describe('init()', function() {
       it('should download the list of base factions', function() {
-        $httpBackend.expectGET('data/factions.json')
+        $httpBackend.expectGET('/data/factions.json')
           .respond(200);
 
         factions.init();

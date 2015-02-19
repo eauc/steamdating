@@ -62,7 +62,7 @@ angular.module('srApp.directives')
     function($timeout) {
       return {
         restrict: 'E',
-        templateUrl: 'partials/directives/prompt.html',
+        templateUrl: '/partials/directives/prompt.html',
         scope: true,
         controller: 'promptCtrl',
         link: function(scope, element, attrs) {

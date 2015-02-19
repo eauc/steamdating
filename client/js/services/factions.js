@@ -14,7 +14,7 @@ angular.module('srApp.services')
 
       return {
         init: function() {
-          $http.get('data/factions.json').then(function(response) {
+          $http.get('/data/factions.json').then(function(response) {
             base_factions = response.data;
             _.each(base_factions_defers, function(d) {
               d.resolve(base_factions);

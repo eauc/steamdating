@@ -72,9 +72,9 @@ angular.module('srApp.controllers')
           });
       };
 
-      $scope.doOpenFile = function(file) {
-        console.log('openFile', file);
-        fileImport.read('json', file, $scope.factions)
+      $scope.doOpenFile = function(files) {
+        console.log('openFile', files);
+        fileImport.read('json', files[0], $scope.factions)
           .then(function(data) {
             var state = data[0];
             var error = data[1];

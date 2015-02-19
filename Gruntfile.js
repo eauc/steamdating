@@ -1,8 +1,11 @@
 module.exports = function(grunt) {
 
   var js_src =  [ 'client/js/**/*.js', '!**/*.min.js' ];
-  var spec_js_src = [ 'spec/**/*Spec.js' ];
+  var spec_js_src = [ 'spec/main/**/*Spec.js' ];
   var spec_js_helpers = [ 'spec/support/helpers/*.js' ];
+
+  var stats_js_src =  [ 'client/stats/js/**/*.js', '!client/stats/js/app.min.js' ];
+  var stats_spec_js_src = [ 'spec/stats/**/*Spec.js' ];
 
   // Project configuration.
   grunt.initConfig({
@@ -13,7 +16,7 @@ module.exports = function(grunt) {
           jshintrc: '.jshintrc'
         },
         files: {
-          src: js_src
+          src: js_src.concat(stats_js_src)
         }
       },
       spec_src: {
@@ -21,7 +24,7 @@ module.exports = function(grunt) {
           jshintrc: '.spec_jshintrc'
         },
         files: {
-          src: spec_js_src.concat(spec_js_helpers)
+          src: spec_js_src.concat(stats_spec_js_src, spec_js_helpers)
         }
       }
     },
@@ -33,7 +36,11 @@ module.exports = function(grunt) {
           }
         },
         files: {
-          'client/js/app.min.js': js_src
+          'client/js/app.min.js': js_src,
+          'client/stats/js/app.min.js': stats_js_src.concat(['client/js/mixins/**.js',
+                                                             'client/js/services/**.js',
+                                                             'client/js/directives/**.js',
+                                                             '!client/js/services/stats.js'])
         }
       }
     },
@@ -54,26 +61,46 @@ module.exports = function(grunt) {
           outfile: 'spec/SpecRunner.html',
           keepRunner: true
         }
+      },
+      stats_spec: {
+        src: stats_js_src.concat(['client/js/mixins/**.js',
+                                  'client/js/services/**.js',
+                                  'client/js/directives/**.js',
+                                  '!client/js/services/stats.js']),
+        options: {
+          specs: stats_spec_js_src,
+          helpers: spec_js_helpers,
+          vendor: [
+            'client/lib/underscore/underscore.js',
+            'client/lib/underscore/underscore-contrib.js',
+            'client/lib/underscore.string/underscore.string.js',
+            'client/lib/angular/angular.js',
+            'client/lib/angular-ui-router/angular-ui-router.min.js',
+            'client/lib/angular/angular-mocks.js'
+          ],
+          outfile: 'spec/SpecRunner.html',
+          keepRunner: true
+        }
       }
     },
     watch: {
       app_src: {
-        files: js_src,
+        files: js_src.concat(stats_js_src),
         tasks: [ 'jshint:app_src', 'uglify:app_src' ],
         options: {
           spawn: true
         }
       },
       uglify: {
-        files: js_src,
+        files: js_src.concat(stats_js_src),
         tasks: [ 'uglify:app_src' ],
         options: {
           spawn: true
         }
       },
       spec_src: {
-        files: js_src.concat(spec_js_src, spec_js_helpers),
-        tasks: [ 'jshint:app_src', 'jshint:spec_src', 'jasmine:spec' ],
+        files: js_src.concat(stats_js_src, spec_js_src, stats_spec_js_src, spec_js_helpers),
+        tasks: [ 'jshint:app_src', 'jshint:spec_src', 'jasmine:spec', 'jasmine:stats_spec' ],
         options: {
           spawn: true
         }

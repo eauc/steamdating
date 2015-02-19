@@ -15,19 +15,19 @@ angular.module('srApp.directives')
           return mem;
         }, {});
         // console.log('totals', totals);
-        $scope.stacks = _.map(values.values, function(s, name) {
+        $scope.stacks = _.map(values.values, function(_s, name) {
           var x = 0;
           return {
             name: name,
-            layers: _.map(s, function(v, i) {
+            layers: _.map(_s, function(v, i) {
               var width = (0 < totals[name]) ?
                 $scope.width * v / totals[name] :
-                $scope.width / s.length;
+                $scope.width / _s.length;
               var layer = {
                 x: x,
                 width: width,
                 color: values.colors[i],
-                value: v
+                value: s.numberFormat(v,2)
               };
               x += width;
               return layer;
@@ -42,7 +42,7 @@ angular.module('srApp.directives')
     function() {
       return {
         restrict: 'E',
-        templateUrl: 'partials/directives/stacks.html',
+        templateUrl: '/partials/directives/stacks.html',
         scope: {
           values: '=stacksValues',
         },
