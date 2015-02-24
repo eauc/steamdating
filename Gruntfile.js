@@ -78,7 +78,7 @@ module.exports = function(grunt) {
             'client/lib/angular-ui-router/angular-ui-router.min.js',
             'client/lib/angular/angular-mocks.js'
           ],
-          outfile: 'spec/SpecRunner.html',
+          outfile: 'spec/statsSpecRunner.html',
           keepRunner: true
         }
       }

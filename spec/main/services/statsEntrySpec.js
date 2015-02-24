@@ -55,6 +55,27 @@ describe('service', function() {
         });
       });
     });
+
+    describe('sum(<base>, <other>)', function() {
+      it('should add tournament points & mean control/army points', function() {
+        expect(statsPointsEntry.sum({
+          colors : [ '#4AE34D', '#E3341D' ],
+          values : { 'Win/Loss' : [ 1, 2 ],
+                     Control : [ 3, 4 ],
+                     Army : [ 5, 6 ] }
+        }, {
+          colors : [ '#4AE34D', '#E3341D' ],
+          values : { 'Win/Loss' : [ 7, 8 ],
+                     Control : [ 9, 10 ],
+                     Army : [ 11, 12 ] }
+        })).toEqual({
+          colors : [ '#4AE34D', '#E3341D' ],
+          values : { 'Win/Loss': [ 8, 10 ], // sum
+                     Control: [ 6, 7 ], // mean
+                     Army: [ 8, 9 ] } //mean
+        });
+      });
+    });
   });
 
   describe('statsCastersEntry', function() {
@@ -103,6 +124,20 @@ describe('service', function() {
                       p2: {name:'p2', list: 'caster3' } }, ] ],
         ])).toEqual([
           [ 'p1Faction', { caster1 : 1, caster2 : 1 }, 'p1FactionHue' ],
+          [ 'p2Faction', { caster1 : 1 }, 'p2FactionHue' ]
+        ]);
+      });
+    });
+
+    describe('sum(<base>, <other>)', function() {
+      it('should merge both counts', function() {
+        expect(statsCastersEntry.sum([
+          [ 'p1Faction', { caster1 : 1, caster3 : 1, caster2 : 1 }, 'p1FactionHue' ]
+        ], [
+          [ 'p1Faction', { caster1 : 1, caster2 : 1 }, 'p1FactionHue' ],
+          [ 'p2Faction', { caster1 : 1 }, 'p2FactionHue' ]
+        ])).toEqual([
+          [ 'p1Faction', { caster1 : 2, caster3 : 1, caster2 : 2 }, 'p1FactionHue' ],
           [ 'p2Faction', { caster1 : 1 }, 'p2FactionHue' ]
         ]);
       });
@@ -156,6 +191,20 @@ describe('service', function() {
                       p2: {name:'p2', list: 'caster3' } }, ] ],
         ])).toEqual([
           [ 'p2Faction', { caster2 : 1, caster3 : 1 }, 'p2FactionHue' ],
+          [ 'p1Faction', { caster3 : 1 }, 'p1FactionHue' ]
+        ]);
+      });
+    });
+
+    describe('sum(<base>, <other>)', function() {
+      it('should merge both counts', function() {
+        expect(statsOppCastersEntry.sum([
+          [ 'p2Faction', { caster2 : 1, caster1 : 1, caster3 : 1 }, 'p2FactionHue' ]
+        ], [
+          [ 'p2Faction', { caster2 : 1, caster3 : 1 }, 'p2FactionHue' ],
+          [ 'p1Faction', { caster3 : 1 }, 'p1FactionHue' ]
+        ])).toEqual([
+          [ 'p2Faction', { caster2 : 2, caster1 : 1, caster3 : 2 }, 'p2FactionHue' ],
           [ 'p1Faction', { caster3 : 1 }, 'p1FactionHue' ]
         ]);
       });
@@ -217,6 +266,25 @@ describe('service', function() {
         });
       });
     });
+
+    describe('sum(<base>, <other>)', function() {
+      it('should merge both counts', function() {
+        expect(statsTiersEntry.sum({
+          Theme1 : 1,
+          None : 1,
+          Theme2 : 1
+        }, {
+          Theme1 : 1,
+          Theme3 : 1,
+          Theme2 : 1
+        })).toEqual({
+          Theme1: 2,
+          None: 1,
+          Theme2: 2,
+          Theme3: 1
+        });
+      });
+    });
   });
 
   describe('statsReferencesEntry', function() {
@@ -270,6 +338,23 @@ describe('service', function() {
           RefsA : 1,
           RefsC : 1,
           RefsB : 1
+        });
+      });
+    });
+
+    describe('sum(<base>, <other>)', function() {
+      it('should merge both counts', function() {
+        expect(statsReferencesEntry.sum({
+          RefsA : 1,
+          RefsB : 1
+        }, {
+          RefsA : 1,
+          RefsC : 1,
+          RefsB : 1
+        })).toEqual({
+          RefsA: 2,
+          RefsB: 2,
+          RefsC: 1
         });
       });
     });

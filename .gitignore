@@ -1,3 +1,4 @@
 node_modules/
 .grunt/
 spec/SpecRunner.html
+spec/statsSpecRunner.html
