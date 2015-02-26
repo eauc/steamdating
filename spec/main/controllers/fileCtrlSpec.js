@@ -97,6 +97,11 @@ describe('controllers', function() {
           it('should reset state', function() {
             expect(this.scope.resetState).toHaveBeenCalled();
           });
+
+          it('should display players list', function() {
+            expect(this.scope.goToState)
+              .toHaveBeenCalledWith('players');
+          });
         });
       });
 
@@ -174,7 +179,7 @@ describe('controllers', function() {
           }
         };
         
-        this.scope.doImportFile('toto', 'file');
+        this.scope.doImportFile('toto', ['file']);
       });
 
       it('should try to import file', function() {

@@ -69,6 +69,7 @@ angular.module('srApp.controllers')
         prompt.prompt('confirm', 'You sure ?')
           .then(function() {
             $scope.resetState();
+            $scope.goToState('players');
           });
       };
 
@@ -86,9 +87,9 @@ angular.module('srApp.controllers')
           });
       };
 
-      $scope.doImportFile = function(type, file) {
-        console.log('importFile', type, file);
-        fileImport.read(type, file, $scope.factions)
+      $scope.doImportFile = function(type, files) {
+        console.log('importFile', type, files);
+        fileImport.read(type, files[0], $scope.factions)
           .then(function(data) {
             var players = data[0];
             var error = data[1];
