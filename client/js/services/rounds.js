@@ -66,6 +66,14 @@ angular.module('srApp.services')
             })
             .value();
         },
+        allGamesHaveResult: function(coll) {
+          return _.chain(coll)
+            .map(gameService.hasResult)
+            .spy('hasres')
+            .all()
+            .spy('all')
+            .value();
+        },
         winners: function(coll) {
           return _.map(coll, gameService.winner);
         },
@@ -84,6 +92,13 @@ angular.module('srApp.services')
              gameService,
              gamesService) {
       var roundsService = {
+        lastRoundIsComplete: function(coll) {
+          return ( _.isEmpty(coll) ||
+                   _.chain(coll)
+                   .last()
+                   .apply(roundService.allGamesHaveResult)
+                   .value() );
+        },
         createNextRound: function(players) {
           var table = 1;
           return _.map(players, function(group) {

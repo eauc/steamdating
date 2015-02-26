@@ -152,6 +152,7 @@ angular.module('srApp.controllers')
              bracketPairing) {
       $scope.new_state = _.clone($scope.state);
       console.log('init roundsNextCtrl', $scope.new_state);
+      $scope.previous_round_complete = rounds.lastRoundIsComplete($scope.new_state.rounds);
       $scope.next_round = rounds.createNextRound($scope.state.players);
 
       $scope.updatePlayersOptions = function() {

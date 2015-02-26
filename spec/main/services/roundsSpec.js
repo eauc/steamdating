@@ -14,6 +14,30 @@ describe('service', function() {
       rounds = _rounds;
     }]));
 
+    describe('lastRoundIsComplete(<name>)', function() {
+      beforeEach(function() {
+        this.roundService = spyOnService('round');
+      });
+
+      when('<coll> is empty', function() {
+      }, function() {
+        it('should return true', function() {
+          expect(rounds.lastRoundIsComplete([])).toBe(true);
+        });
+      });
+
+      when('<coll> is empty', function() {
+        this.coll = [ 'first', 'last' ];
+      }, function() {
+        it('should check whether last round is complete', function() {
+          expect(rounds.lastRoundIsComplete(this.coll))
+            .toBe('round.allGamesHaveResult.returnValue');
+          expect(this.roundService.allGamesHaveResult)
+            .toHaveBeenCalledWith('last');
+        });
+      });
+    });
+
     describe('gamesForPlayer(<name>)', function() {
       beforeEach(function() {
         this.coll = [

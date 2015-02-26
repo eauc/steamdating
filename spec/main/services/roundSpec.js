@@ -134,6 +134,27 @@ describe('service', function() {
       });
     });
 
+    describe('allGamesHaveResult()', function() {
+      it('should check whether all game have a defined result', function() {
+        this.coll = [
+          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+          { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } },
+          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+        ];
+
+        expect(round.allGamesHaveResult(this.coll)).toBe(true);
+
+        this.coll = [
+          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+          // this game has incomplete result
+          { p1: { name: 'p3', tournament: null }, p2: { name: null, tournament: 1 } },
+          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+        ];
+
+        expect(round.allGamesHaveResult(this.coll)).toBe(false);
+      });
+    });
+
     describe('winners()', function() {
       it('should extract list of winners', function() {
         this.coll = [

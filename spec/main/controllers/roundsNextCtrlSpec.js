@@ -19,6 +19,8 @@ describe('controllers', function() {
         this.scope = $rootScope.$new();
         this.scope.goToState = jasmine.createSpy('goToState');
         this.scope.storeState = jasmine.createSpy('storeState');
+        this.state_players = [ 'players' ];
+        this.state_rounds = [ 'rounds' ];
         this.scope.state = {
           players: this.state_players,
           rounds: this.state_rounds
@@ -40,6 +42,13 @@ describe('controllers', function() {
     it('should make a copy of current state', function() {
       expect(this.scope.new_state).not.toBe(this.scope.state);
       expect(this.scope.new_state).toEqual(this.scope.state);
+    });
+
+    it('should check whether last round is complete', function() {
+      expect(this.scope.previous_round_complete)
+        .toBe('rounds.lastRoundIsComplete.returnValue');
+      expect(this.roundsService.lastRoundIsComplete)
+        .toHaveBeenCalledWith(this.state_rounds);
     });
 
     it('should init next round', function() {

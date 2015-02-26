@@ -7,6 +7,11 @@
           ng-click="registerNextRound()">
     Register Round
   </button>
+  <p class="text-warning"
+     ng-if="!previous_round_complete">
+    <strong>Previous round is not complete !</strong><br />
+    Pairing suggestions are bound to fail...
+  </p>
   <div ng-repeat="(gri,gr) in ::new_state.players">
     <h2 ng-if="::new_state | state:'hasPlayerGroups'"
         style="border-bottom:1px solid black;">

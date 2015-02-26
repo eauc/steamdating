@@ -45,6 +45,10 @@ angular.module('srApp.services')
                    _.getPath(game, 'p2.name') :
                    p1_name );
         },
+        hasResult: function(game) {
+          return ( _.isNumber(game.p1.tournament) &&
+                   _.isNumber(game.p2.tournament) );
+        },
         winForPlayer: function(game, player_name) {
           var tournament_point = _.chain(game)
             .apply(gameService.player, player_name)

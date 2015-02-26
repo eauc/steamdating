@@ -100,6 +100,23 @@ describe('service', function() {
       });
     });
 
+    describe('hasResult()', function() {
+      using([
+        [ 'p1' , 'p2' , 'hasResult' ],
+        [ null , null , false       ],
+        [ 1    , null , false       ],
+        [ null , 1    , false       ],
+        [ 1    , 0    , true        ],
+      ], function(e, d) {
+        it('should check whether the game result is defined, '+d, function() {
+          var g = game.create();
+          g.p1.tournament = e.p1;
+          g.p2.tournament = e.p2;
+          expect(game.hasResult(g)).toBe(e.hasResult);
+        });
+      });
+    });
+
     describe('winForPlayer(<name>)', function() {
       beforeEach(function() {
         this.game = game.create(4, 'toto', 'titi');
