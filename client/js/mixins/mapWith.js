@@ -3,5 +3,10 @@ _.mixin({
     var args = _.rest(_.rest(arguments));
     var _iteratee = _.partial.apply(null, _.cat([iteratee, _], args));
     return _.map(obj, _iteratee);
+  },
+  mapcatWith: function(obj, iteratee) {
+    var args = _.rest(_.rest(arguments));
+    var _iteratee = _.partial.apply(null, _.cat([iteratee, _], args));
+    return _.mapcat(obj, _iteratee);
   }
 });

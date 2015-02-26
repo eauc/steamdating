@@ -35,25 +35,27 @@ angular.module('srApp.services')
         'opp_caster': statsGroupByOppCaster,
       };
       var stats = {
-        get: function(st, sl, vl, gr, cache) {
-          cache[sl] = cache[sl] || {};
-          cache[sl][vl] = cache[sl][vl] || {};
-          if(!_.exists(cache[sl][vl][gr])) {
-            var sel = SELECTORS[sl].select(st, vl);
-            sel = GROUPS[gr].group(st, sel);
-            console.log('sel', sel);
-            cache[sl][vl][gr] = _.map(sel, function(s) {
-              return [ s[0], {
-                points: statsPointsEntry.count(st, s[1]),
-                casters: statsCastersEntry.count(st, s[1]),
-                opp_casters: statsOppCastersEntry.count(st, s[1]),
-                tiers: statsTiersEntry.count(st, s[1]),
-                references: statsReferencesEntry.count(st, s[1]),
+        get: function(state, selector, sel_value, group_by, cache) {
+          cache[selector] = cache[selector] || {};
+          cache[selector][sel_value] = cache[selector][sel_value] || {};
+          
+          if(!_.exists(cache[selector][sel_value][group_by])) {
+            var selection = SELECTORS[selector].select(state, sel_value);
+            selection = GROUPS[group_by].group(state, selection);
+            console.log('selection', selection);
+
+            cache[selector][sel_value][group_by] = _.map(selection, function(sel_group) {
+              return [ sel_group[0], {
+                points: statsPointsEntry.count(state, sel_group[1]),
+                casters: statsCastersEntry.count(state, sel_group[1]),
+                opp_casters: statsOppCastersEntry.count(state, sel_group[1]),
+                tiers: statsTiersEntry.count(state, sel_group[1]),
+                references: statsReferencesEntry.count(state, sel_group[1]),
               } ];
             });
             console.log('cache', cache);
           }
-          return cache[sl][vl][gr];
+          return cache[selector][sel_value][group_by];
         }
       };
       return stats;

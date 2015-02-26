@@ -8,25 +8,28 @@ angular.module('srApp.services')
         stringify: function(players) {
           return _.chain(players)
             .flatten()
-            .map(function(p) {
-              var ret = [ 'Player: '+p.name ];
-              if(_.exists(p.city)) ret.push( 'City: '+p.city );
-              if(_.exists(p.faction)) ret.push( 'Faction: '+p.faction );
-              if(p.lists.length > 0) {
-                ret.push('');
-                _.each(p.lists, function(l) {
-                  ret.push('System: Warmachordes');
-                  ret.push('Faction: '+(_.exists(l.theme) ? l.theme : l.faction));
-                  ret.push(l.fk);
-                  ret.push('');
-                });
-              }
-              return ret.join(EOL) + EOL;
-            })
+            .map(stringifyPlayer)
             .join(EOL)
             .value();
         }
       };
+      function stringifyPlayer(player) {
+        var ret = [ 'Player: '+player.name ];
+        if(_.exists(player.city)) ret.push( 'City: '+player.city );
+        if(_.exists(player.faction)) ret.push( 'Faction: '+player.faction );
+        if(player.lists.length > 0) {
+          ret.push('');
+          ret.push(_.map(player.lists, stringifyList).join(EOL));
+        }
+        return ret.join(EOL) + EOL;
+      }
+      function stringifyList(list) {
+        var ret = ['System: Warmachordes'];
+        ret.push('Faction: '+(_.exists(list.theme) ? list.theme : list.faction));
+        ret.push(list.fk);
+        ret.push('');
+        return ret.join(EOL);
+      }
       return fkStringifier;
     }
   ]);

@@ -81,8 +81,8 @@ describe('service', function() {
       using([
         [ 'f'  , 'icon' ],
         [ 'f1' , 'data/icons/i1.svg' ],
-        [ 'f2' , '' ], // icon is not defined
-        [ 'f3' , '' ], // faction is not defined
+        [ 'f2' , undefined ], // icon is not defined
+        [ 'f3' , undefined ], // faction is not defined
       ], function(e, d) {
         it('should retrieve icon for faction <f> if it exists, '+d, function() {
           expect(factions.iconFor(e.f)).toBe(e.icon);

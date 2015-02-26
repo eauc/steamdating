@@ -35,56 +35,54 @@ angular.module('srAppStats.services')
         'opp_caster': statsGroupByOppCaster,
       };
       var stats = {
-        get: function(sts, sl, vl, gr, cache) {
-          cache[sl] = cache[sl] || {};
-          cache[sl][vl] = cache[sl][vl] || {};
-          if(!_.exists(cache[sl][vl][gr])) {
-            cache[sl][vl][gr] = _.chain(sts)
-              .map(function(st) {
-                var sel = SELECTORS[sl].select(st.state, vl);
-                sel = GROUPS[gr].group(st.state, sel);
-                console.log('sel', sel);
-                return _.map(sel, function(s) {
-                  return [ s[0], {
-                    points: statsPointsEntry.count(st.state, s[1]),
-                    casters: statsCastersEntry.count(st.state, s[1]),
-                    opp_casters: statsOppCastersEntry.count(st.state, s[1]),
-                    tiers: statsTiersEntry.count(st.state, s[1]),
-                    references: statsReferencesEntry.count(st.state, s[1]),
+        get: function(states_list, selector, sel_value, group_by, cache) {
+          cache[selector] = cache[selector] || {};
+          cache[selector][sel_value] = cache[selector][sel_value] || {};
+          
+          if(!_.exists(cache[selector][sel_value][group_by])) {
+            cache[selector][sel_value][group_by] = _.chain(states_list)
+              .map(function(state_info) {
+                var selection = SELECTORS[selector].select(state_info.state, sel_value);
+                selection = GROUPS[group_by].group(state_info.state, selection);
+                console.log('selection', selection);
+                
+                return _.map(selection, function(sel_group) {
+                  return [ sel_group[0], {
+                    points: statsPointsEntry.count(state_info.state, sel_group[1]),
+                    casters: statsCastersEntry.count(state_info.state, sel_group[1]),
+                    opp_casters: statsOppCastersEntry.count(state_info.state, sel_group[1]),
+                    tiers: statsTiersEntry.count(state_info.state, sel_group[1]),
+                    references: statsReferencesEntry.count(state_info.state, sel_group[1]),
                   } ];
                 });
               })
-              .reduce(function(mem, st) {
-                console.log(st);
-                _.each(st, function(new_el) {
-                  var ele = _.find(mem, function(el) {
-                    return el[0] === new_el[0];
-                  });
-                  if(!_.exists(ele)) {
-                    mem.push(_.snapshot(new_el));
-                    return;
-                  }
-                  
-                  ele[1].points = statsPointsEntry.sum(ele[1].points,
-                                                       new_el[1].points);
-                  ele[1].casters = statsCastersEntry.sum(ele[1].casters,
-                                                         new_el[1].casters);
-                  ele[1].opp_casters = statsOppCastersEntry.sum(ele[1].opp_casters,
-                                                                new_el[1].opp_casters);
-                  ele[1].tiers = statsTiersEntry.sum(ele[1].tiers,
-                                                     new_el[1].tiers);
-                  ele[1].references = statsReferencesEntry.sum(ele[1].references,
-                                                               new_el[1].references);
-                });
-                
-                return mem;
+              .reduce(function(mem, state_stats) {
+                return _.addHeaderLists(mem, state_stats, addStats);
               }, [])
               .value();
             console.log('cache', cache);
           }
-          return cache[sl][vl][gr];
+          return cache[selector][sel_value][group_by];
         }
       };
+      function statGroup(entry) { return entry[0]; }
+      function statValues(entry) { return entry[1]; }
+
+      function addStats(base, other) {
+        return {
+          points: statsPointsEntry.sum(base.points,
+                                       other.points),
+          casters: statsCastersEntry.sum(base.casters,
+                                         other.casters),
+          opp_casters: statsOppCastersEntry.sum(base.opp_casters,
+                                                other.opp_casters),
+          tiers: statsTiersEntry.sum(base.tiers,
+                                     other.tiers),
+          references: statsReferencesEntry.sum(base.references,
+                                               other.references)
+        };
+      }
+      
       return stats;
     }
   ]);

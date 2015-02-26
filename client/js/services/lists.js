@@ -12,8 +12,8 @@ angular.module('srApp.services')
             fk: fk
           };
         },
-        references: function(l) {
-          return _.chain(l)
+        references: function(list) {
+          return _.chain(list)
             .getPath('fk')
             .apply(s.lines)
             .filter(_.complement(s.isBlank))
@@ -28,39 +28,38 @@ angular.module('srApp.services')
   ])
   .factory('lists', [
     'list',
-    function(list) {
-      var lists = {
-        add: function(coll, l) {
-          return _.cat(coll, l);
+    function(listService) {
+      var listsService = {
+        add: function(coll, list) {
+          return _.cat(coll, list);
         },
-        drop: function(coll, i) {
-          var new_coll = coll.slice();
-          new_coll.splice(i, 1);
+        drop: function(coll, index) {
+          var new_coll = _.clone(coll);
+          new_coll.splice(index, 1);
           return new_coll;
         },
         casters: function(coll) {
           return _.mapWith(coll, _.getPath, 'caster');
         },
-        listForCaster: function(coll, c) {
+        listForCaster: function(coll, caster_name) {
           return _.chain(coll)
-            .filter(function(l) { return l.caster === c; })
+            .where({ caster: caster_name })
             .first()
             .value();
         },
-        themeForCaster: function(coll, c) {
+        themeForCaster: function(coll, caster_name) {
           return _.chain(coll)
-            .filter(function(l) { return l.caster === c; })
-            .first()
+            .apply(listsService.listForCaster, caster_name)
             .getPath('theme')
             .value();
         },
-        containsCaster: function(coll, c) {
+        containsCaster: function(coll, caster_name) {
           return _.chain(coll)
-            .findWhere({ caster: c })
+            .findWhere({ caster: caster_name })
             .exists()
             .value();
         }
       };
-      return lists;
+      return listsService;
     }
   ]);

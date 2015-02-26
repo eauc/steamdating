@@ -4,29 +4,26 @@ angular.module('srApp.services')
   .factory('player', [
     'rounds',
     'lists',
-    function(rounds,
-             lists) {
+    function(roundsService,
+             listsService) {
       return {
-        is: function(p, name) {
-          return p.name === name;
+        is: function(player, name) {
+          return player.name === name;
         },
-        // inTeam: function(p, team) {
-        //   return p.team === team;
-        // },
-        rank: function(p, critFn) {
+        rank: function(player, critFn) {
           var rank;
           try {
-            rank = critFn(p.points.tournament,
-                          p.points.sos,
-                          p.points.control,
-                          p.points.army);
+            rank = critFn(player.points.tournament,
+                          player.points.sos,
+                          player.points.control,
+                          player.points.army);
           }
           catch(e) {
             return "Error : " + e.message;
           }
           return rank;
         },
-        create: function playerCreate(name, faction, city, team) {
+        create: function(name, faction, city, team) {
           return {
             name: name,
             faction: faction,
@@ -42,28 +39,28 @@ angular.module('srApp.services')
             }
           };
         },
-        updateListsPlayed: function(p, rs) {
-          return _.chain(p)
+        updateListsPlayed: function(player, rounds) {
+          return _.chain(player)
             .clone()
-            .apply(function(p) {
-              p.lists_played = rounds.listsForPlayer(rs, p.name);
-              return p;
+            .apply(function(player) {
+              player.lists_played = roundsService.listsForPlayer(rounds, player.name);
+              return player;
             })
             .value();
         },
-        allListsHaveBeenPlayed: function(p) {
-          return _.chain(p.lists)
-            .apply(lists.casters)
-            .difference(p.lists_played)
+        allListsHaveBeenPlayed: function(player) {
+          return _.chain(player.lists)
+            .apply(listsService.casters)
+            .difference(player.lists_played)
             .value().length === 0;
         },
-        updatePoints: function(p, rs, bracket_start, bracket_weight) {
-          return _.chain(p)
+        updatePoints: function(player, rounds, bracket_start, bracket_weight) {
+          return _.chain(player)
             .clone()
-            .apply(function(p) {
-              p.points = rounds.pointsForPlayer(rs, p.name,
-                                                bracket_start, bracket_weight);
-              return p;
+            .apply(function(player) {
+              player.points = roundsService.pointsForPlayer(rounds, player.name,
+                                                            bracket_start, bracket_weight);
+              return player;
             })
             .value();
         }
@@ -77,43 +74,58 @@ angular.module('srApp.services')
     'rounds',
     'ranking',
     'lists',
-    function(player,
-             factions,
-             round,
-             rounds,
-             ranking,
-             lists) {
-      var players = {
-        add: function playersAdd(coll, p, i) {
-          coll[i] = _.cat(coll[i], p);
+    function(playerService,
+             factionsService,
+             roundService,
+             roundsService,
+             rankingService,
+             listsService) {
+      function buildRankingFunction(coll, state, is_bracket) {
+        if(is_bracket) {
+          return function(player) { return player.points.bracket; };
+        }
+        else {
+          var critFn = rankingService.buildPlayerCritFunction(state.ranking.player,
+                                                              state.rounds.length,
+                                                              coll.length);
+          if(!_.isFunction(critFn)) {
+            console.error('Error create ranking function', critFn);
+            return null;
+          }
+          return _.partial(playerService.rank, _, critFn);
+        }
+      }
+      var playersService = {
+        add: function playersAdd(coll, player, group_index) {
+          coll[group_index] = _.cat(coll[group_index], player);
           return coll;
         },
-        drop: function(coll, p) {
+        drop: function(coll, player) {
           return _.chain(coll)
-            .mapWith(_.reject, _.partial(player.is, _, p.name))
+            .mapWith(_.reject, _.partial(playerService.is, _, player.name))
             .reject(_.isEmpty)
-            .apply(function(c) {
-              if(0 === c.length) return [[]];
-              return c;
+            .apply(function(players) {
+              if(_.isEmpty(players)) return [[]];
+              return players;
             })
             .value();
         },
         player: function(coll, name) {
           return _.chain(coll)
-            .flatten()
-            .find(_.partial(player.is, _, name))
+            .flatten(true)
+            .find(_.partial(playerService.is, _, name))
             .value();
         },
         names: function(coll) {
           return _.chain(coll)
-            .flatten()
+            .flatten(true)
             .mapWith(_.getPath, 'name')
             .sortBy(_.identity)
             .value();
         },
         factions: function(coll, base_factions) {
           return _.chain(coll)
-            .flatten()
+            .flatten(true)
             .mapWith(_.getPath, 'faction')
             .cat(_.keys(base_factions))
             .uniq()
@@ -121,29 +133,28 @@ angular.module('srApp.services')
             .sortBy(_.identity)
             .value();
         },
-        forFaction: function(coll, f) {
+        forFaction: function(coll, faction_name) {
           return _.chain(coll)
-            .flatten()
-            .filter(function(p) {
-              return (_.getPath(p, 'faction') === f);
+            .flatten(true)
+            .filter(function(player) {
+              return (_.getPath(player, 'faction') === faction_name);
             })
             .value();
         },
         casters: function(coll) {
           return _.chain(coll)
-            .flatten()
-            .mapWith(_.getPath, 'lists')
-            .flatten()
+            .flatten(true)
+            .mapcatWith(_.getPath, 'lists')
             .without(undefined, null)
-            .map(function(l) {
-              return (_.exists(l.caster) ?
-                      { faction: l.faction || '',
-                        name: l.caster || '' } : undefined);
+            .map(function(list) {
+              return (_.exists(list.caster) ?
+                      { faction: list.faction || '',
+                        name: list.caster } : undefined);
             })
             .without(undefined, null)
             .uniq(false, _.partial(_.getPath, _, 'name'))
-            .apply(function(cs) {
-              return cs.sort(function(a,b) {
+            .apply(function(casters) {
+              return casters.sort(function(a,b) {
                 var comp = a.faction.localeCompare(b.faction);
                 if(comp !== 0) return comp;
                 return a.name.localeCompare(b.name);
@@ -151,184 +162,155 @@ angular.module('srApp.services')
             })
             .value();
         },
-        forCaster: function(coll, c) {
+        forCaster: function(coll, caster_name) {
           return _.chain(coll)
-            .flatten()
-          // .spy('ps', c)
-            .filter(function(p) {
-              return _.chain(p)
-                .getPath('lists')
-                .apply(lists.containsCaster, c)
-                .value();
+            .flatten(true)
+            .filter(function(player) {
+              return listsService.containsCaster(player.lists, caster_name);
             })
-            // .spy('ps')
             .value();
         },
         cities: function(coll) {
           return _.chain(coll)
-            .flatten()
+            .flatten(true)
             .mapWith(_.getPath, 'city')
             .uniq()
             .without(undefined)
             .sortBy(_.identity)
             .value();
         },
-        updateListsPlayed: function(coll, rs) {
+        updateListsPlayed: function(coll, rounds) {
           return _.chain(coll)
-            .map(function(g) {
-                return _.mapWith(g, player.updateListsPlayed, rs);
+            .map(function(group) {
+                return _.mapWith(group, playerService.updateListsPlayed, rounds);
             })
             .value();
         },
-        updatePoints: function(coll, rs, bracket_start, bracket_weight) {
-          var temp = _.chain(coll)
-            .map(function(g, i) {
-                return _.mapWith(g, player.updatePoints, rs,
-                                 bracket_start[i], bracket_weight[i]);
+        updatePoints: function(coll, rounds, bracket_start, bracket_weight) {
+          var updated_players_without_sos = _.chain(coll)
+            .map(function(group, group_index) {
+                return _.mapWith(group, playerService.updatePoints, rounds,
+                                 bracket_start[group_index], bracket_weight[group_index]);
             })
             .value();
-          return _.chain(temp)
-            .map(function(g) {
-              return _.map(g, function(p) {
-                var opponents = rounds.opponentsForPlayer(rs, p.name);
-                p.points.sos = players.sosFromPlayers(temp, opponents);
-                return p;
+          return _.chain(updated_players_without_sos)
+            .map(function(group) {
+              return _.map(group, function(player) {
+                var opponents = roundsService.opponentsForPlayer(rounds, player.name);
+                player.points.sos = playersService.sosFromPlayers(updated_players_without_sos,
+                                                                  opponents);
+                return player;
               });
             })
             .value();
         },
         sortGroup: function(coll, state, is_bracket) {
-          var rankFn;
-          if(is_bracket) {
-            rankFn = function(p) { return p.points.bracket; };
-          }
-          else {
-            var critFn = ranking.buildPlayerCritFunction(state.ranking.player,
-                                                         state.rounds.length,
-                                                         coll.length);
-            if(!_.isFunction(critFn)) {
-              console.error('Error create ranking function', critFn);
-              return coll;
-            }
-            rankFn = _.partial(player.rank, _, critFn);
-          }
-          var by_rank;
+          var rankFn = buildRankingFunction(coll, state, is_bracket);
+          if(!_.exists(rankFn)) return coll;
+          
+          var players_grouped_by_ranking;
           var rank = 0;
           return _.chain(coll)
-          // group players by rank criterion
+          // group players by ranking criterion
             .groupBy(rankFn)
-            // .spy('sort groupBy')
           // store grouped players for later
-            .apply(function(g) {
-              by_rank = g;
-              return g;
-            })
-          // get list of rank and order it decrementally
+            .tap(function(groups) { players_grouped_by_ranking = groups; })
+          // get list of rankings and order it decrementally
             .keys()
-            .sortBy(function(r) { return -parseFloat(r); })
-            // .spy('sort keys')
-          // fold each rank list into final list
-            .reduce(function(mem, r) {
-              mem.push({ rank: rank+1, players: by_rank[r] });
-              rank += by_rank[r].length;
+            .sortBy(function(ranking) { return -parseFloat(ranking); })
+          // fold each ranking list into final list
+            .reduce(function(mem, ranking) {
+              mem.push({ rank: rank+1,
+                         players: players_grouped_by_ranking[ranking] });
+              rank += players_grouped_by_ranking[ranking].length;
               return mem;
             }, [])
             // .spy('sort end')
             .value();
         },
         sort: function(coll, state, is_bracket) {
-          return _.map(coll, function(group, i) {
-            return players.sortGroup(group, state, is_bracket[i]);
+          return _.map(coll, function(group, group_index) {
+            return playersService.sortGroup(group, state, is_bracket[group_index]);
           });
         },
         sosFromPlayers: function(coll, opponents) {
           return _.chain(opponents)
-            .map(_.partial(players.player, coll))
+            .map(_.partial(playersService.player, coll))
             .without(undefined)
-            .reduce(function(mem, o) {
-              return mem + _.getPath(o, 'points.tournament');
+            .reduce(function(mem, opponent) {
+              return mem + _.getPath(opponent, 'points.tournament');
             }, 0)
             .value();
         },
-        areAllPaired: function(coll, rs) {
+        areAllPaired: function(coll, rounds) {
           return _.chain(coll)
-            .apply(players.names)
-            .difference(round.pairedPlayers(rs))
-            .value().length === 0;
+            .apply(playersService.names)
+            .difference(roundService.pairedPlayers(rounds))
+            .isEmpty()
+            .value();
         },
-        indexRangeForGroup: function(coll, i) {
+        indexRangeForGroup: function(coll, group_index) {
           var first_player = _.chain(coll)
-            .slice(0, i)
-            .flatten()
+            .slice(0, group_index)
+            .flatten(true)
             .value().length;
-          var next_player = first_player + coll[i].length;
+          var next_player = first_player + coll[group_index].length;
           return [first_player, next_player];
         },
-        // inTeam: function(coll, t) {
-        //   return _.chain(coll)
-        //     .flatten()
-        //     .select(_.unary(player.inTeam(t)))
-        //     .value();
-        // },
-        // dropTeam: function(coll, t) {
-        //   return _.map(coll, function(group) {
-        //     return _.reject(group, _.unary(player.inTeam(t)));
-        //   });
-        // },
         chunkGroups: function(coll, size) {
           return _.chain(coll)
-            .flatten()
+            .flatten(true)
             .chunkAll(size)
             .value();
         },
-        splitNewGroup: function(coll, ps) {
-          var new_group = _.map(ps, _.partial(players.player, coll));
+        splitNewGroup: function(coll, players) {
+          var new_group = _.map(players, _.partial(playersService.player, coll));
           return _.chain(coll)
             .mapWith(_.difference, new_group)
             .cat([new_group])
             .reject(_.isEmpty)
             .value();
         },
-        groupForPlayer: function(coll, p) {
+        groupForPlayer: function(coll, player_name) {
           return _.chain(coll)
-            .map(function(gr) {
-              return _.findWhere(gr, { name: p });
+            .map(function(group) {
+              return _.findWhere(group, { name: player_name });
             })
-            .reduce(function(mem, val, i) {
-              return _.exists(mem) ? mem : (_.exists(val) ? i : null);
-            }, null)
+            .findIndex(_.exists)
             .value();
         },
-        movePlayerGroupFront: function(coll, p) {
-          var gr = players.groupForPlayer(coll, p);
-          if(0 === gr) return coll;
-          var pl = players.player(coll, p);
-          var new_coll = coll.slice();
-          new_coll[gr] = _.difference(coll[gr], [pl]);
-          new_coll[gr-1] = _.cat(coll[gr-1], pl);
+        movePlayerGroupFront: function(coll, player_name) {
+          var group_index = playersService.groupForPlayer(coll, player_name);
+          if(0 >= group_index) return coll;
+          var player = playersService.player(coll, player_name);
+          var new_coll = _.clone(coll);
+          new_coll[group_index] = _.difference(coll[group_index], [player]);
+          new_coll[group_index-1] = _.cat(coll[group_index-1], player);
           return _.reject(new_coll, _.isEmpty);
         },
-        movePlayerGroupBack: function(coll, p) {
-          var gr = players.groupForPlayer(coll, p);
-          if(coll.length === gr+1) return coll;
-          var pl = players.player(coll, p);
-          var new_coll = coll.slice();
-          new_coll[gr] = _.difference(coll[gr], [pl]);
-          new_coll[gr+1] = _.cat(coll[gr+1], pl);
+        movePlayerGroupBack: function(coll, player_name) {
+          var group_index = playersService.groupForPlayer(coll, player_name);
+          if(0 > group_index ||
+             group_index >= coll.length-1) return coll;
+          var player = playersService.player(coll, player_name);
+          var new_coll = _.clone(coll);
+          new_coll[group_index] = _.difference(coll[group_index], [player]);
+          new_coll[group_index+1] = _.cat(coll[group_index+1], player);
           return _.reject(new_coll, _.isEmpty);
         },
-        moveGroupFront: function(coll, i) {
-          if(i === 0) return coll;
-          var new_coll = coll.slice();
-          new_coll.splice(i,1);
-          new_coll.splice(i-1, 0, coll[i]);
+        moveGroupFront: function(coll, group_index) {
+          if(0 >= group_index) return coll;
+          var new_coll = _.clone(coll);
+          new_coll.splice(group_index, 1);
+          new_coll.splice(group_index-1, 0, coll[group_index]);
           return new_coll;
         },
-        moveGroupBack: function(coll, i) {
-          if(coll.length === i+1) return coll;
-          var new_coll = coll.slice();
-          new_coll.splice(i,1);
-          new_coll.splice(i+1, 0, coll[i]);
+        moveGroupBack: function(coll, group_index) {
+          if(0 > group_index ||
+             group_index >= coll.length-1) return coll;
+          var new_coll = _.clone(coll);
+          new_coll.splice(group_index, 1);
+          new_coll.splice(group_index+1, 0, coll[group_index]);
           return new_coll;
         },
         size: function(coll) {
@@ -337,10 +319,10 @@ angular.module('srApp.services')
         nbGroups: function(coll) {
           return coll.length;
         },
-        groupSizeIsEven: function(gr) {
-          return (gr.length & 1) === 0;
+        groupSizeIsEven: function(group) {
+          return (group.length & 1) === 0;
         }
       };
-      return players;
+      return playersService;
     }
   ]);
