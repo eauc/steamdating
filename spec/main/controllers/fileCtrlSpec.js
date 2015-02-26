@@ -171,14 +171,8 @@ describe('controllers', function() {
 
     describe('doImportFile(<type>, <file>)', function() {
       beforeEach(function() {
-        var ctxt = this;
-        this.fileImportService.read._retVal = {
-          then: function(onSuccess, onError) {
-            ctxt.onSuccess = onSuccess; 
-            ctxt.onError = onError;
-          }
-        };
-        
+        mockReturnPromise(this.fileImportService.read);
+        this.stateService.isEmpty._retVal = false;
         this.scope.doImportFile('toto', ['file']);
       });
 
@@ -189,7 +183,7 @@ describe('controllers', function() {
 
       describe('on error', function() {
         it('should set error feedback string', function() {
-          this.onError([ 'errors' ]);
+          this.fileImportService.read.reject([ 'errors' ]);
 
           expect(this.scope.import_toto_result).toEqual([ 'errors' ]);
         });
@@ -199,39 +193,50 @@ describe('controllers', function() {
         beforeEach(function() {
           spyOn(this.scope, 'updateExports');
 
-          this.onSuccess([[ 'players' ], [ 'errors' ]]);
+          this.fileImportService.read.resolve([[ 'players' ], [ 'errors' ]]);
         });
 
-        it('should reset state', function() {
-          expect(this.scope.resetState)
-            .toHaveBeenCalledWith({ players: [ ['players'] ] });
+        it('should ask user for confirmation', function() {
+          expect(this.promptService.prompt)
+            .toHaveBeenCalledWith('confirm', jasmine.any(String));
         });
 
-        it('should set error feedback string', function() {
-          expect(this.scope.import_toto_result[0]).toEqual('errors');
-        });
-
-        it('should inform about nb of players read', function() {
-          expect(this.scope.import_toto_result[1])
-            .toEqual('1 players have been read successfully');
-        });
-
-        it('should stay on file page', function() {
-          expect(this.scope.goToState)
-            .not.toHaveBeenCalled();
-        });
-
-        it('should update exports', function() {
-          expect(this.scope.updateExports)
-            .toHaveBeenCalled();
-        });
-
-        when('no error during import', function() {
-          this.onSuccess([[ 'players' ], [ ]]);
+        when('user confirms', function() {
+          this.promptService.prompt.resolve();
         }, function() {
-          it('should automatically display players list', function() {
+          it('should reset state', function() {
+            expect(this.scope.resetState)
+              .toHaveBeenCalledWith({ players: [ ['players'] ] });
+          });
+
+          it('should set error feedback string', function() {
+            expect(this.scope.import_toto_result[0]).toEqual('errors');
+          });
+
+          it('should inform about nb of players read', function() {
+            expect(this.scope.import_toto_result[1])
+              .toEqual('1 players have been read successfully');
+          });
+
+          it('should stay on file page', function() {
             expect(this.scope.goToState)
-              .toHaveBeenCalledWith('players');
+              .not.toHaveBeenCalled();
+          });
+
+          it('should update exports', function() {
+            expect(this.scope.updateExports)
+              .toHaveBeenCalled();
+          });
+
+          when('no error during import', function() {
+            this.scope.doImportFile('toto', ['file']);
+            this.fileImportService.read.resolve([[ 'players' ], [ ]]);
+            this.promptService.prompt.resolve();
+          }, function() {
+            it('should automatically display players list', function() {
+              expect(this.scope.goToState)
+                .toHaveBeenCalledWith('players');
+            });
           });
         });
       });

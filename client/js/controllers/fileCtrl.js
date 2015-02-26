@@ -93,16 +93,21 @@ angular.module('srApp.controllers')
           .then(function(data) {
             var players = data[0];
             var error = data[1];
-            $scope.resetState({ players: [players] });
-            $scope['import_'+type+'_result'] = error;
-            if(_.isEmpty(error)) {
-              $scope.goToState('players');
-            }
-            else {
-              $scope['import_'+type+'_result'].push(players.length+
-                                                    ' players have been read successfully');
-              $scope.updateExports();
-            }
+            $q.when(!state.isEmpty($scope.state) ?
+                    prompt.prompt('confirm', 'You\'ll lose current data.') :
+                    true)
+              .then(function() {
+                $scope.resetState({ players: [players] });
+                $scope['import_'+type+'_result'] = error;
+                if(_.isEmpty(error)) {
+                  $scope.goToState('players');
+                }
+                else {
+                  $scope['import_'+type+'_result'].push(players.length+
+                                                        ' players have been read successfully');
+                  $scope.updateExports();
+                }
+              });
           }, function(error) {
             $scope['import_'+type+'_result'] = error;
           });
