@@ -40,9 +40,9 @@ angular.module('srApp.controllers')
         // type: 'player',
         // type: 'caster',
         group_by: 'total',
-        faction: $scope.factions[0],
-        player: $scope.players[0],
-        caster: $scope.casters[0].name,
+        faction: _.isEmpty($scope.factions) ? null : $scope.factions[0],
+        player: _.isEmpty($scope.players) ? null : $scope.players[0],
+        caster: _.isEmpty($scope.casters) ? null : $scope.casters[0].name,
       };
       $scope.setGroup = function(gr) {
         $scope.group = gr;

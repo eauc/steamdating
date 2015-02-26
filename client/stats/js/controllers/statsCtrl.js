@@ -56,7 +56,8 @@ angular.module('srAppStats.controllers')
                             $scope.selection.type, value,
                             $scope.selection.group_by,
                             $scope.stats);
-        if(_.indexOf(_.mapWith(ret, _.first), $scope.group) < 0) {
+        if(_.indexOf(_.mapWith(ret, _.first), $scope.group) < 0 &&
+           !_.isEmpty(ret[0])) {
           $scope.group = ret[0][0];
         }
         return ret;
@@ -67,9 +68,9 @@ angular.module('srAppStats.controllers')
         // type: 'player',
         // type: 'caster',
         group_by: 'total',
-        faction: $scope.factions[0],
-        player: $scope.players[0],
-        caster: $scope.casters[0].name,
+        faction: _.isEmpty($scope.factions) ? null : $scope.factions[0],
+        player: _.isEmpty($scope.players) ? null : $scope.players[0],
+        caster: _.isEmpty($scope.casters) ? null : $scope.casters[0].name,
       };
       $scope.setGroup = function(gr) {
         $scope.group = gr;
