@@ -74,10 +74,15 @@ angular.module('srApp.services')
         ctxt.state = list_state;
       }
       function playerFaction(ctxt, faction) {
-        if(0 > _.indexOf(_.keys(ctxt.factions), faction)) {
+        var faction_key = _.findKey(ctxt.factions, function(faction_info) {
+          return faction_info.name === faction;
+        });
+        if(!_.exists(faction_key)) {
           pushError(ctxt, 'unknown faction "'+faction+'"');
+          ctxt.player.faction = faction;
+          return;
         }
-        ctxt.player.faction = faction;
+        ctxt.player.faction = faction_key;
       }
       function playerCity(ctxt, city) {
         ctxt.player.city = city;
