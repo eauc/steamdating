@@ -4,6 +4,13 @@
     <span class="glyphicon glyphicon-trash"></span>
     Delete Round
   </button>
+  <div ng-repeat="f in exports">
+    <a ng-if="f.url"
+       ng-href="{{f.url}}"
+       download="{{f.name}}">
+      Download {{f.label}} File
+    </a>
+  </div>
   <div ng-repeat="(gri,gr) in ::state.players">
     <h2 ng-if="::state | state:'hasPlayerGroups'"
         style="border-bottom:1px solid black;">

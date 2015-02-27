@@ -15,116 +15,6 @@ angular.module('srApp.controllers')
         $scope.edit.pane = pane;
         $scope.goToState('game_edit');
       };
-
-      // var nb_games = $scope.isTeamTournament() ?
-      //   _.flatten($scope.state.teams).length / 2 :
-      //   _.flatten($scope.state.players).length / 2;
-      // $scope.doShowAllTables = function(show, event) {
-      //   _.chain(nb_games)
-      //     .range()
-      //     .each(function(i) {
-      //       $scope.show['table'+(i+1)] = show;
-      //     });
-      //   event.stopPropagation();
-      // };
-      // $scope.doShowTable = function(t, show, event) {
-      //   $scope.show['table'+t] = show;
-      //   event.stopPropagation();
-      // };
-
-      // if($scope.pane >= $scope.state.rounds.length) {
-      //   $scope.goToState('rounds', { pane: 'sum' });
-      //   return;
-      // }
-
-
-      // function mapRoundsQuery(q) {
-      //   $scope[q] = function(p, r) {
-      //     return rounds.query($scope.state.rounds, r, p, q);
-      //   };
-      // }
-      // mapRoundsQuery('opponentFor');
-      // mapRoundsQuery('successFor');
-      // mapRoundsQuery('tableFor');
-      // $scope.gameFor = function(p, r) {
-      //   return rounds.gameFor($scope.state.rounds, p, r);
-      // };
-      // function mapRoundsTeamQuery(q) {
-      //   $scope[q] = function(t, r) {
-      //     return rounds.teamQuery($scope.state.rounds, r, t, q);
-      //   };
-      // }
-      // mapRoundsTeamQuery('opponentForTeam');
-      // mapRoundsTeamQuery('successForTeam');
-      // mapRoundsTeamQuery('tableForTeam');
-      // $scope.gameForTeam = function(t, r) {
-      //   return rounds.gameForTeam($scope.state.rounds, t, r);
-      // };
-
-      // $scope.round = function(r, i) {
-      //   var start_index;
-      //   var end_index;
-      //   if($scope.isTeamTournament()) {
-      //     start_index = _.chain($scope.state.teams)
-      //       .slice(0, i)
-      //       .flatten()
-      //       .value()
-      //       .length / 2;
-      //     end_index = (start_index +
-      //                  $scope.state.teams[i].length / 2);
-      //     return _.chain($scope.state.rounds)
-      //       .apply(rounds.round, r)
-      //       .slice(start_index, end_index)
-      //       .value();
-      //   }
-      //   else {
-      //     start_index = _.chain($scope.state.players)
-      //       .slice(0, i)
-      //       .flatten()
-      //       .value()
-      //       .length / 2;
-      //     end_index = (start_index +
-      //                  $scope.state.players[i].length / 2);
-      //     return _.chain($scope.state.rounds)
-      //       .apply(rounds.round, r)
-      //       .slice(start_index, end_index)
-      //       .value();
-      //   }
-      // };
-
-      // if(!$scope.isTeamTournament()) {
-      // }
-      // else {
-      //   $scope.next_round = _.map($scope.state.teams, function(group) {
-      //     return _.chain(group.length/2)
-      //       .range()
-      //       .map(function(i) {
-      //         return {
-      //           table: i+1,
-      //           t1: {
-      //             name: null,
-      //           },
-      //           t2: {
-      //             name: null,
-      //           }
-      //         };
-      //       })
-      //       .value();
-      //   });
-      // }
-      // $scope.playerNames = function(gr) {
-      //   return players.names(gr);
-      // };
-      // $scope.teamNames = function(gr) {
-      //   return teams.names(gr);
-      // };
-      // $scope.bracket = _.snapshot($scope.state.bracket);
-      // var n_groups = ($scope.isTeamTournament() ?
-      //                 $scope.state.teams.length :
-      //                 $scope.state.players.length);
-      // if($scope.bracket.length !== n_groups) {
-      //   $scope.bracket = _.repeat(n_groups, undefined);
-      // }
     }
   ])
   .controller('roundsSumCtrl', [
@@ -204,17 +94,38 @@ angular.module('srApp.controllers')
     '$stateParams',
     'prompt',
     'rounds',
+    'fileExport',
+    'state',
     function($scope,
              $stateParams,
              prompt,
-             rounds) {
+             rounds,
+             fileExport,
+             state) {
       console.log('init roundsNthCtrl', $stateParams.pane);
-      $scope.round.current = $stateParams.pane;
-      $scope.r = $scope.state.rounds[$stateParams.pane];
+      $scope.round.current = parseFloat($stateParams.pane);
+      $scope.r = $scope.state.rounds[$scope.round.current];
       if(!_.exists($scope.r)) {
         $scope.goToState('rounds.sum');
+        return;
       }
 
+      $scope.updateExports = function() {
+        $scope.exports = {
+          csv: {
+            name: 'round_'+($scope.round.current+1)+'.csv',
+            url: fileExport.generate('csv', state.roundTables($scope.state, $scope.round.current)),
+            label: 'CSV Round'
+          },
+          bb: {
+            name: 'round_'+($scope.round.current+1)+'.txt',
+            url: fileExport.generate('bb', state.roundTables($scope.state, $scope.round.current)),
+            label: 'BBCode Round'
+          }
+        };
+      };
+      $scope.updateExports();
+      
       $scope.doDeleteRound = function(r) {
         prompt.prompt('confirm', 'You sure ?')
           .then(function() {

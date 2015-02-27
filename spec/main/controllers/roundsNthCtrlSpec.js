@@ -21,10 +21,12 @@ describe('controllers', function() {
         mockReturnPromise(this.promptService.prompt);
 
         this.roundsService = spyOnService('rounds');
+        this.fileExportService = spyOnService('fileExport');
+        this.stateService = spyOnService('state');
 
         initCtrlWith = function(ctxt, pane, rounds) {
-          ctxt.pane = pane || 'sum';
-          ctxt.state_rounds = rounds || [];
+          ctxt.pane = pane || '0';
+          ctxt.state_rounds = rounds || [ 'round0' ];
 
           ctxt.scope = $rootScope.$new();
           ctxt.scope.goToState = jasmine.createSpy('goToState');
@@ -54,11 +56,47 @@ describe('controllers', function() {
     ], function(e, d) {
       it('should init pane & r from stateParams, '+d, function() {
         initCtrlWith(this, e.pane, [ 'rounds0', 'rounds1' ]);
-        expect(this.scope.round.current).toBe(e.pane);
+        expect(this.scope.round.current).toBe(parseFloat(e.pane));
         expect(this.scope.r).toBe(e.r);
       });
     });
 
+    when('<pane> params is invalid', function() {
+      initCtrlWith(this, 'toto', [ 'rounds0', 'rounds1' ]);
+    }, function() {
+      it('should redirect to summary pane', function() {
+        expect(this.scope.goToState)
+          .toHaveBeenCalledWith('rounds.sum');
+      });
+    });
+
+    it('should init exports', function() {
+      initCtrlWith(this, '1', [ 'rounds0', 'rounds1' ]);
+
+      expect(this.scope.exports).toBeAn('Object');
+
+      expect(this.stateService.roundTables)
+        .toHaveBeenCalledWith(this.scope.state, 1);
+
+      expect(this.scope.exports.csv)
+        .toEqual({
+          name: 'round_2.csv',
+          url: 'fileExport.generate.returnValue',
+          label: 'CSV Round'
+        });
+      expect(this.fileExportService.generate)
+        .toHaveBeenCalledWith('csv', 'state.roundTables.returnValue');
+
+      expect(this.scope.exports.bb)
+        .toEqual({
+          name: 'round_2.txt',
+          url: 'fileExport.generate.returnValue',
+          label: 'BBCode Round'
+        });
+      expect(this.fileExportService.generate)
+        .toHaveBeenCalledWith('bb', 'state.roundTables.returnValue');
+    });
+    
     describe('doDeleteRound(<index>)', function() {
       it('should ask user confirmation', function() {
         this.scope.doDeleteRound(1);

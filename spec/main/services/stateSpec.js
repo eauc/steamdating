@@ -387,6 +387,39 @@ describe('service', function() {
         ]]);
       });
     });
+
+    describe('roundTables(<round_index>)', function() {
+      it('should build a result table for round <round_index>', function() {
+        var st = { players: [
+          [ {}, {} ],
+          [ {}, {}, {}, {} ]
+        ], bracket: [], rounds: [
+          [],
+          [ { table:1,
+              p1: { name: 'p1', list: 'list1', tournament: 1, control: 2, army: 3 },
+              p2: { name: 'p2', list: 'list2', tournament: 2, control: 4, army: 6 } },
+            { table:2,
+              p1: { name: 'p3', list: 'list3', tournament: 3, control: 6, army: 9 },
+              p2: { name: 'p4', list: 'list4', tournament: 4, control: 8, army: 12 } },
+            { table:3,
+              p1: { name: 'p5', list: 'list5', tournament: 5, control: 10, army: 15 },
+              p2: { name: 'p6', list: 'list6', tournament: 6, control: 12, army: 18 } },
+          ]
+        ]};
+        var res = state.roundTables(st, 1);
+        expect(res).toEqual([
+          [ [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
+              'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp', 'Player1.ap', 'Player2.ap' ],
+            [ 1, 'p1', 'p2', 'list1', 'list2', 1, 2, 2, 4, 3, 6 ]
+          ],
+          [ [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
+              'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp', 'Player1.ap', 'Player2.ap' ],
+            [ 2, 'p3', 'p4', 'list3', 'list4', 3, 4, 6, 8, 9, 12 ],
+            [ 3, 'p5', 'p6', 'list5', 'list6', 5, 6, 10, 12, 15, 18 ]
+          ]
+        ]);
+      });
+    });
   });
 
 });

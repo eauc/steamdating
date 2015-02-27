@@ -210,6 +210,19 @@ describe('service', function() {
         });
       });
     });
+
+    describe('toArray()', function() {
+      it('should convert game to array', function() {
+        expect(game.toArray({
+          table: 42,
+          p1: { name: 'toto', list: 'list1', tournament: 1, control: 2, army: 3 },
+          p2: { name: 'titi', list: 'list2', tournament: 0, control: 4, army: 5 },
+          games: []
+        })).toEqual([
+          42, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5
+        ]);
+      });
+    });
   });
 
 });

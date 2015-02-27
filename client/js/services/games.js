@@ -82,6 +82,15 @@ angular.module('srApp.services')
                        undefined );
             })
             .value();
+        },
+        toArray: function(game) {
+          return [ game.table,
+                   game.p1.name, game.p2.name,
+                   game.p1.list, game.p2.list,
+                   game.p1.tournament, game.p2.tournament,
+                   game.p1.control, game.p2.control,
+                   game.p1.army, game.p2.army,
+                 ];
         }
       };
       return gameService;

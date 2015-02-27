@@ -10,6 +10,7 @@ angular.module('srApp.services')
     'list',
     'lists',
     'ranking',
+    'round',
     function($window,
              jsonStringifier,
              playerService,
@@ -17,7 +18,8 @@ angular.module('srApp.services')
              gameService,
              listService,
              listsService,
-             ranking) {
+             ranking,
+             roundService) {
       var STORAGE_KEY = 'sdApp.state';
       var stateService = {
         isEmpty: function(state) {
@@ -228,6 +230,26 @@ angular.module('srApp.services')
             .map(function(group) {
               return _.cat([[ 'Rank', 'Name', 'City', 'Faction',
                               'TP', 'SoS', 'CP', 'AP' ]], group);
+            })
+            .value();
+        },
+        roundTables: function(state, round_index) {
+          var round = state.rounds[round_index];
+          return _.chain(state.players)
+            .map(function(group, group_index) {
+              return roundService.gamesForGroup(round, state.players, group_index);
+            })
+            .map(function(games) {
+              return _.map(games, gameService.toArray);
+            })
+            .map(function(group) {
+              return _.cat([[ 'Table',
+                              'Player1', 'Player2',
+                              'Player1.list', 'Player2.list',
+                              'Player1.tp', 'Player2.tp',
+                              'Player1.cp', 'Player2.cp',
+                              'Player1.ap', 'Player2.ap',
+                            ]], group);
             })
             .value();
         }
