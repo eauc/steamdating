@@ -68,9 +68,9 @@ angular.module('srAppStats.controllers')
         // type: 'player',
         // type: 'caster',
         group_by: 'total',
-        faction: _.isEmpty($scope.factions) ? null : $scope.factions[0],
-        player: _.isEmpty($scope.players) ? null : $scope.players[0],
-        caster: _.isEmpty($scope.casters) ? null : $scope.casters[0].name,
+        faction: _.first($scope.factions),
+        player: _.first($scope.players),
+        caster: _.getPath(_.first($scope.casters), 'name'),
       };
       $scope.setGroup = function(gr) {
         $scope.group = gr;
