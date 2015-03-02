@@ -128,7 +128,7 @@ describe('controllers', function() {
         it('should return to player state', function() {
           this.scope.doClose(false);
           
-          expect(this.scope.goToState).toHaveBeenCalledWith('players');
+          expect(this.scope.goToState).toHaveBeenCalledWith('players_ranking');
         });
       });
 
@@ -233,7 +233,7 @@ describe('controllers', function() {
         it('should return to player state', function() {
           this.scope.doClose(true);
           
-          expect(this.scope.goToState).toHaveBeenCalledWith('players');
+          expect(this.scope.goToState).toHaveBeenCalledWith('players_ranking');
         });
       });
     });

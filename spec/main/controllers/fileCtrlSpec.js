@@ -100,7 +100,7 @@ describe('controllers', function() {
 
           it('should display players list', function() {
             expect(this.scope.goToState)
-              .toHaveBeenCalledWith('players');
+              .toHaveBeenCalledWith('players_ranking');
           });
         });
       });
@@ -163,7 +163,7 @@ describe('controllers', function() {
         }, function() {
           it('should automatically display players list', function() {
             expect(this.scope.goToState)
-              .toHaveBeenCalledWith('players');
+              .toHaveBeenCalledWith('players_ranking');
           });
         });
       });
@@ -235,7 +235,7 @@ describe('controllers', function() {
           }, function() {
             it('should automatically display players list', function() {
               expect(this.scope.goToState)
-                .toHaveBeenCalledWith('players');
+                .toHaveBeenCalledWith('players_ranking');
             });
           });
         });

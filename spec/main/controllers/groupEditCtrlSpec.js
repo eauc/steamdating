@@ -232,7 +232,7 @@ describe('controllers', function() {
       it('should return to players list', function() {
         this.scope.doClose(false);
 
-        expect(this.scope.goToState).toHaveBeenCalledWith('players');
+        expect(this.scope.goToState).toHaveBeenCalledWith('players_ranking');
       });
 
       when('<validate>', function() {

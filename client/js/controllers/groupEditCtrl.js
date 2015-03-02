@@ -82,7 +82,7 @@ angular.module('srApp.controllers')
           $scope.updatePoints();
           $scope.storeState();
         }
-        $scope.goToState('players');
+        $scope.goToState('players_ranking');
       };
     }
   ]);

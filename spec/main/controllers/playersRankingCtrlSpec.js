@@ -8,7 +8,7 @@ describe('controllers', function() {
     module('srApp.controllers');
   });
 
-  describe('playersCtrl', function(c) {
+  describe('playersRankingCtrl', function(c) {
 
     beforeEach(inject([
       '$rootScope',
@@ -28,7 +28,7 @@ describe('controllers', function() {
         this.promptService = spyOnService('prompt');
         mockReturnPromise(this.promptService.prompt);
 
-        $controller('playersCtrl', { 
+        $controller('playersRankingCtrl', { 
           '$scope': this.scope,
         });
       }

@@ -13,9 +13,9 @@
         <a href="#/file">File</a>
       </li>
       <li ng-class="{
-          'active': stateIs('players')
+          'active': stateIs('players_ranking')
           }">
-        <a href="#/players">Players</a>
+        <a href="#/players_ranking">Ranking</a>
       </li>
       <li ng-class="{
           'active': currentState().indexOf('rounds') >= 0
@@ -28,9 +28,9 @@
         <a href="#/stats">Stats</a>
       </li>
       <li ng-class="{
-          'active': stateIs('ranking_edit')
+          'active': stateIs('settings_edit')
           }">
-        <a href="#/ranking_edit">Ranking</a>
+        <a href="#/settings_edit">Settings</a>
       </li>
     </ul>
   </div>

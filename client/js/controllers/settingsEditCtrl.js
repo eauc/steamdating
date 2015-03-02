@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('srApp.controllers')
-  .controller('rankingEditCtrl', [
+  .controller('settingsEditCtrl', [
     '$scope',
     'prompt',
     'ranking',
@@ -11,8 +11,8 @@ angular.module('srApp.controllers')
              ranking,
              player
             ) {
-      console.log('init rankingEditCtrl');
-      $scope.pane = 'player';
+      console.log('init settingsEditCtrl');
+      $scope.pane = 'player_ranking';
 
       $scope.player_test = {
         ranking: $scope.state.ranking.player,
@@ -150,7 +150,7 @@ angular.module('srApp.controllers')
         if(validate) {
           if(!$scope.player_ranking_valid) {
             prompt.prompt('alert', 'current player ranking is invalid !');
-            $scope.pane = 'player';
+            $scope.pane = 'player_ranking';
             return;
           }
       //     if(!$scope.team_ranking_valid) {
@@ -162,7 +162,7 @@ angular.module('srApp.controllers')
           // $scope.state.ranking.team = $scope.team_test.ranking;
           $scope.storeState();
         }
-        $scope.goToState('players');
+        $scope.goToState('players_ranking');
       };
     }
   ]);

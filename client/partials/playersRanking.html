@@ -7,10 +7,10 @@
     {{state.players | players:'size'}} Players /
     {{state.players | players:'nbGroups'}} Groups
   </h4>
-  <div ng-if="isTeamTournament()"
-       ng-include="'partials/players_team.html'">
-  </div>
+  <!-- <div ng-if="isTeamTournament()"
+  ng-include="'partials/players_team.html'">
+  </div> -->
   <div ng-if="!isTeamTournament()"
-       ng-include="'partials/players_single.html'">
+       ng-include="'partials/playersRanking_single.html'">
   </div>
 </div>

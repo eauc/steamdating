@@ -69,7 +69,7 @@ angular.module('srApp.controllers')
         prompt.prompt('confirm', 'You sure ?')
           .then(function() {
             $scope.resetState();
-            $scope.goToState('players');
+            $scope.goToState('players_ranking');
           });
       };
 
@@ -81,7 +81,7 @@ angular.module('srApp.controllers')
             var error = data[1];
             $scope.resetState(state);
             $scope['open_result'] = error;
-            $scope.goToState('players');
+            $scope.goToState('players_ranking');
           }, function(error) {
             $scope['open_result'] = error;
           });
@@ -100,7 +100,7 @@ angular.module('srApp.controllers')
                 $scope.resetState({ players: [players] });
                 $scope['import_'+type+'_result'] = error;
                 if(_.isEmpty(error)) {
-                  $scope.goToState('players');
+                  $scope.goToState('players_ranking');
                 }
                 else {
                   $scope['import_'+type+'_result'].push(players.length+

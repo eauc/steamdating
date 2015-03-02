@@ -8,7 +8,7 @@ describe('controllers', function() {
     module('srApp.controllers');
   });
 
-  describe('rankingEditCtrl', function(c) {
+  describe('settingsEditCtrl', function(c) {
 
     beforeEach(inject([
       '$rootScope',
@@ -32,14 +32,14 @@ describe('controllers', function() {
         this.promptService = spyOnService('prompt');
         mockReturnPromise(this.promptService.prompt);
 
-        $controller('rankingEditCtrl', { 
+        $controller('settingsEditCtrl', { 
           '$scope': this.scope,
         });
       }
     ]));
 
     it('should init pane', function() {
-      expect(this.scope.pane).toBe('player');
+      expect(this.scope.pane).toBe('player_ranking');
     });
 
     it('should init player_test object', function() {
@@ -181,7 +181,7 @@ describe('controllers', function() {
           });
 
           it('should display player ranking pane', function() {
-            expect(this.scope.pane).toBe('player');
+            expect(this.scope.pane).toBe('player_ranking');
           });
         });
 
@@ -206,7 +206,7 @@ describe('controllers', function() {
       it('should go back to player list', function() {
         this.scope.doClose(false);
 
-        expect(this.scope.goToState).toHaveBeenCalledWith('players');
+        expect(this.scope.goToState).toHaveBeenCalledWith('players_ranking');
       });
     });
   });

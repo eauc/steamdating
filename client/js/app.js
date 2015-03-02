@@ -15,7 +15,7 @@ angular.module('srApp', [
   '$stateProvider',
   '$urlRouterProvider',
   function($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/players');
+    $urlRouterProvider.otherwise('/players_ranking');
     $stateProvider
       .state('file', {
         url: '/file',
@@ -23,10 +23,10 @@ angular.module('srApp', [
         controller: 'fileCtrl',
         data: {}
       })
-      .state('players', {
-        url: '/players',
-        templateUrl: 'partials/players.html',
-        controller: 'playersCtrl',
+      .state('players_ranking', {
+        url: '/players_ranking',
+        templateUrl: 'partials/playersRanking.html',
+        controller: 'playersRankingCtrl',
         data: {}
       })
       .state('groups_edit', {
@@ -41,12 +41,6 @@ angular.module('srApp', [
         controller: 'playerEditCtrl',
         data: {}
       })
-      // .state('team_edit', {
-      //   // url: '/team_edit',
-      //   templateUrl: 'partials/team_edit.html',
-      //   controller: 'teamEditCtrl',
-      //   data: {}
-      // })
       .state('rounds', {
         url: '/rounds',
         templateUrl: 'partials/rounds.html',
@@ -77,16 +71,16 @@ angular.module('srApp', [
         controller: 'gameEditCtrl',
         data: {}
       })
-      .state('ranking_edit', {
-        url: '/ranking_edit',
-        templateUrl: 'partials/ranking_edit.html',
-        controller: 'rankingEditCtrl',
-        data: {}
-      })
       .state('stats', {
         url: '/stats',
         templateUrl: 'partials/stats.html',
         controller: 'statsCtrl',
+        data: {}
+      })
+      .state('settings_edit', {
+        url: '/settings_edit',
+        templateUrl: 'partials/settings_edit.html',
+        controller: 'settingsEditCtrl',
         data: {}
       })
     ;

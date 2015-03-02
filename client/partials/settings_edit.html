@@ -2,17 +2,12 @@
   <div class="container">
     <ul class="nav nav-tabs">
       <li ng-class="{
-          'active': pane==='player'
+          'active': pane==='player_ranking'
           }">
-        <a ng-click="pane = 'player'">Player</a>
+        <a ng-click="pane = 'player_ranking'">Player Ranking</a>
       </li>
-      <!-- <li ng-class="{
-      'active': pane==='team'
-      }">
-      <a ng-click="pane = 'team'">Team</a>
-      </li> -->
     </ul>
-    <form ng-if="pane === 'player'"
+    <form ng-if="pane === 'player_ranking'"
           class="form-horizontal text-center">
       <div class="form-group">
         <label class="col-sm-2 control-label"
