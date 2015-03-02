@@ -100,7 +100,7 @@ describe('controllers', function() {
 
           it('should display players list', function() {
             expect(this.scope.goToState)
-              .toHaveBeenCalledWith('players_ranking');
+              .toHaveBeenCalledWith('players_list');
           });
         });
       });
@@ -235,7 +235,7 @@ describe('controllers', function() {
           }, function() {
             it('should automatically display players list', function() {
               expect(this.scope.goToState)
-                .toHaveBeenCalledWith('players_ranking');
+                .toHaveBeenCalledWith('players_list');
             });
           });
         });

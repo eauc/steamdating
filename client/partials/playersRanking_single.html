@@ -6,11 +6,6 @@
   <h3 ng-if="::state | state:'isBracketTournament':gri">
     Bracket - {{::state | state:'bracketRoundOf':gri:state.rounds.length-1}}
   </h3>
-  <button class="btn btn-default"
-          ng-click="doAddPlayer($index)">
-    <span class="glyphicon glyphicon-plus"></span>
-    Add Player
-  </button>
   <table class="table"
          style="table-layout:fixed">
     <tr>
@@ -18,14 +13,11 @@
       <th>
         Name
       </th>
-      <th>City</th>
       <th>Faction</th>
-      <th>Lists</th>
-      <th style="width:4.5em;">TP</th>
-      <th style="width:4.5em;">SoS</th>
-      <th style="width:4.5em;">CP</th>
-      <th style="width:4.5em;">AP</th>
-      <th style="width:10em;"></th>
+      <th>TP</th>
+      <th>SoS</th>
+      <th>CP</th>
+      <th>AP</th>
     </tr>
     <tbody ng-repeat="rank in ::gr"
            style="border-width:0px">
@@ -34,28 +26,15 @@
           ng-click="doEditPlayer(p)">
         <td>{{::rank.rank}}</td>
         <td style="word-wrap:break-word;">{{::p.name}}</td>
-        <td style="word-wrap:break-word;">{{::p.city}}</td>
         <td style="word-wrap:break-word;">
           <img ng-src="{{::p.faction | factions:'iconFor'}}"
                style="height:1.8em;"/>
           {{::p.faction}}
         </td>
-        <td style="font-size: 0.8em;word-wrap:break-word;">
-          <span ng-repeat="l in ::p.lists">
-            {{::l.caster}} <br />
-          </span>
-        </td>
         <td>{{::p.points.tournament}}</td>
         <td>{{::p.points.sos}}</td>
         <td>{{::p.points.control}}</td>
         <td>{{::p.points.army}}</td>
-        <td>
-          <button ng-click="doDropPlayer(p, $event)"
-                  class="btn btn-default">
-            <span class="glyphicon glyphicon-trash"></span>
-            Delete
-          </button>
-        </td>
       </tr>
     </tbody>
   </table>

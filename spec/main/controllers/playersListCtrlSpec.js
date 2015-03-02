@@ -8,21 +8,17 @@ describe('controllers', function() {
     module('srApp.controllers');
   });
 
-  describe('playersRankingCtrl', function(c) {
+  describe('playersListCtrl', function(c) {
 
+    var initCtrl;
+    
     beforeEach(inject([
       '$rootScope',
       '$controller',
       function($rootScope,
                $controller) {
-        this.scope = $rootScope.$new();
-        this.state_players = [ 'titi' ];
-        this.scope.edit = { };
-        this.scope.state = { players: this.state_players };
-        this.scope.goToState = jasmine.createSpy('goToState');
+        var ctxt = this;
 
-        this.state = { current: { name: 'current_state' } };
-        
         this.stateService = spyOnService('state');
         this.playerService = spyOnService('player');
         this.playersService = spyOnService('players');
@@ -30,18 +26,55 @@ describe('controllers', function() {
         this.promptService = spyOnService('prompt');
         mockReturnPromise(this.promptService.prompt);
 
-        $controller('playersRankingCtrl', { 
-          '$scope': this.scope,
-          '$state': this.state,
-        });
+        initCtrl = function(sort_by) {
+          ctxt.scope = $rootScope.$new();
+          ctxt.state_players = [ 'titi' ];
+          ctxt.scope.edit = { };
+          ctxt.scope.state = { players: ctxt.state_players };
+          ctxt.scope.goToState = jasmine.createSpy('goToState');
+          
+          ctxt.state = { current: { name: 'current_state',
+                                    data: { sort: sort_by || 'Rank' } } };
+        
+          $controller('playersListCtrl', {
+            '$scope': ctxt.scope,
+            '$state': ctxt.state,
+          });
+        };
+        initCtrl();
       }
     ]));
 
-    it('should init sorted players list', function() {
-      expect(this.scope.sorted_players)
-        .toBe('state.sortPlayers.returnValue');
-      expect(this.stateService.sortPlayers)
-        .toHaveBeenCalledWith(this.scope.state);
+    using([
+      [ 'sort', 'sortFn' ],
+      [ 'Rank', 'sortPlayersByRank' ],
+      [ 'Name', 'sortPlayersByName' ]
+    ], function(e, d) {
+      it('should init sorted players list, '+d, function() {
+        initCtrl(e.sort);
+
+        expect(this.scope.sorted_players)
+          .toBe('state.'+e.sortFn+'.returnValue');
+        expect(this.stateService[e.sortFn])
+          .toHaveBeenCalledWith(this.scope.state);
+      });
+    });
+
+    describe('doEditGroups', function () {
+      it('should init edit parameters', function() {
+        this.scope.doEditGroups();
+
+        expect(this.scope.edit).toEqual({
+          back: 'current_state'
+        });
+      });
+
+      it('should go to groups edit state', function() {
+        this.scope.doEditGroups();
+
+        expect(this.scope.goToState)
+          .toHaveBeenCalledWith('groups_edit');
+      });
     });
 
     describe('doAddPlayer', function () {
@@ -86,7 +119,7 @@ describe('controllers', function() {
 
       when('user confirms', function() {
         this.scope.sorted_players = undefined;
-        this.stateService.sortPlayers.calls.reset();
+        this.stateService.sortPlayersByRank.calls.reset();
 
         this.scope.doDropPlayer(this.player, this.event);
         this.promptService.prompt.resolve();
@@ -104,10 +137,10 @@ describe('controllers', function() {
         });
 
         it('should refresh sorted players list', function() {
-          expect(this.stateService.sortPlayers)
+          expect(this.stateService.sortPlayersByRank)
             .toHaveBeenCalledWith(this.scope.state);
           expect(this.scope.sorted_players)
-            .toBe('state.sortPlayers.returnValue');
+            .toBe('state.sortPlayersByRank.returnValue');
         });
       });
     });

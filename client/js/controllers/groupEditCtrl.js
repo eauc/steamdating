@@ -12,7 +12,7 @@ angular.module('srApp.controllers')
              state) {
       $scope.new_state = _.clone($scope.state);
       $scope.new_state.players = _.chain($scope.state)
-        .apply(state.sortPlayers)
+        .apply(state.sortPlayersByRank)
         .map(function(gr) {
           return _.chain(gr)
             .mapWith(_.getPath, 'players')
@@ -82,7 +82,7 @@ angular.module('srApp.controllers')
           $scope.updatePoints();
           $scope.storeState();
         }
-        $scope.goToState('players_ranking');
+        $scope.goToState($scope.edit.back || 'players_list');
       };
     }
   ]);

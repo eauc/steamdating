@@ -19,6 +19,7 @@ describe('controllers', function() {
                $controller) {
         this.scope = $rootScope.$new();
         this.scope.state = { players: ['players'], bracket: ['bracket'] };
+        this.scope.edit = {};
         this.scope.goToState = jasmine.createSpy('goToState');
         this.scope.updatePoints = jasmine.createSpy('updatePoints');
         this.scope.storeState = jasmine.createSpy('storeState');
@@ -29,7 +30,7 @@ describe('controllers', function() {
         this.playersService = spyOnService('players');
         this.stateService = spyOnService('state');
 
-        this.stateService.sortPlayers._retVal = [
+        this.stateService.sortPlayersByRank._retVal = [
           [ { rank: 1, players: [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ] },
             { rank: 2, players: [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ] } ],
           [ { rank: 3, players: [ { name: 'p8' }, { name: 'p9' } ] } ]
@@ -57,7 +58,7 @@ describe('controllers', function() {
     });
 
     it('should sort players', function() {
-      expect(this.stateService.sortPlayers)
+      expect(this.stateService.sortPlayersByRank)
         .toHaveBeenCalledWith(this.scope.state);
       expect(this.scope.new_state.players).toEqual(this.new_state_players);
     });
@@ -229,10 +230,24 @@ describe('controllers', function() {
     });
 
     describe('doClose(<validate>)', function() {
-      it('should return to players list', function() {
-        this.scope.doClose(false);
+      when('no previous state is defined', function() {
+        this.scope.edit= { back: undefined };
+      }, function() {
+        it('should return to players list', function() {
+          this.scope.doClose(false);
+          expect(this.scope.goToState)
+            .toHaveBeenCalledWith('players_list');
+        });
+      });
 
-        expect(this.scope.goToState).toHaveBeenCalledWith('players_ranking');
+      when('a previous state is defined', function() {
+        this.scope.edit= { back: 'previous_state' };
+      }, function() {
+        it('should return to players list', function() {
+          this.scope.doClose(false);
+          expect(this.scope.goToState)
+            .toHaveBeenCalledWith('previous_state');
+        });
       });
 
       when('<validate>', function() {

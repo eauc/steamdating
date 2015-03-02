@@ -205,7 +205,12 @@ angular.module('srApp.services')
           return playersService.updatePoints(state.players, state.rounds,
                                              bracket, bracket_weights);
         },
-        sortPlayers: function(state) {
+        sortPlayersByName: function(state) {
+          return _.map(state.players, function(group) {
+            return _.sortBy(group, 'name');
+          });
+        },
+        sortPlayersByRank: function(state) {
           var is_bracket = _.map(state.players, function(group, group_index) {
             return stateService.isBracketTournament(state, group_index);
           });
@@ -213,7 +218,7 @@ angular.module('srApp.services')
         },
         rankingTables: function(state) {
           return _.chain(state)
-            .apply(stateService.sortPlayers)
+            .apply(stateService.sortPlayersByRank)
             .map(function(group) {
               return _.chain(group)
                 .map(function(rank) {

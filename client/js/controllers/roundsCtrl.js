@@ -22,11 +22,14 @@ angular.module('srApp.controllers')
   .controller('roundsSumCtrl', [
     '$scope',
     'players',
+    'state',
     function($scope,
-             players) {
+             players,
+             state) {
       console.log('init roundsSumCtrl');
       $scope.state.players = players.updateListsPlayed($scope.state.players,
                                                        $scope.state.rounds);
+      $scope.sorted_players = state.sortPlayersByName($scope.state);
     }
   ])
   .controller('roundsNextCtrl', [

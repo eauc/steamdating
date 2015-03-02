@@ -69,7 +69,7 @@ angular.module('srApp.controllers')
         prompt.prompt('confirm', 'You sure ?')
           .then(function() {
             $scope.resetState();
-            $scope.goToState('players_ranking');
+            $scope.goToState('players_list');
           });
       };
 
@@ -100,7 +100,7 @@ angular.module('srApp.controllers')
                 $scope.resetState({ players: [players] });
                 $scope['import_'+type+'_result'] = error;
                 if(_.isEmpty(error)) {
-                  $scope.goToState('players_ranking');
+                  $scope.goToState('players_list');
                 }
                 else {
                   $scope['import_'+type+'_result'].push(players.length+

@@ -347,7 +347,7 @@ describe('service', function() {
       });
     });
 
-    describe('sortPlayers()', function() {
+    describe('sortPlayersByRank()', function() {
       beforeEach(function() {
         this.playersService = spyOnService('players');
       });
@@ -361,10 +361,33 @@ describe('service', function() {
           rounds: _.repeat(3, {})
         };
 
-        expect(state.sortPlayers(st))
+        expect(state.sortPlayersByRank(st))
           .toBe('players.sort.returnValue');
         expect(this.playersService.sort)
           .toHaveBeenCalledWith(dummy_players, st, [ false, false, true ]);
+      });
+    });
+
+    describe('sortPlayersByName()', function() {
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+      });
+
+      it('should call players.sort with bracket information', function() {
+        var dummy_players = [ _.repeat(4, {}), _.repeat(2, {}), _.repeat(5, {}) ];
+        var dummy_bracket = [ 4, undefined, 2 ];
+        var st = {
+          players: [
+            [ { name: 'toto' }, { name: 'titi' }, { name: 'tutu' }, ],
+            [ { name: 'tete' }, { name: 'tata' } ],
+          ],
+        };
+
+        expect(state.sortPlayersByName(st))
+          .toEqual([
+            [ { name : 'titi' }, { name : 'toto' }, { name : 'tutu' } ],
+            [ { name : 'tata' }, { name : 'tete' } ]
+          ]);
       });
     });
 

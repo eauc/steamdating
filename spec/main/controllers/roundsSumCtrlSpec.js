@@ -22,6 +22,7 @@ describe('controllers', function() {
           rounds: this.state_rounds
         };
 
+        this.stateService = spyOnService('state');
         this.playersService = spyOnService('players');
 
         $controller('roundsSumCtrl', { 
@@ -35,6 +36,13 @@ describe('controllers', function() {
         .toHaveBeenCalledWith(this.state_players, this.state_rounds);
       expect(this.scope.state.players)
         .toBe('players.updateListsPlayed.returnValue');
+    });
+
+    it('should init sorted players list', function() {
+      expect(this.scope.sorted_players)
+        .toBe('state.sortPlayersByName.returnValue');
+      expect(this.stateService.sortPlayersByName)
+        .toHaveBeenCalledWith(this.scope.state);
     });
   });
 

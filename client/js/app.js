@@ -23,11 +23,17 @@ angular.module('srApp', [
         controller: 'fileCtrl',
         data: {}
       })
+      .state('players_list', {
+        url: '/players_list',
+        templateUrl: 'partials/playersList.html',
+        controller: 'playersListCtrl',
+        data: { sort: 'Name' }
+      })
       .state('players_ranking', {
         url: '/players_ranking',
         templateUrl: 'partials/playersRanking.html',
-        controller: 'playersRankingCtrl',
-        data: {}
+        controller: 'playersListCtrl',
+        data: { sort: 'Rank' }
       })
       .state('groups_edit', {
         url: '/groups_edit',

@@ -1,0 +1,46 @@
+<div ng-repeat="(gri,gr) in sorted_players">
+  <h2 ng-if="::state | state:'hasPlayerGroups'"
+      style="border-bottom:1px solid black;">
+    Group{{::gri+1}}
+  </h2>
+  <button class="btn btn-default"
+          ng-click="doAddPlayer($index)">
+    <span class="glyphicon glyphicon-plus"></span>
+    Add Player
+  </button>
+  <table class="table"
+         style="table-layout:fixed">
+    <tr>
+      <th>
+        Name
+      </th>
+      <th>City</th>
+      <th>Faction</th>
+      <th>Lists</th>
+      <th></th>
+    </tr>
+    <tr ng-repeat="p in ::gr track by p.name"
+        style="cursor:pointer;"
+        ng-click="doEditPlayer(p)">
+      <td style="word-wrap:break-word;">{{::p.name}}</td>
+      <td style="word-wrap:break-word;">{{::p.city}}</td>
+      <td style="word-wrap:break-word;">
+        <img ng-src="{{::p.faction | factions:'iconFor'}}"
+             style="height:1.8em;"/>
+        {{::p.faction}}
+      </td>
+      <td style="font-size: 0.9em;">
+        <span ng-repeat="l in ::p.lists">
+          {{::l.caster}}
+        </span>
+      </td>
+      <td>
+        <button ng-click="doDropPlayer(p, $event)"
+                class="btn btn-default">
+          <span class="glyphicon glyphicon-trash"></span>
+          Delete
+        </button>
+      </td>
+    </tr>
+  </table>
+</div>

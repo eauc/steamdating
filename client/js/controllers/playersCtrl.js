@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('srApp.controllers')
-  .controller('playersRankingCtrl', [
+  .controller('playersListCtrl', [
     '$scope',
     'prompt',
     'state',
@@ -19,7 +19,18 @@ angular.module('srApp.controllers')
              // team,
              // teams
             ) {
-      console.log('init playersCtrl');
+      console.log('init playersListCtrl');
+
+      function sortPlayers() {
+        $scope.sorted_players =
+          state['sortPlayersBy'+$state.current.data.sort]($scope.state);
+      }
+      sortPlayers();
+
+      $scope.doEditGroups = function() {
+        $scope.edit.back = $state.current.name;
+        $scope.goToState('groups_edit');
+      };
 
       $scope.doAddPlayer = function(i) {
         $scope.edit.player = player.create();
@@ -33,12 +44,10 @@ angular.module('srApp.controllers')
           .then(function()  {
             $scope.state.players = players.drop($scope.state.players, p);
             state.store($scope.state);
-            $scope.sorted_players = state.sortPlayers($scope.state);
+            sortPlayers();
           });
         event.stopPropagation();
       };
-
-      $scope.sorted_players = state.sortPlayers($scope.state);
     }
   ])
   .controller('playerEditCtrl', [
