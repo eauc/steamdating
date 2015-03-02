@@ -32,7 +32,7 @@ describe('service', function() {
         expect(res[1].length).toBe(0);
       });
 
-      it('should extract players names, city and faction', function() {
+      it('should extract players names, origin and faction', function() {
         var string =
 "Place;Prénom;Nom de famille;Pseudo;Armée;Origine;Équipe;Liste d'armée;Note de compo;Payé\n"+
 "1;Vladimir;Bobroff;SunHunter;Protectorat de Menoth;Talence;GUILD;oui;;Oui\n"+
@@ -44,15 +44,15 @@ describe('service', function() {
         expect(res[1].length).toBe(0);
 
         expect(res[0][0].name).toBe('SunHunter');
-        expect(res[0][0].city).toBe('Talence');
+        expect(res[0][0].origin).toBe('Talence');
         expect(res[0][0].faction).toBe('The Protectorate of Menoth');
 
         expect(res[0][1].name).toBe('elrey22');
-        expect(res[0][1].city).toBe('Toulouse');
+        expect(res[0][1].origin).toBe('Toulouse');
         expect(res[0][1].faction).toBe('Cryx');
 
         expect(res[0][2].name).toBe('communiste');
-        expect(res[0][2].city).toBe('Moscul');
+        expect(res[0][2].origin).toBe('Moscul');
         expect(res[0][2].faction).toBe('Legion of Everblight');
       });
 
@@ -68,11 +68,11 @@ describe('service', function() {
         expect(res[1].length).toBe(0);
 
         expect(res[0][0].name).toBe('SunHunter');
-        expect(res[0][0].city).toBe('Talence');
+        expect(res[0][0].origin).toBe('Talence');
         expect(res[0][0].faction).toBe('The Protectorate of Menoth');
 
         expect(res[0][1].name).toBe('communiste');
-        expect(res[0][1].city).toBe('Moscul');
+        expect(res[0][1].origin).toBe('Moscul');
         expect(res[0][1].faction).toBe('Legion of Everblight');
       });
 
@@ -90,7 +90,7 @@ describe('service', function() {
         expect(res[1].length).toBe(2);
 
         expect(res[0][0].name).toBe('communiste');
-        expect(res[0][0].city).toBe('Moscul');
+        expect(res[0][0].origin).toBe('Moscul');
         expect(res[0][0].faction).toBe('Legion of Everblight');
 
         expect(res[1][0]).toMatch(/line 2 invalid fields number/);
@@ -109,7 +109,7 @@ describe('service', function() {
         expect(res[1].length).toBe(2);
 
         expect(res[0][0].name).toBe('SunHunter');
-        expect(res[0][0].city).toBe('Talence');
+        expect(res[0][0].origin).toBe('Talence');
         expect(res[0][0].faction).toBe('The Protectorate of Menoth');
 
         expect(res[1][0]).toMatch(/line 3 empty player name/);

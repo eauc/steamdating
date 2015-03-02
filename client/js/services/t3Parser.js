@@ -31,7 +31,7 @@ angular.module('srApp.services')
               .map(function(line) {
                 var player = {
                   name: s.trim(line[3]),
-                  city: line[5],
+                  origin: line[5],
                 };
                 _.each(t3_factions_map, function(faction, t3_name) {
                   if(s.include(line[4], t3_name)) {
@@ -43,7 +43,7 @@ angular.module('srApp.services')
               .map(function(player) {
                 return playerService.create(player.name,
                                             player.faction,
-                                            player.city);
+                                            player.origin);
               })
               .value();
           return [res, ctxt.errors];

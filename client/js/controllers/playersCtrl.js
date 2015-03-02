@@ -77,7 +77,7 @@ angular.module('srApp.controllers')
         $scope.factions = players.factions($scope.state.players,
                                            base_factions);
       });
-      $scope.cities = players.cities($scope.state.players);
+      $scope.origins = players.origins($scope.state.players);
 
       $scope.doClose = function(validate) {
         if(validate) {

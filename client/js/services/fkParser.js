@@ -84,8 +84,8 @@ angular.module('srApp.services')
         }
         ctxt.player.faction = faction_key;
       }
-      function playerCity(ctxt, city) {
-        ctxt.player.city = city;
+      function playerOrigin(ctxt, origin) {
+        ctxt.player.origin = origin;
       }
       function listCaster(ctxt, line) {
         var caster = _.chain(ctxt.factions)
@@ -105,7 +105,7 @@ angular.module('srApp.services')
       function addPlayer(ctxt) {
         ctxt.result.push(playerService.create(ctxt.player.name,
                                               ctxt.player.faction,
-                                              ctxt.player.city));
+                                              ctxt.player.origin));
         ctxt.state = default_state;
       }
       function addPlayerList(ctxt) {
@@ -169,9 +169,9 @@ angular.module('srApp.services')
               playerFaction(ctxt, value);
               return;
             }
-          case 'City':
+          case 'Origin':
             {
-              playerCity(ctxt, value);
+              playerOrigin(ctxt, value);
               return;
             }
           default:

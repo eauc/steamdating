@@ -15,7 +15,7 @@ angular.module('srApp.services')
       };
       function stringifyPlayer(player) {
         var ret = [ 'Player: '+player.name ];
-        if(_.exists(player.city)) ret.push( 'City: '+player.city );
+        if(_.exists(player.origin)) ret.push( 'Origin: '+player.origin );
         if(_.exists(player.faction)) ret.push( 'Faction: '+player.faction );
         if(player.lists.length > 0) {
           ret.push('');

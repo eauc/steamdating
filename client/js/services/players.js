@@ -23,11 +23,11 @@ angular.module('srApp.services')
           }
           return rank;
         },
-        create: function(name, faction, city, team) {
+        create: function(name, faction, origin, team) {
           return {
             name: name,
             faction: faction,
-            city: city,
+            origin: origin,
             team: team,
             lists: [],
             lists_played: [],
@@ -170,10 +170,10 @@ angular.module('srApp.services')
             })
             .value();
         },
-        cities: function(coll) {
+        origins: function(coll) {
           return _.chain(coll)
             .flatten(true)
-            .mapWith(_.getPath, 'city')
+            .mapWith(_.getPath, 'origin')
             .uniq()
             .without(undefined)
             .sortBy(_.identity)

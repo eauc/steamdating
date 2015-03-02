@@ -131,11 +131,11 @@ angular.module('srApp.services')
             .keys()
             .sortBy(function(key) { return "undefined" === key ? -1 : parseFloat(key); })
             .mapcat(function(key) {
-              var other_cities = _.filter(players_grouped_by_tp[key],
-                                          function(p) { return p.city !== p1.city; });
-              var same_city = _.filter(players_grouped_by_tp[key],
-                                       function(p) { return p.city === p1.city; });
-              return _.cat(same_city, other_cities);
+              var other_origin = _.filter(players_grouped_by_tp[key],
+                                          function(p) { return p.origin !== p1.origin; });
+              var same_origin = _.filter(players_grouped_by_tp[key],
+                                       function(p) { return p.origin === p1.origin; });
+              return _.cat(same_origin, other_origin);
             })
             .reverse()
             .mapWith(_.partial(_.getPath, _, 'name'))

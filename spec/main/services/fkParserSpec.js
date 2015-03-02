@@ -30,32 +30,32 @@ describe('service', function() {
         };
       });
 
-      it('should extract players names, city and faction', function() {
+      it('should extract players names, origin and faction', function() {
         var string =
-"Player: Toto\nCity: Chambery\nFaction: Legion of Everblight\n\n"+
-"Player: Titi\nCity: Lyon\nFaction: Cryx\n\n"+
-"Player: Tata\nCity: Grenoble\nFaction: The Protectorate of Menoth\n\n";
+"Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
+"Player: Titi\nOrigin: Lyon\nFaction: Cryx\n\n"+
+"Player: Tata\nOrigin: Grenoble\nFaction: The Protectorate of Menoth\n\n";
         var res = fkParser.parse(string, this.factions);
 
         expect(res[0].length).toBe(3);
         expect(res[1].length).toBe(0);
 
         expect(res[0][0].name).toBe('Toto');
-        expect(res[0][0].city).toBe('Chambery');
+        expect(res[0][0].origin).toBe('Chambery');
         expect(res[0][0].faction).toBe('Legion of Everblight');
 
         expect(res[0][1].name).toBe('Titi');
-        expect(res[0][1].city).toBe('Lyon');
+        expect(res[0][1].origin).toBe('Lyon');
         expect(res[0][1].faction).toBe('Cryx');
 
         expect(res[0][2].name).toBe('Tata');
-        expect(res[0][2].city).toBe('Grenoble');
+        expect(res[0][2].origin).toBe('Grenoble');
         expect(res[0][2].faction).toBe('The Protectorate of Menoth');
       });
 
       it('should log error when player name is invalid', function() {
         var string =
-"Player: \nCity: Chambery\nFaction: Cryx\n\n";
+"Player: \nOrigin: Chambery\nFaction: Cryx\n\n";
         var res = fkParser.parse(string, this.factions);
 
         expect(res[0].length).toBe(0);
@@ -66,8 +66,8 @@ describe('service', function() {
 
       it('should log error when player name already exists', function() {
         var string =
-"Player: Toto\nCity: Chambery\nFaction: Cryx\n\n"+
-"Player: Toto\nCity: Chambery\nFaction: Cryx\n\n";
+"Player: Toto\nOrigin: Chambery\nFaction: Cryx\n\n"+
+"Player: Toto\nOrigin: Chambery\nFaction: Cryx\n\n";
         var res = fkParser.parse(string, this.factions);
 
         expect(res[0].length).toBe(1);
@@ -78,14 +78,14 @@ describe('service', function() {
 
       it('should warn about unknown player factions', function() {
         var string =
-"Player: Toto\nCity: Chambery\nFaction: Unknown\n\n";
+"Player: Toto\nOrigin: Chambery\nFaction: Unknown\n\n";
         var res = fkParser.parse(string, this.factions);
 
         expect(res[0].length).toBe(1);
         expect(res[1].length).toBe(1);
 
         expect(res[0][0].name).toBe('Toto');
-        expect(res[0][0].city).toBe('Chambery');
+        expect(res[0][0].origin).toBe('Chambery');
         expect(res[0][0].faction).toBe('Unknown');
 
         expect(res[1][0]).toMatch(/line 3.*unknown faction/);
@@ -93,7 +93,7 @@ describe('service', function() {
 
       it('should extract players lists', function() {
         var string =
-"Player: Toto\nCity: Chambery\nFaction: Legion of Everblight\n\n"+
+"Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
 "System: Hordes\nFaction: Legion of Everblight\nThagrosh, the Messiah\n* Carnivean\n\n\n"+
 "System: Hordes\nFaction: Fallen Angels\nSaeryn, Omen of Everblight\n* Shredder\n\n\n";
         var res = fkParser.parse(string, this.factions);
@@ -116,7 +116,7 @@ describe('service', function() {
 
       it('should warn about unknown list casters', function() {
         var string =
-"Player: Toto\nCity: Chambery\nFaction: Legion of Everblight\n\n"+
+"Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
 "System: Hordes\nFaction: Legion of Everblight\nToto le gros\n* Carnivean\n\n\n";
         var res = fkParser.parse(string, this.factions);
 
@@ -135,8 +135,8 @@ describe('service', function() {
 
       it('should skip lists for invalid players', function() {
         var string =
-"Player: Toto\nCity: Chambery\nFaction: Legion of Everblight\n\n"+
-"Player: \nCity: Chambery\nFaction: Cryx\n\n"+
+"Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
+"Player: \nOrigin: Chambery\nFaction: Cryx\n\n"+
 "System: Hordes\nFaction: Legion of Everblight\nToto le gros\n* Carnivean\n\n\n";
         var res = fkParser.parse(string, this.factions);
 
@@ -151,7 +151,7 @@ describe('service', function() {
 
       it('should warn about unknown parameters', function() {
         var string =
-"Player: Toto\nCity: Chambery\nFaction: Legion of Everblight\nNew: blah\n\n"+
+"Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\nNew: blah\n\n"+
 "System: Hordes\nFaction: Legion of Everblight\nUnknown: X\n"+
 "Toto le gros\n* Carnivean\nFaction: Toto\n\n\n";
         var res = fkParser.parse(string, this.factions);

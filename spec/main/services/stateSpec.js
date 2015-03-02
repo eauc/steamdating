@@ -394,16 +394,16 @@ describe('service', function() {
     describe('rankingTables()', function() {
       it('should build a ranking table', function() {
         var st = { players: [[
-          { name: 'p1', city: 'c1', faction: 'f1',
+          { name: 'p1', origin: 'c1', faction: 'f1',
             points: { tournament: 5, sos: 4, control: 15, army: 32 } },
-          { name: 'p2', city: 'c2', faction: 'f2',
+          { name: 'p2', origin: 'c2', faction: 'f2',
             points: { tournament: 3, sos: 4, control: 12, army: 32 } },
-          { name: 'p3', city: 'c3', faction: 'f3',
+          { name: 'p3', origin: 'c3', faction: 'f3',
             points: { tournament: 3, sos: 7, control: 12, army: 48 } },
         ]], bracket: [], rounds: [], ranking: { player: 'tp*10+sos' } };
         var res = state.rankingTables(st);
         expect(res).toEqual([[
-          [ 'Rank', 'Name', 'City', 'Faction', 'TP', 'SoS', 'CP', 'AP' ],
+          [ 'Rank', 'Name', 'Origin', 'Faction', 'TP', 'SoS', 'CP', 'AP' ],
           [ 1, 'p1', 'c1', 'f1', 5, 4, 15, 32 ],
           [ 2, 'p3', 'c3', 'f3', 3, 7, 12, 48 ],
           [ 3, 'p2', 'c2', 'f2', 3, 4, 12, 32 ]

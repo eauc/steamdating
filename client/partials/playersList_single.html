@@ -14,7 +14,7 @@
       <th>
         Name
       </th>
-      <th>City</th>
+      <th>Origin</th>
       <th>Faction</th>
       <th>Lists</th>
       <th></th>
@@ -23,7 +23,7 @@
         style="cursor:pointer;"
         ng-click="doEditPlayer(p)">
       <td style="word-wrap:break-word;">{{::p.name}}</td>
-      <td style="word-wrap:break-word;">{{::p.city}}</td>
+      <td style="word-wrap:break-word;">{{::p.origin}}</td>
       <td style="word-wrap:break-word;">
         <img ng-src="{{::p.faction | factions:'iconFor'}}"
              style="height:1.8em;"/>

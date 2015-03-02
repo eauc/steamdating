@@ -223,7 +223,7 @@ angular.module('srApp.services')
               return _.chain(group)
                 .map(function(rank) {
                   return _.map(rank.players, function(player) {
-                    return [ rank.rank, player.name, player.city, player.faction,
+                    return [ rank.rank, player.name, player.origin, player.faction,
                              player.points.tournament, player.points.sos,
                              player.points.control, player.points.army ];
                   });
@@ -233,7 +233,7 @@ angular.module('srApp.services')
                 .value();
             })
             .map(function(group) {
-              return _.cat([[ 'Rank', 'Name', 'City', 'Faction',
+              return _.cat([[ 'Rank', 'Name', 'Origin', 'Faction',
                               'TP', 'SoS', 'CP', 'AP' ]], group);
             })
             .value();

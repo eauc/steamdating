@@ -31,7 +31,7 @@ describe('service', function() {
         ];
         var res = fkStringifier.stringify(players);
 
-        expect(res).toMatch(/Player: toto(\r\n)City: chambery(\r\n)Faction: Cryx(\r\n){2,}Player: tata(\r\n)City: lyon(\r\n)Faction: Menoth(\r\n)+/);
+        expect(res).toMatch(/Player: toto(\r\n)Origin: chambery(\r\n)Faction: Cryx(\r\n){2,}Player: tata(\r\n)Origin: lyon(\r\n)Faction: Menoth(\r\n)+/);
       });
 
       it('should export <players> lists', function() {
@@ -45,7 +45,7 @@ describe('service', function() {
         ];
         var res = fkStringifier.stringify(players);
 
-        expect(res).toMatch(/Player: toto(\r\n)City: chambery(\r\n)Faction: Cryx(\r\n){2,}System: Warmachordes(\r\n)Faction: Theme qui tue(\r\n)GaspyContent(\r\n){2,}System: Warmachordes(\r\n)Faction: Cryx(\r\n)GaspyALaPlage(\r\n){2,}Player: tata(\r\n)City: lyon(\r\n)Faction: Menoth(\r\n)+/);
+        expect(res).toMatch(/Player: toto(\r\n)Origin: chambery(\r\n)Faction: Cryx(\r\n){2,}System: Warmachordes(\r\n)Faction: Theme qui tue(\r\n)GaspyContent(\r\n){2,}System: Warmachordes(\r\n)Faction: Cryx(\r\n)GaspyALaPlage(\r\n){2,}Player: tata(\r\n)Origin: lyon(\r\n)Faction: Menoth(\r\n)+/);
       });
     });
   });

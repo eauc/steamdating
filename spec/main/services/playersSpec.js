@@ -132,27 +132,27 @@ describe('service', function() {
       });
     });
 
-    describe('cities()', function() {
+    describe('origins()', function() {
       beforeEach(function() {
         this.coll = [
           [
-            { city: 'toto1' },
-            { city: 'toto2' },
-            { city: 'toto1' },
+            { origin: 'toto1' },
+            { origin: 'toto2' },
+            { origin: 'toto1' },
           ],
           [
-            { city: 'tata1' },
-            { city: undefined },
+            { origin: 'tata1' },
+            { origin: undefined },
           ],
           [
-            { city: 'tata1' },
-            { city: 'tutu2' },
+            { origin: 'tata1' },
+            { origin: 'tutu2' },
           ]
         ];
       });
 
-      it('should return sorted uniq city names list', function() {
-        expect(players.cities(this.coll)).toEqual([
+      it('should return sorted uniq origin names list', function() {
+        expect(players.origins(this.coll)).toEqual([
           'tata1', 'toto1', 'toto2', 'tutu2'
         ]);
       });

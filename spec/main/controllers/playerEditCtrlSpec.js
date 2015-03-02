@@ -60,15 +60,15 @@ describe('controllers', function() {
       expect(this.scope.list).toBe(0);
     });
 
-    it('should init factions & cities', function() {
+    it('should init factions & origins', function() {
       expect(this.playersService.factions)
         .toHaveBeenCalledWith(this.scope.state.players,
                               'factions.baseFactions.returnValue');
-      expect(this.playersService.cities)
+      expect(this.playersService.origins)
         .toHaveBeenCalledWith(this.scope.state.players);
 
       expect(this.scope.factions).toBe('players.factions.returnValue');
-      expect(this.scope.cities).toBe('players.cities.returnValue');
+      expect(this.scope.origins).toBe('players.origins.returnValue');
     });
 
     describe('doSwitchToList(<i>)', function() {
