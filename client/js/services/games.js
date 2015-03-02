@@ -85,14 +85,18 @@ angular.module('srApp.services')
             })
             .value();
         },
-        toArray: function(game) {
-          return [ game.table,
-                   game.p1.name, game.p2.name,
-                   game.p1.list, game.p2.list,
-                   game.p1.tournament, game.p2.tournament,
-                   game.p1.control, game.p2.control,
-                   game.p1.army, game.p2.army
-                 ];
+        toArray: function(game, with_custom_field) {
+          var ret = [ game.table,
+                      game.p1.name, game.p2.name,
+                      game.p1.list, game.p2.list,
+                      game.p1.tournament, game.p2.tournament,
+                      game.p1.control, game.p2.control,
+                      game.p1.army, game.p2.army
+                    ];
+          if(with_custom_field) {
+            ret = _.cat(ret, [game.p1.custom_field, game.p2.custom_field]);
+          }
+          return ret;
         }
       };
       return gameService;

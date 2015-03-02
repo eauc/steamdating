@@ -214,15 +214,19 @@ describe('service', function() {
     });
 
     describe('toArray()', function() {
-      it('should convert game to array', function() {
-        expect(game.toArray({
-          table: 42,
-          p1: { name: 'toto', list: 'list1', tournament: 1, control: 2, army: 3 },
-          p2: { name: 'titi', list: 'list2', tournament: 0, control: 4, army: 5 },
-          games: []
-        })).toEqual([
-          42, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5
-        ]);
+      using([
+        [ 'withCustom', 'array' ],
+        [ false       , [ 21, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5 ] ],
+        [ true        , [ 21, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5, 42, 24 ] ],
+      ], function(e, d) {
+        it('should convert game to array, '+d, function() {
+          expect(game.toArray({
+            table: 21,
+            p1: { name: 'toto', list: 'list1', tournament: 1, control: 2, army: 3, custom_field: 42 },
+            p2: { name: 'titi', list: 'list2', tournament: 0, control: 4, army: 5, custom_field: 24 },
+            games: []
+          }, e.withCustom)).toEqual(e.array);
+        });
       });
     });
   });

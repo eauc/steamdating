@@ -232,44 +232,69 @@ angular.module('srApp.services')
           return playersService.sort(state.players, state, is_bracket);
         },
         rankingTables: function(state) {
+          var has_player_custom_field = stateService.hasPlayerCustomField(state);
+          var has_game_custom_field = stateService.hasGameCustomField(state);
           return _.chain(state)
             .apply(stateService.sortPlayersByRank)
             .map(function(group) {
               return _.chain(group)
                 .map(function(rank) {
                   return _.map(rank.players, function(player) {
-                    return [ rank.rank, player.name, player.origin, player.faction,
-                             player.points.tournament, player.points.sos,
-                             player.points.control, player.points.army ];
+                    var ret = [ rank.rank, player.name, player.origin, player.faction ];
+                    if(has_player_custom_field) {
+                      ret = _.cat(ret, [player.custom_field]);
+                    }
+                    ret = _.cat(ret, [player.points.tournament, player.points.sos,
+                                      player.points.control, player.points.army ]);
+                    if(has_game_custom_field) {
+                      ret = _.cat(ret, [player.points.custom_field]);
+                    }
+                    return ret;
                   });
                 })
                 .flatten()
-                .chunk(8)
+                .chunk(8 +
+                       (has_player_custom_field ? 1 : 0) +
+                       (has_game_custom_field ? 1 : 0))
                 .value();
             })
             .map(function(group) {
-              return _.cat([[ 'Rank', 'Name', 'Origin', 'Faction',
-                              'TP', 'SoS', 'CP', 'AP' ]], group);
+              var headers = ['Rank', 'Name', 'Origin', 'Faction'];
+              if(has_player_custom_field) {
+                headers = _.cat(headers, [state.custom_fields.player]);
+              }
+              headers = _.cat(headers, ['TP', 'SoS', 'CP', 'AP']);
+              if(has_game_custom_field) {
+                headers = _.cat(headers, [state.custom_fields.game]);
+              }
+              return _.cat([headers], group);
             })
             .value();
         },
         roundTables: function(state, round_index) {
+          var has_game_custom_field = stateService.hasGameCustomField(state);
           var round = state.rounds[round_index];
           return _.chain(state.players)
             .map(function(group, group_index) {
               return roundService.gamesForGroup(round, state.players, group_index);
             })
             .map(function(games) {
-              return _.map(games, gameService.toArray);
+              return _.mapWith(games, gameService.toArray, has_game_custom_field);
             })
             .map(function(group) {
-              return _.cat([[ 'Table',
+              var headers = [ 'Table',
                               'Player1', 'Player2',
                               'Player1.list', 'Player2.list',
                               'Player1.tp', 'Player2.tp',
                               'Player1.cp', 'Player2.cp',
                               'Player1.ap', 'Player2.ap',
-                            ]], group);
+                           ];
+              if(has_game_custom_field) {
+                headers = _.cat(headers, ['Player1.'+state.custom_fields.game,
+                                          'Player2.'+state.custom_fields.game
+                                         ]);
+              }
+              return _.cat([headers], group);
             })
             .value();
         }
