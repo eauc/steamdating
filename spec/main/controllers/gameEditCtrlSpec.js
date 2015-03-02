@@ -91,7 +91,7 @@ describe('controllers', function() {
 
         this.scope.close(false);
 
-        expect(this.scope.goToState).toHaveBeenCalledWith('rounds.titi',
+        expect(this.scope.goToState).toHaveBeenCalledWith('titi',
                                                           { pane: 'toto' });
       });
     });

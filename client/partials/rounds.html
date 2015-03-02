@@ -7,7 +7,7 @@
     </li>
     <li ng-repeat="r in state.rounds"
         ng-class="{
-        'active': stateIs('rounds.nth') && round.current===''+$index
+        'active': stateIs('rounds.nth') && round.current===$index
         }">
       <a href="#/rounds/{{$index}}">Round{{$index+1}}</a>
     </li>

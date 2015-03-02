@@ -33,7 +33,7 @@
         </span>
       </td>
       <td ng-repeat="r in ::state.rounds"
-          ng-click="doGameEdit(r, p.name, 'sum')"
+          ng-click="doGameEdit(r, p.name)"
           ng-class="{
           'success': (r | round:'gameForPlayer':p.name | game:'winForPlayer':p.name),
           'danger': (r | round:'gameForPlayer':p.name | game:'winForPlayer':p.name) === false,

@@ -3,15 +3,17 @@
 angular.module('srApp.controllers')
   .controller('roundsCtrl', [
     '$scope',
+    '$state',
     'round',
     function($scope,
+             $state,
              round) {
       console.log('init roundsCtrl');
 
       $scope.round = {};
-      $scope.doGameEdit = function(r, p, back, pane) {
+      $scope.doGameEdit = function(r, p, pane) {
         $scope.edit.game = round.gameForPlayer(r, p);
-        $scope.edit.back = back;
+        $scope.edit.back = $state.current.name;
         $scope.edit.pane = pane;
         $scope.goToState('game_edit');
       };

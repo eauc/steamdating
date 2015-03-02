@@ -123,12 +123,16 @@ describe('controllers', function() {
     });
 
     describe('doClose(<validate>)', function() {
+      beforeEach(function() {
+        this.scope.edit.back = 'previous_state';
+      });
+      
       when('not validate', function() {
       },function() {
         it('should return to player state', function() {
           this.scope.doClose(false);
           
-          expect(this.scope.goToState).toHaveBeenCalledWith('players_ranking');
+          expect(this.scope.goToState).toHaveBeenCalledWith('previous_state');
         });
       });
 
@@ -230,10 +234,11 @@ describe('controllers', function() {
           expect(this.scope.storeState).toHaveBeenCalled();
         });
 
-        it('should return to player state', function() {
+        it('should return to previous state', function() {
           this.scope.doClose(true);
           
-          expect(this.scope.goToState).toHaveBeenCalledWith('players_ranking');
+          expect(this.scope.goToState)
+            .toHaveBeenCalledWith('previous_state');
         });
       });
     });

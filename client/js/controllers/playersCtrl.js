@@ -5,7 +5,7 @@ angular.module('srApp.controllers')
     '$scope',
     'prompt',
     'state',
-    // '$state',
+    '$state',
     'players',
     'player',
     // 'team',
@@ -13,7 +13,7 @@ angular.module('srApp.controllers')
     function($scope,
              prompt,
              state,
-             // $state,
+             $state,
              players,
              player
              // team,
@@ -24,6 +24,7 @@ angular.module('srApp.controllers')
       $scope.doAddPlayer = function(i) {
         $scope.edit.player = player.create();
         $scope.edit.group = i;
+        $scope.edit.back = $state.current.name;
         $scope.goToState('player_edit');
       };
 
@@ -94,7 +95,7 @@ angular.module('srApp.controllers')
           }
           $scope.storeState();
         }
-        $scope.goToState('players_ranking');
+        $scope.goToState($scope.edit.back);
       };
 
       $scope.list = $scope.player.lists.length === 0 ? -1 : 0;

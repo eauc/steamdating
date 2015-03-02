@@ -39,7 +39,7 @@
         <th class="text-center">AP</th>
       </tr>
       <tr ng-repeat="g in ::r | round:'gamesForGroup':state.players:$index"
-          ng-click="doGameEdit(r, g.p1.name, 'nth', round.current)"
+          ng-click="doGameEdit(r, g.p1.name, round.current)"
           style="cursor:pointer;">
         <td>{{::g.p1.army}}</td>
         <td>{{::g.p1.control}}</td>

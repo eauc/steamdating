@@ -21,6 +21,8 @@ describe('controllers', function() {
         this.scope.state = { players: this.state_players };
         this.scope.goToState = jasmine.createSpy('goToState');
 
+        this.state = { current: { name: 'current_state' } };
+        
         this.stateService = spyOnService('state');
         this.playerService = spyOnService('player');
         this.playersService = spyOnService('players');
@@ -30,6 +32,7 @@ describe('controllers', function() {
 
         $controller('playersRankingCtrl', { 
           '$scope': this.scope,
+          '$state': this.state,
         });
       }
     ]));
@@ -47,9 +50,11 @@ describe('controllers', function() {
 
         expect(this.playerService.create)
           .toHaveBeenCalled();
-        expect(this.scope.edit.player)
-          .toBe('player.create.returnValue');
-        expect(this.scope.edit.group).toBe(5);
+        expect(this.scope.edit).toEqual({
+          player: 'player.create.returnValue',
+          group: 5,
+          back: 'current_state'
+        });
       });
 
       it('should go to player edit state', function() {

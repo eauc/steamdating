@@ -64,7 +64,10 @@ describe('controllers', function() {
       it('should enter "player_edit" state', function() {
         this.scope.doEditPlayer({ name: 'player' });
 
-        expect(this.scope.edit).toEqual({ player: { name: 'player' } });
+        expect(this.scope.edit).toEqual({
+          player: { name: 'player' },
+          back: 'current_state'
+        });
         expect(this.router_state.go).toHaveBeenCalledWith('player_edit');
       });
     });

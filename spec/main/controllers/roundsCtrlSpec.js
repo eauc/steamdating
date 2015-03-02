@@ -20,10 +20,13 @@ describe('controllers', function() {
         this.scope.goToState = jasmine.createSpy('goToState');
         this.scope.edit = {};
 
+        this.state = { current: { name: 'current_state' } };
+
         this.roundService = spyOnService('round');
 
         $controller('roundsCtrl', { 
           '$scope': this.scope,
+          '$state': this.state,
         });
       }
     ]));
@@ -36,15 +39,17 @@ describe('controllers', function() {
       beforeEach(function() {
         this.dummy_round = [ 'titi' ];
         this.dummy_player = 'toto';
-        this.scope.doGameEdit(this.dummy_round, this.dummy_player);
+        this.scope.doGameEdit(this.dummy_round, this.dummy_player, 'current_pane');
       });
 
       it('should setup edit object', function() {
         expect(this.roundService.gameForPlayer)
           .toHaveBeenCalledWith(this.dummy_round, this.dummy_player);
-        expect(this.scope.edit.game)
-          .toBe('round.gameForPlayer.returnValue');
-        expect(this.scope.edit.rounds_pane).toBe(this.scope.pane);
+        expect(this.scope.edit).toEqual({
+          game: 'round.gameForPlayer.returnValue',
+          back: 'current_state',
+          pane: 'current_pane'
+        });
       });
 
       it('should go to game dit page', function() {

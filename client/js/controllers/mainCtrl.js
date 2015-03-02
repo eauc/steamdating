@@ -42,6 +42,7 @@ angular.module('srApp.controllers')
       $scope.edit = {};
       $scope.doEditPlayer = function(player) {
         $scope.edit.player = player;
+        $scope.edit.back = $state.current.name;
         $scope.goToState('player_edit');
       };
       // $scope.doEditTeam = function(team) {

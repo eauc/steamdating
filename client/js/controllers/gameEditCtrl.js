@@ -35,7 +35,7 @@ angular.module('srApp.controllers')
           $scope.updatePoints();
           $scope.storeState();
         }
-        $scope.goToState('rounds.'+$scope.edit.back,
+        $scope.goToState($scope.edit.back,
                          { pane: $scope.edit.pane });
       };
 
