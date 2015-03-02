@@ -66,6 +66,17 @@ angular.module('srApp.services')
             })
             .value();
         },
+        updateTable: function(coll, index, min_table) {
+          var table = coll[index].table;
+          var other_index = table - min_table;
+          
+          coll[other_index] = _.snapshot(coll[other_index]);
+          coll[other_index].table = min_table + index;
+          
+          return _.chain(coll)
+            .sortBy('table')
+            .value();
+        },
         allGamesHaveResult: function(coll) {
           return _.chain(coll)
             .map(gameService.hasResult)

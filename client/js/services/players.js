@@ -321,6 +321,11 @@ angular.module('srApp.services')
         },
         groupSizeIsEven: function(group) {
           return (group.length & 1) === 0;
+        },
+        tableRangeForGroup: function(coll, group_index) {
+          var group_range = playersService.indexRangeForGroup(coll, group_index);
+          return _.range(Math.round(group_range[0]/2+1),
+                         Math.round(group_range[1]/2+1));
         }
       };
       return playersService;

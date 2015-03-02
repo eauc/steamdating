@@ -7,11 +7,6 @@ angular.module('srApp.services')
     function(roundsService,
              playersService) {
       var basePairing = {
-        tableRangeForGroup: function(players, group_index) {
-          var group_range = playersService.indexRangeForGroup(players, group_index);
-          return _.range(Math.round(group_range[0]/2+1),
-                         Math.round(group_range[1]/2+1));
-        },
         suggestTableFor: function(rounds, available_tables, p1, p2) {
           var p1_tables = roundsService.tablesForPlayer(rounds, p1);
           var p2_tables = roundsService.tablesForPlayer(rounds, p2);
@@ -46,7 +41,7 @@ angular.module('srApp.services')
             .value();
         },
         suggestFirstSingleRound: function(state, group_index) {
-          var tables = basePairing.tableRangeForGroup(state.players, group_index);
+          var tables = playersService.tableRangeForGroup(state.players, group_index);
           var group = state.players[group_index];
           var players = _.chain(group)
             .apply(playersService.sortGroup, state, false)
@@ -64,7 +59,7 @@ angular.module('srApp.services')
             .value();
         },
         suggestNextSingleRound: function(state, group_index) {
-          var tables = basePairing.tableRangeForGroup(state.players, group_index);
+          var tables = playersService.tableRangeForGroup(state.players, group_index);
           var nb_bracket_rounds = stateService.bracketNbRounds(state, group_index);
           return _.chain(state.rounds)
             .last()
@@ -167,7 +162,7 @@ angular.module('srApp.services')
           return [ gameService.create(table, p1.name, p2.name), sorted_players, tables ];
         },
         suggestNextSingleRound: function(state, group_index) {
-          var tables = basePairing.tableRangeForGroup(state.players, group_index);
+          var tables = playersService.tableRangeForGroup(state.players, group_index);
           var sorted_players = srPairing.sortPlayers(state.players[group_index]);
           if(1 === (sorted_players.length & 0x1)) sorted_players.push({ name: '_phantom_' });
           return _.chain(state.players[group_index].length/2)

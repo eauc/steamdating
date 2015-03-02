@@ -134,6 +134,24 @@ describe('service', function() {
       });
     });
 
+    describe('updateTable(<game_index>, <min_table>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          { table:4, p1: { name: 'p1' }, p2: { name: 'p2' } },
+          { table:5, p1: { name: 'p2' }, p2: { name: null } },
+          { table:4, p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ];
+      });
+
+      it('should reorder tables', function() {
+        expect(round.updateTable(this.coll, 2, 4)).toEqual([
+          { table : 4, p1 : { name : 'p5' }, p2 : { name : 'p1' } },
+          { table : 5, p1 : { name : 'p2' }, p2 : { name : null } },
+          { table : 6, p1 : { name : 'p1' }, p2 : { name : 'p2' } }
+        ]);
+      });
+    });
+
     describe('allGamesHaveResult()', function() {
       it('should check whether all game have a defined result', function() {
         this.coll = [

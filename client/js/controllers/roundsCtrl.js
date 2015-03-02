@@ -32,12 +32,14 @@ angular.module('srApp.controllers')
     'state',
     'round',
     'rounds',
+    'players',
     'srPairing',
     'bracketPairing',
     function($scope,
              state,
              round,
              rounds,
+             players,
              srPairing,
              bracketPairing) {
       $scope.new_state = _.clone($scope.state);
@@ -58,7 +60,9 @@ angular.module('srApp.controllers')
             return rounds.pairAlreadyExists($scope.new_state.rounds, g);
           });
         });
-        // console.log('already', $scope.pairs_already);
+        $scope.tables_ranges = _.map($scope.new_state.players, function(group, group_index) {
+          return players.tableRangeForGroup($scope.new_state.players, group_index);
+        });
       };
       $scope.updatePlayersOptions();
 
@@ -82,9 +86,15 @@ angular.module('srApp.controllers')
         $scope.goToState('rounds.nth', { pane: $scope.state.rounds.length-1 });
       };
 
-      $scope.updateNextRound = function(gr_index, ga_index, key) {
+      $scope.updatePlayer = function(gr_index, ga_index, key) {
         $scope.next_round[gr_index] =
           round.updatePlayer($scope.next_round[gr_index], ga_index, key);
+        $scope.updatePlayersOptions();
+      };
+      $scope.updateTable = function(gr_index, ga_index) {
+        $scope.next_round[gr_index] =
+          round.updateTable($scope.next_round[gr_index], ga_index,
+                            _.min($scope.tables_ranges[gr_index]));
         $scope.updatePlayersOptions();
       };
     }

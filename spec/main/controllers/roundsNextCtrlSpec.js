@@ -57,25 +57,45 @@ describe('controllers', function() {
       expect(this.roundsService.createNextRound)
         .toHaveBeenCalledWith(this.scope.state.players);
     });
-
+    
     it('should init players options lists', function() {
       expect(this.scope.players_options).not.toBe(undefined);
     });
 
-    describe('updateNextRound(<gr_index>,<ga_index>,<key>)', function() {
+    describe('updatePlayer(<gr_index>,<ga_index>,<key>)', function() {
       beforeEach(function() {
         this.scope.next_round = [ 'group1', 'group2', 'group3' ];
-        this.dummy_updated_round = [ 'udpated_round' ];
-        this.roundService.updatePlayer.and.returnValue(this.dummy_updated_round);
-
         spyOn(this.scope, 'updatePlayersOptions');
 
-        this.scope.updateNextRound(2,3,'key');
+        this.scope.updatePlayer(2,3,'key');
       });
 
       it('should update player names in next round for <gr_index> group', function() {
-        expect(this.scope.next_round[2]).toBe(this.dummy_updated_round);
-        expect(this.roundService.updatePlayer).toHaveBeenCalledWith('group3', 3, 'key');
+        expect(this.scope.next_round[2])
+          .toBe('round.updatePlayer.returnValue');
+        expect(this.roundService.updatePlayer)
+          .toHaveBeenCalledWith('group3', 3, 'key');
+      });
+
+      it('should update players options lists', function() {
+        expect(this.scope.updatePlayersOptions).toHaveBeenCalled();
+      });
+    });
+
+    describe('updateTable(<gr_index>,<ga_index>,<key>)', function() {
+      beforeEach(function() {
+        this.scope.next_round = [ 'group1', 'group2', 'group3' ];
+        this.scope.tables_ranges = [[],[],[6,4,5]];
+        spyOn(this.scope, 'updatePlayersOptions');
+
+        this.scope.updateTable(2,3,'key');
+      });
+
+      it('should update tables in next round for <gr_index> group', function() {
+        expect(this.scope.next_round[2])
+          .toBe('round.updateTable.returnValue');
+        expect(this.roundService.updateTable)
+          .toHaveBeenCalledWith('group3', 3, 4);
       });
 
       it('should update players options lists', function() {
@@ -99,6 +119,12 @@ describe('controllers', function() {
         this.roundsService.pairAlreadyExists.and.callFake(function(r, g) {
           return 'rounds.pairAlreadyExists.returnValue('+g+')';
         });
+      });
+
+      it('should update tables ranges list', function() {
+        this.scope.updatePlayersOptions();
+
+        expect(this.scope.tables_ranges).toEqual([[1,2],[3]]);
       });
 
       it('should update players options lists', function() {

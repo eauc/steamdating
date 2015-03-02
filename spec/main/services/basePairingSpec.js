@@ -14,31 +14,6 @@ describe('service', function() {
       basePairing = _basePairing;
     }]));
 
-    describe('tableRangeForGroup(<players>, <group>)', function() {
-      beforeEach(function() {
-        this.players = [
-          [ {},{},{},{} ],
-          [ {},{} ],
-          [ ],
-          [ {},{},{} ],
-          [ {},{} ]
-        ];
-      });
-
-      using([
-        [ 'group' , 'range'  ],
-        [ 0       , [ 1, 2 ] ],
-        [ 1       , [ 3 ]    ],
-        [ 2       , [ ]      ],
-        [ 3       , [ 4, 5 ] ],
-        [ 4       , [ 6 ]    ],
-      ], function(e, d) {
-        it('should calculate table range for <group>, '+d, function() {
-          expect(basePairing.tableRangeForGroup(this.players, e.group)).toEqual(e.range);
-        });
-      });
-    });
-
     describe('suggestTableFor(<rounds>, <availables>, <p1>, <p2>)', function() {
       beforeEach(inject(function(rounds) {
         this.roundsService = spyOnService('rounds');

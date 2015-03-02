@@ -826,6 +826,31 @@ describe('service', function() {
         });
       });
     });
+
+    describe('tableRangeForGroup(<players>, <group>)', function() {
+      beforeEach(function() {
+        this.players = [
+          [ {},{},{},{} ],
+          [ {},{} ],
+          [ ],
+          [ {},{},{} ],
+          [ {},{} ]
+        ];
+      });
+
+      using([
+        [ 'group' , 'range'  ],
+        [ 0       , [ 1, 2 ] ],
+        [ 1       , [ 3 ]    ],
+        [ 2       , [ ]      ],
+        [ 3       , [ 4, 5 ] ],
+        [ 4       , [ 6 ]    ],
+      ], function(e, d) {
+        it('should calculate table range for <group>, '+d, function() {
+          expect(players.tableRangeForGroup(this.players, e.group)).toEqual(e.range);
+        });
+      });
+    });
   });
 
 });

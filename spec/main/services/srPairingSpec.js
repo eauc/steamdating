@@ -169,8 +169,7 @@ describe('service', function() {
         });
         spyOn(srPairing, 'sortPlayers').and.returnValue(this.players[0]);
         
-        this.basePairingService = spyOnService('basePairing');
-        // this.basePairingService.tableRangeForGroup._retVal = this.tables[0];
+        this.playersService = spyOnService('players');
 
         this.state = {
           rounds: [ 'rounds' ],
@@ -184,7 +183,7 @@ describe('service', function() {
       });
 
       it('should build table range', function() {
-        expect(this.basePairingService.tableRangeForGroup)
+        expect(this.playersService.tableRangeForGroup)
           .toHaveBeenCalledWith(this.state.players, 1);
       });
 
@@ -200,7 +199,7 @@ describe('service', function() {
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
                                 ['player11', 'player12'],
-                                'basePairing.tableRangeForGroup.returnValue');
+                                'players.tableRangeForGroup.returnValue');
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
                                 this.players[1],
@@ -222,7 +221,7 @@ describe('service', function() {
           expect(srPairing.findNextPairing)
             .toHaveBeenCalledWith(this.state.rounds,
                                   ['player11', { name:'_phantom_' }],
-                                  'basePairing.tableRangeForGroup.returnValue');
+                                  'players.tableRangeForGroup.returnValue');
         });
       });
 

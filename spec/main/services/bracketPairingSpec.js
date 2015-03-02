@@ -15,6 +15,7 @@ describe('service', function() {
       function(_bracketPairing, basePairing) {
         bracketPairing = _bracketPairing;
 
+        this.playersService = spyOnService('players');
         this.basePairingService = spyOnService('basePairing');
       }
     ]));
@@ -36,10 +37,8 @@ describe('service', function() {
       beforeEach(function() {
         var ctxt = this;
 
-        this.playersService = spyOnService('players');
-
         this.tables = [42,43,44,45];
-        this.basePairingService.tableRangeForGroup._retVal = this.tables;
+        this.playersService.tableRangeForGroup._retVal = this.tables;
 
         var tables_i = 0;
         this.basePairingService.suggestTableFor.and
@@ -59,7 +58,7 @@ describe('service', function() {
       });
 
       it('should request table range for group', function() {
-        expect(this.basePairingService.tableRangeForGroup)
+        expect(this.playersService.tableRangeForGroup)
           .toHaveBeenCalledWith(this.state.players, this.gri);
       });
 
@@ -97,7 +96,7 @@ describe('service', function() {
         this.roundService.losers.and.callThrough();
 
         this.tables = [42,43,44,45];
-        this.basePairingService.tableRangeForGroup._retVal = this.tables;
+        this.playersService.tableRangeForGroup._retVal = this.tables;
         this.tables_i = 0;
         this.basePairingService.suggestTableFor.and
           .callFake(function() { return ctxt.tables[ctxt.tables_i++]; });
@@ -119,7 +118,7 @@ describe('service', function() {
       it('should request table range for group', function() {
         this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
 
-        expect(this.basePairingService.tableRangeForGroup)
+        expect(this.playersService.tableRangeForGroup)
           .toHaveBeenCalledWith(this.st.players, this.gri);
       });
 
