@@ -12,7 +12,7 @@ angular.module('srApp.controllers')
              player
             ) {
       console.log('init settingsEditCtrl');
-      $scope.pane = 'player_ranking';
+      $scope.pane = 'custom_fields';
 
       $scope.player_test = {
         ranking: $scope.state.ranking.player,
@@ -20,21 +20,25 @@ angular.module('srApp.controllers')
         n_players: 32,
         player1: {
           name: 'p1',
+          custom_field: 21,
           points: {
             tournament: 4,
             sos: 10,
             control: 13,
-            army: 38
+            army: 38,
+            custom_field: 14,
           },
           rank: 0
         },
         player2: {
           name: 'p2',
+          custom_field: 19,
           points: {
             tournament: 3,
             sos: 15,
             control: 8,
-            army: 45
+            army: 45,
+            custom_field: 25
           },
           rank: 0
         }

@@ -31,8 +31,6 @@
           </select>
         </div>
       </div>
-      <!-- <div ng-if="::!isTeamTournament()"
-      class="form-group"> -->
       <div class="form-group">
         <label class="col-sm-2 control-label"
                for="origin">Origin :</label>
@@ -49,21 +47,20 @@
                   ng-options="c as c for c in origins">
           </select>
         </div>
-        <!-- </div> -->
-      <!-- <div ng-if="::isTeamTournament()"
-      class="form-group">
-      <label class="col-sm-2 control-label"
-      for="team">Team :</label>
-      <div class="col-sm-10">
-      <select class="form-control"
-      id="team"
-      name="team"
-      ng-model="player.team"
-      required="required"
-      ng-options="t as t for t in state.teams | teams:'names'">
-      </select>
       </div>
-      </div> -->
+      <div ng-if="state | state:'hasPlayerCustomField'"
+           class="form-group">
+        <label class="col-sm-2 control-label"
+               for="custom">{{::state.custom_fields.player}} :</label>
+        <div class="col-sm-10">
+          <input class="form-control"
+                 type="number"
+                 id="custom"
+                 name="custom"
+                 ng-model="player.custom_field"
+                 placeholder="Player custom field value" />
+        </div>
+      </div>
       <div>
         <div class="row">
           <div class="col-sm-1">

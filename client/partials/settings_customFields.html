@@ -1,0 +1,31 @@
+<form class="form-horizontal text-center">
+  <div class="form-group">
+    <label class="col-sm-3 control-label"
+           for="name">Player Custom Field :</label>
+    <div class="col-sm-9">
+      <input class="form-control"
+             type="text"
+             id="player_custom"
+             name="player_custom"
+             ng-model="state.custom_fields.player"
+             placeholder="Player custom field name" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label"
+           for="name">Game Custom Field :</label>
+    <div class="col-sm-9">
+      <input class="form-control"
+             type="text"
+             id="game_custom"
+             name="game_custom"
+             ng-model="state.custom_fields.game"
+             placeholder="Game custom field name" />
+    </div>
+  </div>
+  <button class="btn btn-default"
+          ng-click="doClose(true)"
+          type="button">
+    Save
+  </button>
+</form>

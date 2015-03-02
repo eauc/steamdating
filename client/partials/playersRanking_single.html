@@ -14,10 +14,16 @@
         Name
       </th>
       <th>Faction</th>
+      <th ng-if="state | state:'hasPlayerCustomField'">
+        {{::state.custom_fields.player}}
+      </th>
       <th>TP</th>
       <th>SoS</th>
       <th>CP</th>
       <th>AP</th>
+      <th ng-if="state | state:'hasGameCustomField'">
+        {{::state.custom_fields.game}}
+      </th>
     </tr>
     <tbody ng-repeat="rank in ::gr"
            style="border-width:0px">
@@ -31,10 +37,16 @@
                style="height:1.8em;"/>
           {{::p.faction}}
         </td>
+        <td ng-if="state | state:'hasPlayerCustomField'">
+          {{::p.custom_field}}
+        </td>
         <td>{{::p.points.tournament}}</td>
         <td>{{::p.points.sos}}</td>
         <td>{{::p.points.control}}</td>
         <td>{{::p.points.army}}</td>
+        <td ng-if="state | state:'hasGameCustomField'">
+          {{::p.points.custom_field}}
+        </td>
       </tr>
     </tbody>
   </table>

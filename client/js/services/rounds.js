@@ -137,7 +137,9 @@ angular.module('srApp.services')
               // it's important to keep the games indices correct in regards to rounds
               // otherwise bracket calculation is not possible
               if(!_.exists(game)) {
-                return { p1: { name: player_name, tournament: 0, control: 0, army: 0 } };
+                return { p1: { name: player_name,
+                               tournament: 0, control: 0,
+                               army: 0, custom_field: 0 } };
               }
               return game;
             })

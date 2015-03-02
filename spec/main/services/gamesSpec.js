@@ -17,14 +17,14 @@ describe('service', function() {
     describe('pointsForPlayer(<player>, <bracket_start>, <bracket_end>)', function() {
       beforeEach(function() {
         this.coll = [
-          { p1: { name: 'toto', tournament: 1, control: 2, army: 3 },
-            p2: { name: 'opp', tournament: 4, control: 5, army: 6 } },
-          { p1: {name: 'toto', tournament: 10, control: 20, army: 30 },
-            p2: { name: 'opp', tournament: 0, control: 0, army: 0 } },
-          { p1: { name: 'toto', tournament: 0, control: 0, army: 0 },
-            p2: { name: 'opp', tournament: 40, control: 50, army: 60 } },
-          { p1: { name: 'toto', tournament: 100, control: 200, army: 300 },
-            p2: { name: 'opp', tournament: 400, control: 500, army: 600 } }
+          { p1: { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 3 },
+            p2: { name: 'opp', tournament: 4, control: 5, army: 6, custom_field: 9 } },
+          { p1: {name: 'toto', tournament: 10, control: 20, army: 30, custom_field: 34 },
+            p2: { name: 'opp', tournament: 0, control: 0, army: 0, custom_field: 24 } },
+          { p1: { name: 'toto', tournament: 0, control: 0, army: 0, custom_field: 0 },
+            p2: { name: 'opp', tournament: 40, control: 50, army: 60, custom_field: 13 } },
+          { p1: { name: 'toto', tournament: 100, control: 200, army: 300, custom_field: 45 },
+            p2: { name: 'opp', tournament: 400, control: 500, army: 600, custom_field: 0 } }
         ];
       });
 
@@ -37,6 +37,7 @@ describe('service', function() {
             tournament : 111,
             control: 222,
             army: 333,
+            custom_field: 82,
             sos: 0
           });
         });
@@ -51,6 +52,7 @@ describe('service', function() {
               tournament : 111,
               control: 222,
               army: 333,
+              custom_field : 82,
               sos: 0
             });
         });
@@ -60,14 +62,14 @@ describe('service', function() {
     describe('pointsAgainsPlayer(<player>, <bracket_start>, <bracket_end>)', function() {
       beforeEach(function() {
         this.coll = [
-          { p1: { name: 'toto', tournament: 1, control: 2, army: 3 },
-            p2: { name: 'opp', tournament: 4, control: 5, army: 6 } },
-          { p1: {name: 'toto', tournament: 10, control: 20, army: 30 },
-            p2: { name: 'opp', tournament: 0, control: 0, army: 0 } },
-          { p1: { name: 'toto', tournament: 0, control: 0, army: 0 },
-            p2: { name: 'opp', tournament: 40, control: 50, army: 60 } },
-          { p1: { name: 'toto', tournament: 100, control: 200, army: 300 },
-            p2: { name: 'opp', tournament: 400, control: 500, army: 600 } }
+          { p1: { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 3 },
+            p2: { name: 'opp', tournament: 4, control: 5, army: 6, custom_field: 9 } },
+          { p1: {name: 'toto', tournament: 10, control: 20, army: 30, custom_field: 34 },
+            p2: { name: 'opp', tournament: 0, control: 0, army: 0, custom_field: 24 } },
+          { p1: { name: 'toto', tournament: 0, control: 0, army: 0, custom_field: 0 },
+            p2: { name: 'opp', tournament: 40, control: 50, army: 60, custom_field: 13 } },
+          { p1: { name: 'toto', tournament: 100, control: 200, army: 300, custom_field: 45 },
+            p2: { name: 'opp', tournament: 400, control: 500, army: 600, custom_field: 0 } }
         ];
       });
 
@@ -80,6 +82,7 @@ describe('service', function() {
             tournament : 444,
             control: 555,
             army: 666,
+            custom_field: 46,
             sos: 0
           });
         });
@@ -94,6 +97,7 @@ describe('service', function() {
               tournament : 444,
               control: 555,
               army: 666,
+              custom_field: 46,
               sos: 0
             });
         });
@@ -103,10 +107,10 @@ describe('service', function() {
     describe('reducePoints(<player_games>, <bracket_start>, <bracket_end>)', function() {
       beforeEach(function() {
         this.coll = [
-          { name: 'toto', tournament: 1, control: 2, army: 3 },
-          { name: 'toto', tournament: 10, control: 20, army: 30 },
-          { name: 'toto', tournament: 0, control: 0, army: 0 },
-          { name: 'toto', tournament: 100, control: 200, army: 300 }
+          { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 6 },
+          { name: 'toto', tournament: 10, control: 20, army: 30, custom_field: 60 },
+          { name: 'toto', tournament: 0, control: 0, army: 0, custom_field: 600 },
+          { name: 'toto', tournament: 100, control: 200, army: 300, custom_field: 0 }
         ];
       });
 
@@ -119,6 +123,7 @@ describe('service', function() {
             tournament : 111,
             control: 222,
             army: 333,
+            custom_field: 666,
             sos: 0
           });
         });
@@ -133,18 +138,21 @@ describe('service', function() {
                                 tournament : 111,
                                 control: 222,
                                 army: 333,
+                                custom_field: 666,
                                 sos: 0 } ],
           // started after a few rounds
           [ 2               , { bracket: 1600,
                                 tournament : 111,
                                 control: 222,
                                 army: 333,
+                                custom_field: 666,
                                 sos: 0 } ],
           // not yet started
           [ 4               , { bracket: 0,
                                 tournament : 111,
                                 control: 222,
                                 army: 333,
+                                custom_field: 666,
                                 sos: 0 } ],
         ], function(e, d) {
           it('should sum points, '+d, function() {

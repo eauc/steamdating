@@ -58,6 +58,10 @@ describe('service', function() {
           ranking: {
             player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
             team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
+          },
+          custom_fields: {
+            player: null,
+            game: null
           }
         });
       });
@@ -75,6 +79,10 @@ describe('service', function() {
           ranking: {
             player: 'player',
             team: 'team'
+          },
+          custom_fields: {
+            player: 'pcustom',
+            game: 'gcustom'
           }
         };
         this.result = state.create(this.data);
@@ -152,6 +160,38 @@ describe('service', function() {
       it('should test if one or more team are defined', function() {
         expect(state.isTeamTournament({ teams: [[]] })).toBe(false);
         expect(state.isTeamTournament({ teams: [[],[{}]] })).toBe(true);
+      });
+    });
+
+    describe('hasPlayerCustomField(<st>)', function() {
+      using([
+        [ 'pcustom' , 'hasPCustom' ],
+        [ undefined , false ],
+        [ null      , false ],
+        [ ''        , false ],
+        [ ' \t\n'   , false ],
+        [ 'pcustom' , true ],
+      ], function(e, d) {
+        it('should test if player\'s custom field is defined, '+d, function() {
+          expect(state.hasPlayerCustomField({ custom_fields: { player: e.pcustom } }))
+            .toBe(e.hasPCustom);
+        });
+      });
+    });
+
+    describe('hasGameCustomField(<st>)', function() {
+      using([
+        [ 'gcustom' , 'hasGCustom' ],
+        [ undefined , false ],
+        [ null      , false ],
+        [ ''        , false ],
+        [ ' \t\n'   , false ],
+        [ 'gcustom' , true ],
+      ], function(e, d) {
+        it('should test if game\'s custom field is defined, '+d, function() {
+          expect(state.hasGameCustomField({ custom_fields: { game: e.gcustom } }))
+            .toBe(e.hasGCustom);
+        });
       });
     });
 

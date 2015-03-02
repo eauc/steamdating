@@ -215,6 +215,21 @@
                ng-model="game.p2.army" />
       </td>
     </tr>
+    <tr ng-if="state | state:'hasGameCustomField'">
+      <th class="text-right">
+        {{::state.custom_fields.game}}
+      </th>
+      <td>
+        <input class="form-control"
+               type="number"
+               ng-model="game.p1.custom_field" />
+      </td>
+      <td>
+        <input class="form-control"
+               type="number"
+               ng-model="game.p2.custom_field" />
+      </td>
+    </tr>
   </table>
   <button class="btn btn-default"
           ng-click="close(true)">

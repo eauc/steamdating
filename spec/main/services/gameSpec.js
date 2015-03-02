@@ -19,8 +19,10 @@ describe('service', function() {
         expect(game.create(4, 'toto', 'titi'))
           .toEqual({
             table: 4,
-            p1: { name: 'toto', list: null, tournament: null, control: null, army: null },
-            p2: { name: 'titi', list: null, tournament: null, control: null, army: null },
+            p1: { name: 'toto', list: null,
+                  tournament: null, control: null, army: null, custom_field: null },
+            p2: { name: 'titi', list: null,
+                  tournament: null, control: null, army: null, custom_field: null },
             games: []
           });
       });

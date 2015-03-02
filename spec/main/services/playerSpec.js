@@ -63,11 +63,13 @@ describe('service', function() {
       beforeEach(function() {
         this.critFn = jasmine.createSpy('critFn');
         this.dummy_player = {
+          custom_field: 21,
           points: {
             tournament: 42,
             sos: 71,
             control: 69,
-            army: 83
+            army: 83,
+            custom_field: 27,
           }
         };
       });
@@ -75,7 +77,7 @@ describe('service', function() {
       it('should call <critFn> with player\'s points', function() {
         player.rank(this.dummy_player, this.critFn);
 
-        expect(this.critFn).toHaveBeenCalledWith(42, 71, 69, 83);
+        expect(this.critFn).toHaveBeenCalledWith(21, 42, 71, 69, 83, 27);
       });
 
       when('critFn return without error', function() {

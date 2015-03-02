@@ -43,15 +43,17 @@ describe('service', function() {
           });
 
           using([
-            [ 'criterion' , 'ranking' ],
-            [ 'tp'        , 1         ],
-            [ 'sos'       , 2         ],
-            [ 'cp'        , 3         ],
-            [ 'ap'        , 4         ],
+            [ 'criterion'     , 'ranking' ],
+            [ 'player_custom' , 1         ],
+            [ 'tp'            , 2         ],
+            [ 'sos'           , 3         ],
+            [ 'cp'            , 4         ],
+            [ 'ap'            , 5         ],
+            [ 'game_custom'   , 6         ],
           ], function(e, d) {
             it('should take arguments <tp>,<sos>,<cp>,<ap>, '+d, function() {
               var critFn = ranking.buildPlayerCritFunction(e.criterion, 42, 71);
-              expect(critFn(1,2,3,4)).toBe(e.ranking);
+              expect(critFn(1,2,3,4,5,6)).toBe(e.ranking);
             });
           });
         });

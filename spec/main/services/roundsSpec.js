@@ -131,10 +131,11 @@ describe('service', function() {
       beforeEach(function() {
         this.coll = [
           [
-            { p1: { name: 'toto', tournament: 1, control: 2, army: 3 } }
+            { p1: { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 6 } }
           ],
           [
-            { p1: { name: 'other' }, p2: { name: 'toto', tournament: 10, control: 20, army: 30 } }
+            { p1: { name: 'other' }, p2: { name: 'toto', tournament: 10,
+                                           control: 20, army: 30, custom_field: 60 } }
           ],
           [
             /* round without a game for this player */
@@ -142,7 +143,7 @@ describe('service', function() {
           ],
           [ /* empty round */ ],
           [
-            { p1: { name: 'toto', tournament: 100, control: 200, army: 300 } }
+            { p1: { name: 'toto', tournament: 100, control: 200, army: 300, custom_field: 600 } }
           ],
         ];
       });
@@ -157,6 +158,7 @@ describe('service', function() {
                                           tournament : 111,
                                           control: 222,
                                           army: 333,
+                                          custom_field: 666,
                                           sos: 0
                                         });
         });
@@ -171,18 +173,21 @@ describe('service', function() {
                                 tournament : 111,
                                 control: 222,
                                 army: 333,
+                                custom_field: 666,
                                 sos: 0 } ],
           // started after a few rounds
           [ 2               , { bracket: 800,
                                 tournament : 111,
                                 control: 222,
                                 army: 333,
+                                custom_field: 666,
                                 sos: 0 } ],
           // not yet started
           [ 6               , { bracket: 0,
                                 tournament : 111,
                                 control: 222,
                                 army: 333,
+                                custom_field: 666,
                                 sos: 0 } ],
         ], function(e, d) {
           it('should sum points for <name>, '+d, function() {

@@ -12,14 +12,16 @@ angular.module('srApp.services')
               list: null,
               tournament: null,
               control: null,
-              army: null
+              army: null,
+              custom_field: null
             },
             p2: {
               name: p2_name,
               list: null,
               tournament: null,
               control: null,
-              army: null
+              army: null,
+              custom_field: null
             },
             games: []
           };
@@ -89,7 +91,7 @@ angular.module('srApp.services')
                    game.p1.list, game.p2.list,
                    game.p1.tournament, game.p2.tournament,
                    game.p1.control, game.p2.control,
-                   game.p1.army, game.p2.army,
+                   game.p1.army, game.p2.army
                  ];
         }
       };
@@ -122,9 +124,10 @@ angular.module('srApp.services')
                 bracket: calculateBracketPoints(mem.bracket,
                                                 result, result_index,
                                                 bracket_start, base_weight),
-                tournament: mem.tournament + result.tournament,
-                control: mem.control + result.control,
-                army: mem.army + result.army,
+                tournament: mem.tournament + (result.tournament || 0),
+                control: mem.control + (result.control || 0),
+                army: mem.army + (result.army || 0),
+                custom_field: mem.custom_field + (result.custom_field || 0),
                 sos: 0
               };
             }, {
@@ -132,6 +135,7 @@ angular.module('srApp.services')
               tournament: 0,
               control: 0,
               army: 0,
+              custom_field: 0,
               sos: 0
             })
             .value();

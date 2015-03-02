@@ -15,7 +15,7 @@ angular.module('srApp.services')
           var critFun;
           try {
             baseCritFun = new Function('n_rounds', 'n_players',
-                                       'tp', 'sos', 'cp', 'ap',
+                                       'player_custom', 'tp', 'sos', 'cp', 'ap', 'game_custom',
                                        'return '+body+';');
             critFun = _.partial(baseCritFun, n_rounds, n_players);
           }

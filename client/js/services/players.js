@@ -13,10 +13,12 @@ angular.module('srApp.services')
         rank: function(player, critFn) {
           var rank;
           try {
-            rank = critFn(player.points.tournament,
+            rank = critFn(player.custom_field,
+                          player.points.tournament,
                           player.points.sos,
                           player.points.control,
-                          player.points.army);
+                          player.points.army,
+                          player.points.custom_field);
           }
           catch(e) {
             return "Error : " + e.message;
@@ -29,13 +31,15 @@ angular.module('srApp.services')
             faction: faction,
             origin: origin,
             team: team,
+            custom_field: 0,
             lists: [],
             lists_played: [],
             points: {
               tournament: 0,
               sos: 0,
               control: 0,
-              army: 0
+              army: 0,
+              custom_field: 0
             }
           };
         },

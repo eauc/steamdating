@@ -59,6 +59,7 @@ angular.module('srApp.services')
               listService.create(f, 'Caster1'),
               listService.create(f, 'Caster2')
             );
+            _st.players[i >> 2][i%4].custom_field = (Math.random()*50)>>0;
           });
           _.range(2).map(function(i) {
             _st.rounds.push([]);
@@ -93,12 +94,16 @@ angular.module('srApp.services')
                 g.p2.control = (Math.random()*5)>>0;
                 g.p1.army = (Math.random()*50)>>0;
                 g.p2.army = (Math.random()*50)>>0;
+                g.p1.custom_field = (Math.random()*50)>>0;
+                g.p2.custom_field = (Math.random()*50)>>0;
                 _st.rounds[i].push(g);
               });
             });
           });
           _st.bracket = [undefined, 1];
-          _st.players = state.updatePlayersPoints(_st);
+          _st.custom_fields.player = 'PCustom';
+          _st.custom_fields.game = 'GCustom';
+          _st.players = stateService.updatePlayersPoints(_st);
           return _st;
         },
         create: function(data) {
@@ -110,6 +115,10 @@ angular.module('srApp.services')
             ranking: {
               player: ranking.srPlayerCrit(),
               team: ranking.srTeamCrit()
+            },
+            custom_fields: {
+              player: null,
+              game: null
             }
           });
           state.players = stateService.updatePlayersPoints(state);
@@ -130,6 +139,12 @@ angular.module('srApp.services')
         },
         isTeamTournament: function(state) {
           return _.flatten(state.teams).length !== 0;
+        },
+        hasPlayerCustomField: function(state) {
+          return !s.isBlank(state.custom_fields.player);
+        },
+        hasGameCustomField: function(state) {
+          return !s.isBlank(state.custom_fields.game);
         },
         clearBracket: function(state) {
           return _.repeat(state.players.length, undefined);

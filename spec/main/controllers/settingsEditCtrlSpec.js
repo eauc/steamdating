@@ -39,7 +39,7 @@ describe('controllers', function() {
     ]));
 
     it('should init pane', function() {
-      expect(this.scope.pane).toBe('player_ranking');
+      expect(this.scope.pane).toBe('custom_fields');
     });
 
     it('should init player_test object', function() {
