@@ -9,7 +9,9 @@ angular.module('srApp.services')
       }
       function stringifyRow(row, row_index) {
         return _.chain(row)
+          .map(function(col) { return _.exists(col) ? col : ''; })
           .map(function(col) { return row_index === 0 ? inTag(col, 'b') : col; })
+          .mapWith(inTag, 'center')
           .mapWith(inTag, 'td')
           .join('')
           .apply(inTag, 'tr')

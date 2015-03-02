@@ -22,18 +22,20 @@ describe('service', function() {
         expect(bbStringifier.stringify([
           [ [ 'field1', 'field2', 'field3' ],
             [ '11', '12', 3 ],
-            [ '21', '22', 4 ] ],
+            // undefined replaced by ''
+            [ '21', undefined, 4 ] ],
           [ [ 'field4', 'field5' ],
-            [ '1', 'a' ],
+            // null replaced by ''
+            [ null, 'a' ],
             [ '2', 'b' ] ]
         ])).toBe('\r\n[b]Group 1[/b]\r\n'+
-                 '[table][tr][td][b]field1[/b][/td][td][b]field2[/b][/td][td][b]field3[/b][/td][/tr]\r\n'+
-                 '[tr][td]11[/td][td]12[/td][td]3[/td][/tr]\r\n'+
-                 '[tr][td]21[/td][td]22[/td][td]4[/td][/tr][/table]\r\n'+
+                 '[table][tr][td][center][b]field1[/b][/center][/td][td][center][b]field2[/b][/center][/td][td][center][b]field3[/b][/center][/td][/tr]\r\n'+
+                 '[tr][td][center]11[/center][/td][td][center]12[/center][/td][td][center]3[/center][/td][/tr]\r\n'+
+                 '[tr][td][center]21[/center][/td][td][center][/center][/td][td][center]4[/center][/td][/tr][/table]\r\n'+
                  '\r\n[b]Group 2[/b]\r\n'+
-                 '[table][tr][td][b]field4[/b][/td][td][b]field5[/b][/td][/tr]\r\n'+
-                 '[tr][td]1[/td][td]a[/td][/tr]\r\n'+
-                 '[tr][td]2[/td][td]b[/td][/tr][/table]');
+                 '[table][tr][td][center][b]field4[/b][/center][/td][td][center][b]field5[/b][/center][/td][/tr]\r\n'+
+                 '[tr][td][center][/center][/td][td][center]a[/center][/td][/tr]\r\n'+
+                 '[tr][td][center]2[/center][/td][td][center]b[/center][/td][/tr][/table]');
       });
     });
   });
