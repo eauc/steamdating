@@ -51,10 +51,12 @@ describe('controllers', function() {
     });
 
     it('should init exports', function() {
-      expect(this.scope.exports).toBeAn('Object');
-      expect(_.keys(this.scope.exports).length).not.toBe(0);
-      expect(this.scope.save).toBeAn('Object');
-      expect(_.keys(this.scope.exports).length).not.toBe(0);
+      expect(this.fileExportService.generate)
+        .toHaveBeenCalledWith('json', this.scope.state);
+
+      expect(this.scope.save.name).toMatch(/^steamdating_\d+\.json$/);
+      expect(this.scope.save.url)
+        .toBe('fileExport.generate.returnValue');
     });
 
     describe('on destroy', function() {
@@ -245,9 +247,6 @@ describe('controllers', function() {
     describe('updateExports', function() {
       beforeEach(function() {
         this.fileExportService.generate.calls.reset();
-        this.fileExportService.generate.and.callFake(function(type) {
-          return type+'_url';
-        });
 
         this.scope.exports = null;
         this.scope.save = null;
@@ -260,31 +259,8 @@ describe('controllers', function() {
           .toHaveBeenCalledWith('json', this.scope.state);
 
         expect(this.scope.save.name).toMatch(/^steamdating_\d+\.json$/);
-        expect(this.scope.save.url).toBe('json_url');
-      });
-
-      it('should generate export for fk players list', function() {
-        expect(this.fileExportService.generate)
-          .toHaveBeenCalledWith('fk', this.scope.state.players);
-
-        expect(this.scope.exports.fk.name).toMatch(/^players_\d+\.txt$/);
-        expect(this.scope.exports.fk.url).toBe('fk_url');
-        expect(this.scope.exports.fk.label).toBe('FK players list');
-      });
-
-      using([
-        [ 'type' , 'name'               , 'label'       ],
-        [ 'csv'  , /^ranking_\d+\.csv$/ , 'CSV Ranking' ],
-        [ 'bb'   , /^ranking_\d+\.txt$/ , 'BB Ranking'  ]
-      ], function(exple) {
-        it('should generate export for '+exple.type+' ranking', function() {
-          expect(this.fileExportService.generate)
-            .toHaveBeenCalledWith(exple.type, 'state.rankingTables.returnValue');
-                  
-          expect(this.scope.exports[exple.type+'_rank'].name).toMatch(exple.name);
-          expect(this.scope.exports[exple.type+'_rank'].url).toBe(exple.type+'_url');
-          expect(this.scope.exports[exple.type+'_rank'].label).toBe(exple.label);
-        });
+        expect(this.scope.save.url)
+          .toBe('fileExport.generate.returnValue');
       });
     });
   });

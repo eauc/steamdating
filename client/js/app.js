@@ -27,13 +27,17 @@ angular.module('srApp', [
         url: '/players_list',
         templateUrl: 'partials/playersList.html',
         controller: 'playersListCtrl',
-        data: { sort: 'Name' }
+        data: { sort: 'Name',
+                exports: ['fk']
+              }
       })
       .state('players_ranking', {
         url: '/players_ranking',
         templateUrl: 'partials/playersRanking.html',
         controller: 'playersListCtrl',
-        data: { sort: 'Rank' }
+        data: { sort: 'Rank',
+                exports: ['csv_rank', 'bb_rank']
+              }
       })
       .state('groups_edit', {
         url: '/groups_edit',

@@ -8,17 +8,14 @@ angular.module('srApp.controllers')
     '$state',
     'players',
     'player',
-    // 'team',
-    // 'teams',
+    'fileExport',
     function($scope,
              prompt,
              state,
              $state,
              players,
-             player
-             // team,
-             // teams
-            ) {
+             player,
+             fileExport) {
       console.log('init playersListCtrl');
 
       function sortPlayers() {
@@ -26,6 +23,28 @@ angular.module('srApp.controllers')
           state['sortPlayersBy'+$state.current.data.sort]($scope.state);
       }
       sortPlayers();
+
+      $scope.updateExports = function() {
+        var exports = {
+          fk: {
+            name: 'players_list.txt',
+            url: fileExport.generate('fk', $scope.state.players),
+            label: 'FK players list'
+          },
+          csv_rank: {
+            name: 'players_ranking.csv',
+            url: fileExport.generate('csv', state.rankingTables($scope.state)),
+            label: 'CSV Ranking'
+          },
+          bb_rank: {
+            name: 'players_ranking.txt',
+            url: fileExport.generate('bb', state.rankingTables($scope.state)),
+            label: 'BB Ranking'
+          }
+        };
+        $scope.exports = _.pick(exports, $state.current.data.exports);
+      };
+      $scope.updateExports();
 
       $scope.doEditGroups = function() {
         $scope.edit.back = $state.current.name;

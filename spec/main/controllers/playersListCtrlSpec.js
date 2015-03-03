@@ -22,11 +22,12 @@ describe('controllers', function() {
         this.stateService = spyOnService('state');
         this.playerService = spyOnService('player');
         this.playersService = spyOnService('players');
+        this.fileExportService = spyOnService('fileExport');
 
         this.promptService = spyOnService('prompt');
         mockReturnPromise(this.promptService.prompt);
 
-        initCtrl = function(sort_by) {
+        initCtrl = function(sort_by, exports) {
           ctxt.scope = $rootScope.$new();
           ctxt.state_players = [ 'titi' ];
           ctxt.scope.edit = { };
@@ -34,7 +35,8 @@ describe('controllers', function() {
           ctxt.scope.goToState = jasmine.createSpy('goToState');
           
           ctxt.state = { current: { name: 'current_state',
-                                    data: { sort: sort_by || 'Rank' } } };
+                                    data: { sort: sort_by || 'Rank',
+                                            exports: exports || [] } } };
         
           $controller('playersListCtrl', {
             '$scope': ctxt.scope,
@@ -60,6 +62,22 @@ describe('controllers', function() {
       });
     });
 
+    using([
+      [ 'exports'  , 'type' , 'object' ],
+      [ 'fk'       , 'fk'   , ['titi'] ],
+      [ 'csv_rank' , 'csv'  , 'state.rankingTables.returnValue' ],
+      [ 'bb_rank'  , 'bb'   , 'state.rankingTables.returnValue' ],
+    ], function(e, d) {
+      it('should init exports, '+d, function() {
+        initCtrl(null, [e.exports]);
+
+        expect(this.fileExportService.generate)
+          .toHaveBeenCalledWith(e.type, e.object);
+        expect(this.scope.exports[e.exports].url)
+          .toBe('fileExport.generate.returnValue');
+      });
+    });
+    
     describe('doEditGroups', function () {
       it('should init edit parameters', function() {
         this.scope.doEditGroups();
