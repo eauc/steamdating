@@ -7,7 +7,8 @@
     {{state.players | players:'size'}} Players /
     {{state.players | players:'nbGroups'}} Groups
   </h4>
-  <div ng-repeat="f in exports">
+  <div ng-repeat="f in exports"
+       style="margin:10px 0;">
     <a ng-if="f.url"
        ng-href="{{f.url}}"
        download="{{f.name}}">
