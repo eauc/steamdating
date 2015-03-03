@@ -8,6 +8,7 @@
     "jasmine": false,
     "console": false,
     "window": false,
+    "document": false,
     "$": false,
     "describe": false,
     "xdescribe": false,

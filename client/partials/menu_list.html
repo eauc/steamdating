@@ -1,0 +1,30 @@
+<li ng-class="{
+    'active': stateIs('file')
+    }">
+  <a href="#/file">File</a>
+</li>
+<li ng-class="{
+    'active': stateIs('players_list')
+    }">
+  <a href="#/players_list">Players</a>
+</li>
+<li ng-class="{
+    'active': stateIs('players_ranking')
+    }">
+  <a href="#/players_ranking">Ranking</a>
+</li>
+<li ng-class="{
+  'active': currentState().indexOf('rounds') >= 0
+  }">
+  <a href="#/rounds/sum">Rounds</a>
+</li>
+<li ng-class="{
+    'active': stateIs('stats')
+    }">
+  <a href="#/stats">Stats</a>
+</li>
+<li ng-class="{
+    'active': stateIs('settings_edit')
+    }">
+  <a href="#/settings_edit">Settings</a>
+</li>

@@ -1,4 +1,41 @@
 /******************************************************/
+/* main view
+/******************************************************/
+
+#drop-menu {
+    position: absolute;
+    right: 5px;
+    top: 0px;
+}
+#drop-menu .dropdown-menu {
+    left: auto;
+    right: 0px;
+}
+#drop-menu .dropdown-menu li {
+    padding: 3px 0px 3px 10px;
+}
+#drop-menu .dropdown-menu li.active {
+    background-color: #EEE;
+}
+#drop-menu .dropdown-menu li.divider {
+    margin-left:0px;
+    padding:0px;
+}
+@media (max-width: 767px) {
+    #tab-menu {
+        display: none;
+    }
+    #otherapp-link {
+        display: none;
+    }
+}
+@media (min-width: 768px) {
+    #drop-menu {
+        display: none;
+    }
+}
+
+/******************************************************/
 /* appCache progress bar
 /******************************************************/
 

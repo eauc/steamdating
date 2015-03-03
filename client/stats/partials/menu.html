@@ -1,23 +1,32 @@
 <nav class="navbar navbar-default">
-  <div class="navbar-header pull-right">
+  <div id="otherapp-link"
+       class="navbar-header pull-right">
     <a class="navbar-brand" href="/index.html">Go to SteamDating</a>
   </div>
   <div class="navbar-header"
        ng-include="'title.html'">
   </div>
-  <div class="collapse navbar-collapse">
-    <ul class="nav navbar-nav">
-      <li ng-class="{
-          'active': stateIs('file')
-          }">
-        <a href="#/file">File</a>
-      </li>
-      <li ng-class="{
-          'active': stateIs('stats')
-          }">
-        <a href="#/stats">Stats</a>
-      </li>
+  <div>
+    <ul id="tab-menu"
+        class="nav navbar-nav"
+        ng-include="'partials/menu_list.html'">
     </ul>
+    <div id="drop-menu"
+         class="btn-group">
+      <button class="btn btn-default navbar-btn"
+              open-dropdown="drop-menu">
+        <span class="glyphicon glyphicon-menu-hamburger"></span>
+        Menu
+      </button>
+      <ul class="dropdown-menu">
+        <ng-include src="'partials/menu_list.html'">
+        </ng-include>
+        <li class="divider"></li>
+        <li>
+          <a href="/index.html">Go to SteamDating</a>
+        </li>
+      </ul>
+    </div>
   </div>
   <app-cache-progress-bar>
   </app-cache-progress-bar>
