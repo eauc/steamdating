@@ -16,7 +16,7 @@ angular.module('srApp.services')
           };
           var res =_.chain(string)
               .apply(s.lines)
-          // skip col names
+          // skip col headers
               .rest()
               .filter(_.complement(s.isBlank))
               .mapWith(s.words, ';')
@@ -30,7 +30,7 @@ angular.module('srApp.services')
               })
               .map(function(line) {
                 var player = {
-                  name: s.trim(line[3]),
+                  name: s.capitalize(s.trim(line[3])),
                   origin: line[5],
                 };
                 _.each(t3_factions_map, function(faction, t3_name) {

@@ -47,11 +47,13 @@ describe('service', function() {
         expect(res[0][0].origin).toBe('Talence');
         expect(res[0][0].faction).toBe('The Protectorate of Menoth');
 
-        expect(res[0][1].name).toBe('elrey22');
+        //capitalize
+        expect(res[0][1].name).toBe('Elrey22');
         expect(res[0][1].origin).toBe('Toulouse');
         expect(res[0][1].faction).toBe('Cryx');
 
-        expect(res[0][2].name).toBe('communiste');
+        //capitalize
+        expect(res[0][2].name).toBe('Communiste');
         expect(res[0][2].origin).toBe('Moscul');
         expect(res[0][2].faction).toBe('Legion of Everblight');
       });
@@ -71,7 +73,7 @@ describe('service', function() {
         expect(res[0][0].origin).toBe('Talence');
         expect(res[0][0].faction).toBe('The Protectorate of Menoth');
 
-        expect(res[0][1].name).toBe('communiste');
+        expect(res[0][1].name).toBe('Communiste');
         expect(res[0][1].origin).toBe('Moscul');
         expect(res[0][1].faction).toBe('Legion of Everblight');
       });
@@ -89,7 +91,7 @@ describe('service', function() {
         expect(res[0].length).toBe(1);
         expect(res[1].length).toBe(2);
 
-        expect(res[0][0].name).toBe('communiste');
+        expect(res[0][0].name).toBe('Communiste');
         expect(res[0][0].origin).toBe('Moscul');
         expect(res[0][0].faction).toBe('Legion of Everblight');
 
