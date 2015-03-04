@@ -18,7 +18,8 @@ describe('service', function() {
       beforeEach(function() {
         this.factions = {
           'Cryx': { name: 'Cryx', t3: 'Cryx' },
-          'The Protectorate of Menoth': { name: 'The Protectorate of Menoth', t3: 'Menoth' },
+          // name !== key
+          'Protectorate of Menoth': { name: 'The Protectorate of Menoth', t3: 'Menoth' },
           'Legion of Everblight': {
             name: 'Legion of Everblight',
             t3: 'Everblight',
@@ -32,9 +33,10 @@ describe('service', function() {
 
       it('should extract players names, origin and faction', function() {
         var string =
-"Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
-"Player: Titi\nOrigin: Lyon\nFaction: Cryx\n\n"+
-"Player: Tata\nOrigin: Grenoble\nFaction: The Protectorate of Menoth\n\n";
+            "Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
+            "Player: titi\nOrigin: Lyon\nFaction: Cryx\n\n"+
+            // parse faction name
+            "Player: tatA\nOrigin: Grenoble\nFaction: The Protectorate of Menoth\n\n";
         var res = fkParser.parse(string, this.factions);
 
         expect(res[0].length).toBe(3);
@@ -44,13 +46,16 @@ describe('service', function() {
         expect(res[0][0].origin).toBe('Chambery');
         expect(res[0][0].faction).toBe('Legion of Everblight');
 
+        // capitalize
         expect(res[0][1].name).toBe('Titi');
         expect(res[0][1].origin).toBe('Lyon');
         expect(res[0][1].faction).toBe('Cryx');
 
-        expect(res[0][2].name).toBe('Tata');
+        // capitalize
+        expect(res[0][2].name).toBe('TatA');
         expect(res[0][2].origin).toBe('Grenoble');
-        expect(res[0][2].faction).toBe('The Protectorate of Menoth');
+        // store faction key
+        expect(res[0][2].faction).toBe('Protectorate of Menoth');
       });
 
       it('should log error when player name is invalid', function() {
@@ -91,33 +96,61 @@ describe('service', function() {
         expect(res[1][0]).toMatch(/line 3.*unknown faction/);
       });
 
-      it('should extract players lists', function() {
-        var string =
-"Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
-"System: Hordes\nFaction: Legion of Everblight\nThagrosh, the Messiah\n* Carnivean\n\n\n"+
-"System: Hordes\nFaction: Fallen Angels\nSaeryn, Omen of Everblight\n* Shredder\n\n\n";
-        var res = fkParser.parse(string, this.factions);
+      using([
+        [ 'list1', 'list2' ],
+        // FK
+        [ 'Thagrosh, the Messiah (*3pts)\n'+
+          '* Carnivean (11pts)\n'+
+          'Objective: Fuel Cache\n'+
+          'Specialists:\n'+
+          '* Raek (4pts)',
+          'Saeryn, Omen of Everblight (*5pts)\n'+
+          '* Shredder (2pts)' ],
+        // WHAC
+        [ 'Thagrosh, the Messiah(*3points)\n'+
+          '* Carnivean(11points)\n'+
+          'Objective: Fuel Cache\n'+
+          'Specialists:\n'+
+          '* Raek(4points)',
+          'Saeryn, Omen of Everblight(*5points)\n'+
+          '* Shredder(2points)' ],
+        // Warroom
+        [ 'Thagrosh, the Messiah - WB: 3\n'+
+          '* Carnivean - PC: 11\n'+
+          'Objective: Fuel Cache\n'+
+          'Specialists:\n'+
+          '* Raek - PC: 4',
+          'Saeryn, Omen of Everblight - WB: 5\n'+
+          '* Shredder - PC: 2' ],
+      ], function(e, d) {
+        it('should extract players lists, '+d, function() {
+          var string = 'Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n'+
+              '\nList:\n'+e.list1+
+              '\n\nList:\nTheme: Saeryn - Fallen Angels\n'+e.list2+
+              '\n\n';
+          var res = fkParser.parse(string, this.factions);
 
-        expect(res[0].length).toBe(1);
-        expect(res[1].length).toBe(0);
+          expect(res[0].length).toBe(1);
+          expect(res[1].length).toBe(0);
 
-        expect(res[0][0].lists.length).toBe(2);
+          expect(res[0][0].lists.length).toBe(2);
+          
+          expect(res[0][0].lists[0].faction).toBe('Legion of Everblight');
+          expect(res[0][0].lists[0].caster).toBe('thagrosh2');
+          expect(res[0][0].lists[0].theme).toBe(undefined);
+          expect(res[0][0].lists[0].fk).toBe(e.list1);
 
-        expect(res[0][0].lists[0].faction).toBe('Legion of Everblight');
-        expect(res[0][0].lists[0].caster).toBe('thagrosh2');
-        expect(res[0][0].lists[0].theme).toBe(null);
-        expect(res[0][0].lists[0].fk).toBe('Thagrosh, the Messiah\n* Carnivean');
-
-        expect(res[0][0].lists[1].faction).toBe('Legion of Everblight');
-        expect(res[0][0].lists[1].caster).toBe('saeryn1');
-        expect(res[0][0].lists[1].theme).toBe('Fallen Angels');
-        expect(res[0][0].lists[1].fk).toBe('Saeryn, Omen of Everblight\n* Shredder');
+          expect(res[0][0].lists[1].faction).toBe('Legion of Everblight');
+          expect(res[0][0].lists[1].caster).toBe('saeryn1');
+          expect(res[0][0].lists[1].theme).toBe('Saeryn - Fallen Angels');
+          expect(res[0][0].lists[1].fk).toBe(e.list2);
+        });
       });
 
       it('should warn about unknown list casters', function() {
         var string =
 "Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
-"System: Hordes\nFaction: Legion of Everblight\nToto le gros\n* Carnivean\n\n\n";
+"List:\nToto le gros\n* Carnivean\n\n\n";
         var res = fkParser.parse(string, this.factions);
 
         expect(res[0].length).toBe(1);
@@ -127,7 +160,7 @@ describe('service', function() {
 
         expect(res[0][0].lists[0].faction).toBe('Legion of Everblight');
         expect(res[0][0].lists[0].caster).toBe('Toto le gros');
-        expect(res[0][0].lists[0].theme).toBe(null);
+        expect(res[0][0].lists[0].theme).toBe(undefined);
         expect(res[0][0].lists[0].fk).toBe('Toto le gros\n* Carnivean');
 
         expect(res[1][0]).toMatch(/line \d+.*unknown caster/);
@@ -137,7 +170,7 @@ describe('service', function() {
         var string =
 "Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
 "Player: \nOrigin: Chambery\nFaction: Cryx\n\n"+
-"System: Hordes\nFaction: Legion of Everblight\nToto le gros\n* Carnivean\n\n\n";
+"List:\nToto le gros\n* Carnivean\n\n\n";
         var res = fkParser.parse(string, this.factions);
 
         expect(res[0].length).toBe(1);
@@ -152,17 +185,16 @@ describe('service', function() {
       it('should warn about unknown parameters', function() {
         var string =
 "Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\nNew: blah\n\n"+
-"System: Hordes\nFaction: Legion of Everblight\nUnknown: X\n"+
+"List:\nUnknown: X\n"+
 "Toto le gros\n* Carnivean\nFaction: Toto\n\n\n";
         var res = fkParser.parse(string, this.factions);
 
         expect(res[0].length).toBe(1);
-        expect(res[1].length).toBe(4);
+        expect(res[1].length).toBe(3);
 
         expect(res[1][0]).toMatch(/line \d+.*parameter .*New.*ignored/);
         expect(res[1][1]).toMatch(/line \d+.*parameter .*Unknown.*ignored/);
         expect(res[1][2]).toMatch(/line \d+.*unknown caster/);
-        expect(res[1][3]).toMatch(/line \d+.*parameter .*Faction.*ignored/);
       });
     });
   });

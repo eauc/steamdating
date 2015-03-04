@@ -299,10 +299,10 @@ describe('service', function() {
       });
       this.state = {
         players: [[
-          { name: 'p1', lists: [{ caster: 'caster1', fk: 'Caster1\r\nRefsA\r\n' },
-                                { caster: 'caster2', fk: 'Caster2\r\nRefsB\r\n' },
+          { name: 'p1', lists: [{ caster: 'caster1', fk: 'Caster1\r\nRefs A\r\n' },
+                                { caster: 'caster2', fk: 'Caster2\r\nRefs B\r\n' },
                                 { caster: 'caster3', fk: null }] },
-          { name: 'p2', lists: [{ caster: 'caster1', fk: 'Caster1\r\nRefsC\r\n' }] }
+          { name: 'p2', lists: [{ caster: 'caster1', fk: 'Caster1\r\nRefs C\r\n' }] }
         ]]
       };
     }]));
@@ -323,8 +323,8 @@ describe('service', function() {
                     { p1: {name:'p1', list: 'caster2' },
                       p2: {name:'p2', list: 'caster3' } }, ] ],
         ])).toEqual({
-          RefsA : 1,
-          RefsB : 1
+          'Refs A' : 1,
+          'Refs B' : 1
         });
 
         expect(statsReferencesEntry.count(this.state,[
@@ -335,9 +335,9 @@ describe('service', function() {
           [ 'p1', [ { p1: {name:'p1', list: 'caster2' },
                       p2: {name:'p2', list: 'caster3' } }, ] ],
         ])).toEqual({
-          RefsA : 1,
-          RefsC : 1,
-          RefsB : 1
+          'Refs A' : 1,
+          'Refs C' : 1,
+          'Refs B' : 1
         });
       });
     });

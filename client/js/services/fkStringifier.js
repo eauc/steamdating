@@ -24,8 +24,8 @@ angular.module('srApp.services')
         return ret.join(EOL) + EOL;
       }
       function stringifyList(list) {
-        var ret = ['System: Warmachordes'];
-        ret.push('Faction: '+(_.exists(list.theme) ? list.theme : list.faction));
+        var ret = ['List:'];
+        if(_.exists(list.theme)) ret.push('Theme: '+list.theme);
         ret.push(list.fk);
         ret.push('');
         return ret.join(EOL);

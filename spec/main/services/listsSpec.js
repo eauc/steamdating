@@ -67,6 +67,7 @@ describe('service', function() {
           expect(list.references({
             fk: e.fk
           })).toEqual([
+            // titleize
             'Saeryn Omen Of Everblight',
             'Angelius',
             'Angelius',
@@ -74,6 +75,7 @@ describe('service', function() {
             'Fuel Cache',
             'Raek',
             'Hex Hunters',
+            // titleize
             'Bayal Hound Of Everblight'
           ]);
         });
