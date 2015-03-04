@@ -23,25 +23,60 @@ describe('service', function() {
         });
       });
     });
-
+    
     describe('references()', function() {
-      it('should parse references in FK list', function() {
-        expect(list.references({
-          fk: ''
-        })).toEqual([]);
-        expect(list.references({
-          fk: 'Saeryn, Omen of Everblight (*6pts)\r\n'+
-            // blank lines are ignored
-            '\t \r\n'+
-            '* Angelius (9pts)\r\n'+
-            '* Angelius (9pts)\r\n'+
-            'Hex Hunters (Leader and 5 Grunts) (8pts)\r\n'
-        })).toEqual([
-          'Saeryn, Omen of Everblight',
-          'Angelius',
-          'Angelius',
-          'Hex Hunters'
-        ]);
+      using([
+        [ 'fk' ],
+        // FK
+        [ 'Saeryn, Omen of Everblight (*6pts)\r\n'+
+          // blank lines are ignored
+          '\t \r\n'+
+          '* Angelius (9pts)\r\n'+
+          '* Angelius (9pts)\r\n'+
+          'Cylena Raefyll & Nyss Hunters (Cylena and 9 Grunts) (10pts)\r\n'+
+          'Objective: Fuel cache\r\n'+
+          'Specialists:\r\n'+
+          '* Raek (4pts)\r\n'+
+          'Hex Hunters (Leader and 5 Grunts) (5pts)\r\n'+
+          '* Bayal, Hound of Everblight (3pts)\r\n' ],
+        // WHAC
+        [ 'Saeryn, Omen of Everblight(*6points)\r\n'+
+          '* Angelius(9points)\r\n'+
+          '* Angelius(9points)\r\n'+
+          'Cylena Raefyll & Nyss Hunters(10points)(10models)\r\n'+
+          'Objective: Fuel cache\r\n'+
+          'Specialists:\r\n'+
+          '* Raek(4points)\r\n'+
+          'Hex Hunters(5points)(6models)\r\n'+
+          '* UA Bayal, Hound of Everblight(3points)\r\n' ],
+        // Warroom
+        [ 'Saeryn, Omen of Everblight - WB: 6\r\n'+
+          '-    Angelius - PC: 9\r\n'+
+          '-    Angelius - PC: 9\r\n'+
+          'Cylena Raefyll & Nyss Hunters - Cylena & 9 Grunts: 10\r\n'+
+          'Objective: Fuel cache\r\n'+
+          'Specialists:\r\n'+
+          '-    Raek - PC: 4\r\n'+
+          'Hex Hunters - Leader and 5 Grunts - PC: 5\r\n'+
+          '-    Bayal, Hound of Everblight - PC: 3\r\n' ]
+      ], function(e,d) {
+        it('should parse references in FK list, '+d, function() {
+          expect(list.references({
+            fk: ''
+          })).toEqual([]);
+          expect(list.references({
+            fk: e.fk
+          })).toEqual([
+            'Saeryn Omen Of Everblight',
+            'Angelius',
+            'Angelius',
+            'Cylena Raefyll & Nyss Hunters',
+            'Fuel Cache',
+            'Raek',
+            'Hex Hunters',
+            'Bayal Hound Of Everblight'
+          ]);
+        });
       });
     });
   });

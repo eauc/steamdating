@@ -18,9 +18,17 @@ angular.module('srApp.services')
             .apply(s.lines)
             .filter(_.complement(s.isBlank))
             .map(function(s) { return s.replace(/\(.*\)/,''); })
-            .map(function(s) { return s.replace(/\*/,''); })
-            .map(function(s) { return s.replace(/\d+/,''); })
+            .map(function(s) { return s.replace(/\[.*\]/,''); })
+            .map(function(s) { return s.replace(/- (PC|WJ|WB).*$/,''); })
+          // eliminate Warroom's "- (Leader|Cylena) & Grunts"
+            .map(function(s) { return s.replace(/-[^-]*runt.*$/,''); })
+            .map(function(s) { return s.replace(/Objective/,''); })
+            .map(function(s) { return s.replace(/Specialists/,''); })
+            .map(function(s) { return s.replace(/UA/,''); })
+            .map(function(s) { return s.replace(/[^a-zA-Z\s&]/g,''); })
             .map(function(st) { return s.trim(st); })
+            .map(function(st) { return s.titleize(st); })
+            .filter(_.complement(s.isBlank))
             .value();
         }
       };
