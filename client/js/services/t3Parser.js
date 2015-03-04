@@ -41,9 +41,9 @@ angular.module('srApp.services')
                 return player;
               })
               .map(function(player) {
-                return playerService.create(player.name,
-                                            player.faction,
-                                            player.origin);
+                return playerService.create({ name: player.name,
+                                              faction: player.faction,
+                                              origin: player.origin });
               })
               .value();
           return [res, ctxt.errors];

@@ -33,7 +33,7 @@ describe('service', function() {
       });
 
       it('should update lists played in <rounds>', function() {
-        var p = player.create('toto');
+        var p = player.create({ name: 'toto' });
         var dummy_rounds = [ 'tata' ];
 
         expect(player.updateListsPlayed(p, dummy_rounds).lists_played)
@@ -107,7 +107,7 @@ describe('service', function() {
       });
 
       it('should update points gained in <rounds>', function() {
-        var p = player.create('toto');
+        var p = player.create({ name: 'toto' });
         var dummy_rounds = [ 'tata' ];
         var bracket_start = 8;
         var bracket_weight = 42;

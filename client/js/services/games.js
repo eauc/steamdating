@@ -4,11 +4,11 @@ angular.module('srApp.services')
   .factory('game', [
     function() {
       var gameService = {
-        create: function(table, p1_name, p2_name) {
-          return {
-            table: table,
+        create: function(data) {
+          return _.deepExtend({
+            table: null,
             p1: {
-              name: p1_name,
+              name: null,
               list: null,
               tournament: null,
               control: null,
@@ -16,7 +16,7 @@ angular.module('srApp.services')
               custom_field: null
             },
             p2: {
-              name: p2_name,
+              name: null,
               list: null,
               tournament: null,
               control: null,
@@ -24,7 +24,7 @@ angular.module('srApp.services')
               custom_field: null
             },
             games: []
-          };
+          }, data);
         },
         forPlayer: function(game, player_name) {
           if(player_name === game.p1.name ||

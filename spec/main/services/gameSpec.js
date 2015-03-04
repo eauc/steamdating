@@ -14,9 +14,11 @@ describe('service', function() {
       game = _game;
     }]));
 
-    describe('create(<table>, <p1_name>, <p2_name>', function() {
+    describe('create(<data>)', function() {
       it('should create a default object', function() {
-        expect(game.create(4, 'toto', 'titi'))
+        expect(game.create({ table: 4,
+                             p1: { name: 'toto' },
+                             p2: { name: 'titi' } }))
           .toEqual({
             table: 4,
             p1: { name: 'toto', list: null,
@@ -30,7 +32,9 @@ describe('service', function() {
 
     describe('player(<name>)', function() {
       beforeEach(function() {
-        this.game = game.create(4, 'toto', 'titi');
+        this.game = game.create({ table: 4,
+                                  p1: { name: 'toto' },
+                                  p2: { name: 'titi' } });
       });
 
       it('should return player\'s info for <name>', function() {
@@ -41,7 +45,9 @@ describe('service', function() {
 
     describe('listForPlayer(<name>)', function() {
       beforeEach(function() {
-        this.game = game.create(4, 'toto', 'titi');
+        this.game = game.create({ table: 4,
+                                  p1: { name: 'toto' },
+                                  p2: { name: 'titi' } });
         this.game.p1.list = 'caster1';
         this.game.p2.list = 'caster2';
       });
@@ -54,7 +60,9 @@ describe('service', function() {
 
     describe('forPlayer(<name>)', function() {
       when('<game> involves player', function() {
-        this.game = game.create(4, 'toto', 'titi');
+        this.game = game.create({ table: 4,
+                                  p1: { name: 'toto' },
+                                  p2: { name: 'titi' } });
       }, function() {
         it('should return <game>', function() {
           expect(game.forPlayer(this.game, 'toto')).toBe(this.game);
@@ -65,9 +73,13 @@ describe('service', function() {
       });
 
       when('<game>\'s sub-games involves player', function() {
-        var g = game.create(4, 'toto', 'titi');
+        var g  = game.create({ table: 4,
+                               p1: { name: 'toto' },
+                               p2: { name: 'titi' } });
         _.range(3).map(function(i) {
-          g.games.push(game.create(i+1, 'p'+(i+1), 'p'+(i+3)));
+          g.games.push(game.create({ table: i+1,
+                                     p1: { name: 'p'+(i+1) },
+                                     p2: { name: 'p'+(i+3) } }));
         });
         this.game = g;
       }, function() {
@@ -82,7 +94,9 @@ describe('service', function() {
 
     describe('tableForPlayer(<name>)', function() {
       beforeEach(function() {
-        this.game = game.create(4, 'toto', 'titi');
+        this.game = game.create({ table: 4,
+                                  p1: { name: 'toto' },
+                                  p2: { name: 'titi' } });
       });
 
       it('should return player\'s list', function() {
@@ -93,7 +107,9 @@ describe('service', function() {
 
     describe('opponentForPlayer(<name>)', function() {
       beforeEach(function() {
-        this.game = game.create(4, 'toto', 'titi');
+        this.game = game.create({ table: 4,
+                                  p1: { name: 'toto' },
+                                  p2: { name: 'titi' } });
       });
 
       it('should return player\'s list', function() {
@@ -121,7 +137,9 @@ describe('service', function() {
 
     describe('winForPlayer(<name>)', function() {
       beforeEach(function() {
-        this.game = game.create(4, 'toto', 'titi');
+        this.game = game.create({ table: 4,
+                                  p1: { name: 'toto' },
+                                  p2: { name: 'titi' } });
       });
 
       when('result is not defined', function(){
@@ -152,14 +170,18 @@ describe('service', function() {
         [ 'p1' , 'p2' , true      ],
       ], function(e, d) {
         it('should check whether both players are defined, '+d, function() {
-          expect(game.isValid(game.create(3, e.p1, e.p2))).toBe(e.isValid);
+          expect(game.isValid(game.create({ table: 3,
+                                            p1: { name: e.p1 },
+                                            p2: { name: e.p2 } }))).toBe(e.isValid);
         });
       });
     });
 
     describe('winner()', function() {
       beforeEach(function() {
-        this.game = game.create(4, 'toto', 'titi');
+        this.game = game.create({ table: 4,
+                                  p1: { name: 'toto' },
+                                  p2: { name: 'titi' } });
       });
 
       when('result is not defined', function(){
@@ -187,7 +209,9 @@ describe('service', function() {
 
     describe('loser()', function() {
       beforeEach(function() {
-        this.game = game.create(4, 'toto', 'titi');
+        this.game = game.create({ table: 4,
+                                  p1: { name: 'toto' },
+                                  p2: { name: 'titi' } });
       });
 
       when('result is not defined', function(){

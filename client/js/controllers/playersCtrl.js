@@ -133,7 +133,7 @@ angular.module('srApp.controllers')
       $scope.doAddList = function() {
         $scope.list = $scope.player.lists.length;
         $scope.player.lists = lists.add($scope.player.lists,
-                                        list.create($scope.player.faction));
+                                        list.create({ faction: $scope.player.faction }));
       };
       $scope.doDropList = function(i) {
         $scope.player.lists = lists.drop($scope.player.lists, i);

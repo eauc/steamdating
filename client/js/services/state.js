@@ -72,7 +72,11 @@ angular.module('srApp.services')
                 var p2 = _.first(names);
                 names = _.rest(names);
 
-                var g = gameService.create(table++, p1, p2);
+                var g = gameService.create({
+                  table: table++,
+                  p1: { name: p1 },
+                  p2: { name: p2 }
+                });
                 g.p1.list = _.chain(_st.players)
                   .apply(playersService.player, p1)
                   .getPath('lists')
@@ -107,8 +111,7 @@ angular.module('srApp.services')
           return _st;
         },
         create: function(data) {
-          var _data = _.clone(data || {});
-          var state = _.defaults(_data, {
+          var state = _.deepExtend({
             bracket: [],
             players: [[]],
             rounds: [],
@@ -120,6 +123,12 @@ angular.module('srApp.services')
               player: null,
               game: null
             }
+          }, data);
+          state.players = _.map(state.players, function(group) {
+            return _.map(group, playerService.create);
+          });
+          state.rounds = _.map(state.rounds, function(round) {
+            return _.map(round, gameService.create);
           });
           state.players = stateService.updatePlayersPoints(state);
           stateService.store(state);

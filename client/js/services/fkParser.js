@@ -107,16 +107,16 @@ angular.module('srApp.services')
         ctxt.state = LIST_CONTENT_STATE;
       }
       function addPlayer(ctxt) {
-        ctxt.result.push(playerService.create(ctxt.player.name,
-                                              ctxt.player.faction,
-                                              ctxt.player.origin));
+        ctxt.result.push(playerService.create({ name: ctxt.player.name,
+                                                faction: ctxt.player.faction,
+                                                origin: ctxt.player.origin }));
         ctxt.state = DEFAULT_STATE;
       }
       function addPlayerList(ctxt) {
-        var list = listService.create(ctxt.list.faction,
-                                      ctxt.list.caster,
-                                      ctxt.list.theme,
-                                      ctxt.list.content.join('\n'));
+        var list = listService.create({ faction: ctxt.list.faction,
+                                        caster: ctxt.list.caster,
+                                        theme: ctxt.list.theme,
+                                        fk: ctxt.list.content.join('\n') });
         var player = _.last(ctxt.result);
         player.lists = listsService.add(player.lists, list);
         ctxt.state = DEFAULT_STATE;

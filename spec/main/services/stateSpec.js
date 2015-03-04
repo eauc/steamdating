@@ -36,7 +36,8 @@ describe('service', function() {
 
     describe('create(<data>)', function() {
       beforeEach(function() {
-        spyOn(state, 'updatePlayersPoints').and.returnValue(['updated_players']);
+        spyOn(state, 'updatePlayersPoints')
+          .and.callFake(function(s) { s.players.push('updated'); return s.players; });
         spyOn(state, 'store');
         this.data = {
           test: 'value'
@@ -46,13 +47,12 @@ describe('service', function() {
 
       it('should update players points', function() {
         expect(state.updatePlayersPoints).toHaveBeenCalled();
-        expect(this.result.players).toEqual(['updated_players']);
       });
 
       it('should create default state', function() {
         expect(this.result).toEqual({
           test: 'value',
-          players: ['updated_players'],
+          players: [ [], 'updated' ],
           rounds: [],
           bracket: [],
           ranking: {
@@ -65,7 +65,7 @@ describe('service', function() {
           }
         });
       });
-
+      
       it('should store state', function() {
         expect(state.store).toHaveBeenCalledWith(this.result);
       });
@@ -73,8 +73,8 @@ describe('service', function() {
       when('expected fields exist in data', function() {
         this.data = {
           test: 'value',
-          players: [ [ 'toto' ] ],
-          rounds: [ 'titi' ],
+          players: [ [ { name: 'toto' } ] ],
+          rounds: [ [ { table: 1 } ] ],
           bracket: [ 'bracket' ],
           ranking: {
             player: 'player',
@@ -88,9 +88,31 @@ describe('service', function() {
         this.result = state.create(this.data);
       }, function() {
         it('should not modify them', function() {
-          expect(this.result).toEqual(_.extend(this.data, {
-            players: ['updated_players']
-          }));
+          expect(this.result).toEqual({
+            bracket: [ 'bracket' ],
+            players: [ [ { name : 'toto', faction : null, origin : null, team : null,
+                           custom_field : 0, notes : null, lists : [  ], lists_played : [  ],
+                           points : { tournament : 0, sos : 0, control : 0,
+                                      army : 0, custom_field : 0 }
+                         }
+                       ], 'updated' ],
+            rounds: [ [ { table: 1,
+                          p1 : { name : null, list : null, tournament : null,
+                                 control : null, army : null, custom_field : null },
+                          p2 : { name : null, list : null, tournament : null,
+                                 control : null, army : null, custom_field : null },
+                          games : [  ]
+                        } ] ],
+            ranking: {
+              player : 'player',
+              team : 'team'
+            },
+            custom_fields: {
+              player : 'pcustom',
+              game : 'gcustom'
+            },
+            test : 'value'
+          });
         });
       });
     });

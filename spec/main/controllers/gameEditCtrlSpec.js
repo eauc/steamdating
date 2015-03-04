@@ -33,7 +33,9 @@ describe('controllers', function() {
             '$scope': ctxt.scope
           });
         };
-        this.edit_game = game.create(4, 'toto', 'titi');
+        this.edit_game = game.create({ table: 4,
+                                       p1: { name: 'toto' },
+                                       p2: { name: 'titi' } });
         initCtrlWith(this, this.edit_game);
       }
     ]));

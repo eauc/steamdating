@@ -13,9 +13,12 @@ describe('service', function() {
       list = _list;
     }]));
 
-    describe('create(<...>)', function() {
+    describe('create(<data>)', function() {
       it('should create a list object', function() {
-        expect(list.create('faction','caster','theme','fk')).toEqual({
+        expect(list.create({ faction: 'faction',
+                             caster: 'caster',
+                             theme: 'theme',
+                             fk: 'fk' })).toEqual({
           faction: 'faction',
           caster: 'caster',
           theme: 'theme',

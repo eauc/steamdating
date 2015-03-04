@@ -3,8 +3,10 @@
 angular.module('srApp.services')
   .factory('player', [
     'rounds',
+    'list',
     'lists',
     function(roundsService,
+             listService,
              listsService) {
       return {
         is: function(player, name) {
@@ -25,13 +27,14 @@ angular.module('srApp.services')
           }
           return rank;
         },
-        create: function(name, faction, origin, team) {
-          return {
-            name: name,
-            faction: faction,
-            origin: origin,
-            team: team,
+        create: function(data) {
+          var ret = _.deepExtend({
+            name: null,
+            faction: null,
+            origin: null,
+            team: null,
             custom_field: 0,
+            notes: null,
             lists: [],
             lists_played: [],
             points: {
@@ -41,7 +44,9 @@ angular.module('srApp.services')
               army: 0,
               custom_field: 0
             }
-          };
+          }, data);
+          ret.lists = _.map(ret.lists, listService.create);
+          return ret;
         },
         updateListsPlayed: function(player, rounds) {
           return _.chain(player)

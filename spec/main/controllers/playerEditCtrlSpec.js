@@ -96,7 +96,7 @@ describe('controllers', function() {
 
       it('should add a new list to player.lists', function() {
         expect(this.listService.create)
-          .toHaveBeenCalledWith(this.scope.edit.player.faction);
+          .toHaveBeenCalledWith({ faction: this.scope.edit.player.faction });
         expect(this.listsService.add)
           .toHaveBeenCalledWith(this.scope.edit.player.lists,
                                 'list.create.returnValue');

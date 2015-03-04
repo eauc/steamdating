@@ -4,13 +4,13 @@ angular.module('srApp.services')
   .factory('list', [
     function() {
       return {
-        create: function playerCreate(faction, caster, theme, fk) {
-          return {
-            faction: faction,
-            caster: caster,
-            theme: theme,
-            fk: fk
-          };
+        create: function playerCreate(data) {
+          return _.deepExtend({
+            faction: null,
+            caster: null,
+            theme: null,
+            fk: null
+          }, data);
         },
         references: function(list) {
           return _.chain(list)

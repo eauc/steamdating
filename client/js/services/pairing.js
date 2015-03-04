@@ -54,7 +54,9 @@ angular.module('srApp.services')
               var p2 = players[index[1]-1].name;
               var table = basePairing.suggestTableFor(state.rounds, tables, p1, p2);
               tables = _.without(tables, table);
-              return gameService.create(table, p1, p2);
+              return gameService.create({ table: table,
+                                          p1: { name: p1 },
+                                          p2: { name: p2 } });
             })
             .value();
         },
@@ -77,7 +79,9 @@ angular.module('srApp.services')
                                                         tables,
                                                         p[0], p[1]);
                 tables = _.without(tables, table);
-                return gameService.create(table, p[0], p[1]);
+                return gameService.create({ table: table,
+                                            p1: { name: p[0] },
+                                            p2: { name: p[1] } });
               }));
             }, [])
             .value();
@@ -159,7 +163,12 @@ angular.module('srApp.services')
                                                   p1.name, p2.name);
           tables = _.without(tables, table);
 
-          return [ gameService.create(table, p1.name, p2.name), sorted_players, tables ];
+          return [ gameService.create({ table: table,
+                                        p1: { name: p1.name },
+                                        p2: { name: p2.name } }),
+                   sorted_players,
+                   tables
+                 ];
         },
         suggestNextSingleRound: function(state, group_index) {
           var tables = playersService.tableRangeForGroup(state.players, group_index);

@@ -116,7 +116,7 @@ angular.module('srApp.services')
             return _.chain(group.length/2)
               .range()
               .map(function() {
-                return gameService.create(table++);
+                return gameService.create({ table: table++ });
               })
               .value();
           });

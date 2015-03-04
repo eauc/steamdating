@@ -276,7 +276,7 @@ describe('service', function() {
     
     describe('createNextRound(<players>)', function() {
       beforeEach(inject(function(game) {
-        spyOn(game, 'create').and.callFake(function(t) { return 'table'+t ; });
+        spyOn(game, 'create').and.callFake(function(g) { return 'table'+g.table ; });
         this.game = game;
       }));
 

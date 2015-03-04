@@ -26,8 +26,8 @@ describe('service', function() {
     describe('stringify(<players>)', function() {
       it('should export <players>', function() {
         var players = [
-          player.create('toto', 'Cryx', 'chambery'),
-          player.create('tata', 'Menoth', 'lyon'),
+          player.create({ name: 'toto', faction: 'Cryx', origin: 'chambery' }),
+          player.create({ name: 'tata', faction: 'Menoth', origin: 'lyon' }),
         ];
         var res = fkStringifier.stringify(players);
 
@@ -36,12 +36,12 @@ describe('service', function() {
 
       it('should export <players> lists', function() {
         var players = [
-          player.create('toto', 'Cryx', 'chambery'),
-          player.create('tata', 'Menoth', 'lyon'),
+          player.create({ name: 'toto', faction: 'Cryx', origin: 'chambery' }),
+          player.create({ name: 'tata', faction: 'Menoth', origin: 'lyon' }),
         ];
         players[0].lists = [
-          list.create('Cryx', 'gaspy1', 'Theme qui tue', 'GaspyContent'),
-          list.create('Cryx', 'gaspy2', null, 'GaspyALaPlage'),
+          list.create({ faction: 'Cryx', caster: 'gaspy1', theme: 'Theme qui tue', fk: 'GaspyContent' }),
+          list.create({ faction: 'Cryx', caster: 'gaspy2', theme: null, fk: 'GaspyALaPlage' }),
         ];
         var res = fkStringifier.stringify(players);
 
