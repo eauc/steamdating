@@ -17,6 +17,7 @@
       <th>Origin</th>
       <th>Faction</th>
       <th>Lists</th>
+      <th>Notes</th>
       <th></th>
     </tr>
     <tr ng-repeat="p in ::gr track by p.name"
@@ -34,6 +35,7 @@
           {{::l.caster}}
         </span>
       </td>
+      <td>{{::p.notes}}</td>
       <td>
         <button ng-click="doDropPlayer(p, $event)"
                 class="btn btn-default">
