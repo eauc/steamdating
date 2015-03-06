@@ -5,26 +5,15 @@ angular.module('srApp.controllers')
     '$scope',
     '$state',
     '$q',
-    // '$window',
     'factions',
     'state',
-    // 'player',
     'players',
-    // 'rounds',
-    // 'team',
-    // 'teams',
     function($scope,
              $state,
              $q,
-             // $window,
              factions,
              state,
-             // player,
-             players
-             // rounds,
-             // team,
-             // teams
-            ) {
+             players) {
       console.log('init mainCtrl');
 
       factions.init();
@@ -45,31 +34,10 @@ angular.module('srApp.controllers')
         $scope.edit.back = $state.current.name;
         $scope.goToState('player_edit');
       };
-      // $scope.doEditTeam = function(team) {
-      //   $scope.edit.team = team;
-      //   $scope.goToState('team_edit');
-      // };
-
-      // $scope.edit.player = $scope.state.players[0][1];
-      // $scope.edit.game = $scope.state.rounds[0][1];
-      // $scope.edit.rounds_pane = 'sum';
-
-      // $scope.show = {};
-      // $scope.doShowAll = function(i, show, event) {
-      //   _.chain($scope.state.teams[i])
-      //     .apply(teams.names)
-      //     .each(function(name) {
-      //       $scope.show[name] = show;
-      //     });
-      //   event.stopPropagation();
-      // };
-      // $scope.doShow = function(name, show, event) {
-      //   $scope.show[name] = show;
-      //   event.stopPropagation();
-      // };
 
       $scope.updatePoints = function() {
-        $scope.state.players = state.updatePlayersPoints($scope.state);
+        $scope.state = state.updatePlayersPoints($scope.state);
+        $scope.state = state.updateBestsPlayers($scope.state);
       };
       $scope.storeState = function() {
         state.store($scope.state);

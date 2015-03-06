@@ -85,10 +85,20 @@ describe('controllers', function() {
       it('should update all players points', function() {
         this.scope.updatePoints();
 
-        expect(this.scope.state.players)
-          .toBe('state.updatePlayersPoints.returnValue');
         expect(this.stateService.updatePlayersPoints)
-          .toHaveBeenCalledWith(this.scope.state);
+          .toHaveBeenCalledWith({
+          players: this.state_players,
+          rounds: this.state_rounds
+        });
+      });
+
+      it('should update bests players', function() {
+        this.scope.updatePoints();
+
+        expect(this.stateService.updateBestsPlayers)
+          .toHaveBeenCalledWith('state.updatePlayersPoints.returnValue');
+        expect(this.scope.state)
+          .toBe('state.updateBestsPlayers.returnValue');
       });
     });
 

@@ -188,6 +188,57 @@ angular.module('srApp.services')
             .sortBy(_.identity)
             .value();
         },
+        withPoints: function(coll, key, value) {
+          return _.chain(coll)
+            .flatten()
+            .filter(function(player) {
+              return ( _.getPath(player, key) !== 0 &&
+                       _.getPath(player, key) === value
+                     );
+            })
+            .pluck('name')
+            .value();
+        },
+        maxPoints: function(coll, key) {
+          return _.chain(coll)
+            .flatten()
+            .map(_.partial(_.getPath, _, key))
+            .max()
+            .value();
+        },
+        bests: function(coll, nb_rounds) {
+          var maxes = {
+            custom_field: playersService.maxPoints(coll, 'custom_field'),
+            points: {
+              sos: playersService.maxPoints(coll, 'points.sos'),
+              control: playersService.maxPoints(coll, 'points.control'),
+              army: playersService.maxPoints(coll, 'points.army'),
+              custom_field: playersService.maxPoints(coll, 'points.custom_field'),
+            }
+          };
+          return {
+            undefeated: playersService.withPoints(coll,
+                                                  'points.tournament',
+                                                  nb_rounds),
+            custom_field: playersService.withPoints(coll,
+                                                    'custom_field',
+                                                    maxes.custom_field),
+            points: {
+              sos: playersService.withPoints(coll,
+                                             'points.sos',
+                                             maxes.points.sos),
+              control: playersService.withPoints(coll,
+                                                 'points.control',
+                                                 maxes.points.control),
+              army: playersService.withPoints(coll,
+                                              'points.army',
+                                              maxes.points.army),
+              custom_field: playersService.withPoints(coll,
+                                                      'points.custom_field',
+                                                      maxes.points.custom_field),
+            }
+          };
+        },
         updateListsPlayed: function(coll, rounds) {
           return _.chain(coll)
             .map(function(group) {

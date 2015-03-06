@@ -37,14 +37,24 @@
                style="height:1.8em;"/>
           {{::p.faction}}
         </td>
-        <td ng-if="state | state:'hasPlayerCustomField'">
+        <td ng-if="state | state:'hasPlayerCustomField'"
+            class="{{:: (state | state:'isPlayerBest':'custom_field':p) ? 'info' : ''}}">
           {{::p.custom_field}}
         </td>
-        <td>{{::p.points.tournament}}</td>
-        <td>{{::p.points.sos}}</td>
-        <td>{{::p.points.control}}</td>
-        <td>{{::p.points.army}}</td>
-        <td ng-if="state | state:'hasGameCustomField'">
+        <td class="{{:: (state | state:'isPlayerBest':'undefeated':p) ? 'info' : ''}}">
+          {{::p.points.tournament}}
+        </td>
+        <td>
+          {{::p.points.sos}}
+        </td>
+        <td class="{{:: (state | state:'isPlayerBest':'points.control':p) ? 'info' : ''}}">
+          {{::p.points.control}}
+        </td>
+        <td class="{{:: (state | state:'isPlayerBest':'points.army':p) ? 'info' : ''}}">
+          {{::p.points.army}}
+        </td>
+        <td ng-if="state | state:'hasGameCustomField'"
+             class="{{:: (state | state:'isPlayerBest':'points.custom_field':p) ? 'info' : ''}}">
           {{::p.points.custom_field}}
         </td>
       </tr>

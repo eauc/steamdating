@@ -33,6 +33,7 @@ describe('controllers', function() {
           ctxt.scope.edit = { };
           ctxt.scope.state = { players: ctxt.state_players };
           ctxt.scope.goToState = jasmine.createSpy('goToState');
+          ctxt.scope.updatePoints = jasmine.createSpy('updatePoints');
           
           ctxt.state = { current: { name: 'current_state',
                                     data: { sort: sort_by || 'Rank',
@@ -47,6 +48,10 @@ describe('controllers', function() {
       }
     ]));
 
+    it('should update points', function() {
+      expect(this.scope.updatePoints).toHaveBeenCalled();
+    });
+    
     using([
       [ 'sort', 'sortFn' ],
       [ 'Rank', 'sortPlayersByRank' ],

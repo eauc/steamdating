@@ -49,15 +49,15 @@ angular.module('srApp.services')
           _st.players = [[],[]];
           _.range(8).map(function(i) {
             var f = _.chain(faction).shuffle().first().value();
-            _st.players[i >> 2].push(playerService.create(
-              'Player'+(i+1),
-              f,
-              _.chain(city).shuffle().first().value(),
-              _.chain(team).shuffle().first().value()
-            ));
+            _st.players[i >> 2].push(playerService.create({
+              name: 'Player'+(i+1),
+              faction: f,
+              origin: _.chain(city).shuffle().first().value(),
+              team: _.chain(team).shuffle().first().value()
+            }));
             _st.players[i >> 2][i%4].lists.push(
-              listService.create(f, 'Caster1'),
-              listService.create(f, 'Caster2')
+              listService.create({ faction: f, caster: 'Caster1' }),
+              listService.create({ faction: f, caster: 'Caster2' })
             );
             _st.players[i >> 2][i%4].custom_field = (Math.random()*50)>>0;
           });
@@ -107,7 +107,7 @@ angular.module('srApp.services')
           _st.bracket = [undefined, 1];
           _st.custom_fields.player = 'PCustom';
           _st.custom_fields.game = 'GCustom';
-          _st.players = stateService.updatePlayersPoints(_st);
+          _st = stateService.updatePlayersPoints(_st);
           return _st;
         },
         create: function(data) {
@@ -130,7 +130,7 @@ angular.module('srApp.services')
           state.rounds = _.map(state.rounds, function(round) {
             return _.map(round, gameService.create);
           });
-          state.players = stateService.updatePlayersPoints(state);
+          state = stateService.updatePlayersPoints(state);
           stateService.store(state);
           console.log('state', state);
           return state;
@@ -223,11 +223,22 @@ angular.module('srApp.services')
           }
         },
         updatePlayersPoints: function(state) {
-          var bracket = stateService.setBracketLength(state, state.players.length);
-          var bracket_weights = _.map(state.players,
+          var _state = _.clone(state);
+          
+          var bracket = stateService.setBracketLength(_state, _state.players.length);
+          var bracket_weights = _.map(_state.players,
                                       function(group) { return group.length/2; });
-          return playersService.updatePoints(state.players, state.rounds,
-                                             bracket, bracket_weights);
+          _state.players = playersService.updatePoints(_state.players, _state.rounds,
+                                                       bracket, bracket_weights);
+          return _state;
+        },
+        updateBestsPlayers: function(state) {
+          var _state = _.clone(state);
+          _state.bests = playersService.bests(state.players, _.size(state.rounds));
+          return _state;
+        },
+        isPlayerBest: function(state, type, player) {
+          return 0 <= _.indexOf(_.getPath(state.bests, type), _.getPath(player, 'name'));
         },
         sortPlayersByName: function(state) {
           return _.map(state.players, function(group) {
@@ -241,44 +252,14 @@ angular.module('srApp.services')
           return playersService.sort(state.players, state, is_bracket);
         },
         rankingTables: function(state) {
-          var has_player_custom_field = stateService.hasPlayerCustomField(state);
-          var has_game_custom_field = stateService.hasGameCustomField(state);
-          return _.chain(state)
-            .apply(stateService.sortPlayersByRank)
-            .map(function(group) {
-              return _.chain(group)
-                .map(function(rank) {
-                  return _.map(rank.players, function(player) {
-                    var ret = [ rank.rank, player.name, player.origin, player.faction ];
-                    if(has_player_custom_field) {
-                      ret = _.cat(ret, [player.custom_field]);
-                    }
-                    ret = _.cat(ret, [player.points.tournament, player.points.sos,
-                                      player.points.control, player.points.army ]);
-                    if(has_game_custom_field) {
-                      ret = _.cat(ret, [player.points.custom_field]);
-                    }
-                    return ret;
-                  });
-                })
-                .flatten()
-                .chunk(8 +
-                       (has_player_custom_field ? 1 : 0) +
-                       (has_game_custom_field ? 1 : 0))
-                .value();
-            })
-            .map(function(group) {
-              var headers = ['Rank', 'Name', 'Origin', 'Faction'];
-              if(has_player_custom_field) {
-                headers = _.cat(headers, [state.custom_fields.player]);
-              }
-              headers = _.cat(headers, ['TP', 'SoS', 'CP', 'AP']);
-              if(has_game_custom_field) {
-                headers = _.cat(headers, [state.custom_fields.game]);
-              }
-              return _.cat([headers], group);
-            })
-            .value();
+          var bests_table = bestsTable(state);
+          console.log('bests_table', bests_table);
+          var players_tables = playersTables(state);
+          console.log('players_tables', players_tables);
+
+          var ret = _.cat([bests_table], players_tables);
+          console.log('ret', ret);
+          return ret;
         },
         roundTables: function(state, round_index) {
           var has_game_custom_field = stateService.hasGameCustomField(state);
@@ -308,6 +289,112 @@ angular.module('srApp.services')
             .value();
         }
       };
+
+      function bestsTable(state) {
+        var headers = bestsTableHeaders(state);
+        var values = bestsTableValues(state);
+        return [
+          ['Bests'],
+          headers,
+          values
+        ];
+      }
+      function bestsTableHeaders(state) {
+        var has_player_custom_field = stateService.hasPlayerCustomField(state);
+        var has_game_custom_field = stateService.hasGameCustomField(state);
+
+        var headers = ['Undefeated'];
+        if(has_player_custom_field) {
+          headers.push(state.custom_fields.player);
+        }
+        headers = _.cat(headers, ['SoS', 'Scenario', 'Destruction']);
+        if(has_game_custom_field) {
+          headers.push(state.custom_fields.game);
+        }
+
+        return headers;
+      }
+      function bestsTableValues(state) {
+        var has_player_custom_field = stateService.hasPlayerCustomField(state);
+        var has_game_custom_field = stateService.hasGameCustomField(state);
+
+        var values = [_.getPath(state, 'bests.undefeated')];
+        if(has_player_custom_field) {
+          values.push(_.getPath(state, 'bests.custom_field'));
+        }
+        values = _.cat(values, [ _.getPath(state, 'bests.points.sos'),
+                                 _.getPath(state, 'bests.points.control'),
+                                 _.getPath(state, 'bests.points.army')
+                               ]);
+        if(has_game_custom_field) {
+          values.push(_.getPath(state, 'bests.points.custom_field'));
+        }
+
+        return values;
+      }
+      
+      function playersTables(state) {
+        var has_player_custom_field = stateService.hasPlayerCustomField(state);
+        var has_game_custom_field = stateService.hasGameCustomField(state);
+
+        return _.chain(state)
+          .apply(stateService.sortPlayersByRank)
+          .map(_.partial(groupRows, _, state))
+          .map(_.partial(groupTable, _, _, state))
+          .spy('players_tables')
+          .value();
+      }
+      function groupTable(group_rows, group_index, state) {
+        var headers = groupHeaders(state);
+        return _.cat([
+          ['Group'+(group_index+1)],
+          headers
+        ], group_rows);
+      }
+      function groupHeaders(state) {
+        var has_player_custom_field = stateService.hasPlayerCustomField(state);
+        var has_game_custom_field = stateService.hasGameCustomField(state);
+
+        var headers = ['Rank', 'Name', 'Origin', 'Faction'];
+        if(has_player_custom_field) {
+          headers = _.cat(headers, [state.custom_fields.player]);
+        }
+        headers = _.cat(headers, ['TP', 'SoS', 'CP', 'AP']);
+        if(has_game_custom_field) {
+          headers = _.cat(headers, [state.custom_fields.game]);
+        }
+        return headers;
+      }
+      function groupRows(group, state) {
+        var has_player_custom_field = stateService.hasPlayerCustomField(state);
+        var has_game_custom_field = stateService.hasGameCustomField(state);
+
+        return _.chain(group)
+          .map(function(rank) {
+            var rankPlayerRow = _.partial(playerRow, _, rank.rank, state);
+            return _.map(rank.players, rankPlayerRow);
+          })
+          .flatten()
+          .chunk(8 +
+                 (has_player_custom_field ? 1 : 0) +
+                 (has_game_custom_field ? 1 : 0))
+          .value();
+      }
+      function playerRow(player, rank, state) {
+        var has_player_custom_field = stateService.hasPlayerCustomField(state);
+        var has_game_custom_field = stateService.hasGameCustomField(state);
+        
+        var row = [ rank, player.name, player.origin, player.faction ];
+        if(has_player_custom_field) {
+          row = _.cat(row, [player.custom_field]);
+        }
+        row = _.cat(row, [player.points.tournament, player.points.sos,
+                          player.points.control, player.points.army ]);
+        if(has_game_custom_field) {
+          row = _.cat(row, [player.points.custom_field]);
+        }
+        return row;
+      }
       return stateService;
     }
   ]);

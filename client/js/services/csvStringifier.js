@@ -4,18 +4,24 @@ angular.module('srApp.services')
   .factory('csvStringifier', [
     function() {
       var EOL = '\r\n';
+      function stringifyCell(cell) {
+        return _.isArray(cell) ? cell.join(' ') : cell;
+      }
       function stringifyRow(row, row_index) {
-        return row.join(',');
+        return _.map(row, stringifyCell).join(',');
       }
       function stringifyGroup(group, group_index) {
-        return _.cat([ '', 'Group '+(group_index+1) ],
-                     _.map(group, stringifyRow));
+        return _.chain(group)
+          .map(stringifyRow)
+          .join(EOL)
+          .value();
       }
       var csvStringifier = {
         stringify: function(tables) {
           return _.chain(tables)
-            .mapcat(stringifyGroup)
-            .join(EOL)
+            .map(stringifyGroup)
+            .spy()
+            .join(EOL+EOL)
             .value();
         }
       };

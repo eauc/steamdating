@@ -20,17 +20,20 @@ describe('service', function() {
     describe('stringify(<tables>)', function() {
       it('should convert <tables> to bb code', function() {
         expect(bbStringifier.stringify([
-          [ [ 'field1', 'field2', 'field3' ],
-            [ '11', '12', 3 ],
+          [ ['Group 1'],
+            [ 'field1', 'field2', 'field3' ],
+            // subArray
+            [ '11', ['12', '121'], 3 ],
             // undefined replaced by ''
             [ '21', undefined, 4 ] ],
-          [ [ 'field4', 'field5' ],
+          [ ['Group 2'],
+            [ 'field4', 'field5' ],
             // null replaced by ''
             [ null, 'a' ],
             [ '2', 'b' ] ]
-        ])).toBe('\r\n[b]Group 1[/b]\r\n'+
+        ])).toBe('[b]Group 1[/b]\r\n'+
                  '[table][tr][td][center][b]field1[/b][/center][/td][td][center][b]field2[/b][/center][/td][td][center][b]field3[/b][/center][/td][/tr]\r\n'+
-                 '[tr][td][center]11[/center][/td][td][center]12[/center][/td][td][center]3[/center][/td][/tr]\r\n'+
+                 '[tr][td][center]11[/center][/td][td][center]12\r\n121[/center][/td][td][center]3[/center][/td][/tr]\r\n'+
                  '[tr][td][center]21[/center][/td][td][center][/center][/td][td][center]4[/center][/td][/tr][/table]\r\n'+
                  '\r\n[b]Group 2[/b]\r\n'+
                  '[table][tr][td][center][b]field4[/b][/center][/td][td][center][b]field5[/b][/center][/td][/tr]\r\n'+

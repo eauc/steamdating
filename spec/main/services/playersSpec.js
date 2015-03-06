@@ -851,6 +851,101 @@ describe('service', function() {
         });
       });
     });
+
+    describe('withPoints(<key>, <value>)', function() {
+      beforeEach(function() {
+        this.players = [
+          [ { name: '2', custom_field: 0,
+              points: { tournament: 2, sos: 4, control: 5, army: 25, custom_field: 2 } },
+            { name: '4',  custom_field: 2,
+              points: { tournament: 4, sos: 0, control: 1, army: 35, custom_field: 1 } }
+          ],
+          [ { name: '1',  custom_field: 1,
+              points: { tournament: 1, sos: 1, control: 3, army: 5, custom_field: 1 } },
+            { name: '3',  custom_field: 4,
+              points: { tournament: 0, sos: 3, control: 0, army: 35, custom_field: 0 } },
+            { name: '5',  custom_field: 2,
+              points: { tournament: 1, sos: 1, control: 4, army: 0, custom_field: 3 } }
+          ],
+        ];
+      });
+
+      using([
+        [ 'key'               , 'value' , 'result' ],
+        [ 'custom_field'      , 2 ,  [ '4', '5' ] ],
+        [ 'custom_field'      , 4 ,  [ '3' ] ],
+        [ 'points.tournament' , 1 ,  [ '1', '5' ] ],
+        [ 'points.tournament' , 2 ,  [ '2' ] ],
+        // value=0 return empty list
+        [ 'points.tournament' , 0 ,  [ ] ],
+      ], function(e, d) {
+        it('should return the players names with <key> points === <value>, '+d, function() {
+          expect(players.withPoints(this.players, e.key, e.value)).toEqual(e.result);
+        });
+      });
+    });
+
+    describe('maxPoints(<key>)', function() {
+      beforeEach(function() {
+        this.players = [
+          [ { name: '2', custom_field: 0,
+              points: { tournament: 2, sos: 4, control: 5, army: 25, custom_field: 2 } },
+            { name: '4',  custom_field: 2,
+              points: { tournament: 4, sos: 0, control: 1, army: 35, custom_field: 1 } }
+          ],
+          [ { name: '1',  custom_field: 1,
+              points: { tournament: 1, sos: 1, control: 3, army: 5, custom_field: 1 } },
+            { name: '3',  custom_field: 4,
+              points: { tournament: 0, sos: 3, control: 0, army: 35, custom_field: 0 } },
+            { name: '5',  custom_field: 2,
+              points: { tournament: 1, sos: 1, control: 4, army: 0, custom_field: 3 } }
+          ],
+        ];
+      });
+
+      using([
+        [ 'key'               , 'max'],
+        [ 'custom_field'      , 4 ],
+        [ 'points.control'    , 5 ],
+        [ 'points.tournament' , 4 ],
+      ], function(e, d) {
+        it('should return the max <key> points in players, '+d, function() {
+          expect(players.maxPoints(this.players, e.key)).toEqual(e.max);
+        });
+      });
+    });
+
+    describe('bests(<nb_rounds>)', function() {
+      beforeEach(function() {
+        this.players = [
+          [ { name: '2', custom_field: 0,
+              points: { tournament: 2, sos: 4, control: 5, army: 25, custom_field: 2 } },
+            { name: '4',  custom_field: 2,
+              points: { tournament: 4, sos: 0, control: 1, army: 35, custom_field: 1 } }
+          ],
+          [ { name: '1',  custom_field: 1,
+              points: { tournament: 1, sos: 1, control: 3, army: 5, custom_field: 1 } },
+            { name: '3',  custom_field: 4,
+              points: { tournament: 0, sos: 3, control: 0, army: 35, custom_field: 0 } },
+            { name: '5',  custom_field: 2,
+              points: { tournament: 1, sos: 1, control: 4, army: 0, custom_field: 3 } }
+          ],
+        ];
+      });
+
+      it('should compute bests players lists', function() {
+        expect(players.bests(this.players, 4)).toEqual({
+          undefeated : [ '4' ],
+          custom_field : [ '3' ],
+          points : {
+            sos : [ '2' ],
+            control : [ '2' ],
+            army : [ '4', '3' ],
+            custom_field : [ '5' ]
+          }
+        });
+      });
+    });
   });
 
 });

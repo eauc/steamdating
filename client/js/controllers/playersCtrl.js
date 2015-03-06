@@ -16,8 +16,9 @@ angular.module('srApp.controllers')
              players,
              player,
              fileExport) {
-      console.log('init playersListCtrl');
-
+      console.log('init playersListCtrl', $scope);
+      $scope.updatePoints();
+      
       function sortPlayers() {
         $scope.sorted_players =
           state['sortPlayersBy'+$state.current.data.sort]($scope.state);
