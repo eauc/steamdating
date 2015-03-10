@@ -20,7 +20,6 @@ angular.module('srApp.services')
         stringify: function(tables) {
           return _.chain(tables)
             .map(stringifyGroup)
-            .spy()
             .join(EOL+EOL)
             .value();
         }

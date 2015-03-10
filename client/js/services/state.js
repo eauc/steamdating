@@ -235,10 +235,17 @@ angular.module('srApp.services')
         updateBestsPlayers: function(state) {
           var _state = _.clone(state);
           _state.bests = playersService.bests(state.players, _.size(state.rounds));
+          _state.bests_in_faction = bestsInFaction(_state);
           return _state;
         },
         isPlayerBest: function(state, type, player) {
           return 0 <= _.indexOf(_.getPath(state.bests, type), _.getPath(player, 'name'));
+        },
+        isPlayerBestInFaction: function(state, player) {
+          return player.name === _.chain(state)
+            .getPath('bests_in_faction.'+player.faction)
+            .first()
+            .value();
         },
         sortPlayersByName: function(state) {
           return _.map(state.players, function(group) {
@@ -253,12 +260,14 @@ angular.module('srApp.services')
         },
         rankingTables: function(state) {
           var bests_table = bestsTable(state);
-          console.log('bests_table', bests_table);
+          // console.log('bests_table', bests_table);
+          var bests_in_faction_table = bestsInFactionTable(state);
+          // console.log('bests_in_faction_table', bests_table);
           var players_tables = playersTables(state);
-          console.log('players_tables', players_tables);
+          // console.log('players_tables', players_tables);
 
-          var ret = _.cat([bests_table], players_tables);
-          console.log('ret', ret);
+          var ret = _.cat([bests_table], bests_in_faction_table, players_tables);
+          // console.log('ret', ret);
           return ret;
         },
         roundTables: function(state, round_index) {
@@ -290,6 +299,25 @@ angular.module('srApp.services')
         }
       };
 
+      function bestsInFaction(state) {
+        return _.chain(state)
+          .apply(stateService.sortPlayersByRank)
+          .first()
+          .map(function(rank) {
+            return _.map(rank.players, function(player) {
+              // player_array
+              return [player.faction, player.name, rank.rank];
+            });
+          })
+          .flatten(true)
+          .uniq(false, _.first)
+          .reduce(function(mem, player_array) {
+            mem[_.first(player_array)] = _.rest(player_array);
+            return mem;
+          }, {})
+          .value();
+      }
+      
       function bestsTable(state) {
         var headers = bestsTableHeaders(state);
         var values = bestsTableValues(state);
@@ -298,6 +326,20 @@ angular.module('srApp.services')
           headers,
           values
         ];
+      }
+      function bestsInFactionTable(state) {
+        var values = _.chain(state)
+            .getPath('bests_in_faction')
+            .pairs()
+            .map(function(pair) {
+              return _.cat(pair[0], pair[1]);
+            })
+            .sortBy(_.partial(_.nth, _, 2))
+            .value();
+        return [_.cat([
+          ['Bests In Faction'],
+          ['Faction', 'Player', 'Rank'],
+        ], values)];
       }
       function bestsTableHeaders(state) {
         var has_player_custom_field = stateService.hasPlayerCustomField(state);
@@ -341,7 +383,6 @@ angular.module('srApp.services')
           .apply(stateService.sortPlayersByRank)
           .map(_.partial(groupRows, _, state))
           .map(_.partial(groupTable, _, _, state))
-          .spy('players_tables')
           .value();
       }
       function groupTable(group_rows, group_index, state) {

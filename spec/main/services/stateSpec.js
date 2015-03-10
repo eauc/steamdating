@@ -416,21 +416,44 @@ describe('service', function() {
     describe('updateBestsPlayers()', function() {
       beforeEach(function() {
         this.playersService = spyOnService('players');
+        spyOn(state, 'sortPlayersByRank')
+          .and.returnValue([[
+            { rank: 1,
+              players: [ { name: 'p1', faction: 'f1' },
+                         { name: 'p2', faction: 'f2' },
+                         { name: 'p3', faction: 'f1' } ]
+            },
+            { rank: 2,
+              players: [ { name: 'p4', faction: 'f2' },
+                         { name: 'p5', faction: 'f3' } ]
+            },
+            { rank: 3,
+              players: [ { name: 'p6', faction: 'f3' },
+                         { name: 'p7', faction: 'f4' },
+                         { name: 'p8', faction: 'f1' } ]
+            },
+          ]]);
+
+        this.dummy_players = [ _.repeat(4, {}), _.repeat(2, {}), _.repeat(5, {}) ];
+        this.ret = state.updateBestsPlayers({
+          players: this.dummy_players,
+          rounds: ['round1', 'round2', 'round3']
+        });
       });
 
       it('should call players.bests with nb rounds information', function() {
-        var dummy_players = [ _.repeat(4, {}), _.repeat(2, {}), _.repeat(5, {}) ];
-
-        expect(state.updateBestsPlayers({
-          players: dummy_players,
-          rounds: ['round1', 'round2', 'round3']
-        })).toEqual({
-          players: dummy_players,
-          rounds: ['round1', 'round2', 'round3'],
-          bests: 'players.bests.returnValue'
-        });
+        expect(this.ret.bests).toBe('players.bests.returnValue');
         expect(this.playersService.bests)
-          .toHaveBeenCalledWith(dummy_players, 3);
+          .toHaveBeenCalledWith(this.dummy_players, 3);
+      });
+
+      it('should extract bests players in each faction', function() {
+        expect(this.ret.bests_in_faction).toEqual({
+          f1: [ 'p1', 1 ],
+          f2: [ 'p2', 1 ],
+          f3: [ 'p5', 2 ],
+          f4: [ 'p7', 3 ]
+        });
       });
     });
     
@@ -463,6 +486,37 @@ describe('service', function() {
       ], function(e, d) {
         it('should test whether <name> is in the bests players for <type>, '+d, function() {
           expect(state.isPlayerBest(this.state, e.type, { name: e.name })).toBe(e.isBest);
+        });
+      });
+    });
+    
+    describe('isPlayerBestInFaction(<player>)', function() {
+      beforeEach(function() {
+        this.state = {
+          bests_in_faction: {
+            f1: [ 'p1', 1 ],
+            f2: [ 'p2', 1 ],
+            f3: [ 'p5', 2 ],
+            f4: [ 'p7', 3 ]
+          }
+        };
+      });
+
+      using([
+        [ 'faction' , 'name'    , 'isBest' ],
+        [ 'f1'      , 'p1'      , true  ],
+        [ 'f1'      , 'p2'      , false ],
+        [ 'f3'      , 'p5'      , true  ],
+        [ 'f3'      , 'p4'      , false ],
+        [ 'unknown' , 'p1'      , false ],
+        [ 'f1'      , 'unknown' , false ],
+        [ null      , 'p2'      , false ],
+        [ 'f1'      , null      , false ],
+      ], function(e, d) {
+        it('should test whether <name> is the bests players for <faction>, '+d, function() {
+          expect(state.isPlayerBestInFaction(this.state, { name: e.name,
+                                                           faction: e.faction }))
+            .toBe(e.isBest);
         });
       });
     });
@@ -537,6 +591,12 @@ describe('service', function() {
               army: [ 'p3' ],
               custom_field: [ 'p2' ],
             }
+          },
+          bests_in_faction: {
+            f1: [ 'p1', 1 ],
+            f2: [ 'p2', 1 ],
+            f3: [ 'p5', 2 ],
+            f4: [ 'p7', 3 ]
           }
         };
         var res = state.rankingTables(st);
@@ -544,6 +604,13 @@ describe('service', function() {
           [ [ 'Bests' ],
             [ 'Undefeated', 'pCustom', 'SoS', 'Scenario', 'Destruction', 'gCustom' ],
             [ [ 'p1' ], [ 'p1 p3' ], [ 'p1' ], [ 'p2 p3' ], [ 'p3' ], [ 'p2' ] ]
+          ],
+          [ [ 'Bests In Faction' ],
+            [ 'Faction', 'Player', 'Rank' ],
+            [ 'f1', 'p1', 1 ],
+            [ 'f2', 'p2', 1 ],
+            [ 'f3', 'p5', 2 ],
+            [ 'f4', 'p7', 3 ]
           ],
           [ [ 'Group1' ],
             [ 'Rank', 'Name', 'Origin', 'Faction', 'pCustom', 'TP', 'SoS', 'CP', 'AP', 'gCustom' ],

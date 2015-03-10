@@ -32,7 +32,8 @@
           ng-click="doEditPlayer(p)">
         <td>{{::rank.rank}}</td>
         <td style="word-wrap:break-word;">{{::p.name}}</td>
-        <td style="word-wrap:break-word;">
+        <td style="word-wrap:break-word;"
+            class="{{:: (state | state:'isPlayerBestInFaction':p) ? 'info' : ''}}">
           <img ng-src="{{::p.faction | factions:'iconFor'}}"
                style="height:1.8em;"/>
           {{::p.faction}}
