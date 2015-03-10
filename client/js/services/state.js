@@ -122,7 +122,8 @@ angular.module('srApp.services')
             custom_fields: {
               player: null,
               game: null
-            }
+            },
+            tables_groups_size: null
           }, data);
           state.players = _.map(state.players, function(group) {
             return _.map(group, playerService.create);

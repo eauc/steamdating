@@ -7,6 +7,11 @@
         <a ng-click="pane = 'custom_fields'">Custom Fields</a>
       </li>
       <li ng-class="{
+          'active': pane==='tables'
+          }">
+        <a ng-click="pane = 'tables'">Tables</a>
+      </li>
+      <li ng-class="{
           'active': pane==='player_ranking'
           }">
         <a ng-click="pane = 'player_ranking'">Player Ranking</a>
@@ -14,6 +19,9 @@
     </ul>
     <div ng-if="pane === 'custom_fields'"
          ng-include="'partials/settings_customFields.html'">
+    </div>
+    <div ng-if="pane === 'tables'"
+         ng-include="'partials/settings_tables.html'">
     </div>
     <div ng-if="pane === 'player_ranking'"
          ng-include="'partials/settings_playerRanking.html'">

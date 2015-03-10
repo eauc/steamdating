@@ -45,7 +45,9 @@ describe('service', function() {
           .callFake(function() { return ctxt.tables[tables_i++]; });
 
         this.state = {
-          players: [ [], ['group1'], [] ]
+          rounds: ['rounds'],
+          players: [ [], ['group1'], [] ],
+          tables_groups_size: 4
         };
         this.gri = 1;
         this.sorted_players = [
@@ -60,6 +62,17 @@ describe('service', function() {
       it('should request table range for group', function() {
         expect(this.playersService.tableRangeForGroup)
           .toHaveBeenCalledWith(this.state.players, this.gri);
+      });
+
+      it('should request table suggestions for each pairing', function() {
+        expect(this.basePairingService.suggestTableFor)
+          .toHaveBeenCalledWith(this.state.rounds,
+                                this.tables,
+                                jasmine.any(String),
+                                jasmine.any(String),
+                                this.state.tables_groups_size);
+        expect(this.basePairingService.suggestTableFor.calls.count())
+          .toBe(4);
       });
 
       it('should sort group using SR criterion', function() {
@@ -103,7 +116,8 @@ describe('service', function() {
 
         this.st = {
           players: [ [], ['p1','p2','p3','p4','p5','p6','p7','p8'], [] ],
-          rounds: [ [], [], ['last_round'] ]
+          rounds: [ [], [], ['last_round'] ],
+          tables_groups_size: 4
         };
         this.gri = 1;
         this.games = [
@@ -127,6 +141,19 @@ describe('service', function() {
 
         expect(this.roundService.gamesForGroup)
           .toHaveBeenCalledWith(['last_round'], this.st.players, this.gri);
+      });
+
+      it('should request table suggestions for each pairing', function() {
+        this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
+
+        expect(this.basePairingService.suggestTableFor)
+          .toHaveBeenCalledWith(this.st.rounds,
+                                this.tables,
+                                jasmine.any(String),
+                                jasmine.any(String),
+                                this.st.tables_groups_size);
+        expect(this.basePairingService.suggestTableFor.calls.count())
+          .toBe(4);
       });
 
       using([

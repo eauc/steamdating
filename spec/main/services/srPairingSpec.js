@@ -100,6 +100,7 @@ describe('service', function() {
     describe('findNextPairing(<rounds>, <players>, <tables>)', function() {
       beforeEach(function() {
         this.tables = [ 41, 42, 43 ];
+        this.tables_groups_size = 4;
         this.sorted_players = [
           { name: 'p5', city: 'same', points: { tournament: 2 } },
           { name: 'p1', city: 'same', points: { tournament: 1 } },
@@ -117,7 +118,8 @@ describe('service', function() {
 
         var res = srPairing.findNextPairing(this.dummy_rounds,
                                             this.sorted_players,
-                                            this.tables);
+                                            this.tables,
+                                            this.tables_groups_size);
         this.res_game = res[0];
         this.res_players = res[1];
         this.res_tables = res[2];
@@ -135,7 +137,9 @@ describe('service', function() {
 
       it('should request table suggestion for both players', function() {
         expect(this.basePairingService.suggestTableFor)
-          .toHaveBeenCalledWith(this.dummy_rounds, this.tables, 'p5', 'p3');
+          .toHaveBeenCalledWith(this.dummy_rounds, this.tables,
+                                'p5', 'p3',
+                                this.tables_groups_size);
       });
 
       it('should find new table for both players', function() {
@@ -176,7 +180,8 @@ describe('service', function() {
           players: [
             [],
             [ 'p2','p3','p4','p5','p6','p1' ]
-          ]
+          ],
+          tables_groups_size: 4
         };
 
         this.suggest = srPairing.suggestNextRound(this.state, 1);
@@ -199,15 +204,18 @@ describe('service', function() {
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
                                 ['player11', 'player12'],
-                                'players.tableRangeForGroup.returnValue');
+                                'players.tableRangeForGroup.returnValue',
+                                this.state.tables_groups_size);
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
                                 this.players[1],
-                                this.tables[1]);
+                                this.tables[1],
+                                this.state.tables_groups_size);
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
                                 this.players[2],
-                                this.tables[2]);
+                                this.tables[2],
+                                this.state.tables_groups_size);
       });
 
       when('group size is odd', function() {
@@ -221,7 +229,8 @@ describe('service', function() {
           expect(srPairing.findNextPairing)
             .toHaveBeenCalledWith(this.state.rounds,
                                   ['player11', { name:'_phantom_' }],
-                                  'players.tableRangeForGroup.returnValue');
+                                  'players.tableRangeForGroup.returnValue',
+                                  this.state.tables_groups_size);
         });
       });
 

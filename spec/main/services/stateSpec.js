@@ -62,7 +62,8 @@ describe('service', function() {
           custom_fields: {
             player: null,
             game: null
-          }
+          },
+            tables_groups_size: null
         });
       });
       
@@ -83,7 +84,8 @@ describe('service', function() {
           custom_fields: {
             player: 'pcustom',
             game: 'gcustom'
-          }
+          },
+          tables_groups_size: 4
         };
         this.result = state.create(this.data);
       }, function() {
@@ -111,6 +113,7 @@ describe('service', function() {
               player : 'pcustom',
               game : 'gcustom'
             },
+            tables_groups_size: 4,
             test : 'value'
           });
         });

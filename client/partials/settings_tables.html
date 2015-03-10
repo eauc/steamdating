@@ -1,0 +1,18 @@
+<form class="form-horizontal text-center">
+  <div class="form-group">
+    <label class="col-sm-3 control-label"
+           for="tables_groups_size">Tables Groups Size :</label>
+    <div class="col-sm-9">
+      <input class="form-control"
+             type="number"
+             id="tables_groups_size"
+             name="tables_groups_size"
+             ng-model="state.tables_groups_size" />
+    </div>
+  </div>
+  <button class="btn btn-default"
+          ng-click="doClose(true)"
+          type="button">
+    Save
+  </button>
+</form>

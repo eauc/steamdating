@@ -7,14 +7,39 @@ angular.module('srApp.services')
     function(roundsService,
              playersService) {
       var basePairing = {
-        suggestTableFor: function(rounds, available_tables, p1, p2) {
+        suggestTableFor: function(rounds, available_tables, p1, p2, tables_groups_size) {
           available_tables = _.shuffle(available_tables);
+          tables_groups_size = tables_groups_size || _.max(available_tables)+1;
+          var tableGroupFun = _.partial(tableGroup, _, tables_groups_size);
+          var available_groups = _.chain(available_tables)
+              .map(tableGroupFun)
+              .uniq()
+              .value();
+          var available_tables_by_group = _.groupBy(available_tables, tableGroupFun);
           var p1_tables = roundsService.tablesForPlayer(rounds, p1);
+          var p1_groups = _.chain(p1_tables)
+              .map(tableGroupFun)
+              .uniq()
+              .value();
           var p2_tables = roundsService.tablesForPlayer(rounds, p2);
+          var p2_groups = _.chain(p2_tables)
+              .map(tableGroupFun)
+              .uniq()
+              .value();
           var possible_tables = _.difference(available_tables, p1_tables, p2_tables);
-          return possible_tables.length === 0 ? available_tables[0] : possible_tables[0];
+          var possible_groups = _.difference(available_groups, p1_groups, p2_groups);
+          return ( !_.isEmpty(possible_groups) ?
+                   available_tables_by_group[possible_groups[0]][0] :
+                   ( !_.isEmpty(possible_tables) ?
+                     possible_tables[0] :
+                     available_tables[0]
+                   )
+                 );
         }
       };
+      function tableGroup(table_number, groups_size) {
+        return Math.floor((table_number-1) / groups_size);
+      }
       return basePairing;
     }
   ])
@@ -53,7 +78,8 @@ angular.module('srApp.services')
             .map(function(index) {
               var p1 = players[index[0]-1].name;
               var p2 = players[index[1]-1].name;
-              var table = basePairing.suggestTableFor(state.rounds, tables, p1, p2);
+              var table = basePairing.suggestTableFor(state.rounds, tables, p1, p2,
+                                                      _.getPath(state, 'tables_groups_size'));
               tables = _.without(tables, table);
               return gameService.create({ table: table,
                                           p1: { name: p1 },
@@ -78,7 +104,8 @@ angular.module('srApp.services')
               return  _.cat(mem, _.map(pairs, function(p) {
                 var table = basePairing.suggestTableFor(state.rounds,
                                                         tables,
-                                                        p[0], p[1]);
+                                                        p[0], p[1],
+                                                        _.getPath(state, 'tables_groups_size'));
                 tables = _.without(tables, table);
                 return gameService.create({ table: table,
                                             p1: { name: p[0] },
@@ -150,7 +177,7 @@ angular.module('srApp.services')
           var candidates = _.difference(available_player_names, opp_names);
           return (candidates.length === 0 ? available_player_names[0] : candidates[0]);
         },
-        findNextPairing: function(rounds, sorted_players, tables) {
+        findNextPairing: function(rounds, sorted_players, tables, tables_groups_size) {
           var p1 = _.first(sorted_players);
           sorted_players = _.rest(sorted_players);
 
@@ -161,7 +188,8 @@ angular.module('srApp.services')
           sorted_players = _.without(sorted_players, p2);
 
           var table = basePairing.suggestTableFor(rounds, tables,
-                                                  p1.name, p2.name);
+                                                  p1.name, p2.name,
+                                                  tables_groups_size);
           tables = _.without(tables, table);
 
           return [ gameService.create({ table: table,
@@ -178,7 +206,10 @@ angular.module('srApp.services')
           return _.chain(state.players[group_index].length/2)
             .range()
             .map(function(i) {
-              var pairing = srPairing.findNextPairing(state.rounds, sorted_players, tables);
+              var pairing = srPairing.findNextPairing(state.rounds,
+                                                      sorted_players,
+                                                      tables,
+                                                      _.getPath(state, 'tables_groups_size'));
               sorted_players = pairing[1];
               tables = pairing[2];
               return pairing[0];
