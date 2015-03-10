@@ -8,6 +8,7 @@ angular.module('srApp.services')
              playersService) {
       var basePairing = {
         suggestTableFor: function(rounds, available_tables, p1, p2) {
+          available_tables = _.shuffle(available_tables);
           var p1_tables = roundsService.tablesForPlayer(rounds, p1);
           var p2_tables = roundsService.tablesForPlayer(rounds, p2);
           var possible_tables = _.difference(available_tables, p1_tables, p2_tables);

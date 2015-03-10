@@ -39,26 +39,26 @@ describe('service', function() {
       });
 
       when('a new table is available', function() {
-        this.availables = [ 1, 3, 4, 6 ];
+        this.availables = [ 1, 3, 4, 5, 6 ];
       }, function() {
-        it('should find first new table for both players', function() {
+        it('should pick a random new table for both players', function() {
           this.suggest = basePairing.suggestTableFor(this.dummy_rounds,
                                                      this.availables,
                                                      'p1', 'p2');
 
-          expect(this.suggest).toBe(6);
+          expect(_.indexOf([5,6], this.suggest) >= 0).toBe(true);
         });
       });
 
       when('no new table is available', function() {
         this.availables = [ 1, 3, 4 ];
       }, function() {
-        it('should find first available table', function() {
+        it('should pick a random available table', function() {
           this.suggest = basePairing.suggestTableFor(this.dummy_rounds,
                                                      this.availables,
                                                      'p1', 'p2');
 
-          expect(this.suggest).toBe(1);
+          expect(_.indexOf([1,3,4], this.suggest) >= 0).toBe(true);
         });
       });
     });
