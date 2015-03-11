@@ -34,22 +34,22 @@ describe('service', function() {
 
       it('should extract players names, origin and faction', function() {
         var string =
-"Place;Prénom;Nom de famille;Pseudo;Armée;Origine;Équipe;Liste d'armée;Note de compo;Payé\n"+
-"1;Vladimir;Bobroff;SunHunter;Protectorat de Menoth;Talence;GUILD;oui;;Oui\n"+
-"2;Alexandre;Rey;elrey22;Cryx;Toulouse;;oui;;Oui\n"+
-"6;Sylvester;Staline;communiste;Légion d'Everblight;Moscul;31 décapsule;oui;;Oui\n";
+'Place;Prénom;Nom de famille;Pseudo;Armée;Origine;Équipe;Liste d\'armée;Note de compo;Payé\n'+
+'1;Vladimir;Bobroff;"Sun;Hunter";Protectorat de Menoth;Talence;GUILD;oui;;Oui\n'+
+'2;Alexandre;Rey;elrey22;Cryx;"Tou""louse";;oui;;Oui\n'+
+'6;Sylvester;Staline;communiste;Légion d\'Everblight;Moscul;31 décapsule;oui;;Oui\n';
         var res = t3Parser.parse(string, this.factions);
 
         expect(res[0].length).toBe(3);
         expect(res[1].length).toBe(0);
 
-        expect(res[0][0].name).toBe('SunHunter');
+        expect(res[0][0].name).toBe('Sun;Hunter');
         expect(res[0][0].origin).toBe('Talence');
         expect(res[0][0].faction).toBe('The Protectorate of Menoth');
 
         //capitalize
         expect(res[0][1].name).toBe('Elrey22');
-        expect(res[0][1].origin).toBe('Toulouse');
+        expect(res[0][1].origin).toBe('Tou"louse');
         expect(res[0][1].faction).toBe('Cryx');
 
         //capitalize

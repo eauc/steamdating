@@ -19,7 +19,7 @@ angular.module('srApp.services')
           // skip col headers
               .rest()
               .filter(_.complement(s.isBlank))
-              .mapWith(s.words, ';')
+              .mapWith(CSVToArray)
               .filter(function(line, line_index) {
                 // we skipped first line, so we restore line number by adding 2 instead of 1
                 ctxt.line_number = line_index+2;
@@ -81,6 +81,43 @@ angular.module('srApp.services')
         validateNameNotEmpty,
         validateNameNotAlready
       ];
+	    function CSVToArray(strData){
+        if(s.isBlank(strData)) return [];
+
+		    var strDelimiter = ';';
+		    var arrData = [];
+		    // Keep looping over the regular expression matches
+		    // until we can no longer find a match.
+		    var csvPattern = new RegExp(
+			    (
+				    // Delimiters.
+				    "(\\;|\\r?\\n|\\r|^)" +
+				      // Quoted fields.
+				      "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+				      // Standard fields.
+				      "([^\"\\;\\r\\n]*))"
+			    ),
+			    "gi"
+			  );
+        var arrMatches = csvPattern.exec(strData);
+		    while(_.exists(arrMatches)) {
+          var strMatchedValue;
+			    // let's check to see which kind of value we
+			    // captured (quoted or unquoted).
+			    if(arrMatches[2]) {
+				    // We found a quoted value. When we capture
+				    // this value, unescape any double quotes.
+				    strMatchedValue = arrMatches[2].replace(/\"\"/g, '"');
+			    }
+          else {
+				    // We found a non-quoted value.
+				    strMatchedValue = arrMatches[3];
+			    }
+			    arrData.push(strMatchedValue);
+          arrMatches = csvPattern.exec(strData);
+		    }
+		    return arrData;
+	    }
       return t3Parser;
     }
   ]);

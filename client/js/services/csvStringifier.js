@@ -5,7 +5,12 @@ angular.module('srApp.services')
     function() {
       var EOL = '\r\n';
       function stringifyCell(cell) {
-        return _.isArray(cell) ? cell.join(' ') : cell;
+        return _.chain(cell)
+          .apply(function(cell) { return _.isArray(cell) ? cell.join(' ') : cell; })
+          .apply(function(cell) { return _.isString(cell) ? cell.replace(/\"/g, '""') : cell; })
+          .apply(function(cell) { return _.exists(cell) ? cell : ''; })
+          .apply(function(cell) { return '"'+cell+'"'; })
+          .value();
       }
       function stringifyRow(row, row_index) {
         return _.map(row, stringifyCell).join(',');

@@ -29,16 +29,16 @@ describe('service', function() {
           [ ['Group 2'],
             [ 'field4', 'field5' ],
             // null replaced by ''
-            [ null, 'a' ],
-            [ '2', 'b' ] ]
-        ])).toBe('Group 1\r\n'+
-                 'field1,field2,field3\r\n'+
-                 '11,12 121,3\r\n'+
-                 '21,,4\r\n'+
-                 '\r\nGroup 2\r\n'+
-                 'field4,field5\r\n'+
-                 ',a\r\n'+
-                 '2,b');
+            [ null, 'a,b' ],
+            [ '2', 'qu"ote' ] ]
+        ])).toBe('"Group 1"\r\n'+
+                 '"field1","field2","field3"\r\n'+
+                 '"11","12 121","3"\r\n'+
+                 '"21","","4"\r\n'+
+                 '\r\n"Group 2"\r\n'+
+                 '"field4","field5"\r\n'+
+                 '"","a,b"\r\n'+
+                 '"2","qu""ote"');
       });
     });
   });
