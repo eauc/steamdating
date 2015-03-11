@@ -24,6 +24,7 @@ describe('controllers', function() {
 
         this.stateService = spyOnService('state');
         this.playersService = spyOnService('players');
+        this.fileExportService = spyOnService('fileExport');
 
         $controller('roundsSumCtrl', { 
           '$scope': this.scope,
@@ -43,6 +44,31 @@ describe('controllers', function() {
         .toBe('state.sortPlayersByName.returnValue');
       expect(this.stateService.sortPlayersByName)
         .toHaveBeenCalledWith(this.scope.state);
+    });
+
+    it('should init exports', function() {
+      expect(this.scope.exports).toBeAn('Object');
+
+      expect(this.stateService.roundsSummaryTables)
+        .toHaveBeenCalledWith(this.scope.state);
+
+      expect(this.scope.exports.csv)
+        .toEqual({
+          name: 'rounds_summary.csv',
+          url: 'fileExport.generate.returnValue',
+          label: 'CSV Rounds Summary'
+        });
+      expect(this.fileExportService.generate)
+        .toHaveBeenCalledWith('csv', 'state.roundsSummaryTables.returnValue');
+
+      expect(this.scope.exports.bb)
+        .toEqual({
+          name: 'rounds_summary.txt',
+          url: 'fileExport.generate.returnValue',
+          label: 'BBCode Rounds Summary'
+        });
+      expect(this.fileExportService.generate)
+        .toHaveBeenCalledWith('bb', 'state.roundsSummaryTables.returnValue');
     });
   });
 

@@ -23,13 +23,31 @@ angular.module('srApp.controllers')
     '$scope',
     'players',
     'state',
+    'fileExport',
     function($scope,
              players,
-             state) {
+             state,
+             fileExport) {
       console.log('init roundsSumCtrl');
       $scope.state.players = players.updateListsPlayed($scope.state.players,
                                                        $scope.state.rounds);
       $scope.sorted_players = state.sortPlayersByName($scope.state);
+
+      $scope.updateExports = function() {
+        $scope.exports = {
+          csv: {
+            name: 'rounds_summary.csv',
+            url: fileExport.generate('csv', state.roundsSummaryTables($scope.state)),
+            label: 'CSV Rounds Summary'
+          },
+          bb: {
+            name: 'rounds_summary.txt',
+            url: fileExport.generate('bb', state.roundsSummaryTables($scope.state)),
+            label: 'BBCode Rounds Summary'
+          }
+        };
+      };
+      $scope.updateExports();
     }
   ])
   .controller('roundsNextCtrl', [

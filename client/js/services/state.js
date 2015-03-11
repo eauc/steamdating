@@ -272,6 +272,18 @@ angular.module('srApp.services')
           // console.log('ret', ret);
           return ret;
         },
+        roundsSummaryTables: function(state) {
+          return _.chain(state)
+            .apply(stateService.sortPlayersByName)
+            .map(function(group, group_index) {
+              var headers = roundsSummaryHeadersForGroup(state, group_index);
+              var rows = roundsSummaryRowsForGroup(state, group);
+              return _.cat([ ['Group'+(group_index+1)],
+                             headers
+                           ], rows);
+            })
+            .value();
+        },
         roundTables: function(state, round_index) {
           var has_game_custom_field = stateService.hasGameCustomField(state);
           var round = state.rounds[round_index];
@@ -439,6 +451,29 @@ angular.module('srApp.services')
         if(has_game_custom_field) {
           row = _.cat(row, [player.points.custom_field]);
         }
+        return row;
+      }
+
+      function roundsSummaryHeadersForGroup(state, group_index) {
+        var headers = [ 'Player', 'Lists Played' ];
+        _.each(state.rounds, function(round, round_index) {
+          headers.push(stateService.isBracketTournament(state, group_index, round_index) ?
+                       stateService.bracketRoundOf(state, group_index, round_index) :
+                       'Round'+(round_index+1));
+        });
+        return headers;
+      }
+      function roundsSummaryRowsForGroup(state, group) {
+        return _.map(group, _.partial(roundsSummaryRowForPlayer, state));
+      }
+      function roundsSummaryRowForPlayer(state, player) {
+        var row = [ player.name, _.size(player.lists_played)+'/'+_.size(player.lists) ];
+        _.each(state.rounds, function(round, round_index) {
+          var game = roundService.gameForPlayer(round, player.name);
+          row.push( (gameService.winForPlayer(game, player.name) ? 'W' : 'L') +
+                    ' - ' +
+                    gameService.opponentForPlayer(game, player.name) );
+        });
         return row;
       }
       return stateService;
