@@ -1,7 +1,7 @@
 <form class="form-horizontal text-center">
   <div class="form-group">
     <label class="col-sm-3 control-label"
-           for="name">Ranking formula :</label>
+           for="player">Ranking formula :</label>
     <div class="col-sm-9">
       <input class="form-control"
              type="text"
@@ -9,6 +9,17 @@
              name="player"
              ng-model="player_test.ranking"
              required="required" />
+    </div>
+    <label class="col-sm-3 control-label"
+           for="player_preset">Presets :</label>
+    <div class="col-sm-9">
+      <select class="form-control"
+              id="player_preset"
+              name="player_preset"
+              ng-model="player_test.ranking"
+              ng-options="crit.player as name for (name, crit) in criterions.SR"
+              >
+      </select>
     </div>
     <p>
       Available vars : n_rounds, n_players, player_custom, tp, sos, cp, ap, ck, game_custom.
@@ -143,11 +154,6 @@
         'danger': player_test.player2.rank < player_test.player1.rank
         }">{{player_test.player2.rank}}</td>
   </table>
-  <button class="btn btn-default"
-          ng-click="doReset('player')"
-          type="button">
-    Reset to SR
-  </button>
   <button class="btn btn-default"
           ng-click="doClose(true)"
           type="button">

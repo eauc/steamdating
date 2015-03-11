@@ -42,6 +42,10 @@ describe('controllers', function() {
       expect(this.scope.pane).toBe('custom_fields');
     });
 
+    it('should init criterions', function() {
+      expect(this.scope.criterions).toBeAn('Object');
+    });
+
     it('should init player_test object', function() {
       expect(this.scope.player_test.ranking).toBe('player_ranking');
     });
@@ -150,18 +154,6 @@ describe('controllers', function() {
 
             expect(this.scope.player_ranking_valid).toBe(true);
           });
-        });
-      });
-    });
-
-    describe('doReset(<type>)', function() {
-      when('<type> is "player"', function() {
-        this.rankingService.srPlayerCrit.and.returnValue('toto');
-      }, function() {
-        it('should reset player ranking crit to SR default', function() {
-          this.scope.player_test.ranking = 'toto';
-          this.scope.doReset('player');
-          expect(this.scope.player_test.ranking).toBe('toto');
         });
       });
     });

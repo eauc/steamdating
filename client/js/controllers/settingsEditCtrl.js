@@ -13,7 +13,8 @@ angular.module('srApp.controllers')
             ) {
       console.log('init settingsEditCtrl');
       $scope.pane = 'custom_fields';
-
+      $scope.criterions = _.snapshot(ranking.criterions);
+      
       $scope.player_test = {
         ranking: $scope.state.ranking.player,
         n_rounds: 5,
@@ -143,15 +144,6 @@ angular.module('srApp.controllers')
       //   computeTeamTestRankings();
       // }, true);
 
-      $scope.doReset = function(type) {
-        if('player' === type) {
-          $scope.player_test.ranking = ranking.srPlayerCrit();
-        }
-      //   if('team' === type) {
-      //     $scope.team_test.ranking = ranking.srTeamCrit();
-      //       '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap';
-      //   }
-      };
       $scope.doClose = function(validate) {
         if(validate) {
           if(!$scope.player_ranking_valid) {

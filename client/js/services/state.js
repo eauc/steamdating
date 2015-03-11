@@ -117,8 +117,8 @@ angular.module('srApp.services')
             players: [[]],
             rounds: [],
             ranking: {
-              player: ranking.srPlayerCrit(),
-              team: ranking.srTeamCrit()
+              player: ranking.criterions.SR.Baseline.player,
+              team: ranking.criterions.SR.Baseline.team
             },
             custom_fields: {
               player: null,
