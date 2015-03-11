@@ -21,6 +21,7 @@
       <th>SoS</th>
       <th>CP</th>
       <th>AP</th>
+      <th>CK</th>
       <th ng-if="state | state:'hasGameCustomField'">
         {{::state.custom_fields.game}}
       </th>
@@ -53,6 +54,9 @@
         </td>
         <td class="{{:: (state | state:'isPlayerBest':'points.army':p) ? 'info' : ''}}">
           {{::p.points.army}}
+        </td>
+        <td class="{{:: (state | state:'isPlayerBest':'points.assassination':p) ? 'info' : ''}}">
+          {{::p.points.assassination}}
         </td>
         <td ng-if="state | state:'hasGameCustomField'"
              class="{{:: (state | state:'isPlayerBest':'points.custom_field':p) ? 'info' : ''}}">

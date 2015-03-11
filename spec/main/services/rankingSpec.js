@@ -49,11 +49,12 @@ describe('service', function() {
             [ 'sos'           , 3         ],
             [ 'cp'            , 4         ],
             [ 'ap'            , 5         ],
-            [ 'game_custom'   , 6         ],
+            [ 'ck'            , 6         ],
+            [ 'game_custom'   , 7         ],
           ], function(e, d) {
-            it('should take arguments <tp>,<sos>,<cp>,<ap>, '+d, function() {
+            it('should take argument <'+e.criterion+'> '+d, function() {
               var critFn = ranking.buildPlayerCritFunction(e.criterion, 42, 71);
-              expect(critFn(1,2,3,4,5,6)).toBe(e.ranking);
+              expect(critFn(1,2,3,4,5,6,7)).toBe(e.ranking);
             });
           });
         });

@@ -20,6 +20,7 @@ angular.module('srApp.services')
                           player.points.sos,
                           player.points.control,
                           player.points.army,
+                          player.points.assassination,
                           player.points.custom_field);
           }
           catch(e) {
@@ -213,6 +214,7 @@ angular.module('srApp.services')
               sos: playersService.maxPoints(coll, 'points.sos'),
               control: playersService.maxPoints(coll, 'points.control'),
               army: playersService.maxPoints(coll, 'points.army'),
+              assassination: playersService.maxPoints(coll, 'points.assassination'),
               custom_field: playersService.maxPoints(coll, 'points.custom_field'),
             }
           };
@@ -233,6 +235,9 @@ angular.module('srApp.services')
               army: playersService.withPoints(coll,
                                               'points.army',
                                               maxes.points.army),
+              assassination: playersService.withPoints(coll,
+                                                       'points.assassination',
+                                                       maxes.points.assassination),
               custom_field: playersService.withPoints(coll,
                                                       'points.custom_field',
                                                       maxes.points.custom_field),

@@ -69,6 +69,7 @@ describe('service', function() {
             sos: 71,
             control: 69,
             army: 83,
+            assassination: 32,
             custom_field: 27,
           }
         };
@@ -77,7 +78,7 @@ describe('service', function() {
       it('should call <critFn> with player\'s points', function() {
         player.rank(this.dummy_player, this.critFn);
 
-        expect(this.critFn).toHaveBeenCalledWith(21, 42, 71, 69, 83, 27);
+        expect(this.critFn).toHaveBeenCalledWith(21, 42, 71, 69, 83, 32, 27);
       });
 
       when('critFn return without error', function() {

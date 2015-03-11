@@ -7,6 +7,7 @@ angular.module('srApp.services')
         create: function(data) {
           return _.deepExtend({
             table: null,
+            victory: null,
             p1: {
               name: null,
               list: null,
@@ -59,6 +60,14 @@ angular.module('srApp.services')
           return (tournament_point === 1 ? true :
                   (tournament_point === 0 ? false : undefined));
         },
+        lossForPlayer: function(game, player_name) {
+          var tournament_point = _.chain(game)
+            .apply(gameService.player, player_name)
+            .getPath('tournament')
+            .value();
+          return (tournament_point === 0 ? true :
+                  (tournament_point === 1 ? false : undefined));
+        },
         listForPlayer: function(game, player_name) {
           return _.chain(game)
             .apply(gameService.player, player_name)
@@ -69,6 +78,9 @@ angular.module('srApp.services')
         isValid: function(game) {
           return (_.isString(game.p1.name) &&
                   _.isString(game.p2.name));
+        },
+        isAssassination: function(game) {
+          return game.victory === 'assassination';
         },
         winner: function(game) {
           return (game.p1.tournament === 1 ? game.p1.name :
@@ -91,7 +103,8 @@ angular.module('srApp.services')
                       game.p1.list, game.p2.list,
                       game.p1.tournament, game.p2.tournament,
                       game.p1.control, game.p2.control,
-                      game.p1.army, game.p2.army
+                      game.p1.army, game.p2.army,
+                      gameService.isAssassination(game) ? 1 : 0
                     ];
           if(with_custom_field) {
             ret = _.cat(ret, [game.p1.custom_field, game.p2.custom_field]);
@@ -107,19 +120,31 @@ angular.module('srApp.services')
     function(gameService) {
       var gamesService = {
         pointsForPlayer: function(games, player_name, bracket_start, base_weight) {
-          return _.chain(games)
+          var ret = _.chain(games)
             .mapWith(gameService.player, player_name)
             .apply(gamesService.reducePoints, bracket_start, base_weight)
+              .value();
+          ret.assassination = _.chain(games)
+            .filter(_.partial(gameService.winForPlayer, _, player_name))
+            .filter(gameService.isAssassination)
+            .size()
             .value();
+          return ret;
         },
         pointsAgainstPlayer: function(games, player_name, bracket_start, base_weight) {
-          return _.chain(games)
+          var ret = _.chain(games)
             .map(function(game) {
               var opponent_name = gameService.opponentForPlayer(game, player_name);
               return gameService.player(game, opponent_name);
             })
             .apply(gamesService.reducePoints, bracket_start, base_weight)
             .value();
+          ret.assassination = _.chain(games)
+            .filter(_.partial(gameService.lossForPlayer, _, player_name))
+            .filter(gameService.isAssassination)
+            .size()
+            .value();
+          return ret;
         },
         reducePoints: function(results, bracket_start, base_weight) {
           return _.chain(results)

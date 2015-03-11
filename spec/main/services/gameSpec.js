@@ -21,6 +21,7 @@ describe('service', function() {
                              p2: { name: 'titi' } }))
           .toEqual({
             table: 4,
+            victory: null,
             p1: { name: 'toto', list: null,
                   tournament: null, control: null, army: null, custom_field: null },
             p2: { name: 'titi', list: null,
@@ -161,6 +162,32 @@ describe('service', function() {
       });
     });
 
+    describe('lossForPlayer(<name>)', function() {
+      beforeEach(function() {
+        this.game = game.create({ table: 4,
+                                  p1: { name: 'toto' },
+                                  p2: { name: 'titi' } });
+      });
+
+      when('result is not defined', function(){
+      }, function() {
+        it('should return undefined', function() {
+          expect(game.lossForPlayer(this.game, 'toto')).toBe(undefined);
+          expect(game.lossForPlayer(this.game, 'titi')).toBe(undefined);
+        });
+      });
+
+      when('result is defined', function() {
+        this.game.p1.tournament = 1;
+        this.game.p2.tournament = 0;
+      }, function() {
+        it('should return whether <name> has won', function() {
+          expect(game.lossForPlayer(this.game, 'toto')).toBe(false);
+          expect(game.lossForPlayer(this.game, 'titi')).toBe(true);
+        });
+      });
+    });
+
     describe('isValid()', function() {
       using([
         [ 'p1' , 'p2' , 'isValid' ],
@@ -173,6 +200,23 @@ describe('service', function() {
           expect(game.isValid(game.create({ table: 3,
                                             p1: { name: e.p1 },
                                             p2: { name: e.p2 } }))).toBe(e.isValid);
+        });
+      });
+    });
+
+    describe('isAssassination()', function() {
+      using([
+        [ 'victory'       , 'isAssassination' ],
+        [ null            , false ],
+        [ 'assassination' , true  ],
+        [ 'other'         , false ],
+      ], function(e, d) {
+        it('should check whether both players are defined, '+d, function() {
+          expect(game.isAssassination(game.create({ table: 3,
+                                                    victory: e.victory,
+                                                    p1: { name: e.p1 },
+                                                    p2: { name: e.p2 } })))
+            .toBe(e.isAssassination);
         });
       });
     });
@@ -239,15 +283,18 @@ describe('service', function() {
 
     describe('toArray()', function() {
       using([
-        [ 'withCustom', 'array' ],
-        [ false       , [ 21, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5 ] ],
-        [ true        , [ 21, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5, 42, 24 ] ],
+        [ 'withCustom', 'ck'  , 'array' ],
+        [ false       , true  , [ 21, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5, 1 ] ],
+        [ true        , false , [ 21, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5, 0, 42, 24 ] ],
       ], function(e, d) {
         it('should convert game to array, '+d, function() {
           expect(game.toArray({
             table: 21,
-            p1: { name: 'toto', list: 'list1', tournament: 1, control: 2, army: 3, custom_field: 42 },
-            p2: { name: 'titi', list: 'list2', tournament: 0, control: 4, army: 5, custom_field: 24 },
+            victory: e.ck ? 'assassination' : null,
+            p1: { name: 'toto', list: 'list1', tournament: 1,
+                  control: 2, army: 3, custom_field: 42 },
+            p2: { name: 'titi', list: 'list2', tournament: 0,
+                  control: 4, army: 5, custom_field: 24 },
             games: []
           }, e.withCustom)).toEqual(e.array);
         });

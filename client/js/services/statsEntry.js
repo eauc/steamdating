@@ -28,14 +28,18 @@ angular.module('srApp.services')
                 return [{
                   tournament: ptsForPlayer(mem).tournament + ptsForPlayer(pts_entry).tournament,
                   control: ptsForPlayer(mem).control + ptsForPlayer(pts_entry).control,
-                  army: ptsForPlayer(mem).army + ptsForPlayer(pts_entry).army
+                  army: ptsForPlayer(mem).army + ptsForPlayer(pts_entry).army,
+                  assassination: ptsForPlayer(mem).assassination +
+                    ptsForPlayer(pts_entry).assassination
                 }, {
                   tournament: ptsAgainstPlayer(mem).tournament + ptsAgainstPlayer(pts_entry).tournament,
                   control: ptsAgainstPlayer(mem).control + ptsAgainstPlayer(pts_entry).control,
-                  army: ptsAgainstPlayer(mem).army + ptsAgainstPlayer(pts_entry).army
+                  army: ptsAgainstPlayer(mem).army + ptsAgainstPlayer(pts_entry).army,
+                  assassination: ptsAgainstPlayer(mem).assassination +
+                    ptsAgainstPlayer(pts_entry).assassination
                 }, ptsNbGames(pts_entry) + ptsNbGames(mem) ];
-              }, [{ tournament: 0, control: 0, army: 0 },
-                  { tournament: 0, control: 0, army: 0 },
+              }, [{ tournament: 0, control: 0, army: 0, assassination: 0 },
+                  { tournament: 0, control: 0, army: 0, assassination: 0 },
                   0
                  ])
               .apply(function(points) {
@@ -47,6 +51,8 @@ angular.module('srApp.services')
                               ptsAgainstPlayer(points).control/total],
                   'Army': [ptsForPlayer(points).army/total,
                            ptsAgainstPlayer(points).army/total],
+                  'CasterKill': [ptsForPlayer(points).assassination,
+                                  ptsAgainstPlayer(points).assassination],
                 };
               })
               .value()
@@ -61,6 +67,8 @@ angular.module('srApp.services')
                          (base.values.Control[1] + other.values.Control[1])/2 ],
             'Army': [ (base.values.Army[0] + other.values.Army[0])/2,
                       (base.values.Army[1] + other.values.Army[1])/2 ],
+            'CasterKill': [ base.values.CasterKill[0] + other.values.CasterKill[0],
+                            base.values.CasterKill[1] + other.values.CasterKill[1] ],
           };
           return ret;
         }

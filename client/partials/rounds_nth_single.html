@@ -22,12 +22,14 @@
     </h3>
     <table class="table text-center">
       <tr>
+        <th>CKill</th>
         <th class="text-center" colspan="4">Player1</th>
         <th class="text-center">Table</th>
         <th class="text-center" colspan="4">Player2</th>
         <th>Notes</th>
       </tr>
       <tr>
+        <th></th>
         <th class="text-center">AP</th>
         <th class="text-center">CP</th>
         <th class="text-center">List</th>
@@ -44,6 +46,10 @@
       <tr ng-repeat="g in ::r | round:'gamesForGroup':state.players:$index"
           ng-click="doGameEdit(r, g.p1.name, round.current)"
           style="cursor:pointer;">
+        <td>
+          <span class="glyphicon glyphicon-{{::(g | game:'isAssassination') ? 'ok' : ''}}">
+          </span>
+        </td>
         <td>{{::g.p1.army}}</td>
         <td>{{::g.p1.control}}</td>
         <td>{{::g.p1.list}}</td>

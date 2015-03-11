@@ -24,34 +24,43 @@ describe('service', function() {
           colors : [ '#4AE34D', '#E3341D' ],
           values : { 'Win/Loss' : [ 0, 0 ],
                      Control : [ 0, 0 ],
-                     Army : [ 0, 0 ] }
+                     Army : [ 0, 0 ],
+                     CasterKill : [ 0, 0 ] }
         });
 
         expect(statsPointsEntry.count(['state'],[
-          [ 'p1', [ { p1: {name:'p1' , tournament:1, control:2, army:3},
+          [ 'p1', [ { victory: 'assassination',
+                      p1: {name:'p1' , tournament:1, control:2, army:3},
                       p2: {name:'p2', tournament:0, control:5, army:6} },
-                    { p1: {name:'p1' , tournament:0, control:20, army:30},
+                    { victory: 'assassination',
+                      p1: {name:'p1' , tournament:0, control:20, army:30},
                       p2: {name:'p2', tournament:1, control:50, army:60} },
-                    { p1: {name:'p1' , tournament:1, control:200, army:300},
+                    { victory: null,
+                      p1: {name:'p1' , tournament:1, control:200, army:300},
                       p2: {name:'p2', tournament:0, control:500, army:600} }, ] ],
         ])).toEqual({
           colors : [ '#4AE34D', '#E3341D' ],
           values : { 'Win/Loss' : [ 2, 1 ],
                      Control : [ 74, 185 ],
-                     Army : [ 111, 222 ] }
+                     Army : [ 111, 222 ],
+                     CasterKill : [ 1, 1 ] }
         });
         expect(statsPointsEntry.count(['state'],[
-          [ 'p1', [ { p1: {name:'p1' , tournament:1, control:2, army:3},
+          [ 'p1', [ { victory: null,
+                      p1: {name:'p1' , tournament:1, control:2, army:3},
                       p2: {name:'p2', tournament:0, control:5, army:6} } ] ],
-          [ 'p2', [ { p1: {name:'p1' , tournament:0, control:20, army:30},
+          [ 'p2', [ { victory: 'assassination',
+                      p1: {name:'p1' , tournament:0, control:20, army:30},
                       p2: {name:'p2', tournament:1, control:50, army:60} } ] ],
-          [ 'p1', [ { p1: {name:'p1' , tournament:1, control:200, army:300},
+          [ 'p1', [ { victory: null,
+                      p1: {name:'p1' , tournament:1, control:200, army:300},
                       p2: {name:'p2', tournament:0, control:500, army:600} }, ] ],
         ])).toEqual({
           colors : [ '#4AE34D', '#E3341D' ],
           values : { 'Win/Loss' : [ 3, 0 ],
                      Control : [ 84, 175 ],
-                     Army : [ 121, 212 ] }
+                     Army : [ 121, 212 ],
+                     CasterKill : [ 1, 0 ] }
         });
       });
     });
@@ -62,17 +71,21 @@ describe('service', function() {
           colors : [ '#4AE34D', '#E3341D' ],
           values : { 'Win/Loss' : [ 1, 2 ],
                      Control : [ 3, 4 ],
-                     Army : [ 5, 6 ] }
+                     Army : [ 5, 6 ],
+                     CasterKill : [ 1, 3 ] }
         }, {
           colors : [ '#4AE34D', '#E3341D' ],
           values : { 'Win/Loss' : [ 7, 8 ],
                      Control : [ 9, 10 ],
-                     Army : [ 11, 12 ] }
+                     Army : [ 11, 12 ],
+                     CasterKill : [ 5, 2 ] }
         })).toEqual({
           colors : [ '#4AE34D', '#E3341D' ],
           values : { 'Win/Loss': [ 8, 10 ], // sum
                      Control: [ 6, 7 ], // mean
-                     Army: [ 8, 9 ] } //mean
+                     Army: [ 8, 9 ], //mean
+                     CasterKill : [ 6, 5 ] //sum
+                   }
         });
       });
     });

@@ -99,6 +99,7 @@ describe('service', function() {
                          }
                        ], 'updated' ],
             rounds: [ [ { table: 1,
+                          victory: null,
                           p1 : { name : null, list : null, tournament : null,
                                  control : null, army : null, custom_field : null },
                           p2 : { name : null, list : null, tournament : null,
@@ -572,11 +573,14 @@ describe('service', function() {
       it('should build a ranking table', function() {
         var st = {
           players: [[ { name: 'p1', origin: 'c1', faction: 'f1', custom_field: 21,
-                        points: { tournament: 5, sos: 4, control: 15, army: 32, custom_field: 12 } },
+                        points: { tournament: 5, sos: 4, control: 15, army: 32,
+                                  assassination: 3, custom_field: 12 } },
                       { name: 'p2', origin: 'c2', faction: 'f2', custom_field: 24,
-                        points: { tournament: 3, sos: 4, control: 12, army: 32, custom_field: 42 } },
+                        points: { tournament: 3, sos: 4, control: 12, army: 32,
+                                  assassination: 1, custom_field: 42 } },
                       { name: 'p3', origin: 'c3', faction: 'f3', custom_field: 27,
-                        points: { tournament: 3, sos: 7, control: 12, army: 48, custom_field: 72 } },
+                        points: { tournament: 3, sos: 7, control: 12, army: 48,
+                                  assassination: 6, custom_field: 72 } },
                     ]],
           bracket: [],
           rounds: [],
@@ -592,6 +596,7 @@ describe('service', function() {
               sos: [ 'p1' ],
               control: [ 'p2 p3' ],
               army: [ 'p3' ],
+              assassination: [ 'p5' ],
               custom_field: [ 'p2' ],
             }
           },
@@ -605,8 +610,8 @@ describe('service', function() {
         var res = state.rankingTables(st);
         expect(res).toEqual([
           [ [ 'Bests' ],
-            [ 'Undefeated', 'pCustom', 'SoS', 'Scenario', 'Destruction', 'gCustom' ],
-            [ [ 'p1' ], [ 'p1 p3' ], [ 'p1' ], [ 'p2 p3' ], [ 'p3' ], [ 'p2' ] ]
+            [ 'Undefeated', 'pCustom', 'SoS', 'Scenario', 'Destruction', 'Assassin', 'gCustom' ],
+            [ [ 'p1' ], [ 'p1 p3' ], [ 'p1' ], [ 'p2 p3' ], [ 'p3' ], [ 'p5' ], [ 'p2' ] ]
           ],
           [ [ 'Bests In Faction' ],
             [ 'Faction', 'Player', 'Rank' ],
@@ -616,10 +621,10 @@ describe('service', function() {
             [ 'f4', 'p7', 3 ]
           ],
           [ [ 'Group1' ],
-            [ 'Rank', 'Name', 'Origin', 'Faction', 'pCustom', 'TP', 'SoS', 'CP', 'AP', 'gCustom' ],
-            [ 1, 'p1', 'c1', 'f1', 21, 5, 4, 15, 32, 12 ],
-            [ 2, 'p3', 'c3', 'f3', 27, 3, 7, 12, 48, 72 ],
-            [ 3, 'p2', 'c2', 'f2', 24, 3, 4, 12, 32, 42 ]
+            [ 'Rank', 'Name', 'Origin', 'Faction', 'pCustom', 'TP', 'SoS', 'CP', 'AP', 'CK', 'gCustom' ],
+            [ 1, 'p1', 'c1', 'f1', 21, 5, 4, 15, 32, 3, 12 ],
+            [ 2, 'p3', 'c3', 'f3', 27, 3, 7, 12, 48, 6, 72 ],
+            [ 3, 'p2', 'c2', 'f2', 24, 3, 4, 12, 32, 1, 42 ]
           ]
         ]);
       });
@@ -633,12 +638,15 @@ describe('service', function() {
         ], bracket: [], rounds: [
           [],
           [ { table:1,
+              victory: 'assassination',
               p1: { name: 'p1', list: 'list1', tournament: 1, control: 2, army: 3, custom_field: 21 },
               p2: { name: 'p2', list: 'list2', tournament: 2, control: 4, army: 6, custom_field: 12 } },
             { table:2,
+              victory: null,
               p1: { name: 'p3', list: 'list3', tournament: 3, control: 6, army: 9, custom_field: 24 },
               p2: { name: 'p4', list: 'list4', tournament: 4, control: 8, army: 12, custom_field: 42 } },
             { table:3,
+              victory: 'assassination',
               p1: { name: 'p5', list: 'list5', tournament: 5, control: 10, army: 15, custom_field: 27 },
               p2: { name: 'p6', list: 'list6', tournament: 6, control: 12, army: 18, custom_field: 72 } },
           ]
@@ -650,14 +658,14 @@ describe('service', function() {
         expect(res).toEqual([
           [ [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
               'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp',
-              'Player1.ap', 'Player2.ap', 'Player1.gCustom', 'Player2.gCustom' ],
-            [ 1, 'p1', 'p2', 'list1', 'list2', 1, 2, 2, 4, 3, 6, 21, 12 ]
+              'Player1.ap', 'Player2.ap', 'CasterKill', 'Player1.gCustom', 'Player2.gCustom' ],
+            [ 1, 'p1', 'p2', 'list1', 'list2', 1, 2, 2, 4, 3, 6, 1, 21, 12 ]
           ],
           [ [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
               'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp',
-              'Player1.ap', 'Player2.ap', 'Player1.gCustom', 'Player2.gCustom' ],
-            [ 2, 'p3', 'p4', 'list3', 'list4', 3, 4, 6, 8, 9, 12, 24, 42 ],
-            [ 3, 'p5', 'p6', 'list5', 'list6', 5, 6, 10, 12, 15, 18, 27, 72 ]
+              'Player1.ap', 'Player2.ap', 'CasterKill', 'Player1.gCustom', 'Player2.gCustom' ],
+            [ 2, 'p3', 'p4', 'list3', 'list4', 3, 4, 6, 8, 9, 12, 0, 24, 42 ],
+            [ 3, 'p5', 'p6', 'list5', 'list6', 5, 6, 10, 12, 15, 18, 1, 27, 72 ]
           ]
         ]);
       });

@@ -74,6 +74,7 @@ angular.module('srApp.services')
 
                 var g = gameService.create({
                   table: table++,
+                  victory: _.chain(['assassination', null, null]).shuffle().first().value(),
                   p1: { name: p1 },
                   p2: { name: p2 }
                 });
@@ -288,7 +289,8 @@ angular.module('srApp.services')
                               'Player1.tp', 'Player2.tp',
                               'Player1.cp', 'Player2.cp',
                               'Player1.ap', 'Player2.ap',
-                           ];
+                              'CasterKill'
+                            ];
               if(has_game_custom_field) {
                 headers = _.cat(headers, ['Player1.'+state.custom_fields.game,
                                           'Player2.'+state.custom_fields.game
@@ -350,7 +352,7 @@ angular.module('srApp.services')
         if(has_player_custom_field) {
           headers.push(state.custom_fields.player);
         }
-        headers = _.cat(headers, ['SoS', 'Scenario', 'Destruction']);
+        headers = _.cat(headers, ['SoS', 'Scenario', 'Destruction', 'Assassin']);
         if(has_game_custom_field) {
           headers.push(state.custom_fields.game);
         }
@@ -367,7 +369,8 @@ angular.module('srApp.services')
         }
         values = _.cat(values, [ _.getPath(state, 'bests.points.sos'),
                                  _.getPath(state, 'bests.points.control'),
-                                 _.getPath(state, 'bests.points.army')
+                                 _.getPath(state, 'bests.points.army'),
+                                 _.getPath(state, 'bests.points.assassination')
                                ]);
         if(has_game_custom_field) {
           values.push(_.getPath(state, 'bests.points.custom_field'));
@@ -401,7 +404,7 @@ angular.module('srApp.services')
         if(has_player_custom_field) {
           headers = _.cat(headers, [state.custom_fields.player]);
         }
-        headers = _.cat(headers, ['TP', 'SoS', 'CP', 'AP']);
+        headers = _.cat(headers, ['TP', 'SoS', 'CP', 'AP', 'CK']);
         if(has_game_custom_field) {
           headers = _.cat(headers, [state.custom_fields.game]);
         }
@@ -417,7 +420,7 @@ angular.module('srApp.services')
             return _.map(rank.players, rankPlayerRow);
           })
           .flatten()
-          .chunk(8 +
+          .chunk(9 +
                  (has_player_custom_field ? 1 : 0) +
                  (has_game_custom_field ? 1 : 0))
           .value();
@@ -431,7 +434,8 @@ angular.module('srApp.services')
           row = _.cat(row, [player.custom_field]);
         }
         row = _.cat(row, [player.points.tournament, player.points.sos,
-                          player.points.control, player.points.army ]);
+                          player.points.control, player.points.army,
+                          player.points.assassination ]);
         if(has_game_custom_field) {
           row = _.cat(row, [player.points.custom_field]);
         }

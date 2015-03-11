@@ -26,6 +26,7 @@ angular.module('srApp.controllers')
             sos: 10,
             control: 13,
             army: 38,
+            assassination: 3,
             custom_field: 14,
           },
           rank: 0
@@ -38,6 +39,7 @@ angular.module('srApp.controllers')
             sos: 15,
             control: 8,
             army: 45,
+            assassination: 5,
             custom_field: 25
           },
           rank: 0

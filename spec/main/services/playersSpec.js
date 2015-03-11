@@ -919,16 +919,21 @@ describe('service', function() {
       beforeEach(function() {
         this.players = [
           [ { name: '2', custom_field: 0,
-              points: { tournament: 2, sos: 4, control: 5, army: 25, custom_field: 2 } },
+              points: { tournament: 2, sos: 4, control: 5, army: 25,
+                        assassination: 4, custom_field: 2 } },
             { name: '4',  custom_field: 2,
-              points: { tournament: 4, sos: 0, control: 1, army: 35, custom_field: 1 } }
+              points: { tournament: 4, sos: 0, control: 1, army: 35,
+                        assassination: 3, custom_field: 1 } }
           ],
           [ { name: '1',  custom_field: 1,
-              points: { tournament: 1, sos: 1, control: 3, army: 5, custom_field: 1 } },
+              points: { tournament: 1, sos: 1, control: 3, army: 5,
+                        assassination: 5, custom_field: 1 } },
             { name: '3',  custom_field: 4,
-              points: { tournament: 0, sos: 3, control: 0, army: 35, custom_field: 0 } },
+              points: { tournament: 0, sos: 3, control: 0, army: 35,
+                        assassination: 2, custom_field: 0 } },
             { name: '5',  custom_field: 2,
-              points: { tournament: 1, sos: 1, control: 4, army: 0, custom_field: 3 } }
+              points: { tournament: 1, sos: 1, control: 4, army: 0,
+                        assassination: 0, custom_field: 3 } }
           ],
         ];
       });
@@ -941,6 +946,7 @@ describe('service', function() {
             sos : [ '2' ],
             control : [ '2' ],
             army : [ '4', '3' ],
+            assassination: [ '1' ],
             custom_field : [ '5' ]
           }
         });

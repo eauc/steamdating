@@ -17,14 +17,18 @@ describe('service', function() {
     describe('pointsForPlayer(<player>, <bracket_start>, <bracket_end>)', function() {
       beforeEach(function() {
         this.coll = [
-          { p1: { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 3 },
-            p2: { name: 'opp', tournament: 4, control: 5, army: 6, custom_field: 9 } },
-          { p1: {name: 'toto', tournament: 10, control: 20, army: 30, custom_field: 34 },
-            p2: { name: 'opp', tournament: 0, control: 0, army: 0, custom_field: 24 } },
-          { p1: { name: 'toto', tournament: 0, control: 0, army: 0, custom_field: 0 },
-            p2: { name: 'opp', tournament: 40, control: 50, army: 60, custom_field: 13 } },
-          { p1: { name: 'toto', tournament: 100, control: 200, army: 300, custom_field: 45 },
-            p2: { name: 'opp', tournament: 400, control: 500, army: 600, custom_field: 0 } }
+          { victory: 'assassination',
+            p1: { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 3 },
+            p2: { name: 'opp', tournament: 0, control: 5, army: 6, custom_field: 9 } },
+          { victory: 'assassination',
+            p1: {name: 'toto', tournament: 0, control: 20, army: 30, custom_field: 34 },
+            p2: { name: 'opp', tournament: 1, control: 0, army: 0, custom_field: 24 } },
+          { victory: null,
+            p1: { name: 'toto', tournament: 1, control: 0, army: 0, custom_field: 0 },
+            p2: { name: 'opp', tournament: 0, control: 50, army: 60, custom_field: 13 } },
+          { victory: null,
+            p1: { name: 'toto', tournament: 0, control: 200, army: 300, custom_field: 45 },
+            p2: { name: 'opp', tournament: 1, control: 500, army: 600, custom_field: 0 } }
         ];
       });
 
@@ -34,11 +38,12 @@ describe('service', function() {
           // uniq
           expect(games.pointsForPlayer(this.coll, 'toto', undefined, 32)).toEqual({
             bracket: 0,
-            tournament : 111,
+            tournament : 2,
             control: 222,
             army: 333,
             custom_field: 82,
-            sos: 0
+            sos: 0,
+            assassination: 1
           });
         });
       });
@@ -48,12 +53,13 @@ describe('service', function() {
         it('should sum points for <name>', function() {
           expect(games.pointsForPlayer(this.coll, 'toto', 2, 32))
             .toEqual({
-              bracket: 1600,
-              tournament : 111,
+              bracket: 32,
+              tournament : 2,
               control: 222,
               army: 333,
               custom_field : 82,
-              sos: 0
+              sos: 0,
+              assassination: 1
             });
         });
       });
@@ -62,14 +68,18 @@ describe('service', function() {
     describe('pointsAgainsPlayer(<player>, <bracket_start>, <bracket_end>)', function() {
       beforeEach(function() {
         this.coll = [
-          { p1: { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 3 },
-            p2: { name: 'opp', tournament: 4, control: 5, army: 6, custom_field: 9 } },
-          { p1: {name: 'toto', tournament: 10, control: 20, army: 30, custom_field: 34 },
-            p2: { name: 'opp', tournament: 0, control: 0, army: 0, custom_field: 24 } },
-          { p1: { name: 'toto', tournament: 0, control: 0, army: 0, custom_field: 0 },
-            p2: { name: 'opp', tournament: 40, control: 50, army: 60, custom_field: 13 } },
-          { p1: { name: 'toto', tournament: 100, control: 200, army: 300, custom_field: 45 },
-            p2: { name: 'opp', tournament: 400, control: 500, army: 600, custom_field: 0 } }
+          { victory: 'assassination',
+            p1: { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 3 },
+            p2: { name: 'opp', tournament: 0, control: 5, army: 6, custom_field: 9 } },
+          { victory: 'assassination',
+            p1: {name: 'toto', tournament: 0, control: 20, army: 30, custom_field: 34 },
+            p2: { name: 'opp', tournament: 1, control: 0, army: 0, custom_field: 24 } },
+          { victory: null,
+            p1: { name: 'toto', tournament: 1, control: 0, army: 0, custom_field: 0 },
+            p2: { name: 'opp', tournament: 0, control: 50, army: 60, custom_field: 13 } },
+          { victory: null,
+            p1: { name: 'toto', tournament: 0, control: 200, army: 300, custom_field: 45 },
+            p2: { name: 'opp', tournament: 1, control: 500, army: 600, custom_field: 0 } }
         ];
       });
 
@@ -79,11 +89,12 @@ describe('service', function() {
           // uniq
           expect(games.pointsAgainstPlayer(this.coll, 'toto', undefined, 32)).toEqual({
             bracket: 0,
-            tournament : 444,
+            tournament : 2,
             control: 555,
             army: 666,
             custom_field: 46,
-            sos: 0
+            sos: 0,
+            assassination: 1
           });
         });
       });
@@ -93,12 +104,13 @@ describe('service', function() {
         it('should sum points for <name>', function() {
           expect(games.pointsAgainstPlayer(this.coll, 'toto', 2, 32))
             .toEqual({
-              bracket: 7680,
-              tournament : 444,
+              bracket: 16,
+              tournament : 2,
               control: 555,
               army: 666,
               custom_field: 46,
-              sos: 0
+              sos: 0,
+              assassination: 1
             });
         });
       });
