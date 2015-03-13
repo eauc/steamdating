@@ -15,6 +15,7 @@ describe('service', function() {
       function(_bracketPairing, basePairing) {
         bracketPairing = _bracketPairing;
 
+        this.stateService = spyOnService('state');
         this.playersService = spyOnService('players');
         this.basePairingService = spyOnService('basePairing');
       }
@@ -46,9 +47,13 @@ describe('service', function() {
 
         this.state = {
           rounds: ['rounds'],
-          players: [ [], ['group1'], [] ],
+          players: [ 'players' ],
           tables_groups_size: 4
         };
+
+        this.not_droped_players = [ [], ['group1'], [] ];
+        this.stateService.playersNotDropedInLastRound._retVal = this.not_droped_players;
+        
         this.gri = 1;
         this.sorted_players = [
           { rank: 1, players: [{ name: 'p1' }, { name: 'p2' }, { name: 'p3' }, { name: 'p4' }] },
@@ -59,9 +64,14 @@ describe('service', function() {
         this.res = bracketPairing.suggestFirstSingleRound(this.state, this.gri);
       });
 
+      it('should request undroped players', function() {
+        expect(this.stateService.playersNotDropedInLastRound)
+          .toHaveBeenCalledWith(this.state);
+      });
+
       it('should request table range for group', function() {
         expect(this.playersService.tableRangeForGroup)
-          .toHaveBeenCalledWith(this.state.players, this.gri);
+          .toHaveBeenCalledWith(this.not_droped_players, this.gri);
       });
 
       it('should request table suggestions for each pairing', function() {
@@ -77,7 +87,7 @@ describe('service', function() {
 
       it('should sort group using SR criterion', function() {
         expect(this.playersService.sortGroup)
-          .toHaveBeenCalledWith(this.state.players[this.gri], this.state, false);
+          .toHaveBeenCalledWith(this.not_droped_players[this.gri], this.state, false);
       });
 
       using([
@@ -99,7 +109,6 @@ describe('service', function() {
       beforeEach(function() {
         var ctxt = this;
 
-        this.stateService = spyOnService('state');
         this.nb_rounds = 1;
         this.stateService.bracketNbRounds.and.callFake(function() {
           return ctxt.nb_rounds;
@@ -115,10 +124,14 @@ describe('service', function() {
           .callFake(function() { return ctxt.tables[ctxt.tables_i++]; });
 
         this.st = {
-          players: [ [], ['p1','p2','p3','p4','p5','p6','p7','p8'], [] ],
+          players: ['players'],
           rounds: [ [], [], ['last_round'] ],
           tables_groups_size: 4
         };
+
+        this.not_droped_players = [ [], ['p1','p2','p3','p4','p5','p6','p7','p8'], [] ];
+        this.stateService.playersNotDropedInLastRound._retVal = this.not_droped_players;
+
         this.gri = 1;
         this.games = [
           { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p8', tournament: 0 } },
@@ -129,18 +142,25 @@ describe('service', function() {
         this.roundService.gamesForGroup._retVal = this.games;
       });
 
+      it('should request undroped players', function() {
+        this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
+
+        expect(this.stateService.playersNotDropedInLastRound)
+          .toHaveBeenCalledWith(this.st);
+      });
+
       it('should request table range for group', function() {
         this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
 
         expect(this.playersService.tableRangeForGroup)
-          .toHaveBeenCalledWith(this.st.players, this.gri);
+          .toHaveBeenCalledWith(this.not_droped_players, this.gri);
       });
 
       it('should request last round\'s game for group', function() {
         this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
 
         expect(this.roundService.gamesForGroup)
-          .toHaveBeenCalledWith(['last_round'], this.st.players, this.gri);
+          .toHaveBeenCalledWith(['last_round'], this.not_droped_players, this.gri);
       });
 
       it('should request table suggestions for each pairing', function() {
@@ -181,8 +201,6 @@ describe('service', function() {
 
     describe('suggestRound(<state>, <group_index>)', function() {
       beforeEach(function() {
-        this.stateService = spyOnService('state');
-
         spyOn(bracketPairing, 'suggestFirstSingleRound').and.returnValue('first');
         spyOn(bracketPairing, 'suggestNextSingleRound').and.returnValue('next');
 

@@ -121,20 +121,62 @@ describe('controllers', function() {
       });
     });
 
-    describe('doDropPlayer', function () {
+    describe('doDropPlayer(<do_drop>, <player>)', function () {
+      beforeEach(function() {
+        this.event = jasmine.createSpyObj('event', ['stopPropagation']);
+        this.player = { name: 'toto' };
+
+        this.scope.sorted_players = undefined;
+        this.stateService.sortPlayersByRank.calls.reset();
+      });
+
+      it('should prevent player edition', function() {
+        this.scope.doDropPlayer(false, this.player, this.event);
+
+        expect(this.event.stopPropagation).toHaveBeenCalled();
+      });
+
+      when('<do_drop>', function() {
+        this.scope.state.rounds = [ 'round1', 'round2' ];
+        this.scope.doDropPlayer(true, this.player, this.event);
+      }, function() {
+        it('should drop player', function() {
+          expect(this.playerService.drop)
+            .toHaveBeenCalledWith(this.player, 2);
+        });
+      });
+
+      when('not <do_drop>', function() {
+        this.scope.doDropPlayer(false, this.player, this.event);
+      }, function() {
+        it('should undrop player', function() {
+          expect(this.playerService.undrop)
+            .toHaveBeenCalledWith(this.player);
+        });
+      });
+      
+      it('should store new state', function() {
+        this.scope.doDropPlayer(false, this.player, this.event);
+
+        expect(this.stateService.store)
+          .toHaveBeenCalledWith(this.scope.state);
+      });
+    });
+
+    describe('doDeletePlayer(<player>)', function () {
       beforeEach(function() {
         this.event = jasmine.createSpyObj('event', ['stopPropagation']);
         this.player = { name: 'toto' };
       });
 
       it('should prevent player edition', function() {
-        this.scope.doDropPlayer(this.player, this.event);
+        this.scope.doDeletePlayer(this.player, this.event);
 
         expect(this.event.stopPropagation).toHaveBeenCalled();
       });
 
       it('should ask confirmation', function() {
-        this.scope.doDropPlayer(this.player, this.event);
+        this.scope.doDeletePlayer(this.player, this.event);
 
         expect(this.promptService.prompt)
           .toHaveBeenCalledWith('confirm', jasmine.any(String));
@@ -144,10 +186,10 @@ describe('controllers', function() {
         this.scope.sorted_players = undefined;
         this.stateService.sortPlayersByRank.calls.reset();
 
-        this.scope.doDropPlayer(this.player, this.event);
+        this.scope.doDeletePlayer(this.player, this.event);
         this.promptService.prompt.resolve();
       }, function() {
-        it('should drop player from state', function() {
+        it('should delete player from state', function() {
           expect(this.playersService.drop)
             .toHaveBeenCalledWith(this.state_players, this.player);
           expect(this.scope.state.players)
@@ -167,7 +209,6 @@ describe('controllers', function() {
         });
       });
     });
-
   });
 
 });

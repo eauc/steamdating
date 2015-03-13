@@ -67,8 +67,9 @@ angular.module('srApp.services')
             .value();
         },
         suggestFirstSingleRound: function(state, group_index) {
-          var tables = playersService.tableRangeForGroup(state.players, group_index);
-          var group = state.players[group_index];
+          var players_not_droped = stateService.playersNotDropedInLastRound(state);
+          var tables = playersService.tableRangeForGroup(players_not_droped, group_index);
+          var group = players_not_droped[group_index];
           var players = _.chain(group)
             .apply(playersService.sortGroup, state, false)
             .mapcatWith(_.getPath, 'players')
@@ -88,12 +89,13 @@ angular.module('srApp.services')
             .value();
         },
         suggestNextSingleRound: function(state, group_index) {
-          var tables = playersService.tableRangeForGroup(state.players, group_index);
+          var players_not_droped = stateService.playersNotDropedInLastRound(state);
+          var tables = playersService.tableRangeForGroup(players_not_droped, group_index);
           var nb_bracket_rounds = stateService.bracketNbRounds(state, group_index);
           return _.chain(state.rounds)
             .last()
-            .apply(roundService.gamesForGroup, state.players, group_index)
-            .chunk(state.players[group_index].length / (1 << nb_bracket_rounds))
+            .apply(roundService.gamesForGroup, players_not_droped, group_index)
+            .chunk(players_not_droped[group_index].length / (1 << nb_bracket_rounds))
             .reduce(function(mem, round) {
               var winners = roundService.winners(round);
               var losers = roundService.losers(round);
@@ -137,10 +139,12 @@ angular.module('srApp.services')
     'players',
     'rounds',
     'game',
+    'state',
     function(basePairing,
              playersService,
              roundsService,
-             gameService) {
+             gameService,
+             stateService) {
       var srPairing = {
         sortPlayers: function(players) {
           var players_grouped_by_tp;
@@ -200,10 +204,11 @@ angular.module('srApp.services')
                  ];
         },
         suggestNextSingleRound: function(state, group_index) {
-          var tables = playersService.tableRangeForGroup(state.players, group_index);
-          var sorted_players = srPairing.sortPlayers(state.players[group_index]);
+          var players_not_droped = stateService.playersNotDropedInLastRound(state);
+          var tables = playersService.tableRangeForGroup(players_not_droped, group_index);
+          var sorted_players = srPairing.sortPlayers(players_not_droped[group_index]);
           if(1 === (sorted_players.length & 0x1)) sorted_players.push({ name: '_phantom_' });
-          return _.chain(state.players[group_index].length/2)
+          return _.chain(players_not_droped[group_index].length/2)
             .range()
             .map(function(i) {
               var pairing = srPairing.findNextPairing(state.rounds,

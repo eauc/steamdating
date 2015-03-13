@@ -8,7 +8,7 @@
     <span class="glyphicon glyphicon-plus"></span>
     Add Player
   </button>
-  <table class="table"
+  <table class="table table-hover"
          style="table-layout:fixed">
     <tr>
       <th>
@@ -19,10 +19,14 @@
       <th>Lists</th>
       <th>Notes</th>
       <th></th>
+      <th></th>
     </tr>
     <tr ng-repeat="p in ::gr track by p.name"
         style="cursor:pointer;"
-        ng-click="doEditPlayer(p)">
+        ng-click="doEditPlayer(p)"
+        ng-style="{
+        'background-color': (p | player:'isDroped') ? '#CCC' : 'auto'
+        }">
       <td style="word-wrap:break-word;">{{::p.name}}</td>
       <td style="word-wrap:break-word;">{{::p.origin}}</td>
       <td style="word-wrap:break-word;">
@@ -37,7 +41,20 @@
       </td>
       <td>{{::p.notes}}</td>
       <td>
-        <button ng-click="doDropPlayer(p, $event)"
+        <button ng-click="doDropPlayer(true, p, $event)"
+                class="btn btn-default"
+                ng-if="!(p | player:'isDroped')">
+          <span class="glyphicon glyphicon-ban-circle"></span>
+          Drop
+        </button>
+        <p ng-click="doDropPlayer(false, p, $event)"
+           ng-if="(p | player:'isDroped')">
+          Dropped after Round {{p.droped}}<br />
+          <a>click to undrop</a>
+        </p>
+      </td>
+      <td>
+        <button ng-click="doDeletePlayer(p, $event)"
                 class="btn btn-default">
           <span class="glyphicon glyphicon-trash"></span>
           Delete

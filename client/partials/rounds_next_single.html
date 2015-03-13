@@ -2,9 +2,9 @@
   <button class="btn btn-default"
           style="margin-bottom: 5px;"
           ng-class="{
-          'btn-info': (new_state.players | players:'areAllPaired':next_round)
+          'btn-info': (new_state | state:'playersNotDroped' | players:'areAllPaired':next_round)
           }"
-          ng-disabled="!(new_state.players | players:'areAllPaired':next_round)"
+          ng-disabled="!(new_state | state:'playersNotDroped' | players:'areAllPaired':next_round)"
           ng-click="registerNextRound()">
     Register Round
   </button>
@@ -21,8 +21,8 @@
     <h3 ng-if="new_state | state:'isBracketTournament':gri">
       Bracket - {{::new_state | state:'bracketRoundOf':gri}}
     </h3>
-    <strong class="text-danger"
-            ng-if="::!(gr | players:'groupSizeIsEven')">
+    <strong class="text-warning"
+            ng-if="::!(gr | players:'groupSizeIsEven':state.rounds.length)">
       Odd number of players !<br />
       (add a phantom player)
     </strong>
@@ -86,9 +86,9 @@
   <button class="btn btn-default"
           style="margin-top: 5px;"
           ng-class="{
-          'btn-info': (new_state.players | players:'areAllPaired':next_round)
+          'btn-info': (new_state | state:'playersNotDroped' | players:'areAllPaired':next_round)
           }"
-          ng-disabled="!(new_state.players | players:'areAllPaired':next_round)"
+          ng-disabled="!(new_state | state:'playersNotDroped' | players:'areAllPaired':next_round)"
           ng-click="registerNextRound()">
     Register Round
   </button>

@@ -163,43 +163,54 @@ describe('service', function() {
       beforeEach(function() {
         this.games = [{table: 3},{table: 1},{table: 2}];
         this.tables = [['tables1'],['tables2'],['tables3'],[]];
-        this.players= [['player11','player12'],['players2'],['players3'],[]];
+        this.sorted_players = [['player11','player12'],['players2'],['players3'],[]];
         this.i = 0;
         var ctxt = this;
         spyOn(srPairing, 'findNextPairing').and.callFake(function() {
-          var ret = [ ctxt.games[ctxt.i], ctxt.players[ctxt.i+1], ctxt.tables[ctxt.i+1] ];
+          var ret = [ ctxt.games[ctxt.i],
+                      ctxt.sorted_players[ctxt.i+1],
+                      ctxt.tables[ctxt.i+1]
+                    ];
           ctxt.i++;
           return ret;
         });
-        spyOn(srPairing, 'sortPlayers').and.returnValue(this.players[0]);
+        spyOn(srPairing, 'sortPlayers')
+          .and.returnValue(this.sorted_players[0]);
         
         this.playersService = spyOnService('players');
-
+        this.stateService = spyOnService('state');
+        this.players_not_droped = [
+          [],
+          [ 'p2','p3','p4','p5','p6','p1' ]
+        ];
+        this.stateService.playersNotDropedInLastRound._retVal = this.players_not_droped;
         this.state = {
           rounds: [ 'rounds' ],
-          players: [
-            [],
-            [ 'p2','p3','p4','p5','p6','p1' ]
-          ],
+          players: [ 'players' ],
           tables_groups_size: 4
         };
 
         this.suggest = srPairing.suggestNextRound(this.state, 1);
       });
 
+      it('should request list of not droped players', function() {
+        expect(this.stateService.playersNotDropedInLastRound)
+          .toHaveBeenCalledWith(this.state);
+      });
+
       it('should build table range', function() {
         expect(this.playersService.tableRangeForGroup)
-          .toHaveBeenCalledWith(this.state.players, 1);
+          .toHaveBeenCalledWith(this.players_not_droped, 1);
       });
 
       it('should build sorted players list', function() {
         expect(srPairing.sortPlayers)
-          .toHaveBeenCalledWith(this.state.players[1]);
+          .toHaveBeenCalledWith(this.players_not_droped[1]);
       });
 
       it('should recursively find pairings', function() {
         expect(srPairing.findNextPairing.calls.count())
-          .toBe(this.state.players[1].length/2);
+          .toBe(this.players_not_droped[1].length/2);
 
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
@@ -208,12 +219,12 @@ describe('service', function() {
                                 this.state.tables_groups_size);
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
-                                this.players[1],
+                                this.sorted_players[1],
                                 this.tables[1],
                                 this.state.tables_groups_size);
         expect(srPairing.findNextPairing)
           .toHaveBeenCalledWith(this.state.rounds,
-                                this.players[2],
+                                this.sorted_players[2],
                                 this.tables[2],
                                 this.state.tables_groups_size);
       });

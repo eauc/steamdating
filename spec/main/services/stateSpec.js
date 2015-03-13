@@ -92,7 +92,7 @@ describe('service', function() {
         it('should not modify them', function() {
           expect(this.result).toEqual({
             bracket: [ 'bracket' ],
-            players: [ [ { name : 'toto', faction : null, origin : null, team : null,
+            players: [ [ { name : 'toto', droped: null, faction : null, origin : null, team : null,
                            custom_field : 0, notes : null, lists : [  ], lists_played : [  ],
                            points : { tournament : 0, sos : 0, control : 0,
                                       army : 0, custom_field : 0 }
@@ -321,6 +321,20 @@ describe('service', function() {
     });
 
     describe('canBeBracketTournament(<st>, <group_index>)', function() {
+      beforeEach(function() {
+        spyOn(state, 'playersNotDropedInLastRound');
+      });
+
+      it('should request list of not droped players', function() {
+        state.playersNotDropedInLastRound.and.returnValue([[]]);
+        var st = { players: ['players'] };
+        
+        state.canBeBracketTournament(st, 0);
+        
+        expect(state.playersNotDropedInLastRound)
+          .toHaveBeenCalledWith(st);
+      });
+      
       using([
         [ 'players'           , 'can' ],
         [ [ [] ]              , false ],
@@ -331,10 +345,12 @@ describe('service', function() {
         [ [ _.repeat(5, {}) ] , false ],
         [ [ _.repeat(7, {}) ] , false ],
         [ [ _.repeat(8, {}) ] , true  ],
-      ], function(e, d) {
+      ], function(e, d) {              
         it('should test whether group\'s length is a power of 2, '+d, function() {
+          state.playersNotDropedInLastRound.and.returnValue(e.players);
+          
           expect(state.canBeBracketTournament({
-            players: e.players
+            players: ['players']
           }, 0)).toBe(e.can);
         });
       });
@@ -572,13 +588,13 @@ describe('service', function() {
     describe('rankingTables()', function() {
       it('should build a ranking table', function() {
         var st = {
-          players: [[ { name: 'p1', origin: 'c1', faction: 'f1', custom_field: 21,
+          players: [[ { name: 'p1', droped: null, origin: 'c1', faction: 'f1', custom_field: 21,
                         points: { tournament: 5, sos: 4, control: 15, army: 32,
                                   assassination: 3, custom_field: 12 } },
-                      { name: 'p2', origin: 'c2', faction: 'f2', custom_field: 24,
+                      { name: 'p2', droped: 0, origin: 'c2', faction: 'f2', custom_field: 24,
                         points: { tournament: 3, sos: 4, control: 12, army: 32,
                                   assassination: 1, custom_field: 42 } },
-                      { name: 'p3', origin: 'c3', faction: 'f3', custom_field: 27,
+                      { name: 'p3', droped: 5, origin: 'c3', faction: 'f3', custom_field: 27,
                         points: { tournament: 3, sos: 7, control: 12, army: 48,
                                   assassination: 6, custom_field: 72 } },
                     ]],
@@ -621,10 +637,11 @@ describe('service', function() {
             [ 'f4', 'p7', 3 ]
           ],
           [ [ 'Group1' ],
-            [ 'Rank', 'Name', 'Origin', 'Faction', 'pCustom', 'TP', 'SoS', 'CP', 'AP', 'CK', 'gCustom' ],
-            [ 1, 'p1', 'c1', 'f1', 21, 5, 4, 15, 32, 3, 12 ],
-            [ 2, 'p3', 'c3', 'f3', 27, 3, 7, 12, 48, 6, 72 ],
-            [ 3, 'p2', 'c2', 'f2', 24, 3, 4, 12, 32, 1, 42 ]
+            [ 'Rank', 'Name', 'Origin', 'Faction',
+              'pCustom', 'TP', 'SoS', 'CP', 'AP', 'CK', 'gCustom', 'Drop' ],
+            [ 1, 'p1', 'c1', 'f1', 21, 5, 4, 15, 32, 3, 12, '' ],
+            [ 2, 'p3', 'c3', 'f3', 27, 3, 7, 12, 48, 6, 72, 'After Round 5' ],
+            [ 3, 'p2', 'c2', 'f2', 24, 3, 4, 12, 32, 1, 42, 'After Round 0' ]
           ]
         ]);
       });
@@ -674,12 +691,12 @@ describe('service', function() {
     describe('roundsSummaryTables(<round_index>)', function() {
       it('should build a result table for round <round_index>', function() {
         var st = { players: [
-          [ { name: 'p1', lists: ['list11','list12'], lists_played: ['list11','list12'] },
-            { name: 'p2', lists: ['list21','list22'], lists_played: ['list21'] } ],
-          [ { name: 'p3', lists: ['list31','list32'], lists_played: ['list31','list32'] },
-            { name: 'p4', lists: ['list41','list42'], lists_played: ['list41'] },
-            { name: 'p5', lists: ['list51','list52'], lists_played: ['list51','list52'] },
-            { name: 'p6', lists: ['list61','list62'], lists_played: ['list62'] } ]
+          [ { name: 'p1', droped: 0, lists: ['list11','list12'], lists_played: ['list11','list12'] },
+            { name: 'p2', droped: 1, lists: ['list21','list22'], lists_played: ['list21'] } ],
+          [ { name: 'p3', droped: null, lists: ['list31','list32'], lists_played: ['list31','list32'] },
+            { name: 'p4', droped: null, lists: ['list41','list42'], lists_played: ['list41'] },
+            { name: 'p5', droped: null, lists: ['list51','list52'], lists_played: ['list51','list52'] },
+            { name: 'p6', droped: 6, lists: ['list61','list62'], lists_played: ['list62'] } ]
         ], bracket: [null, 1], rounds: [
           [ { table:1, games: [],
               victory: null,
@@ -727,17 +744,114 @@ describe('service', function() {
         expect(res).toEqual([
           [ [ 'Group1' ],
             [ 'Player', 'Lists Played', 'Round1', 'Round2' ],
-            [ 'p1', '2/2', 'W - p2', 'W - p2' ],
-            [ 'p2', '1/2', 'L - p1', 'L - p1' ]
+            [ 'p1', '2/2', 'DROPPED', 'DROPPED' ],
+            [ 'p2', '1/2', 'L - p1', 'DROPPED' ]
           ],
           [ [ 'Group2' ],
-            [ 'Player', 'Lists Played', 'Round1', 'Semi-finals' ],
+            [ 'Player', 'Lists Played', 'Round1', 'Final' ],
             [ 'p3', '2/2', 'W - p6', 'W - p4' ],
             [ 'p4', '1/2', 'W - p5', 'L - p3' ],
             [ 'p5', '2/2', 'L - p4', 'W - p6' ],
             [ 'p6', '1/2', 'L - p3', 'L - p5' ]
           ]
         ]);
+      });
+    });
+
+    describe('hasDropedPlayers()', function() {
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+        this.playersService.size.and.callThrough();
+      });
+
+      it('should request list of droped players', function() {
+        state.hasDropedPlayers({ players: ['players'] });
+        
+        expect(this.playersService.dropedInRound)
+          .toHaveBeenCalledWith(['players']);
+      });
+      
+      using([
+        [ 'droped_players'   , 'has_droped' ],
+        [ [ [], [ {}, {} ] ] , true         ],
+        [ [ [], [ {} ] ]     , true         ],
+        [ [ [], [ ] ]        , false        ],
+      ], function(e, d) {
+        it('should check wheter droped players list is empty, '+d, function() {
+          this.playersService.dropedInRound._retVal = e.droped_players;
+
+          expect(state.hasDropedPlayers({ players: ['players'] }))
+            .toBe(e.has_droped);
+        });
+      });
+    });
+
+    describe('playersDroped()', function() {
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+      });
+
+      it('should request list of droped players', function() {
+        expect(state.playersDroped({ players: ['players'] }))
+          .toBe('players.dropedInRound.returnValue');
+        expect(this.playersService.dropedInRound)
+          .toHaveBeenCalledWith(['players']);
+      });
+    });
+
+    describe('playersNotDroped()', function() {
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+      });
+
+      it('should request list of not droped players', function() {
+        expect(state.playersNotDroped({ players: ['players'] }))
+          .toBe('players.notDropedInRound.returnValue');
+        expect(this.playersService.notDropedInRound)
+          .toHaveBeenCalledWith(['players']);
+      });
+    });
+
+    describe('playersNotDropedInLastRound()', function() {
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+      });
+
+      it('should request list of not droped players', function() {
+        expect(state.playersNotDropedInLastRound({
+          players: ['players'],
+          rounds: [ [], [], [] ]
+        }))
+          .toBe('players.notDropedInRound.returnValue');
+        expect(this.playersService.notDropedInRound)
+          .toHaveBeenCalledWith(['players'], 3);
+      });
+    });
+
+    describe('createNextRound()', function() {
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+        this.roundsService = spyOnService('rounds');
+      });
+
+      it('should request list of not droped players', function() {
+        state.createNextRound({
+          players: ['players'],
+          rounds: [ [], [], [] ]
+        });
+        
+        expect(this.playersService.notDropedInRound)
+          .toHaveBeenCalledWith(['players'], 3);
+      });
+
+      it('should create next round from not droped players', function() {
+        expect(state.createNextRound({
+          players: ['players'],
+          rounds: [ [], [], [] ]
+        }))
+          .toBe('rounds.createNextRound.returnValue');
+        expect(this.roundsService.createNextRound)
+          .toHaveBeenCalledWith('players.notDropedInRound.returnValue');
       });
     });
   });

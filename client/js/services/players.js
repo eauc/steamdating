@@ -8,7 +8,29 @@ angular.module('srApp.services')
     function(roundsService,
              listService,
              listsService) {
-      return {
+      var playerService = {
+        create: function(data) {
+          var ret = _.deepExtend({
+            name: null,
+            droped: null,
+            faction: null,
+            origin: null,
+            team: null,
+            custom_field: 0,
+            notes: null,
+            lists: [],
+            lists_played: [],
+            points: {
+              tournament: 0,
+              sos: 0,
+              control: 0,
+              army: 0,
+              custom_field: 0
+            }
+          }, data);
+          ret.lists = _.map(ret.lists, listService.create);
+          return ret;
+        },
         is: function(player, name) {
           return player.name === name;
         },
@@ -27,27 +49,6 @@ angular.module('srApp.services')
             return "Error : " + e.message;
           }
           return rank;
-        },
-        create: function(data) {
-          var ret = _.deepExtend({
-            name: null,
-            faction: null,
-            origin: null,
-            team: null,
-            custom_field: 0,
-            notes: null,
-            lists: [],
-            lists_played: [],
-            points: {
-              tournament: 0,
-              sos: 0,
-              control: 0,
-              army: 0,
-              custom_field: 0
-            }
-          }, data);
-          ret.lists = _.map(ret.lists, listService.create);
-          return ret;
         },
         updateListsPlayed: function(player, rounds) {
           return _.chain(player)
@@ -73,8 +74,27 @@ angular.module('srApp.services')
               return player;
             })
             .value();
+        },
+        drop: function(player, round_index) {
+          player.droped = round_index;
+          return player;
+        },
+        undrop: function(player) {
+          player.droped = null;
+          return player;
+        },
+        hasDropedInRound: function(player, round_index) {
+          return ( _.isNumber(player.droped) &&
+                   ( !_.isNumber(round_index) ||
+                     player.droped <= round_index
+                   )
+                 );
+        },
+        isDroped: function(player) {
+          return playerService.hasDropedInRound(player, null);
         }
       };
+      return playerService;
     }
   ])
   .factory('players', [
@@ -114,6 +134,7 @@ angular.module('srApp.services')
           return _.chain(coll)
             .mapWith(_.reject, _.partial(playerService.is, _, player.name))
             .reject(_.isEmpty)
+          // ensure there is at least one empty group left
             .apply(function(players) {
               if(_.isEmpty(players)) return [[]];
               return players;
@@ -124,6 +145,16 @@ angular.module('srApp.services')
           return _.chain(coll)
             .flatten(true)
             .find(_.partial(playerService.is, _, name))
+            .value();
+        },
+        dropedInRound: function(coll, round_index) {
+          return _.chain(coll)
+            .mapWith(_.filter, _.partial(playerService.hasDropedInRound, _, round_index))
+            .value();
+        },
+        notDropedInRound: function(coll, round_index) {
+          return _.chain(coll)
+            .mapWith(_.reject, _.partial(playerService.hasDropedInRound, _, round_index))
             .value();
         },
         names: function(coll) {
@@ -384,8 +415,11 @@ angular.module('srApp.services')
         nbGroups: function(coll) {
           return coll.length;
         },
-        groupSizeIsEven: function(group) {
-          return (group.length & 1) === 0;
+        groupSizeIsEven: function(group, round_index) {
+          return ( _.chain(group)
+                   .reject(_.partial(playerService.hasDropedInRound, _, round_index))
+                   .size()
+                   .value() & 1 ) === 0;
         },
         tableRangeForGroup: function(coll, group_index) {
           var group_range = playersService.indexRangeForGroup(coll, group_index);

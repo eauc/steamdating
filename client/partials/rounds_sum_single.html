@@ -25,7 +25,10 @@
       </th>
     </tr>
     <tr ng-repeat="p in ::gr track by p.name">
-      <td style="cursor:pointer;"
+      <td style="
+          cursor:pointer;
+          background-color:{{::(p | player:'isDroped':state.rounds.length) ? '#CCC' : 'auto'}};
+          "
           ng-click="doEditPlayer(p)">
         {{::p.name}}
       </td>
@@ -40,8 +43,11 @@
           {{::c}}
         </span>
       </td>
-      <td ng-repeat="r in ::state.rounds"
+      <td ng-repeat="(ri,r) in ::state.rounds"
           ng-click="doGameEdit(r, p.name)"
+          style="
+          background-color:{{::(p | player:'hasDropedInRound':ri) ? '#CCC' : 'auto'}};
+          "
           ng-class="{
           'success': (r | round:'gameForPlayer':p.name | game:'winForPlayer':p.name),
           'danger': (r | round:'gameForPlayer':p.name | game:'winForPlayer':p.name) === false,

@@ -59,7 +59,16 @@ angular.module('srApp.controllers')
         $scope.goToState('player_edit');
       };
 
-      $scope.doDropPlayer = function(p, event) {
+      $scope.doDropPlayer = function(do_drop, p, event) {
+        p = (do_drop ?
+             player.drop(p, $scope.state.rounds.length) :
+             player.undrop(p)
+            );
+        state.store($scope.state);
+        event.stopPropagation();
+      };
+
+      $scope.doDeletePlayer = function(p, event) {
         prompt.prompt('confirm', 'You sure ?')
           .then(function()  {
             $scope.state.players = players.drop($scope.state.players, p);

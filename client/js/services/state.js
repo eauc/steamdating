@@ -11,6 +11,7 @@ angular.module('srApp.services')
     'lists',
     'ranking',
     'round',
+    'rounds',
     function($window,
              jsonStringifier,
              playerService,
@@ -19,7 +20,8 @@ angular.module('srApp.services')
              listService,
              listsService,
              ranking,
-             roundService) {
+             roundService,
+             roundsService) {
       var STORAGE_KEY = 'sdApp.state';
       var stateService = {
         isEmpty: function(state) {
@@ -157,6 +159,27 @@ angular.module('srApp.services')
         hasGameCustomField: function(state) {
           return !s.isBlank(state.custom_fields.game);
         },
+        hasDropedPlayers: function(state) {
+          return _.chain(state)
+            .apply(stateService.playersDroped)
+            .apply(playersService.size)
+            .value() > 0;
+        },
+        playersDroped: function(state) {
+          return playersService.dropedInRound(state.players);
+        },
+        playersNotDroped: function(state) {
+          return playersService.notDropedInRound(state.players);
+        },
+        playersNotDropedInLastRound: function(state) {
+          return playersService.notDropedInRound(state.players, state.rounds.length);
+        },
+        createNextRound: function(state) {
+          return _.chain(state)
+            .apply(stateService.playersNotDropedInLastRound)
+            .apply(roundsService.createNextRound)
+            .value();
+        },
         clearBracket: function(state) {
           return _.repeat(state.players.length, undefined);
         },
@@ -177,7 +200,12 @@ angular.module('srApp.services')
           return bracket;
         },
         canBeBracketTournament: function(state, group_index) {
-          var group_size = state.players[group_index].length;
+          var group_size = _.chain(state)
+              .apply(stateService.playersNotDropedInLastRound)
+              .nth(group_index)
+              .size()
+              .spy('group_size')
+              .value();
           if(group_size === 0) return false;
           while(0 === (group_size & 0x1)) group_size = group_size >> 1;
           return (group_size === 1);
@@ -199,7 +227,8 @@ angular.module('srApp.services')
         bracketRoundOf: function(state, group_index, round_index) {
           if(!_.exists(state.bracket[group_index])) return 'Not in bracket';
           round_index = _.exists(round_index) ? round_index : state.rounds.length;
-          var bracket_size = state.players[group_index].length >>
+          var players_not_droped = stateService.playersNotDroped(state);
+          var bracket_size = players_not_droped[group_index].length >>
               (round_index - state.bracket[group_index] + 1);
           switch(bracket_size) {
           case 0:
@@ -420,6 +449,7 @@ angular.module('srApp.services')
         if(has_game_custom_field) {
           headers = _.cat(headers, [state.custom_fields.game]);
         }
+        headers = _.cat(headers, ['Drop']);
         return headers;
       }
       function groupRows(group, state) {
@@ -432,7 +462,7 @@ angular.module('srApp.services')
             return _.map(rank.players, rankPlayerRow);
           })
           .flatten()
-          .chunk(9 +
+          .chunk(10 +
                  (has_player_custom_field ? 1 : 0) +
                  (has_game_custom_field ? 1 : 0))
           .value();
@@ -451,6 +481,10 @@ angular.module('srApp.services')
         if(has_game_custom_field) {
           row = _.cat(row, [player.points.custom_field]);
         }
+        row = _.cat(row, [ playerService.hasDropedInRound(player, null) ?
+                           'After Round '+player.droped :
+                           ''
+                         ]);
         return row;
       }
 
@@ -469,6 +503,11 @@ angular.module('srApp.services')
       function roundsSummaryRowForPlayer(state, player) {
         var row = [ player.name, _.size(player.lists_played)+'/'+_.size(player.lists) ];
         _.each(state.rounds, function(round, round_index) {
+          if(playerService.hasDropedInRound(player, round_index)) {
+            row.push('DROPPED');
+            return;
+          }
+          
           var game = roundService.gameForPlayer(round, player.name);
           row.push( (gameService.winForPlayer(game, player.name) ? 'W' : 'L') +
                     ' - ' +

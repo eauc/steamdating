@@ -6,7 +6,7 @@
   <h3 ng-if="::state | state:'isBracketTournament':gri">
     Bracket - {{::state | state:'bracketRoundOf':gri:state.rounds.length-1}}
   </h3>
-  <table class="table"
+  <table class="table table-hover"
          style="table-layout:fixed">
     <tr>
       <th style="width:4em;">Rank</th>
@@ -25,12 +25,16 @@
       <th ng-if="state | state:'hasGameCustomField'">
         {{::state.custom_fields.game}}
       </th>
+      <th></th>
     </tr>
     <tbody ng-repeat="rank in ::gr"
            style="border-width:0px">
       <tr ng-repeat="p in ::rank.players"
           style="cursor:pointer;"
-          ng-click="doEditPlayer(p)">
+          ng-click="doEditPlayer(p)"
+          ng-style="{
+          'background-color': (p | player:'isDroped') ? '#CCC' : 'auto'
+          }">
         <td>{{::rank.rank}}</td>
         <td style="word-wrap:break-word;">{{::p.name}}</td>
         <td style="word-wrap:break-word;"
@@ -61,6 +65,19 @@
         <td ng-if="state | state:'hasGameCustomField'"
              class="{{:: (state | state:'isPlayerBest':'points.custom_field':p) ? 'info' : ''}}">
           {{::p.points.custom_field}}
+        </td>
+        <td>
+          <button ng-click="doDropPlayer(true, p, $event)"
+                  class="btn btn-default"
+                  ng-if="!(p | player:'isDroped')">
+            <span class="glyphicon glyphicon-ban-circle"></span>
+            Drop
+          </button>
+          <p ng-click="doDropPlayer(false, p, $event)"
+             ng-if="(p | player:'isDroped')">
+            Dropped after Round {{p.droped}}<br />
+            <a>click to undrop</a>
+          </p>
         </td>
       </tr>
     </tbody>

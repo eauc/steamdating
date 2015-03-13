@@ -27,11 +27,12 @@ describe('controllers', function() {
         };
 
         this.stateService = spyOnService('state');
+        this.stateService.playersNotDropedInLastRound._retVal = [ 'players_not_droped' ];
+        this.stateService.createNextRound._retVal = ['state.createNextRound.returnValue'];
         this.srPairingService = spyOnService('srPairing');
         this.bracketPairingService = spyOnService('bracketPairing');
         this.roundService = spyOnService('round');
         this.roundsService = spyOnService('rounds');
-        this.roundsService.createNextRound._retVal = ['rounds.createNextRound.returnValue'];
 
         $controller('roundsNextCtrl', { 
           '$scope': this.scope,
@@ -53,9 +54,9 @@ describe('controllers', function() {
 
     it('should init next round', function() {
       expect(this.scope.next_round)
-        .toEqual([ 'rounds.createNextRound.returnValue' ]);
-      expect(this.roundsService.createNextRound)
-        .toHaveBeenCalledWith(this.scope.state.players);
+        .toEqual([ 'state.createNextRound.returnValue' ]);
+      expect(this.stateService.createNextRound)
+        .toHaveBeenCalledWith(this.scope.state);
     });
     
     it('should init players options lists', function() {
@@ -106,7 +107,7 @@ describe('controllers', function() {
     describe('updatePlayersOptions()', function() {
       beforeEach(function() {
         this.scope.players_options = null;
-        this.scope.new_state.players = [
+        this.stateService.playersNotDropedInLastRound._retVal = [
           [ { name: 'paired11' }, { name: 'not_paired12' }, { name: 'not_paired13' } ],
           [ { name: 'not_paired21' }, { name: 'paired22' } ],
         ];
@@ -121,6 +122,11 @@ describe('controllers', function() {
         });
       });
 
+      it('should request list of players not droped in last round', function() {
+        expect(this.stateService.playersNotDropedInLastRound)
+          .toHaveBeenCalledWith(this.scope.new_state);
+      });
+      
       it('should update tables ranges list', function() {
         this.scope.updatePlayersOptions();
 

@@ -68,24 +68,33 @@ angular.module('srApp.controllers')
       $scope.new_state = _.clone($scope.state);
       console.log('init roundsNextCtrl', $scope.new_state);
       $scope.previous_round_complete = rounds.lastRoundIsComplete($scope.new_state.rounds);
-      $scope.next_round = rounds.createNextRound($scope.state.players);
+      $scope.next_round = state.createNextRound($scope.state);
 
       $scope.updatePlayersOptions = function() {
-        $scope.players_options = _.map($scope.new_state.players, function(gr, gri) {
-          return _.map(gr, function(p) {
-            var paired = round.isPlayerPaired($scope.next_round[gri], p);
-            var label = paired ? p.name : '> '+p.name;
-            return [ p.name, label ];
-          });
-        });
+        $scope.players_options = _.chain($scope.new_state)
+          .apply(state.playersNotDropedInLastRound)
+          .map(function(gr, gri) {
+            return _.map(gr, function(p) {
+              var paired = round.isPlayerPaired($scope.next_round[gri], p);
+              var label = paired ? p.name : '> '+p.name;
+              return [ p.name, label ];
+            });
+          })
+          .value();
         $scope.pairs_already = _.map($scope.next_round, function(gr) {
           return _.map(gr, function(g) {
             return rounds.pairAlreadyExists($scope.new_state.rounds, g);
           });
         });
-        $scope.tables_ranges = _.map($scope.new_state.players, function(group, group_index) {
-          return players.tableRangeForGroup($scope.new_state.players, group_index);
-        });
+        $scope.tables_ranges = _.chain($scope.new_state)
+          .apply(state.playersNotDropedInLastRound)
+          .map(function(group, group_index) {
+            return _.chain($scope.new_state)
+              .apply(state.playersNotDropedInLastRound)
+              .apply(players.tableRangeForGroup, group_index)
+              .value();
+          })
+          .value();
       };
       $scope.updatePlayersOptions();
 
@@ -163,12 +172,6 @@ angular.module('srApp.controllers')
         prompt.prompt('confirm', 'You sure ?')
           .then(function() {
             $scope.state.rounds = rounds.drop($scope.state.rounds, parseFloat(r));
-            // _.each($scope.state.bracket, function(b, i) {
-            //   if(_.exists(b) &&
-            //      $scope.state.rounds.length <= b) {
-            //     $scope.state.bracket[i] = undefined;
-            //   }
-            // });
             $scope.updatePoints();
             $scope.storeState();
             $scope.goToState('rounds.sum');

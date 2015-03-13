@@ -119,6 +119,62 @@ describe('service', function() {
           .toHaveBeenCalledWith(dummy_rounds, 'toto', 8, 42);
       });
     });
+
+    describe('drop(<player>, <after_round>)', function() {
+      it('should remember the round after which the player droped', function() {
+        var p = { droped: null };
+        expect(player.drop(p, 42)).toEqual({droped: 42});
+        expect(p).toEqual({droped: 42});
+      });
+    });
+
+    describe('undrop(<player>)', function() {
+      it('should reset player\'s drop', function() {
+        var p = { droped: 42 };
+        expect(player.undrop(p)).toEqual({droped: null});
+        expect(p).toEqual({droped: null});
+      });
+    });
+
+    describe('hasDropedInRound(<player>, <round_index>)', function() {
+      using([
+        [ 'droped_after_round' , 'round_index' , 'has_droped' ],
+        // player has not droped yet
+        [ null                 , 0             , false        ],
+        [ null                 , 4             , false        ],
+        // round_index = null => check if player has droped in any round
+        [ null                 , null          , false        ],
+        // player droped at the start
+        [ 0                    , 0             , true         ],
+        [ 0                    , 1             , true         ],
+        [ 0                    , null          , true         ],
+        // player droped after some round
+        [ 4                    , 0             , false        ],
+        [ 4                    , 3             , false        ],
+        [ 4                    , 4             , true         ],
+        [ 4                    , 6             , true         ],
+        [ 4                    , null          , true         ],
+      ], function(e, d) {
+        it('should check whether player had already droped by <round_index>, '+d, function() {
+          expect(player.hasDropedInRound({droped: e.droped_after_round}, e.round_index))
+            .toBe(e.has_droped);
+        });
+      });
+    });
+
+    describe('isDroped(<player>)', function() {
+      using([
+        [ 'droped_after_round' , 'is_droped' ],
+        [ null                 , false       ],
+        [ 0                    , true        ],
+        [ 4                    , true       ],
+      ], function(e, d) {
+        it('should check whether player has droped in whole tournament, '+d, function() {
+          expect(player.isDroped({droped: e.droped_after_round}))
+            .toBe(e.is_droped);
+        });
+      });
+    });
   });
 
 });

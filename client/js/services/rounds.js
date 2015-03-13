@@ -80,9 +80,7 @@ angular.module('srApp.services')
         allGamesHaveResult: function(coll) {
           return _.chain(coll)
             .map(gameService.hasResult)
-            .spy('hasres')
             .all()
-            .spy('all')
             .value();
         },
         winners: function(coll) {
@@ -112,14 +110,16 @@ angular.module('srApp.services')
         },
         createNextRound: function(players) {
           var table = 1;
-          return _.map(players, function(group) {
-            return _.chain(group.length/2)
-              .range()
-              .map(function() {
-                return gameService.create({ table: table++ });
-              })
-              .value();
-          });
+          return _.chain(players)
+            .map(function(group) {
+              return _.chain(group.length/2)
+                .range()
+                .map(function() {
+                  return gameService.create({ table: table++ });
+                })
+                .value();
+            })
+            .value();
         },
         registerNextRound: function(coll, next) {
           return _.cat(coll, [_.flatten(next)]);

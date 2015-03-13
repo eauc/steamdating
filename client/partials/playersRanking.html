@@ -4,8 +4,8 @@
     Edit Groups
   </button>
   <h4 style="display:inline;">
-    {{state.players | players:'size'}} Players /
-    {{state.players | players:'nbGroups'}} Groups
+    {{state | state:'playersNotDroped' | players:'size'}}<span ng-if="state | state:'hasDropedPlayers'">+{{state | state:'playersDroped' | players:'size'}}</span>
+    Players / {{state.players | players:'nbGroups'}} Groups
   </h4>
   <div ng-repeat="f in exports"
        style="margin:10px 0;">

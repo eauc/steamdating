@@ -814,15 +814,103 @@ describe('service', function() {
       });
     });
 
-    describe('groupSizeIsEven(<group>)', function() {
+    describe('dropedInRound(<round_index>)', function() {
       using([
-        [ 'group'    , 'isEven' ],
-        [ [ [], [] ] , true     ],
-        [ [ [] ]     , false    ],
-        [ [ ]        , true     ],
+        [ 'players' , 'round_index' , 'not_droped' ],
+        // simple case : no players droped
+        [ [ [ { name: 'p1', droped: null }, { name: 'p2', droped: null } ] ] , null ,
+          [ [] ]
+        ],
+        [ [ [ { name: 'p1', droped: null }, { name: 'p2', droped: null } ] ] , 0    ,
+          [ [] ]
+        ],
+        [ [ [ { name: 'p1', droped: null }, { name: 'p2', droped: null } ] ] , 5    ,
+          [ [] ]
+        ],
+        // a player droped in tournament
+        [ [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: null } ] ] , null ,
+          [ [ { name: 'p1', droped: 4 } ] ]
+        ],
+        // a player droped in later round
+        [ [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: null } ] ] , 3    ,
+          [ [] ]
+        ],
+        // a player droped in previous round
+        [ [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: null } ] ] , 4    ,
+          [ [ { name: 'p1', droped: 4 } ] ]
+        ],
+        [ [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: null } ] ] , 6    ,
+          [ [ { name: 'p1', droped: 4 } ] ]
+        ],
       ], function(e ,d) {
-        it('should check whether <group> size is even, '+d, function() {
-          expect(players.groupSizeIsEven(e.group)).toBe(e.isEven);
+        it('should filter player that did drop by <round_index>, '+d, function() {
+          expect(players.dropedInRound(e.players, e.round_index))
+            .toEqual(e.not_droped);
+        });
+      });
+    });
+
+    describe('notDropedInRound(<round_index>)', function() {
+      using([
+        [ 'players' , 'round_index' , 'not_droped' ],
+        // simple case : no players droped
+        [ [ [ { name: 'p1', droped: null }, { name: 'p2', droped: null } ] ] , null ,
+          [ [ { name: 'p1', droped: null }, { name: 'p2', droped: null } ] ]
+        ],
+        [ [ [ { name: 'p1', droped: null }, { name: 'p2', droped: null } ] ] , 0    ,
+          [ [ { name: 'p1', droped: null }, { name: 'p2', droped: null } ] ]
+        ],
+        [ [ [ { name: 'p1', droped: null }, { name: 'p2', droped: null } ] ] , 5    ,
+          [ [ { name: 'p1', droped: null }, { name: 'p2', droped: null } ] ]
+        ],
+        // a player droped in tournament
+        [ [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: null } ] ] , null ,
+          [ [ { name: 'p2', droped: null } ] ]
+        ],
+        // a player droped in a later round
+        [ [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: null } ] ] , 3    ,
+          [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: null } ] ]
+        ],
+        // a player droped in a previous round
+        [ [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: null } ] ] , 4    ,
+          [ [ { name: 'p2', droped: null } ] ]
+        ],
+        [ [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: null } ] ] , 6    ,
+          [ [ { name: 'p2', droped: null } ] ]
+        ],
+        // all players droped in a previous round
+        [ [ [ { name: 'p1', droped: 4 }, { name: 'p2', droped: 3 } ] ] , 4    ,
+          [ [  ] ]
+        ],
+      ], function(e ,d) {
+        it('should filter player that did not drop by <round_index>, '+d, function() {
+          expect(players.notDropedInRound(e.players, e.round_index))
+            .toEqual(e.not_droped);
+        });
+      });
+    });
+
+    describe('groupSizeIsEven(<group>, <round_index>)', function() {
+      using([
+        [ 'group'                                , 'round_index' , 'isEven' ],
+        // simple case : no players droped
+        [ [ { droped: null }, { droped: null } ] , null          , true     ],
+        [ [ { droped: null }, { droped: null } ] , 0             , true     ],
+        [ [ { droped: null }, { droped: null } ] , 5             , true     ],
+        [ [ { droped: null } ]                   , null          , false    ],
+        [ [ { droped: null } ]                   , 0             , false    ],
+        [ [ { droped: null } ]                   , 5             , false    ],
+        // empty group is not even
+        [ [ ]                                    , null          , true     ],
+        // player droped, check in whole tournament
+        [ [ { droped: null }, { droped: 5 } ]    , null          , false    ],
+        // player droped in later round
+        [ [ { droped: null }, { droped: 5 } ]    , 4             , true     ],
+        // player droped in previous round
+        [ [ { droped: null }, { droped: 5 } ]    , 5             , false    ],
+      ], function(e ,d) {
+        it('should check whether <group> size is even in <round_index>, '+d, function() {
+          expect(players.groupSizeIsEven(e.group, e.round_index)).toBe(e.isEven);
         });
       });
     });
