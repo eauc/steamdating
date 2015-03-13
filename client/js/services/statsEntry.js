@@ -244,7 +244,7 @@ angular.module('srApp.services')
             })
             .mapcat(function(lst_entry) {
               return _.map(lstCasters(lst_entry), function(caster) {
-                return listsService.listForCaster(lstPlayer(lst_entry).lists, caster);
+                return listsService.listForCaster(_.getPath(lstPlayer(lst_entry), 'lists'), caster);
               });
             })
             .without(undefined, null)
