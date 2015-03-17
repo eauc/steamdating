@@ -103,8 +103,7 @@ describe('service', function() {
                           p1 : { name : null, list : null, tournament : null,
                                  control : null, army : null, custom_field : null },
                           p2 : { name : null, list : null, tournament : null,
-                                 control : null, army : null, custom_field : null },
-                          games : [  ]
+                                 control : null, army : null, custom_field : null }
                         } ] ],
             ranking: {
               player : 'player',
@@ -168,28 +167,28 @@ describe('service', function() {
       });
     });
 
-    describe('hasPlayers(<st>)', function() {
+    describe('hasPlayers()', function() {
       it('should test if one or more player are defined', function() {
         expect(state.hasPlayers({ players: [[]] })).toBe(false);
         expect(state.hasPlayers({ players: [[],[{}]] })).toBe(true);
       });
     });
 
-    describe('hasPlayerGroups(<st>)', function() {
+    describe('hasPlayerGroups()', function() {
       it('should test if more than one player group is defined', function() {
         expect(state.hasPlayerGroups({ players: [[]] })).toBe(false);
         expect(state.hasPlayerGroups({ players: [[],[]] })).toBe(true);
       });
     });
 
-    describe('isTeamTournament(<st>)', function() {
+    describe('isTeamTournament()', function() {
       it('should test if one or more team are defined', function() {
         expect(state.isTeamTournament({ teams: [[]] })).toBe(false);
         expect(state.isTeamTournament({ teams: [[],[{}]] })).toBe(true);
       });
     });
 
-    describe('hasPlayerCustomField(<st>)', function() {
+    describe('hasPlayerCustomField()', function() {
       using([
         [ 'pcustom' , 'hasPCustom' ],
         [ undefined , false ],
@@ -205,7 +204,7 @@ describe('service', function() {
       });
     });
 
-    describe('hasGameCustomField(<st>)', function() {
+    describe('hasGameCustomField()', function() {
       using([
         [ 'gcustom' , 'hasGCustom' ],
         [ undefined , false ],
@@ -221,23 +220,23 @@ describe('service', function() {
       });
     });
 
-    describe('clearBracket(<st>)', function() {
+    describe('clearBracket()', function() {
       it('should clear all brackets', function() {
         expect(state.clearBracket({ players: _.repeat(3, {}) }))
           .toEqual([undefined, undefined, undefined]);
       });
     });
 
-    describe('setBracketLength(<st>, <length>)', function() {
+    describe('setBracketLength(<length>)', function() {
       when('bracket is longer than <length>', function() {
         this.coll = { bracket: [ undefined, 4, 5 ] };
       }, function() {
         it('should return bracket', function() {
-          expect(state.setBracketLength(this.coll, 1))
+          expect(state.setBracketLength(1, this.coll))
             .toEqual(this.coll.bracket);
-          expect(state.setBracketLength(this.coll, 2))
+          expect(state.setBracketLength(2, this.coll))
             .toEqual(this.coll.bracket);
-          expect(state.setBracketLength(this.coll, 3))
+          expect(state.setBracketLength(3, this.coll))
             .toEqual(this.coll.bracket);
         });
       });
@@ -246,22 +245,22 @@ describe('service', function() {
         this.coll = { bracket: [ undefined, 4, 5 ] };
       }, function() {
         it('should append undefined', function() {
-          expect(state.setBracketLength(this.coll, 4))
+          expect(state.setBracketLength(4, this.coll))
             .toEqual([ undefined, 4, 5, undefined ]);
-          expect(state.setBracketLength(this.coll, 6))
+          expect(state.setBracketLength(6, this.coll))
             .toEqual([ undefined, 4, 5, undefined, undefined, undefined ]);
         });
       });
     });
 
-    describe('setBracket(<st>, <index>)', function() {
+    describe('setBracket(<index>)', function() {
       when('bracket is shorter than <length>', function() {
         this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
       }, function() {
         it('should append undefined and set bracket[<index>]', function() {
-          expect(state.setBracket(this.coll, 3))
+          expect(state.setBracket(3, this.coll))
             .toEqual([ undefined, 4, 5, 2 ]);
-          expect(state.setBracket(this.coll, 5))
+          expect(state.setBracket(5, this.coll))
             .toEqual([ undefined, 4, 5, undefined, undefined, 2 ]);
         });
       });
@@ -270,7 +269,7 @@ describe('service', function() {
         this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
       }, function() {
         it('should set bracket[<index>]', function() {
-          expect(state.setBracket(this.coll, 0))
+          expect(state.setBracket(0, this.coll))
             .toEqual([ 2, 4, 5 ]);
         });
       });
@@ -279,22 +278,22 @@ describe('service', function() {
         this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
       }, function() {
         it('should not modify bracket[<index>]', function() {
-          expect(state.setBracket(this.coll, 1))
+          expect(state.setBracket(1, this.coll))
             .toEqual([ undefined, 4, 5 ]);
-          expect(state.setBracket(this.coll, 2))
+          expect(state.setBracket(2, this.coll))
             .toEqual([ undefined, 4, 5 ]);
         });
       });
     });
 
-    describe('resetBracket(<st>, <index>)', function() {
+    describe('resetBracket(<index>)', function() {
       when('bracket is shorter than <length>', function() {
         this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
       }, function() {
         it('should append undefined', function() {
-          expect(state.resetBracket(this.coll, 3))
+          expect(state.resetBracket(3, this.coll))
             .toEqual([ undefined, 4, 5, undefined ]);
-          expect(state.resetBracket(this.coll, 5))
+          expect(state.resetBracket(5, this.coll))
             .toEqual([ undefined, 4, 5, undefined, undefined, undefined ]);
         });
       });
@@ -303,7 +302,7 @@ describe('service', function() {
         this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
       }, function() {
         it('should not modify bracket', function() {
-          expect(state.resetBracket(this.coll, 0))
+          expect(state.resetBracket(0, this.coll))
             .toEqual([ undefined, 4, 5 ]);
         });
       });
@@ -312,15 +311,15 @@ describe('service', function() {
         this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
       }, function() {
         it('should not modify bracket[<index>]', function() {
-          expect(state.resetBracket(this.coll, 1))
+          expect(state.resetBracket(1, this.coll))
             .toEqual([ undefined, undefined, 5 ]);
-          expect(state.resetBracket(this.coll, 2))
+          expect(state.resetBracket(2, this.coll))
             .toEqual([ undefined, 4, undefined ]);
         });
       });
     });
 
-    describe('canBeBracketTournament(<st>, <group_index>)', function() {
+    describe('canBeBracketTournament(<group_index>)', function() {
       beforeEach(function() {
         spyOn(state, 'playersNotDropedInLastRound');
       });
@@ -329,7 +328,7 @@ describe('service', function() {
         state.playersNotDropedInLastRound.and.returnValue([[]]);
         var st = { players: ['players'] };
         
-        state.canBeBracketTournament(st, 0);
+        state.canBeBracketTournament(0, st);
         
         expect(state.playersNotDropedInLastRound)
           .toHaveBeenCalledWith(st);
@@ -349,14 +348,14 @@ describe('service', function() {
         it('should test whether group\'s length is a power of 2, '+d, function() {
           state.playersNotDropedInLastRound.and.returnValue(e.players);
           
-          expect(state.canBeBracketTournament({
+          expect(state.canBeBracketTournament(0, {
             players: ['players']
-          }, 0)).toBe(e.can);
+          })).toBe(e.can);
         });
       });
     });
 
-    describe('bracketNbRounds(<st>, <group_index>)', function() {
+    describe('bracketNbRounds(<group_index>)', function() {
       when('bracket is set', function() {
       }, function() {
         using([
@@ -366,7 +365,7 @@ describe('service', function() {
           [ [ [], [], [], [], [] ] , 3    ],
         ], function(e, d) {
           it('should return number of rounds since bracket start, '+d, function() {
-            expect(state.bracketNbRounds({ bracket: [ 2 ], rounds: e.rounds }, 0))
+            expect(state.bracketNbRounds(0, { bracket: [ 2 ], rounds: e.rounds }))
               .toBe(e.nb);
           });
         });
@@ -375,17 +374,20 @@ describe('service', function() {
       when('bracket is not set', function() {
       }, function() {
         it('should return 0', function() {
-          expect(state.bracketNbRounds({ bracket: [ undefined ], rounds: [ [], [] ] }, 0))
+          expect(state.bracketNbRounds(0, { bracket: [ undefined ], rounds: [ [], [] ] }))
             .toBe(0);
         });
       });
     });
 
-    describe('bracketRoundof(<st>, <group_index>, <round_index>)', function() {
+    describe('bracketRoundof(, <group_index>, <round_index>)', function() {
       when('bracket is not set', function() {
       }, function() {
         it('should return "Not in bracket"', function() {
-          expect(state.bracketRoundOf({ bracket: [] }, 0, 0)).toMatch(/not in bracket/i);
+          expect(state.bracketRoundOf(0, 0, {
+            bracket: [],
+            rounds: []
+          })).toMatch(/not in bracket/i);
         });
       });
 
@@ -400,10 +402,11 @@ describe('service', function() {
           [ 4             , /ended/i          ],
         ], function(e, d) {
           it('should return a description of the bracket round, '+d, function() {
-            expect(state.bracketRoundOf({
+            expect(state.bracketRoundOf(0, e.round_index, {
               bracket: [0],
-              players: [ _.repeat(16, {}) ]
-            }, 0, e.round_index)).toMatch(e.desc);
+              players: [ _.repeat(16, {}) ],
+              rounds: []
+            })).toMatch(e.desc);
           });
         });
       });
@@ -428,8 +431,9 @@ describe('service', function() {
           rounds: ['rounds']
         });
         expect(this.playersService.updatePoints)
-          .toHaveBeenCalledWith(dummy_players, [ 'rounds' ],
-                                dummy_bracket, [ 2, 1, 2.5 ]);
+          .toHaveBeenCalledWith(dummy_bracket, [ 2, 1, 2.5 ],
+                                [ 'rounds' ],
+                                dummy_players);
       });
     });
     
@@ -464,7 +468,7 @@ describe('service', function() {
       it('should call players.bests with nb rounds information', function() {
         expect(this.ret.bests).toBe('players.bests.returnValue');
         expect(this.playersService.bests)
-          .toHaveBeenCalledWith(this.dummy_players, 3);
+          .toHaveBeenCalledWith(3, this.dummy_players);
       });
 
       it('should extract bests players in each faction', function() {
@@ -505,7 +509,8 @@ describe('service', function() {
         [ 'points.custom_field' , 'p3'   , false ],
       ], function(e, d) {
         it('should test whether <name> is in the bests players for <type>, '+d, function() {
-          expect(state.isPlayerBest(this.state, e.type, { name: e.name })).toBe(e.isBest);
+          expect(state.isPlayerBest(e.type, { name: e.name }, this.state))
+            .toBe(e.isBest);
         });
       });
     });
@@ -534,8 +539,10 @@ describe('service', function() {
         [ 'f1'      , null      , false ],
       ], function(e, d) {
         it('should test whether <name> is the bests players for <faction>, '+d, function() {
-          expect(state.isPlayerBestInFaction(this.state, { name: e.name,
-                                                           faction: e.faction }))
+          expect(state.isPlayerBestInFaction({
+            name: e.name,
+            faction: e.faction
+          }, this.state))
             .toBe(e.isBest);
         });
       });
@@ -558,7 +565,7 @@ describe('service', function() {
         expect(state.sortPlayersByRank(st))
           .toBe('players.sort.returnValue');
         expect(this.playersService.sort)
-          .toHaveBeenCalledWith(dummy_players, st, [ false, false, true ]);
+          .toHaveBeenCalledWith(st, [ false, false, true ], dummy_players);
       });
     });
 
@@ -768,7 +775,7 @@ describe('service', function() {
         state.hasDropedPlayers({ players: ['players'] });
         
         expect(this.playersService.dropedInRound)
-          .toHaveBeenCalledWith(['players']);
+          .toHaveBeenCalledWith(null, ['players']);
       });
       
       using([
@@ -795,7 +802,7 @@ describe('service', function() {
         expect(state.playersDroped({ players: ['players'] }))
           .toBe('players.dropedInRound.returnValue');
         expect(this.playersService.dropedInRound)
-          .toHaveBeenCalledWith(['players']);
+          .toHaveBeenCalledWith(null, ['players']);
       });
     });
 
@@ -808,7 +815,7 @@ describe('service', function() {
         expect(state.playersNotDroped({ players: ['players'] }))
           .toBe('players.notDropedInRound.returnValue');
         expect(this.playersService.notDropedInRound)
-          .toHaveBeenCalledWith(['players']);
+          .toHaveBeenCalledWith(null, ['players']);
       });
     });
 
@@ -824,7 +831,7 @@ describe('service', function() {
         }))
           .toBe('players.notDropedInRound.returnValue');
         expect(this.playersService.notDropedInRound)
-          .toHaveBeenCalledWith(['players'], 3);
+          .toHaveBeenCalledWith(3, ['players']);
       });
     });
 
@@ -841,7 +848,7 @@ describe('service', function() {
         });
         
         expect(this.playersService.notDropedInRound)
-          .toHaveBeenCalledWith(['players'], 3);
+          .toHaveBeenCalledWith(3, ['players']);
       });
 
       it('should create next round from not droped players', function() {

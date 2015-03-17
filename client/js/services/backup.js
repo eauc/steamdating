@@ -31,16 +31,16 @@ angular.module('srApp.services')
           return defer.promise;
         },
         generate: function(data) {
-          return _.chain(data)
-            .apply(JSON.stringify)
-            .apply(function(string) {
+          return R.pipe(
+            JSON.stringify,
+            function(string) {
               return new $window.Blob([string], {type: 'text/plain'});
-            })
-            .apply($window.URL.createObjectURL)
-            .value();
+            },
+            $window.URL.createObjectURL
+          )(data);
         },
         cleanup: function(url) {
-          if(url !== null) {
+          if(!R.isNil(url)) {
             $window.URL.revokeObjectURL(url);
           }
         }

@@ -8,25 +8,25 @@ angular.module('srApp.services')
     'fkParser',
     function($window,
              $q,
-             t3Parser,
-             fkParser) {
+             t3ParserService,
+             fkParserService) {
       var parsers = {
-        't3': t3Parser,
-        'fk': fkParser,
+        't3': t3ParserService,
+        'fk': fkParserService,
         'json': {
           parse: function(string) {
             return [JSON.parse(string), []];
           }
         }
       };
-      return {
+      var fileImportService = {
         read: function(type, file, factions) {
           var reader = new $window.FileReader();
           var defer = $q.defer();
           reader.onload = function(e) {
             var data;
             try {
-              data = parsers[type].parse(e.target.result, factions);
+              data = parsers[type].parse(factions, e.target.result);
               defer.resolve(data);
             }
             catch (event) {
@@ -43,5 +43,7 @@ angular.module('srApp.services')
           return defer.promise;
         }
       };
+      R.curryService(fileImportService);
+      return fileImportService;
     }
   ]);

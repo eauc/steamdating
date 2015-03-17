@@ -33,7 +33,7 @@ describe('controllers', function() {
 
     it('should setup select lists', function() {
       expect(this.playersService.factions)
-        .toHaveBeenCalledWith(this.scope.state.players);
+        .toHaveBeenCalledWith([], this.scope.state.players);
       expect(this.scope.factions)
         .toEqual(['players.factions.returnValue']);
 

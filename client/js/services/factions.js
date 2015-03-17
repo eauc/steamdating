@@ -8,16 +8,16 @@ angular.module('srApp.services')
     function($window,
              $http,
              $q) {
-
       var base_factions;
       var base_factions_defers = [];
       function resolveAllDefers() {
-        _.each(base_factions_defers, function(defer) {
+        R.forEach(function(defer) {
           defer.resolve(base_factions);
-        });
+        }, base_factions_defers);
         base_factions_defers = [];
       }
-      return {
+      
+      var factionsService = {
         init: function() {
           $http.get('/data/factions.json').then(function(response) {
             base_factions = response.data;
@@ -27,29 +27,35 @@ angular.module('srApp.services')
           });
         },
         baseFactions: function() {
-          if(_.exists(base_factions)) return base_factions;
+          if(!R.isNil(base_factions)) return base_factions;
 
           var defer = $q.defer();
           base_factions_defers.push(defer);
           return defer.promise;
         },
         iconFor: function(faction_name) {
-          return _.chain([base_factions])
-            .mapWith(_.getPath, faction_name+'.icon')
-            .without(undefined, null)
-            .mapWith(function(icon) { return 'data/icons/'+icon; })
-            .first()
-            .value();
+          return R.pipe(
+            R.defaultTo({}),
+            R.map(R.path([faction_name, 'icon'])),
+            R.reject(R.isNil),
+            R.map(function(icon) { return 'data/icons/'+icon; }),
+            R.head
+          )([base_factions]);
         },
         hueFor: function(faction_name) {
-          return _.getPath(base_factions, faction_name+'.hue');
+          return R.path([faction_name, 'hue'],
+                        R.defaultTo({}, base_factions));
         },
         castersFor: function(faction_name) {
-          return _.getPath(base_factions, faction_name+'.casters');
+          return R.path([faction_name, 'casters'],
+                        R.defaultTo({}, base_factions));
         },
         casterNameFor: function(faction_name, caster_name) {
-          return _.getPath(base_factions, faction_name+'.casters.'+caster_name+'.name');
+          return R.path([faction_name,'casters',caster_name,'name'],
+                        R.defaultTo({}, base_factions));
         }
       };
+      R.curryService(factionsService);
+      return factionsService;
     }
   ]);

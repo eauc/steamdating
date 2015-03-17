@@ -6,41 +6,45 @@ angular.module('srApp.services')
     'players',
     function(roundsService,
              playersService) {
-      var basePairing = {
+      var basePairingService = {
         suggestTableFor: function(rounds, available_tables, p1, p2, tables_groups_size) {
-          available_tables = _.shuffle(available_tables);
-          tables_groups_size = tables_groups_size || _.max(available_tables)+1;
-          var tableGroupFun = _.partial(tableGroup, _, tables_groups_size);
-          var available_groups = _.chain(available_tables)
-              .map(tableGroupFun)
-              .uniq()
-              .value();
-          var available_tables_by_group = _.groupBy(available_tables, tableGroupFun);
-          var p1_tables = roundsService.tablesForPlayer(rounds, p1);
-          var p1_groups = _.chain(p1_tables)
-              .map(tableGroupFun)
-              .uniq()
-              .value();
-          var p2_tables = roundsService.tablesForPlayer(rounds, p2);
-          var p2_groups = _.chain(p2_tables)
-              .map(tableGroupFun)
-              .uniq()
-              .value();
-          var possible_tables = _.difference(available_tables, p1_tables, p2_tables);
-          var possible_groups = _.difference(available_groups, p1_groups, p2_groups);
-          return ( !_.isEmpty(possible_groups) ?
+          available_tables = R.shuffle(available_tables);
+          tables_groups_size = R.defaultTo(R.max(available_tables)+1, tables_groups_size);
+
+          var available_tables_groups = tablesGroups(tables_groups_size, available_tables);
+          var available_tables_by_group = R.groupBy(tableGroup$(tables_groups_size), available_tables);
+          
+          var p1_tables = roundsService.tablesForPlayer(p1, rounds);
+          var p1_tables_groups = tablesGroups(tables_groups_size, p1_tables);
+
+          var p2_tables = roundsService.tablesForPlayer(p2, rounds);
+          var p2_tables_groups = tablesGroups(tables_groups_size, p2_tables);
+
+          var possible_tables = R.difference(available_tables,
+                                             R.concat(p1_tables, p2_tables));
+          var possible_groups = R.difference(available_tables_groups,
+                                             R.concat(p1_tables_groups, p2_tables_groups));
+          return ( !R.isEmpty(possible_groups) ?
                    available_tables_by_group[possible_groups[0]][0] :
-                   ( !_.isEmpty(possible_tables) ?
+                   ( !R.isEmpty(possible_tables) ?
                      possible_tables[0] :
                      available_tables[0]
                    )
                  );
         }
       };
-      function tableGroup(table_number, groups_size) {
+      function tablesGroups(tables_groups_size, tables) {
+        return R.pipe(
+          R.map(tableGroup$(tables_groups_size)),
+          R.uniq
+        )(tables);
+      }
+      function tableGroup(groups_size, table_number) {
         return Math.floor((table_number-1) / groups_size);
       }
-      return basePairing;
+      var tableGroup$ = R.curry(tableGroup);
+      R.curryService(basePairingService);
+      return basePairingService;
     }
   ])
   .factory('bracketPairing', [
@@ -49,89 +53,98 @@ angular.module('srApp.services')
     'game',
     'round',
     'state',
-    function(basePairing,
+    function(basePairingService,
              playersService,
              gameService,
              roundService,
              stateService) {
-      var bracketPairing = {
+      var bracketPairingService = {
         indices: function(size) {
           if(2 === size) return [[1, 2]];
-          return _.chain(bracketPairing.indices(size/2))
-            .map(function(val) {
+          return R.pipe(
+            R.map(function(val) {
               return [[val[0], size+1-val[0]], [size+1-val[1], val[1]]];
-            })
-            .reduce(function(mem, val) {
-              return _.cat(mem, val);
+            }),
+            R.reduce(function(mem, val) {
+              return R.concat(mem, val);
             }, [])
-            .value();
+          )(bracketPairingService.indices(size/2));
         },
         suggestFirstSingleRound: function(state, group_index) {
           var players_not_droped = stateService.playersNotDropedInLastRound(state);
-          var tables = playersService.tableRangeForGroup(players_not_droped, group_index);
-          var group = players_not_droped[group_index];
-          var players = _.chain(group)
-            .apply(playersService.sortGroup, state, false)
-            .mapcatWith(_.getPath, 'players')
-            .value();
-          return _.chain(players.length)
-            .apply(bracketPairing.indices)
-            .map(function(index) {
+          var tables = playersService.tableRangeForGroup(group_index, players_not_droped);
+
+          var players = R.pipe(
+            R.nth(group_index),
+            playersService.sortGroup$(state, false),
+            R.chain(R.prop('players'))
+          )(players_not_droped);
+
+          return R.pipe(
+            R.length,
+            bracketPairingService.indices,
+            R.map(function(index) {
               var p1 = players[index[0]-1].name;
               var p2 = players[index[1]-1].name;
-              var table = basePairing.suggestTableFor(state.rounds, tables, p1, p2,
-                                                      _.getPath(state, 'tables_groups_size'));
-              tables = _.without(tables, table);
+              var table = basePairingService.suggestTableFor(state.rounds, tables, p1, p2,
+                                                             R.prop('tables_groups_size', state));
+              tables = R.reject(R.eq(table), tables);
               return gameService.create({ table: table,
                                           p1: { name: p1 },
-                                          p2: { name: p2 } });
+                                          p2: { name: p2 }
+                                        });
             })
-            .value();
+          )(players);
         },
         suggestNextSingleRound: function(state, group_index) {
           var players_not_droped = stateService.playersNotDropedInLastRound(state);
-          var tables = playersService.tableRangeForGroup(players_not_droped, group_index);
-          var nb_bracket_rounds = stateService.bracketNbRounds(state, group_index);
-          return _.chain(state.rounds)
-            .last()
-            .apply(roundService.gamesForGroup, players_not_droped, group_index)
-            .chunk(players_not_droped[group_index].length / (1 << nb_bracket_rounds))
-            .reduce(function(mem, round) {
+          var tables = playersService.tableRangeForGroup(group_index, players_not_droped);
+          var nb_bracket_rounds = stateService.bracketNbRounds(group_index, state);
+          var games_groups_bracket_size = players_not_droped[group_index].length /
+              (1 << nb_bracket_rounds);
+          
+          return R.pipe(
+            R.prop('rounds'),
+            R.last,
+            roundService.gamesForGroup$(players_not_droped, group_index),
+            R.chunkAll(games_groups_bracket_size, null),
+            R.reduce(function(mem, round) {
               var winners = roundService.winners(round);
               var losers = roundService.losers(round);
-              var pairs = _.chain(winners)
-                  .cat(losers)
-                  .chunk(2)
-                  .value();
-              return  _.cat(mem, _.map(pairs, function(p) {
-                var table = basePairing.suggestTableFor(state.rounds,
-                                                        tables,
-                                                        p[0], p[1],
-                                                        _.getPath(state, 'tables_groups_size'));
-                tables = _.without(tables, table);
+              var pairs = R.chunkAll(2, null, R.concat(winners, losers));
+
+              var new_pairings = R.map(function(p) {
+                var table = basePairingService.suggestTableFor(state.rounds,
+                                                               tables,
+                                                               p[0], p[1],
+                                                               R.prop('tables_groups_size', state));
+                tables = R.reject(R.eq(table), tables);
                 return gameService.create({ table: table,
                                             p1: { name: p[0] },
-                                            p2: { name: p[1] } });
-              }));
+                                            p2: { name: p[1] }
+                                          });
+              }, pairs);
+              return R.concat(mem, new_pairings);
             }, [])
-            .value();
+          )(state);
         },
         suggestFirstRound: function(state, group_index) {
-          return bracketPairing.suggestFirstSingleRound(state, group_index);
+          return bracketPairingService.suggestFirstSingleRound(state, group_index);
         },
         suggestNextRound: function(state, group_index) {
-          return bracketPairing.suggestNextSingleRound(state, group_index);
+          return bracketPairingService.suggestNextSingleRound(state, group_index);
         },
         suggestRound: function(state, group_index) {
-          if(0 === stateService.bracketNbRounds(state, group_index)) {
-            return bracketPairing.suggestFirstRound(state, group_index);
+          if(0 === stateService.bracketNbRounds(group_index, state)) {
+            return bracketPairingService.suggestFirstRound(state, group_index);
           }
           else {
-            return bracketPairing.suggestNextRound(state, group_index);
+            return bracketPairingService.suggestNextRound(state, group_index);
           }
         }
       };
-      return bracketPairing;
+      R.curryService(bracketPairingService);
+      return bracketPairingService;
     }
   ])
   .factory('srPairing', [
@@ -140,61 +153,61 @@ angular.module('srApp.services')
     'rounds',
     'game',
     'state',
-    function(basePairing,
+    function(basePairingService,
              playersService,
              roundsService,
              gameService,
              stateService) {
-      var srPairing = {
+      var srPairingService = {
         sortPlayers: function(players) {
           var players_grouped_by_tp;
-          return _.chain(players)
-            .groupBy(_.partial(_.getPath, _, 'points.tournament'))
-            .tap(function(players) { players_grouped_by_tp = players; })
-            .keys()
-            .sortBy(function(key) { return parseFloat(key); })
-            .mapcat(function(key) {
-              return _.shuffle(players_grouped_by_tp[key]);
-            })
-            .reverse()
-            .value();
+          return R.pipe(
+            R.groupBy(R.path(['points','tournament'])),
+            R.tap(function(players) { players_grouped_by_tp = players; }),
+            R.keys,
+            R.sortBy(function(key) { return parseFloat(key); }),
+            R.chain(function(key) {
+              return R.shuffle(players_grouped_by_tp[key]);
+            }),
+            R.reverse
+          )(players);
         },
         sortAvailablePlayersFor: function(available_players, p1) {
           var players_grouped_by_tp;
-          return _.chain(available_players)
-            .groupBy(_.partial(_.getPath, _, 'points.tournament'))
-            .tap(function(players) { players_grouped_by_tp = players; })
-            .keys()
-            .sortBy(function(key) { return "undefined" === key ? -1 : parseFloat(key); })
-            .mapcat(function(key) {
-              var other_origin = _.filter(players_grouped_by_tp[key],
-                                          function(p) { return p.origin !== p1.origin; });
-              var same_origin = _.filter(players_grouped_by_tp[key],
-                                       function(p) { return p.origin === p1.origin; });
-              return _.cat(same_origin, other_origin);
-            })
-            .reverse()
-            .mapWith(_.partial(_.getPath, _, 'name'))
-            .value();
+          return R.pipe(
+            R.groupBy(R.path(['points','tournament'])),
+            R.tap(function(players) { players_grouped_by_tp = players; }),
+            R.keys,
+            R.sortBy(function(key) { return "undefined" === key ? -1 : parseFloat(key); }),
+            R.map(function(key) { return R.prop(key, players_grouped_by_tp); }),
+            R.chain(R.partition(R.eqProps('origin', p1))),
+            R.flatten,
+            R.reverse,
+            R.pluck('name')
+          )(available_players);
         },
         suggestOpponentFor: function(opp_names, available_player_names) {
-          var candidates = _.difference(available_player_names, opp_names);
-          return (candidates.length === 0 ? available_player_names[0] : candidates[0]);
+          var candidates = R.difference(available_player_names, opp_names);
+          return ( candidates.length === 0 ?
+                   available_player_names[0] :
+                   candidates[0]
+                 );
         },
         findNextPairing: function(rounds, sorted_players, tables, tables_groups_size) {
-          var p1 = _.first(sorted_players);
-          sorted_players = _.rest(sorted_players);
+          var p1 = R.head(sorted_players);
+          sorted_players = R.tail(sorted_players);
 
-          var p1_opps = roundsService.opponentsForPlayer(rounds, p1.name);
-          var p1_availables = srPairing.sortAvailablePlayersFor(sorted_players, p1);
-          var p2_name = srPairing.suggestOpponentFor(p1_opps, p1_availables);
-          var p2 = playersService.player(sorted_players, p2_name);
-          sorted_players = _.without(sorted_players, p2);
+          var p1_opps = roundsService.opponentsForPlayer(p1.name, rounds);
+          var p1_availables = srPairingService.sortAvailablePlayersFor(sorted_players, p1);
+          
+          var p2_name = srPairingService.suggestOpponentFor(p1_opps, p1_availables);
+          var p2 = playersService.player(p2_name, sorted_players);
+          sorted_players = R.reject(R.eq(p2), sorted_players);
 
-          var table = basePairing.suggestTableFor(rounds, tables,
-                                                  p1.name, p2.name,
-                                                  tables_groups_size);
-          tables = _.without(tables, table);
+          var table = basePairingService.suggestTableFor(rounds, tables,
+                                                         p1.name, p2.name,
+                                                         tables_groups_size);
+          tables = R.reject(R.eq(table), tables);
 
           return [ gameService.create({ table: table,
                                         p1: { name: p1.name },
@@ -205,45 +218,51 @@ angular.module('srApp.services')
         },
         suggestNextSingleRound: function(state, group_index) {
           var players_not_droped = stateService.playersNotDropedInLastRound(state);
-          var tables = playersService.tableRangeForGroup(players_not_droped, group_index);
-          var sorted_players = srPairing.sortPlayers(players_not_droped[group_index]);
+          var tables = playersService.tableRangeForGroup(group_index, players_not_droped);
+          var sorted_players = srPairingService.sortPlayers(players_not_droped[group_index]);
+
           if(1 === (sorted_players.length & 0x1)) sorted_players.push({ name: '_phantom_' });
-          return _.chain(players_not_droped[group_index].length/2)
-            .range()
-            .map(function(i) {
-              var pairing = srPairing.findNextPairing(state.rounds,
-                                                      sorted_players,
-                                                      tables,
-                                                      _.getPath(state, 'tables_groups_size'));
+          
+          return R.pipe(
+            R.nth(group_index),
+            R.length,
+            R.flip(R.divide)(2),
+            R.range(0),
+            R.map(function(i) {
+              var pairing = srPairingService.findNextPairing(state.rounds,
+                                                             sorted_players,
+                                                             tables,
+                                                             R.prop('tables_groups_size', state));
               sorted_players = pairing[1];
               tables = pairing[2];
               return pairing[0];
-            })
-            .sortBy(_.property('table'))
-            .value();
+            }),
+            R.sortBy(R.prop('table'))
+          )(players_not_droped);
         },
         suggestNextRound: function(state, group_index) {
-          return srPairing.suggestNextSingleRound(state, group_index);
+          return srPairingService.suggestNextSingleRound(state, group_index);
         }
       };
-      return srPairing;
+      R.curryService(srPairingService);
+      return srPairingService;
     }
   ])
   .factory('pairing', [
     'bracketPairing',
     'srPairing',
-    function(bracketPairing,
-             srPairing) {
-      var pairing = {
+    function(bracketPairingService,
+             srPairingService) {
+      var pairingService = {
         suggestRound: function(state, group_index, bracket) {
-          if(_.exists(bracket)) {
-            return bracketPairing.suggestRound(state, group_index, bracket);
+          if(!R.isNil(bracket)) {
+            return bracketPairingService.suggestRound(state, group_index, bracket);
           }
           else {
-            return srPairing.suggestRound(state, group_index);
+            return srPairingService.suggestRound(state, group_index);
           }
         }
       };
-      return pairing;
+      return pairingService;
     }
   ]);

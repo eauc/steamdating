@@ -10,7 +10,7 @@ angular.module('srApp.services')
              listsService) {
       var playerService = {
         create: function(data) {
-          var ret = _.deepExtend({
+          var ret = R.merge({
             name: null,
             droped: null,
             faction: null,
@@ -28,13 +28,13 @@ angular.module('srApp.services')
               custom_field: 0
             }
           }, data);
-          ret.lists = _.map(ret.lists, listService.create);
+          ret.lists = R.map(listService.create, ret.lists);
           return ret;
         },
-        is: function(player, name) {
-          return player.name === name;
+        is: function(name, player) {
+          return R.propEq('name', name, player);
         },
-        rank: function(player, critFn) {
+        rank: function(critFn, player) {
           var rank;
           try {
             rank = critFn(player.custom_field,
@@ -50,50 +50,42 @@ angular.module('srApp.services')
           }
           return rank;
         },
-        updateListsPlayed: function(player, rounds) {
-          return _.chain(player)
-            .clone()
-            .apply(function(player) {
-              player.lists_played = roundsService.listsForPlayer(rounds, player.name);
-              return player;
-            })
-            .value();
+        updateListsPlayed: function(rounds, player) {
+          return R.assoc('lists_played',
+                         roundsService.listsForPlayer(player.name, rounds),
+                         player);
         },
         allListsHaveBeenPlayed: function(player) {
-          return _.chain(player.lists)
-            .apply(listsService.casters)
-            .difference(player.lists_played)
-            .value().length === 0;
+          return R.pipe(R.prop('lists'),
+                        listsService.casters,
+                        R.flip(R.difference)(player.lists_played),
+                        R.isEmpty)(player);
         },
-        updatePoints: function(player, rounds, bracket_start, bracket_weight) {
-          return _.chain(player)
-            .clone()
-            .apply(function(player) {
-              player.points = roundsService.pointsForPlayer(rounds, player.name,
-                                                            bracket_start, bracket_weight);
-              return player;
-            })
-            .value();
+        updatePoints: function(bracket_start, bracket_weight, rounds, player) {
+          return R.assoc('points',
+                         roundsService.pointsForPlayer(player.name,
+                                                       bracket_start, bracket_weight,
+                                                       rounds),
+                         player);
         },
-        drop: function(player, round_index) {
-          player.droped = round_index;
-          return player;
+        drop: function(round_index, player) {
+          return R.assoc('droped', round_index, player);
         },
         undrop: function(player) {
-          player.droped = null;
-          return player;
+          return R.assoc('droped', null, player);
         },
-        hasDropedInRound: function(player, round_index) {
-          return ( _.isNumber(player.droped) &&
-                   ( !_.isNumber(round_index) ||
+        hasDropedInRound: function(round_index, player) {
+          return ( R.type(player.droped) === 'Number' &&
+                   ( R.type(round_index) !== 'Number' ||
                      player.droped <= round_index
                    )
                  );
         },
         isDroped: function(player) {
-          return playerService.hasDropedInRound(player, null);
+          return playerService.hasDropedInRound(null, player);
         }
       };
+      R.curryService(playerService);
       return playerService;
     }
   ])
@@ -110,7 +102,7 @@ angular.module('srApp.services')
              roundsService,
              rankingService,
              listsService) {
-      function buildRankingFunction(coll, state, is_bracket) {
+      function buildRankingFunction(state, is_bracket, coll) {
         if(is_bracket) {
           return function(player) { return player.points.bracket; };
         }
@@ -118,315 +110,299 @@ angular.module('srApp.services')
           var critFn = rankingService.buildPlayerCritFunction(state.ranking.player,
                                                               state.rounds.length,
                                                               coll.length);
-          if(!_.isFunction(critFn)) {
+          if(R.type(critFn) !== 'Function') {
             console.error('Error create ranking function', critFn);
             return null;
           }
-          return _.partial(playerService.rank, _, critFn);
+          return playerService.rank$(critFn);
         }
       }
       var playersService = {
-        add: function playersAdd(coll, player, group_index) {
-          coll[group_index] = _.cat(coll[group_index], player);
-          return coll;
+        add: function playersAdd(group_index, player, coll) {
+          var new_group = R.append(player, coll[group_index]);
+          var ret = R.remove(group_index, 1, coll);
+          return R.insert(group_index, new_group, ret);
         },
-        drop: function(coll, player) {
-          return _.chain(coll)
-            .mapWith(_.reject, _.partial(playerService.is, _, player.name))
-            .reject(_.isEmpty)
-          // ensure there is at least one empty group left
-            .apply(function(players) {
-              if(_.isEmpty(players)) return [[]];
-              return players;
-            })
-            .value();
+        drop: function(player, coll) {
+          return R.pipe(R.map(R.reject(playerService.is$(player.name))),
+                        R.reject(R.isEmpty),
+                        // ensure there is at least one empty group left
+                        function(players) {
+                          if(R.isEmpty(players)) return [[]];
+                          return players;
+                        })(coll);
         },
-        player: function(coll, name) {
-          return _.chain(coll)
-            .flatten(true)
-            .find(_.partial(playerService.is, _, name))
-            .value();
+        player: function(name, coll) {
+          return R.pipe(R.flatten,
+                        R.find(playerService.is$(name))
+                       )(coll);
         },
-        dropedInRound: function(coll, round_index) {
-          return _.chain(coll)
-            .mapWith(_.filter, _.partial(playerService.hasDropedInRound, _, round_index))
-            .value();
+        dropedInRound: function(round_index, coll) {
+          return R.map(R.filter(playerService.hasDropedInRound$(round_index)))(coll);
         },
-        notDropedInRound: function(coll, round_index) {
-          return _.chain(coll)
-            .mapWith(_.reject, _.partial(playerService.hasDropedInRound, _, round_index))
-            .value();
+        notDropedInRound: function(round_index, coll) {
+          return R.map(R.reject(playerService.hasDropedInRound$(round_index)))(coll);
         },
         names: function(coll) {
-          return _.chain(coll)
-            .flatten(true)
-            .mapWith(_.getPath, 'name')
-            .sortBy(_.identity)
-            .value();
+          return R.pipe(R.flatten,
+                        R.pluck('name'),
+                        R.sortBy(R.identity)
+                       )(coll);
         },
-        factions: function(coll, base_factions) {
-          return _.chain(coll)
-            .flatten(true)
-            .mapWith(_.getPath, 'faction')
-            .cat(_.keys(base_factions))
-            .uniq()
-            .without(undefined)
-            .sortBy(_.identity)
-            .value();
+        factions: function(base_factions, coll) {
+          return R.pipe(R.flatten,
+                        R.pluck('faction'),
+                        R.union(R.keys(base_factions)),
+                        R.reject(R.isNil),
+                        R.sortBy(R.identity)
+                       )(coll);
         },
-        forFaction: function(coll, faction_name) {
-          return _.chain(coll)
-            .flatten(true)
-            .filter(function(player) {
-              return (_.getPath(player, 'faction') === faction_name);
-            })
-            .value();
+        forFaction: function(faction_name, coll) {
+          return R.pipe(R.flatten,
+                        R.filter(R.propEq('faction', faction_name))
+                       )(coll);
         },
         casters: function(coll) {
-          return _.chain(coll)
-            .flatten(true)
-            .mapcatWith(_.getPath, 'lists')
-            .without(undefined, null)
-            .map(function(list) {
-              return (_.exists(list.caster) ?
-                      { faction: list.faction || '',
-                        name: list.caster } : undefined);
-            })
-            .without(undefined, null)
-            .uniq(false, _.partial(_.getPath, _, 'name'))
-            .apply(function(casters) {
-              return casters.sort(function(a,b) {
-                var comp = a.faction.localeCompare(b.faction);
-                if(comp !== 0) return comp;
-                return a.name.localeCompare(b.name);
-              });
-            })
-            .value();
+          return R.pipe(R.flatten,
+                        R.chain(R.prop('lists')),
+                        R.reject(R.isNil),
+                        R.map(function(list) {
+                          return (!R.isNil(list.caster) ?
+                                  { faction: list.faction || '',
+                                    name: list.caster } :
+                                  undefined);
+                        }),
+                        R.reject(R.isNil),
+                        R.uniqWith(R.eqProps('name')),
+                        R.sort(function(a,b) {
+                          var comp = a.faction.localeCompare(b.faction);
+                          if(comp !== 0) return comp;
+                          return a.name.localeCompare(b.name);
+                        })
+                       )(coll);
         },
-        forCaster: function(coll, caster_name) {
-          return _.chain(coll)
-            .flatten(true)
-            .filter(function(player) {
-              return listsService.containsCaster(player.lists, caster_name);
-            })
-            .value();
+        forCaster: function(caster_name, coll) {
+          return R.pipe(R.flatten,
+                        R.filter(R.compose(listsService.containsCaster$(caster_name),
+                                           R.defaultTo([]),
+                                           R.prop('lists')))
+                       )(coll);
         },
         origins: function(coll) {
-          return _.chain(coll)
-            .flatten(true)
-            .mapWith(_.getPath, 'origin')
-            .uniq()
-            .without(undefined)
-            .sortBy(_.identity)
-            .value();
+          return R.pipe(R.flatten,
+                        R.pluck('origin'),
+                        R.uniq,
+                        R.reject(R.isNil),
+                        R.sortBy(R.identity)
+                       )(coll);
         },
-        withPoints: function(coll, key, value) {
-          return _.chain(coll)
-            .flatten()
-            .filter(function(player) {
-              return ( _.getPath(player, key) !== 0 &&
-                       _.getPath(player, key) === value
-                     );
-            })
-            .pluck('name')
-            .value();
+        withPoints: function(key, value, coll) {
+          var path = R.split('.', key);
+          return R.pipe(R.flatten,
+                        R.filter(function(player) {
+                          return ( R.path(path, player) !== 0 &&
+                                   R.path(path, player) === value
+                                 );
+                        }),
+                        R.pluck('name')
+                       )(coll);
         },
-        maxPoints: function(coll, key) {
-          return _.chain(coll)
-            .flatten()
-            .map(_.partial(_.getPath, _, key))
-            .max()
-            .value();
+        maxPoints: function(key, coll) {
+          var path = R.split('.', key);
+          return R.pipe(R.flatten,
+                        R.map(R.path(path)),
+                        R.max
+                       )(coll);
         },
-        bests: function(coll, nb_rounds) {
+        bests: function(nb_rounds, coll) {
           var maxes = {
-            custom_field: playersService.maxPoints(coll, 'custom_field'),
+            custom_field: playersService.maxPoints('custom_field', coll),
             points: {
-              sos: playersService.maxPoints(coll, 'points.sos'),
-              control: playersService.maxPoints(coll, 'points.control'),
-              army: playersService.maxPoints(coll, 'points.army'),
-              assassination: playersService.maxPoints(coll, 'points.assassination'),
-              custom_field: playersService.maxPoints(coll, 'points.custom_field'),
+              sos: playersService.maxPoints('points.sos', coll),
+              control: playersService.maxPoints('points.control', coll),
+              army: playersService.maxPoints('points.army', coll),
+              assassination: playersService.maxPoints('points.assassination', coll),
+              custom_field: playersService.maxPoints('points.custom_field', coll),
             }
           };
           return {
-            undefeated: playersService.withPoints(coll,
-                                                  'points.tournament',
-                                                  nb_rounds),
-            custom_field: playersService.withPoints(coll,
-                                                    'custom_field',
-                                                    maxes.custom_field),
+            undefeated: playersService.withPoints('points.tournament',
+                                                  nb_rounds,
+                                                  coll),
+            custom_field: playersService.withPoints('custom_field',
+                                                    maxes.custom_field,
+                                                    coll),
             points: {
-              sos: playersService.withPoints(coll,
-                                             'points.sos',
-                                             maxes.points.sos),
-              control: playersService.withPoints(coll,
-                                                 'points.control',
-                                                 maxes.points.control),
-              army: playersService.withPoints(coll,
-                                              'points.army',
-                                              maxes.points.army),
-              assassination: playersService.withPoints(coll,
-                                                       'points.assassination',
-                                                       maxes.points.assassination),
-              custom_field: playersService.withPoints(coll,
-                                                      'points.custom_field',
-                                                      maxes.points.custom_field),
+              sos: playersService.withPoints('points.sos',
+                                             maxes.points.sos,
+                                             coll),
+              control: playersService.withPoints('points.control',
+                                                 maxes.points.control,
+                                                 coll),
+              army: playersService.withPoints('points.army',
+                                              maxes.points.army,
+                                              coll),
+              assassination: playersService.withPoints('points.assassination',
+                                                       maxes.points.assassination,
+                                                       coll),
+              custom_field: playersService.withPoints('points.custom_field',
+                                                      maxes.points.custom_field,
+                                                      coll),
             }
           };
         },
-        updateListsPlayed: function(coll, rounds) {
-          return _.chain(coll)
-            .map(function(group) {
-                return _.mapWith(group, playerService.updateListsPlayed, rounds);
-            })
-            .value();
+        updateListsPlayed: function(rounds, coll) {
+          return R.map(R.map(playerService.updateListsPlayed$(rounds)))(coll);
         },
-        updatePoints: function(coll, rounds, bracket_start, bracket_weight) {
-          var updated_players_without_sos = _.chain(coll)
-            .map(function(group, group_index) {
-                return _.mapWith(group, playerService.updatePoints, rounds,
-                                 bracket_start[group_index], bracket_weight[group_index]);
-            })
-            .value();
-          return _.chain(updated_players_without_sos)
-            .map(function(group) {
-              return _.map(group, function(player) {
-                var opponents = roundsService.opponentsForPlayer(rounds, player.name);
-                player.points.sos = playersService.sosFromPlayers(updated_players_without_sos,
-                                                                  opponents);
+        updatePoints: function(bracket_start, bracket_weight, rounds, coll) {
+          return R.pipe(
+            R.mapIndexed(function(group, group_index) {
+              return R.map(playerService.updatePoints$(bracket_start[group_index],
+                                                       bracket_weight[group_index],
+                                                       rounds), group);
+            }),
+            R.mapIndexed(function(group, group_index, updated_players_without_sos) {
+              return R.map(function(player) {
+                var opponents = roundsService.opponentsForPlayer(player.name, rounds);
+                player.points.sos = playersService.sosFromPlayers(opponents,
+                                                                  updated_players_without_sos);
                 return player;
-              });
+              }, group);
             })
-            .value();
+          )(coll);
         },
-        sortGroup: function(coll, state, is_bracket) {
-          var rankFn = buildRankingFunction(coll, state, is_bracket);
-          if(!_.exists(rankFn)) return coll;
+        sortGroup: function(state, is_bracket, coll) {
+          var rankFn = buildRankingFunction(state, is_bracket, coll);
+          if(R.isNil(rankFn)) return coll;
           
           var players_grouped_by_ranking;
           var rank = 0;
-          return _.chain(coll)
+          return R.pipe(
           // group players by ranking criterion
-            .groupBy(rankFn)
+            R.groupBy(rankFn),
           // store grouped players for later
-            .tap(function(groups) { players_grouped_by_ranking = groups; })
+            R.tap(function(groups) { players_grouped_by_ranking = groups; }),
           // get list of rankings and order it decrementally
-            .keys()
-            .sortBy(function(ranking) { return -parseFloat(ranking); })
+            R.keys,
+            R.sortBy(function(ranking) { return -parseFloat(ranking); }),
           // fold each ranking list into final list
-            .reduce(function(mem, ranking) {
+            R.reduce(function(mem, ranking) {
               mem.push({ rank: rank+1,
                          players: players_grouped_by_ranking[ranking] });
               rank += players_grouped_by_ranking[ranking].length;
               return mem;
             }, [])
-            // .spy('sort end')
-            .value();
+          )(coll);
         },
-        sort: function(coll, state, is_bracket) {
-          return _.map(coll, function(group, group_index) {
-            return playersService.sortGroup(group, state, is_bracket[group_index]);
-          });
+        sort: function(state, is_bracket, coll) {
+          return R.mapIndexed(function(group, group_index) {
+            return playersService.sortGroup(state, is_bracket[group_index], group);
+          }, coll);
         },
-        sosFromPlayers: function(coll, opponents) {
-          return _.chain(opponents)
-            .map(_.partial(playersService.player, coll))
-            .without(undefined)
-            .reduce(function(mem, opponent) {
-              return mem + _.getPath(opponent, 'points.tournament');
-            }, 0)
-            .value();
+        sosFromPlayers: function(names, coll) {
+          return R.pipe(R.map(R.flip(playersService.player$)(coll)),
+                        R.reject(R.isNil),
+                        R.reduce(function(mem, player) {
+                          return mem + R.path(['points','tournament'], player);
+                        }, 0)
+                       )(names);
         },
-        areAllPaired: function(coll, rounds) {
-          return _.chain(coll)
-            .apply(playersService.names)
-            .difference(roundService.pairedPlayers(rounds))
-            .isEmpty()
-            .value();
+        areAllPaired: function(rounds, coll) {
+          return R.pipe(playersService.names,
+                        R.flip(R.difference)(roundService.pairedPlayers(rounds)),
+                        R.isEmpty
+                       )(coll);
         },
-        indexRangeForGroup: function(coll, group_index) {
-          var first_player = _.chain(coll)
-            .slice(0, group_index)
-            .flatten(true)
-            .value().length;
+        indexRangeForGroup: function(group_index, coll) {
+          var first_player = R.pipe(
+            R.slice(0, group_index),
+            R.flatten,
+            R.length
+          )(coll);
           var next_player = first_player + coll[group_index].length;
           return [first_player, next_player];
         },
-        chunkGroups: function(coll, size) {
-          return _.chain(coll)
-            .flatten(true)
-            .chunkAll(size)
-            .value();
+        chunkGroups: function(size, coll) {
+          return R.pipe(R.flatten,
+                        R.chunkAll(size, null)
+                       )(coll);
         },
-        splitNewGroup: function(coll, players) {
-          var new_group = _.map(players, _.partial(playersService.player, coll));
-          return _.chain(coll)
-            .mapWith(_.difference, new_group)
-            .cat([new_group])
-            .reject(_.isEmpty)
-            .value();
+        splitNewGroup: function(names, coll) {
+          var new_group = R.map(R.flip(playersService.player$)(coll))(names);
+          return R.pipe(
+            R.map(R.flip(R.difference)(new_group)),
+            R.append(new_group),
+            R.reject(R.isEmpty)
+          )(coll);
         },
-        groupForPlayer: function(coll, player_name) {
-          return _.chain(coll)
-            .map(function(group) {
-              return _.findWhere(group, { name: player_name });
-            })
-            .findIndex(_.exists)
-            .value();
+        groupForPlayer: function(player_name, coll) {
+          return R.pipe(
+            R.map(R.find(R.propEq('name', player_name))),
+            R.findIndex(R.not(R.isNil))
+          )(coll);
         },
-        movePlayerGroupFront: function(coll, player_name) {
-          var group_index = playersService.groupForPlayer(coll, player_name);
+        movePlayerGroupFront: function(player_name, coll) {
+          var group_index = playersService.groupForPlayer(player_name, coll);
           if(0 >= group_index) return coll;
-          var player = playersService.player(coll, player_name);
-          var new_coll = _.clone(coll);
-          new_coll[group_index] = _.difference(coll[group_index], [player]);
-          new_coll[group_index-1] = _.cat(coll[group_index-1], player);
-          return _.reject(new_coll, _.isEmpty);
+          var player = playersService.player(player_name, coll);
+          var old_group = R.difference(coll[group_index], [player]);
+          var new_group = R.append(player, coll[group_index-1]);
+          return R.pipe(
+            R.remove(group_index-1, 2),
+            R.insertAll(group_index-1, [new_group, old_group]),
+            R.reject(R.isEmpty)
+          )(coll);
         },
-        movePlayerGroupBack: function(coll, player_name) {
-          var group_index = playersService.groupForPlayer(coll, player_name);
+        movePlayerGroupBack: function(player_name, coll) {
+          var group_index = playersService.groupForPlayer(player_name, coll);
           if(0 > group_index ||
              group_index >= coll.length-1) return coll;
-          var player = playersService.player(coll, player_name);
-          var new_coll = _.clone(coll);
-          new_coll[group_index] = _.difference(coll[group_index], [player]);
-          new_coll[group_index+1] = _.cat(coll[group_index+1], player);
-          return _.reject(new_coll, _.isEmpty);
+          var player = playersService.player(player_name, coll);
+          var old_group = R.difference(coll[group_index], [player]);
+          var new_group = R.append(player, coll[group_index+1]);
+          return R.pipe(
+            R.remove(group_index, 2),
+            R.insertAll(group_index, [old_group, new_group]),
+            R.reject(R.isEmpty)
+          )(coll);
         },
-        moveGroupFront: function(coll, group_index) {
+        moveGroupFront: function(group_index, coll) {
           if(0 >= group_index) return coll;
-          var new_coll = _.clone(coll);
-          new_coll.splice(group_index, 1);
-          new_coll.splice(group_index-1, 0, coll[group_index]);
-          return new_coll;
+
+          var group = coll[group_index];
+          return R.pipe(
+            R.remove(group_index, 1),
+            R.insert(group_index-1, group)
+          )(coll);
         },
-        moveGroupBack: function(coll, group_index) {
+        moveGroupBack: function(group_index, coll) {
           if(0 > group_index ||
              group_index >= coll.length-1) return coll;
-          var new_coll = _.clone(coll);
-          new_coll.splice(group_index, 1);
-          new_coll.splice(group_index+1, 0, coll[group_index]);
-          return new_coll;
+          var group = coll[group_index];
+          return R.pipe(
+            R.remove(group_index, 1),
+            R.insert(group_index+1, group)
+          )(coll);
         },
         size: function(coll) {
-          return _.flatten(coll).length;
+          return R.flatten(coll).length;
         },
         nbGroups: function(coll) {
           return coll.length;
         },
-        groupSizeIsEven: function(group, round_index) {
-          return ( _.chain(group)
-                   .reject(_.partial(playerService.hasDropedInRound, _, round_index))
-                   .size()
-                   .value() & 1 ) === 0;
+        groupSizeIsEven: function(round_index, group) {
+          return ( R.pipe(
+            R.reject(playerService.hasDropedInRound$(round_index)),
+            R.length
+          )(group) & 1 ) === 0;
         },
-        tableRangeForGroup: function(coll, group_index) {
-          var group_range = playersService.indexRangeForGroup(coll, group_index);
-          return _.range(Math.round(group_range[0]/2+1),
+        tableRangeForGroup: function(group_index, coll) {
+          var group_range = playersService.indexRangeForGroup(group_index, coll);
+          return R.range(Math.round(group_range[0]/2+1),
                          Math.round(group_range[1]/2+1));
         }
       };
+      R.curryService(playersService);
       return playersService;
     }
   ]);

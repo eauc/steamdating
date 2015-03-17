@@ -5,8 +5,8 @@ angular.module('srApp.filters')
     'game',
     function(game) {
       return function(input, method) {
-        var args = _.rest(_.rest(arguments));
-        return game[method].apply(null, _.cons(input, args));
+        var args = R.tail(R.tail(arguments));
+        return game[method].apply(null, R.append(input, args));
       };
     }
   ])
@@ -14,8 +14,8 @@ angular.module('srApp.filters')
     'rounds',
     function(rounds) {
       return function(input, method) {
-        var args = _.rest(_.rest(arguments));
-        return rounds[method].apply(null, _.cons(input, args));
+        var args = R.tail(R.tail(arguments));
+        return rounds[method].apply(null, R.append(input, args));
       };
     }
   ])
@@ -23,8 +23,8 @@ angular.module('srApp.filters')
     'round',
     function(round) {
       return function(input, method) {
-        var args = _.rest(_.rest(arguments));
-        return round[method].apply(null, _.cons(input, args));
+        var args = R.tail(R.tail(arguments));
+        return round[method].apply(null, R.append(input, args));
       };
     }
   ]);

@@ -13,51 +13,52 @@ angular.module('srApp.services')
     'statsOppCastersEntry',
     'statsTiersEntry',
     'statsReferencesEntry',
-    function(statsFactionSelector,
-             statsPlayerSelector,
-             statsCasterSelector,
-             statsGroupByTotal,
-             statsGroupByOppFaction,
-             statsGroupByOppCaster,
-             statsPointsEntry,
-             statsCastersEntry,
-             statsOppCastersEntry,
-             statsTiersEntry,
-             statsReferencesEntry) {
+    function(statsFactionSelectorService,
+             statsPlayerSelectorService,
+             statsCasterSelectorService,
+             statsGroupByTotalService,
+             statsGroupByOppFactionService,
+             statsGroupByOppCasterService,
+             statsPointsEntryService,
+             statsCastersEntryService,
+             statsOppCastersEntryService,
+             statsTiersEntryService,
+             statsReferencesEntryService) {
       var SELECTORS = {
-        'faction': statsFactionSelector,
-        'player': statsPlayerSelector,
-        'caster': statsCasterSelector,
+        'faction': statsFactionSelectorService,
+        'player': statsPlayerSelectorService,
+        'caster': statsCasterSelectorService,
       };
       var GROUPS = {
-        'total': statsGroupByTotal,
-        'opp_faction': statsGroupByOppFaction,
-        'opp_caster': statsGroupByOppCaster,
+        'total': statsGroupByTotalService,
+        'opp_faction': statsGroupByOppFactionService,
+        'opp_caster': statsGroupByOppCasterService,
       };
-      var stats = {
+      var statsService = {
         get: function(state, selector, sel_value, group_by, cache) {
-          cache[selector] = cache[selector] || {};
-          cache[selector][sel_value] = cache[selector][sel_value] || {};
+          cache[selector] = R.defaultTo({}, cache[selector]);
+          cache[selector][sel_value] = R.defaultTo({}, cache[selector][sel_value]);
           
-          if(!_.exists(cache[selector][sel_value][group_by])) {
+          if(R.isNil(cache[selector][sel_value][group_by])) {
+            
             var selection = SELECTORS[selector].select(state, sel_value);
             selection = GROUPS[group_by].group(state, selection);
-            console.log('selection', selection);
 
-            cache[selector][sel_value][group_by] = _.map(selection, function(sel_group) {
+            cache[selector][sel_value][group_by] = R.map(function(sel_group) {
               return [ sel_group[0], {
-                points: statsPointsEntry.count(state, sel_group[1]),
-                casters: statsCastersEntry.count(state, sel_group[1]),
-                opp_casters: statsOppCastersEntry.count(state, sel_group[1]),
-                tiers: statsTiersEntry.count(state, sel_group[1]),
-                references: statsReferencesEntry.count(state, sel_group[1]),
+                points: statsPointsEntryService.count(state, sel_group[1]),
+                casters: statsCastersEntryService.count(state, sel_group[1]),
+                opp_casters: statsOppCastersEntryService.count(state, sel_group[1]),
+                tiers: statsTiersEntryService.count(state, sel_group[1]),
+                references: statsReferencesEntryService.count(state, sel_group[1]),
               } ];
-            });
+            }, selection);
             console.log('cache', cache);
           }
           return cache[selector][sel_value][group_by];
         }
       };
-      return stats;
+      R.curryService(statsService);
+      return statsService;
     }
   ]);

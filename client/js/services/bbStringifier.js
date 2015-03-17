@@ -4,39 +4,49 @@ angular.module('srApp.services')
   .factory('bbStringifier', [
     function() {
       var EOL = '\r\n';
-      function inTag(string, tag) {
+      function inTag(tag, string) {
         return '['+tag+']'+string+'[/'+tag+']';
       }
+      var inTag$ = R.curry(inTag);
       function stringifyCell(cell) {
-        return _.isArray(cell) ? cell.join(EOL) : cell;
+        return ( R.type(cell) === 'Array' ?
+                 cell.join(EOL) :
+                 cell
+               );
       }
       function stringifyRow(row, row_index) {
-        return _.chain(row)
-          .map(function(col) { return _.exists(col) ? col : ''; })
-          .map(stringifyCell)
-          .map(function(col) { return row_index === 0 ? inTag(col, 'b') : col; })
-          .mapWith(inTag, 'center')
-          .mapWith(inTag, 'td')
-          .join('')
-          .apply(inTag, 'tr')
-          .value();
+        return R.pipe(
+          R.map(R.defaultTo('')),
+          R.map(stringifyCell),
+          R.map(function(col) { return ( row_index === 0 ?
+                                         inTag('b', col) :
+                                         col
+                                       ); }),
+          R.map(inTag$('center')),
+          R.map(inTag$('td')),
+          R.join(''),
+          inTag$('tr')
+        )(row);
       }
       function stringifyGroup(group, group_index) {
-        var rows = _.chain(group)
-            .rest()
-            .map(stringifyRow)
-            .join(EOL)
-            .apply(inTag, 'table')
-            .value();
-        return _.cat([inTag(_.first(group).join(' '), 'b')],
-                     rows).join(EOL);
+        var rows = R.pipe(
+          R.tail,
+          R.mapIndexed(stringifyRow),
+          R.join(EOL),
+          inTag$('table')
+        )(group);
+        return R.join(EOL, [
+          inTag('b', R.head(group).join(' ')),
+          rows
+        ]);
       }
       var bbStringifier = {
         stringify: function(tables) {
-          return _.chain(tables)
-            .mapcat(stringifyGroup)
-            .join(EOL+EOL)
-            .value();
+          return R.pipe(
+            R.mapIndexed(stringifyGroup),
+            R.flatten,
+            R.join(EOL+EOL)
+          )(tables);
         }
       };
       return bbStringifier;

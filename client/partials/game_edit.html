@@ -229,7 +229,7 @@
                ng-model="game.p2.army" />
       </td>
     </tr>
-    <tr ng-if="state | state:'hasGameCustomField'">
+    <tr ng-if="::state | state:'hasGameCustomField'">
       <th class="text-right">
         {{::state.custom_fields.game}}
       </th>

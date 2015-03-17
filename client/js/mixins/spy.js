@@ -1,7 +1,9 @@
-_.mixin({
-  spy: function(obj) {
-    var args = _.rest(arguments);
-    console.log.apply(console, _.cat(args, [obj]));
-    return obj;
-  }
-});
+R.spy = (function() {
+  return function() {
+    var args = R.slice(0, arguments.length, arguments);
+    return function(obj) {
+      console.log.apply(console, R.append(obj, args));
+      return obj;
+    };
+  };
+})();

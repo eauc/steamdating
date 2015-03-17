@@ -1,40 +1,53 @@
-_.mixin({
-  deepExtend: function(obj) {
+R.deepExtend =(function() {
+  return function(obj) {
     var parentRE = /#{\s*?_\s*?}/,
         slice = Array.prototype.slice;
- 
-    _.each(slice.call(arguments, 1), function(source) {
-      for (var prop in source) {
-        if (_.isUndefined(obj[prop]) ||
-            _.isFunction(obj[prop]) ||
-            _.isNull(source[prop]) ||
-            _.isDate(source[prop])) {
+
+    // obj = R.clone(obj);
+    R.forEach(function(source) {
+      for(var prop in source) {
+        if( R.isNil(obj[prop]) ||
+            R.type(obj[prop]) === 'Function' ||
+            R.type(source[prop]) === 'Date'
+          ) {
           obj[prop] = source[prop];
         }
-        else if (_.isString(source[prop]) &&
-                 parentRE.test(source[prop])) {
-          if (_.isString(obj[prop])) {
+        else if( R.type(source[prop]) === 'String' &&
+                 parentRE.test(source[prop])
+               ) {
+          if(R.type(obj[prop]) === 'String') {
             obj[prop] = source[prop].replace(parentRE, obj[prop]);
           }
         }
-        else if (_.isArray(obj[prop]) || _.isArray(source[prop])){
-          if (!_.isArray(obj[prop]) || !_.isArray(source[prop])){
+        else if( R.type(obj[prop]) === 'Array' ||
+                 R.type(source[prop]) === 'Array'
+               ){
+          if( R.type(obj[prop]) !== 'Array' ||
+              R.type(source[prop]) !== 'Array'
+            ){
             throw new Error('Trying to combine an array with a non-array (' + prop + ')');
-          } else {
-            obj[prop] = _.reject(_.deepExtend(_.clone(obj[prop]), source[prop]), _.isNull);
+          }
+          else {
+            obj[prop] = R.reject(R.isNil, R.deepExtend(obj[prop], source[prop]));
           }
         }
-        else if (_.isObject(obj[prop]) || _.isObject(source[prop])){
-          if (!_.isObject(obj[prop]) || !_.isObject(source[prop])){
+        else if( R.type(obj[prop]) === 'Object' ||
+                 R.type(source[prop]) === 'Object'
+               ){
+          if( R.type(obj[prop]) !== 'Object' ||
+              R.type(source[prop]) !== 'Object'
+            ) {
             throw new Error('Trying to combine an object with a non-object (' + prop + ')');
-          } else {
-            obj[prop] = _.deepExtend(_.clone(obj[prop]), source[prop]);
           }
-        } else {
+          else {
+            obj[prop] = R.deepExtend(obj[prop], source[prop]);
+          }
+        }
+        else {
           obj[prop] = source[prop];
         }
       }
-    });
+    }, slice.call(arguments, 1));
     return obj;
-  }
-});
+  };
+})();

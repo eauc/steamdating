@@ -23,32 +23,34 @@ angular.module('srApp.services')
     'bbStringifier',
     'jsonStringifier',
     function($window,
-             fkStringifier,
-             csvStringifier,
-             bbStringifier,
-             jsonStringifier) {
+             fkStringifierService,
+             csvStringifierService,
+             bbStringifierService,
+             jsonStringifierService) {
       $window.URL = $window.URL || $window.webkitURL;
       var stringifiers = {
-        fk: fkStringifier,
-        csv: csvStringifier,
-        bb: bbStringifier,
-        json: jsonStringifier
+        fk: fkStringifierService,
+        csv: csvStringifierService,
+        bb: bbStringifierService,
+        json: jsonStringifierService
       };
-      return {
+      var fileExportService = {
         generate: function(type, data) {
-          return _.chain(data)
-            .apply(stringifiers[type].stringify)
-            .apply(function(string) {
+          return R.pipe(
+            stringifiers[type].stringify,
+            function(string) {
               return new $window.Blob([string], {type: 'text/plain'});
-            })
-            .apply($window.URL.createObjectURL)
-            .value();
+            },
+            $window.URL.createObjectURL
+          )(data);
         },
         cleanup: function(url) {
-          if(_.exists(url)) {
+          if(!R.isNil(url)) {
             $window.URL.revokeObjectURL(url);
           }
         }
       };
+      R.curryService(fileExportService);
+      return fileExportService;
     }
   ]);

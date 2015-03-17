@@ -3,9 +3,9 @@
 angular.module('srApp.services')
   .factory('list', [
     function() {
-      return {
+      var listService = {
         create: function playerCreate(data) {
-          return _.deepExtend({
+          return R.merge({
             faction: null,
             caster: null,
             theme: null,
@@ -13,61 +13,60 @@ angular.module('srApp.services')
           }, data);
         },
         references: function(list) {
-          return _.chain(list)
-            .getPath('fk')
-            .apply(s.lines)
-            .filter(_.complement(s.isBlank))
-            .map(function(s) { return s.replace(/\(.*\)/,''); })
-            .map(function(s) { return s.replace(/\[.*\]/,''); })
-            .map(function(s) { return s.replace(/- (PC|WJ|WB).*$/,''); })
+          return R.pipe(
+            R.prop('fk'),
+            s.lines,
+            R.filter(R.not(s.isBlank)),
+            R.map(function(s) { return s.replace(/\(.*\)/,''); }),
+            R.map(function(s) { return s.replace(/\[.*\]/,''); }),
+            R.map(function(s) { return s.replace(/- (PC|WJ|WB).*$/,''); }),
           // eliminate Warroom's "- (Leader|Cylena) & Grunts"
-            .map(function(s) { return s.replace(/-[^-]*runt.*$/,''); })
-            .map(function(s) { return s.replace(/Objective/,''); })
-            .map(function(s) { return s.replace(/Specialists/,''); })
-            .map(function(s) { return s.replace(/UA/,''); })
-            .map(function(s) { return s.replace(/[^a-zA-Z\s&]/g,''); })
-            .map(function(st) { return s.trim(st); })
-            .map(function(st) { return s.titleize(st); })
-            .filter(_.complement(s.isBlank))
-            .value();
+            R.map(function(s) { return s.replace(/-[^-]*runt.*$/,''); }),
+            R.map(function(s) { return s.replace(/Objective/,''); }),
+            R.map(function(s) { return s.replace(/Specialists/,''); }),
+            R.map(function(s) { return s.replace(/UA/,''); }),
+            R.map(function(s) { return s.replace(/[^a-zA-Z\s&]/g,''); }),
+            R.map(function(st) { return s.trim(st); }),
+            R.map(function(st) { return s.titleize(st); }),
+            R.filter(R.not(s.isBlank))
+          )(list);
         }
       };
+      R.curryService(listService);
+      return listService;
     }
   ])
   .factory('lists', [
     'list',
     function(listService) {
       var listsService = {
-        add: function(coll, list) {
-          return _.cat(coll, list);
+        add: function(list, coll) {
+          return R.append(list, coll);
         },
-        drop: function(coll, index) {
-          var new_coll = _.clone(coll);
-          new_coll.splice(index, 1);
-          return new_coll;
+        drop: function(index, coll) {
+          return R.remove(index, 1, coll);
         },
         casters: function(coll) {
-          return _.mapWith(coll, _.getPath, 'caster');
+          return R.pluck('caster', coll);
         },
-        listForCaster: function(coll, caster_name) {
-          return _.chain(coll)
-            .where({ caster: caster_name })
-            .first()
-            .value();
+        listForCaster: function(caster_name, coll) {
+          return R.pipe(R.filter(R.propEq('caster', caster_name)),
+                        R.head
+                       )(coll);
         },
-        themeForCaster: function(coll, caster_name) {
-          return _.chain(coll)
-            .apply(listsService.listForCaster, caster_name)
-            .getPath('theme')
-            .value();
+        themeForCaster: function(caster_name, coll) {
+          return R.pipe(listsService.listForCaster$(caster_name),
+                        R.defaultTo({}),
+                        R.prop('theme')
+                       )(coll);
         },
-        containsCaster: function(coll, caster_name) {
-          return _.chain(coll)
-            .findWhere({ caster: caster_name })
-            .exists()
-            .value();
+        containsCaster: function(caster_name, coll) {
+          return R.pipe(R.find(R.propEq('caster', caster_name)),
+                        R.not(R.isNil)
+                       )(coll);
         }
       };
+      R.curryService(listsService);
       return listsService;
     }
   ]);

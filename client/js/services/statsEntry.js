@@ -4,63 +4,80 @@ angular.module('srApp.services')
   .factory('statsPointsEntry', [
     'games',
     function(gamesService) {
-      function selPlayer(entry) { return entry[0]; }
-      function selGames(entry) { return entry[1]; }
+      var selPlayer = R.head;
+      var selGames = R.nth(1);
 
-      function ptsForPlayer(entry) { return entry[0]; }
-      function ptsAgainstPlayer(entry) { return entry[1]; }
-      function ptsNbGames(entry) { return entry[2]; }
+      var ptsForPlayer = R.head;
+      var ptsAgainstPlayer = R.nth(1);
+      var ptsNbGames = R.nth(2);
 
-      var statsPointsEntry = {
+      var statsPointsEntryService = {
         count: function(state, selection) {
           return {
             colors: [ '#4AE34D',
                       '#E3341D' ],
-            values: _.chain(selection)
-              .mapWith(function(sel_entry) {
+            values: R.pipe(
+              R.map(function(sel_entry) {
                 return [
-                  gamesService.pointsForPlayer(selGames(sel_entry), selPlayer(sel_entry)),
-                  gamesService.pointsAgainstPlayer(selGames(sel_entry), selPlayer(sel_entry)),
+                  gamesService.pointsForPlayer(selPlayer(sel_entry), null, null,
+                                               selGames(sel_entry)),
+                  gamesService.pointsAgainstPlayer(selPlayer(sel_entry), null, null,
+                                                   selGames(sel_entry)),
                   selGames(sel_entry).length
                 ];
-              })
-              .reduce(function(mem, pts_entry) {
-                return [{
-                  tournament: ptsForPlayer(mem).tournament + ptsForPlayer(pts_entry).tournament,
-                  control: ptsForPlayer(mem).control + ptsForPlayer(pts_entry).control,
-                  army: ptsForPlayer(mem).army + ptsForPlayer(pts_entry).army,
-                  assassination: ptsForPlayer(mem).assassination +
-                    ptsForPlayer(pts_entry).assassination
-                }, {
-                  tournament: ptsAgainstPlayer(mem).tournament + ptsAgainstPlayer(pts_entry).tournament,
-                  control: ptsAgainstPlayer(mem).control + ptsAgainstPlayer(pts_entry).control,
-                  army: ptsAgainstPlayer(mem).army + ptsAgainstPlayer(pts_entry).army,
-                  assassination: ptsAgainstPlayer(mem).assassination +
-                    ptsAgainstPlayer(pts_entry).assassination
-                }, ptsNbGames(pts_entry) + ptsNbGames(mem) ];
-              }, [{ tournament: 0, control: 0, army: 0, assassination: 0 },
-                  { tournament: 0, control: 0, army: 0, assassination: 0 },
-                  0
-                 ])
-              .apply(function(points) {
+              }),
+              R.reduce(function(mem, pts_entry) {
+                return [
+                  {
+                    tournament: ptsForPlayer(mem).tournament +
+                      ptsForPlayer(pts_entry).tournament,
+                    control: ptsForPlayer(mem).control +
+                      ptsForPlayer(pts_entry).control,
+                    army: ptsForPlayer(mem).army +
+                      ptsForPlayer(pts_entry).army,
+                    assassination: ptsForPlayer(mem).assassination +
+                      ptsForPlayer(pts_entry).assassination
+                  },
+                  {
+                    tournament: ptsAgainstPlayer(mem).tournament +
+                      ptsAgainstPlayer(pts_entry).tournament,
+                    control: ptsAgainstPlayer(mem).control +
+                      ptsAgainstPlayer(pts_entry).control,
+                    army: ptsAgainstPlayer(mem).army +
+                      ptsAgainstPlayer(pts_entry).army,
+                    assassination: ptsAgainstPlayer(mem).assassination +
+                      ptsAgainstPlayer(pts_entry).assassination
+                  },
+                  ptsNbGames(pts_entry) +
+                    ptsNbGames(mem)
+                ];
+              }, [
+                { tournament: 0, control: 0, army: 0, assassination: 0 },
+                { tournament: 0, control: 0, army: 0, assassination: 0 },
+                0
+              ]),
+              function(points) {
                 var total = (ptsNbGames(points) === 0) ? 1 : ptsNbGames(points);
                 return {
-                  'Win/Loss': [ptsForPlayer(points).tournament,
-                               ptsAgainstPlayer(points).tournament],
-                  'Control': [ptsForPlayer(points).control/total,
-                              ptsAgainstPlayer(points).control/total],
-                  'Army': [ptsForPlayer(points).army/total,
-                           ptsAgainstPlayer(points).army/total],
-                  'CasterKill': [ptsForPlayer(points).assassination,
-                                  ptsAgainstPlayer(points).assassination],
+                  'Win/Loss': [ ptsForPlayer(points).tournament,
+                                ptsAgainstPlayer(points).tournament
+                              ],
+                  'Control': [ ptsForPlayer(points).control/total,
+                               ptsAgainstPlayer(points).control/total
+                             ],
+                  'Army': [ ptsForPlayer(points).army/total,
+                            ptsAgainstPlayer(points).army/total
+                          ],
+                  'CasterKill': [ ptsForPlayer(points).assassination,
+                                  ptsAgainstPlayer(points).assassination
+                                ],
                 };
-              })
-              .value()
+              }
+            )(selection)
           };
         },
         sum: function(base, other) {
-          var ret = _.clone(base);
-          ret.values = {
+          return R.assoc('values', {
             'Win/Loss': [ base.values['Win/Loss'][0] + other.values['Win/Loss'][0],
                           base.values['Win/Loss'][1] + other.values['Win/Loss'][1] ],
             'Control': [ (base.values.Control[0] + other.values.Control[0])/2,
@@ -69,11 +86,11 @@ angular.module('srApp.services')
                       (base.values.Army[1] + other.values.Army[1])/2 ],
             'CasterKill': [ base.values.CasterKill[0] + other.values.CasterKill[0],
                             base.values.CasterKill[1] + other.values.CasterKill[1] ],
-          };
-          return ret;
+          }, base);
         }
       };
-      return statsPointsEntry;
+      R.curryService(statsPointsEntryService);
+      return statsPointsEntryService;
     }
   ])
   .factory('statsCastersEntry', [
@@ -83,47 +100,51 @@ angular.module('srApp.services')
     function(factionsService,
              gameService,
              playersService) {
-      function selPlayer(entry) { return entry[0]; }
-      function selGames(entry) { return entry[1]; }
+      var selPlayer = R.head;
+      var selGames = R.nth(1);
 
-      function listPlayer(entry) { return entry[0]; }
-      function listCaster(entry) { return entry[1]; }
+      var listPlayer = R.head;
+      var listCaster = R.nth(1);
       
-      var statsCastersEntry = {
+      var statsCastersEntryService = {
         count: function(state, selection) {
-          return _.chain(selection)
-            .map(function(sel_entry) {
-              return _.map(selGames(sel_entry), function(game) {
+          var list_entries_by_faction;
+          return R.pipe(
+            R.chain(function(sel_entry) {
+              return R.map(function(game) {
                 return [ selPlayer(sel_entry),
-                         gameService.listForPlayer(game, selPlayer(sel_entry))
+                         gameService.listForPlayer(selPlayer(sel_entry), game)
                        ];
-              });
-            })
-            .flatten(true)
-            .filter(function(list_entry) {
-              return ( _.exists(listPlayer(list_entry)) &&
-                       _.exists(listCaster(list_entry)) );
-            })
-            .groupBy(function(list_entry) {
-              return _.chain(state.players)
-                .apply(playersService.player, listPlayer(list_entry))
-                .getPath('faction')
-                .value();
-            })
-            .map(function(list_entries, faction) {
-              var casters = _.map(list_entries, listCaster);
+              }, selGames(sel_entry));
+            }),
+            R.spy('blah'),
+            R.reject(R.or(R.compose(R.isNil, listPlayer),
+                          R.compose(R.isNil, listCaster)
+                         )
+                    ),
+            R.groupBy(function(list_entry) {
+              return R.pipe(
+                playersService.player$(listPlayer(list_entry)),
+                R.prop('faction')
+              )(state.players);
+            }),
+            R.tap(function(l) { list_entries_by_faction = l; }),
+            R.keys,
+            R.map(function(faction) {
+              var casters = R.map(listCaster, list_entries_by_faction[faction]);
               return [ faction,
-                       _.countBy(casters, _.identity),
+                       R.countBy(R.identity, casters),
                        factionsService.hueFor(faction)
                      ];
             })
-            .value();
+          )(selection);
         },
         sum: function(base, other) {
-          return _.addHeaderLists(base, other, _.partial(_.addObjects, _, _, _.add));
+          return R.addHeaderLists(R.addObjects(R.add), base, other);
         }
       };
-      return statsCastersEntry;
+      R.curryService(statsCastersEntryService);
+      return statsCastersEntryService;
     }
   ])
   .factory('statsOppCastersEntry', [
@@ -133,45 +154,49 @@ angular.module('srApp.services')
     function(factionsService,
              gameService,
              playersService) {
-      function selPlayer(entry) { return entry[0]; }
-      function selGames(entry) { return entry[1]; }
+      var selPlayer = R.head;
+      var selGames = R.nth(1);
 
-      function listPlayer(entry) { return entry[0]; }
-      function listCaster(entry) { return entry[1]; }
+      var listPlayer = R.head;
+      var listCaster = R.nth(1);
       
-      var statsCastersEntry = {
+      var statsOppCastersEntryService = {
         count: function(state, selection) {
-          return _.chain(selection)
-            .map(function(sel_entry) {
-              return _.map(selGames(sel_entry), function(game) {
-                var opp = gameService.opponentForPlayer(game, selPlayer(sel_entry));
-                return [opp, gameService.listForPlayer(game, opp)];
-              });
+          var list_entries_by_faction;
+          return R.pipe(
+            R.chain(function(sel_entry) {
+              return R.map(function(game) {
+                var opp = gameService.opponentForPlayer(selPlayer(sel_entry), game);
+                return [ opp, gameService.listForPlayer(opp, game) ];
+              }, selGames(sel_entry));
+            }),
+            R.reject(R.or(R.compose(R.isNil, listPlayer),
+                          R.compose(R.isNil, listCaster)
+                         )
+                    ),
+            R.groupBy(function(list_entry) {
+              return R.pipe(
+                playersService.player$(listPlayer(list_entry)),
+                R.prop('faction')
+              )(state.players);
+            }),
+            R.tap(function(l) { list_entries_by_faction = l; }),
+            R.keys,
+            R.map(function(faction) {
+              var casters = R.map(listCaster, list_entries_by_faction[faction]);
+              return [ faction,
+                       R.countBy(R.identity, casters),
+                       factionsService.hueFor(faction)
+                     ];
             })
-            .flatten(true)
-            .filter(function(list_entry) {
-              return ( _.exists(listPlayer(list_entry)) &&
-                       _.exists(listCaster(list_entry)) );
-            })
-            .groupBy(function(list_entry) {
-              return _.chain(state.players)
-                .apply(playersService.player, listPlayer(list_entry))
-                .getPath('faction')
-                .value();
-            })
-            .map(function(list_entries,faction) {
-              var casters = _.map(list_entries, listCaster);
-              return [faction,
-                      _.countBy(casters, _.identity),
-                     factionsService.hueFor(faction)];
-            })
-            .value();
+          )(selection);
         },
         sum: function(base, other) {
-          return _.addHeaderLists(base, other, _.partial(_.addObjects, _, _, _.add));
+          return R.addHeaderLists(R.addObjects(R.add), base, other);
         }
       };
-      return statsCastersEntry;
+      R.curryService(statsOppCastersEntryService);
+      return statsOppCastersEntryService;
     }
   ])
   .factory('statsTiersEntry', [
@@ -183,37 +208,42 @@ angular.module('srApp.services')
              listsService,
              playersService,
              gameService) {
-      function selPlayer(entry) { return entry[0]; }
-      function selGames(entry) { return entry[1]; }
+      var selPlayer = R.head;
+      var selGames = R.nth(1);
 
-      function lstPlayer(entry) { return entry[0]; }
-      function lstCasters(entry) { return entry[1]; }
+      var lstPlayer = R.head;
+      var lstCasters = R.nth(1);
 
-      var statsTiersEntry = {
+      var statsTiersEntryService = {
         count: function(state, selection) {
-          return _.chain(selection)
-            .map(function(sel_entry) {
-              return [ playersService.player(state.players, selPlayer(sel_entry)),
-                       _.chain(selGames(sel_entry))
-                       .mapWith(gameService.listForPlayer, selPlayer(sel_entry))
-                       .without(undefined, null)
-                       .value() ];
-            })
-            .filter(function(lst_entry) { return _.exists(lstPlayer(lst_entry)); })
-            .mapcat(function(lst_entry) {
-              return _.map(lstCasters(lst_entry), function(caster) {
-                return listsService.themeForCaster(lstPlayer(lst_entry).lists, caster) || 'None';
-              });
-            })
-            .without(null, undefined)
-            .countBy(_.identity)
-            .value();
+          return R.pipe(
+            R.map(function(sel_entry) {
+              return [ playersService.player(selPlayer(sel_entry), state.players),
+                       R.pipe(
+                         R.map(gameService.listForPlayer$(selPlayer(sel_entry))),
+                         R.reject(R.isNil)
+                       )(selGames(sel_entry))
+                     ];
+            }),
+            R.reject(R.compose(R.isNil, lstPlayer)),
+            R.chain(function(lst_entry) {
+              return R.map(function(caster) {
+                return R.defaultTo('None',
+                                   listsService.themeForCaster(caster,
+                                                               lstPlayer(lst_entry).lists)
+                                  );
+              }, lstCasters(lst_entry));
+            }),
+            R.reject(R.isNil),
+            R.countBy(R.identity)
+          )(selection);
         },
         sum: function(base, other) {
-          return _.addObjects(base, other, _.add);
+          return R.addObjects(R.add, base, other);
         }
       };
-      return statsTiersEntry;
+      R.curryService(statsTiersEntryService);
+      return statsTiersEntryService;
     }
   ])
   .factory('statsReferencesEntry', [
@@ -225,38 +255,42 @@ angular.module('srApp.services')
              listsService,
              playersService,
              gameService) {
-      function selPlayer(entry) { return entry[0]; }
-      function selGames(entry) { return entry[1]; }
+      var selPlayer = R.head;
+      var selGames = R.nth(1);
 
-      function lstPlayer(entry) { return entry[0]; }
-      function lstCasters(entry) { return entry[1]; }
+      var lstPlayer = R.head;
+      var lstCasters = R.nth(1);
 
-      var statsReferencesEntry = {
+      var statsReferencesEntryService = {
         count: function(state, selection) {
-          return _.chain(selection)
-            .map(function(sel_entry) {
-              return [ playersService.player(state.players, selPlayer(sel_entry)),
-                       _.chain(selGames(sel_entry))
-                       .mapWith(gameService.listForPlayer, selPlayer(sel_entry))
-                       .without(undefined, null)
-                       .uniq()
-                       .value() ];
-            })
-            .mapcat(function(lst_entry) {
-              return _.map(lstCasters(lst_entry), function(caster) {
-                return listsService.listForCaster(_.getPath(lstPlayer(lst_entry), 'lists'), caster);
-              });
-            })
-            .without(undefined, null)
-            .mapWith(listService.references)
-            .mapcatWith(_.rest)
-            .countBy(_.identity)
-            .value();
+          return R.pipe(
+            R.map(function(sel_entry) {
+              return [ playersService.player(selPlayer(sel_entry), state.players),
+                       R.pipe(
+                         R.map(gameService.listForPlayer$(selPlayer(sel_entry))),
+                         R.reject(R.isNil),
+                         R.uniq
+                       )(selGames(sel_entry))
+                     ];
+            }),
+            R.chain(function(lst_entry) {
+              return R.map(function(caster) {
+                return listsService.listForCaster(caster,
+                                                  R.prop('lists', lstPlayer(lst_entry))
+                                                 );
+              }, lstCasters(lst_entry));
+            }),
+            R.reject(R.isNil),
+            R.map(listService.references),
+            R.chain(R.tail),
+            R.countBy(R.identity)
+          )(selection);
         },
         sum: function(base, other) {
-          return _.addObjects(base, other, _.add);
+          return R.addObjects(R.add, base, other);
         }
       };
-      return statsReferencesEntry;
+      R.curryService(statsReferencesEntryService);
+      return statsReferencesEntryService;
     }
   ]);

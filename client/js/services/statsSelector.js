@@ -6,19 +6,18 @@ angular.module('srApp.services')
     'rounds',
     function(playersService,
              roundsService) {
-      var statsFactionSelector = {
+      var statsFactionSelectorService = {
         select: function(state, faction_name) {
-          var players = playersService.forFaction(state.players, faction_name);
-          return _.chain(players)
-            .mapWith(function(player) {
-              return [ player.name,
-                       roundsService.gamesForPlayer(state.rounds, player.name)
-                     ];
-            })
-            .value();
+          var players = playersService.forFaction(faction_name, state.players);
+          return R.map(function(player) {
+            return [ player.name,
+                     roundsService.gamesForPlayer(player.name, state.rounds)
+                   ];
+          }, players);
         }
       };
-      return statsFactionSelector;
+      R.curryService(statsFactionSelectorService);
+      return statsFactionSelectorService;
     }
   ])
   .factory('statsPlayerSelector', [
@@ -26,14 +25,15 @@ angular.module('srApp.services')
     'rounds',
     function(playersService,
              roundsService) {
-      var statsPlayerSelector = {
+      var statsPlayerSelectorService = {
         select: function(state, player_name) {
           return [ [ player_name,
-                     roundsService.gamesForPlayer(state.rounds, player_name)
+                     roundsService.gamesForPlayer(player_name, state.rounds)
                    ] ];
         }
       };
-      return statsPlayerSelector;
+      R.curryService(statsPlayerSelectorService);
+      return statsPlayerSelectorService;
     }
   ])
   .factory('statsCasterSelector', [
@@ -46,26 +46,27 @@ angular.module('srApp.services')
       function selPlayer(entry) { return entry[0]; }
       function selGames(entry) { return entry[1]; }
 
-      var statsCasterSelector = {
+      var statsCasterSelectorService = {
         select: function(state, caster_name) {
-          var players = playersService.forCaster(state.players, caster_name);
-          return _.chain(players)
-            .map(function(player) {
+          var players = playersService.forCaster(caster_name, state.players);
+          return R.pipe(
+            R.map(function(player) {
               return [ player.name,
-                       roundsService.gamesForPlayer(state.rounds, player.name)
+                       roundsService.gamesForPlayer(player.name, state.rounds)
                      ];
-            })
-            .map(function(sel_entry) {
+            }),
+            R.map(function(sel_entry) {
               return [ selPlayer(sel_entry),
-                       gamesService.forCaster(selGames(sel_entry),
-                                              selPlayer(sel_entry),
-                                              caster_name)
+                       gamesService.forCaster(selPlayer(sel_entry),
+                                              caster_name,
+                                              selGames(sel_entry))
                      ];
-            })
-            .filter(function(sel_entry) { return !_.isEmpty(selGames(sel_entry)); })
-            .value();
+            }),
+            R.reject(R.compose(R.isEmpty, selGames))
+          )(players);
         }
       };
-      return statsCasterSelector;
+      R.curryService(statsCasterSelectorService);
+      return statsCasterSelectorService;
     }
   ]);

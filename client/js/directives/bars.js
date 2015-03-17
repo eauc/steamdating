@@ -5,38 +5,35 @@ angular.module('srApp.directives')
     '$scope',
     function($scope) {
       $scope.$watch('values', function(values) {
-        if(!_.exists(values)) {
+        if(R.isNil(values)) {
           $scope.bars = [];
           return;
         }
-        var max = Math.max.apply(null, _.values(values));
+        var max = R.max(R.values(values));
         // console.log('max', max);
-        var s_step = (65-35) / Math.max(1, _.keys(values).length-1);
+        var s_step = (65-35) / Math.max(1, R.keys(values).length-1);
         // console.log('s_step', s_step);
-        $scope.bars = _.chain(values)
-          .map(function(v,k) {
+        $scope.bars = R.pipe(
+          R.keys,
+          R.map(function(k) {
             return {
               k: k,
               name: s.capitalize(k),
-              width: $scope.width * v / max,
-              value: v,
+              width: $scope.width * values[k] / max,
+              value: values[k],
             };
-          })
-          .apply(function(bs) {
-            return bs.sort(function(a,b) {
+          }),
+          function(bs) {
+            return R.sort(function(a,b) {
               if(a.value < b.value) return 1;
               if(b.value < a.value) return -1;
               return a.name.localeCompare(b.name);
-              // if(b.name < a.name) return 1;
-              // if(a.name < b.name) return -1;
-              // return 0;
-            });
-          })
-          .map(function(v,i) {
-            // console.log($scope.hues, v);
-            if(_.exists(_.getPath($scope.hues, v.k))) {
-              v.color = ('hsl('+_.getPath($scope.hues, v.k)[0]+
-                         ', '+_.getPath($scope.hues, v.k)[1]+
+            }, bs);
+          },
+          R.mapIndexed(function(v,i) {
+            if(R.exists(R.prop(v.k, $scope.hues))) {
+              v.color = ('hsl('+R.prop(v.k, $scope.hues)[0]+
+                         ', '+R.prop(v.k, $scope.hues)[1]+
                          '%, 52%)');
             }
             else {
@@ -46,7 +43,7 @@ angular.module('srApp.directives')
             }
             return v;
           })
-          .value();
+        )(values);
         // console.log('bars', $scope);
       });
     }
@@ -66,11 +63,11 @@ angular.module('srApp.directives')
           scope.height = 50;
           scope.hue = '200';
           attrs.$observe('barsHue', function(hue) {
-            scope.hue = _.exists(hue) ? hue : '200';
+            scope.hue = R.exists(hue) ? hue : '200';
           });
           scope.saturation = '75';
           attrs.$observe('barsSaturation', function(sat) {
-            scope.saturation = _.exists(sat) ? sat : '75';
+            scope.saturation = R.exists(sat) ? sat : '75';
           });
           // console.log('bars', element);
         }

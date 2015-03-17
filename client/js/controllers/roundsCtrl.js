@@ -7,12 +7,12 @@ angular.module('srApp.controllers')
     'round',
     function($scope,
              $state,
-             round) {
+             roundService) {
       console.log('init roundsCtrl');
 
       $scope.round = {};
       $scope.doGameEdit = function(r, p, pane) {
-        $scope.edit.game = round.gameForPlayer(r, p);
+        $scope.edit.game = roundService.gameForPlayer(p, r);
         $scope.edit.back = $state.current.name;
         $scope.edit.pane = pane;
         $scope.goToState('game_edit');
@@ -25,24 +25,26 @@ angular.module('srApp.controllers')
     'state',
     'fileExport',
     function($scope,
-             players,
-             state,
-             fileExport) {
+             playersService,
+             stateService,
+             fileExportService) {
       console.log('init roundsSumCtrl');
-      $scope.state.players = players.updateListsPlayed($scope.state.players,
-                                                       $scope.state.rounds);
-      $scope.sorted_players = state.sortPlayersByName($scope.state);
+      $scope.state.players = playersService.updateListsPlayed($scope.state.rounds,
+                                                              $scope.state.players);
+      $scope.sorted_players = stateService.sortPlayersByName($scope.state);
 
       $scope.updateExports = function() {
         $scope.exports = {
           csv: {
             name: 'rounds_summary.csv',
-            url: fileExport.generate('csv', state.roundsSummaryTables($scope.state)),
+            url: fileExportService
+              .generate('csv', stateService.roundsSummaryTables($scope.state)),
             label: 'CSV Rounds Summary'
           },
           bb: {
             name: 'rounds_summary.txt',
-            url: fileExport.generate('bb', state.roundsSummaryTables($scope.state)),
+            url: fileExportService
+              .generate('bb', stateService.roundsSummaryTables($scope.state)),
             label: 'BBCode Rounds Summary'
           }
         };
@@ -59,74 +61,73 @@ angular.module('srApp.controllers')
     'srPairing',
     'bracketPairing',
     function($scope,
-             state,
-             round,
-             rounds,
-             players,
-             srPairing,
-             bracketPairing) {
-      $scope.new_state = _.clone($scope.state);
+             stateService,
+             roundService,
+             roundsService,
+             playersService,
+             srPairingService,
+             bracketPairingService) {
+      $scope.new_state = R.clone($scope.state);
       console.log('init roundsNextCtrl', $scope.new_state);
-      $scope.previous_round_complete = rounds.lastRoundIsComplete($scope.new_state.rounds);
-      $scope.next_round = state.createNextRound($scope.state);
+      $scope.previous_round_complete = roundsService.lastRoundIsComplete($scope.new_state.rounds);
+      $scope.next_round = stateService.createNextRound($scope.state);
 
       $scope.updatePlayersOptions = function() {
-        $scope.players_options = _.chain($scope.new_state)
-          .apply(state.playersNotDropedInLastRound)
-          .map(function(gr, gri) {
-            return _.map(gr, function(p) {
-              var paired = round.isPlayerPaired($scope.next_round[gri], p);
+        $scope.players_options = R.pipe(
+          stateService.playersNotDropedInLastRound,
+          R.mapIndexed(function(gr, gri) {
+            return R.map(function(p) {
+              var paired = roundService.isPlayerPaired(p, $scope.next_round[gri]);
               var label = paired ? p.name : '> '+p.name;
               return [ p.name, label ];
-            });
+            }, gr);
           })
-          .value();
-        $scope.pairs_already = _.map($scope.next_round, function(gr) {
-          return _.map(gr, function(g) {
-            return rounds.pairAlreadyExists($scope.new_state.rounds, g);
-          });
-        });
-        $scope.tables_ranges = _.chain($scope.new_state)
-          .apply(state.playersNotDropedInLastRound)
-          .map(function(group, group_index) {
-            return _.chain($scope.new_state)
-              .apply(state.playersNotDropedInLastRound)
-              .apply(players.tableRangeForGroup, group_index)
-              .value();
+        )($scope.new_state);
+        $scope.pairs_already = R.map(function(gr) {
+          return R.map(R.flip(roundsService.pairAlreadyExists)($scope.new_state.rounds),
+                       gr);
+        }, $scope.next_round);
+        $scope.tables_ranges = R.pipe(
+          stateService.playersNotDropedInLastRound,
+          R.mapIndexed(function(group, group_index) {
+            return R.pipe(
+              stateService.playersNotDropedInLastRound,
+              playersService.tableRangeForGroup$(group_index)
+            )($scope.new_state);
           })
-          .value();
+        )($scope.new_state);
       };
       $scope.updatePlayersOptions();
 
       $scope.suggestNextRound = function(i, type) {
         if('bracket' === type) {
-          $scope.new_state.bracket = state.setBracket($scope.new_state, i);
-          $scope.next_round[i] = bracketPairing.suggestRound($scope.new_state, i);
+          $scope.new_state.bracket = stateService.setBracket(i, $scope.new_state);
+          $scope.next_round[i] = bracketPairingService.suggestRound($scope.new_state, i);
         }
         if('sr' === type) {
-          $scope.new_state.bracket = state.resetBracket($scope.new_state, i);
-          $scope.next_round[i] = srPairing.suggestNextRound($scope.new_state, i);
+          $scope.new_state.bracket = stateService.resetBracket(i, $scope.new_state);
+          $scope.next_round[i] = srPairingService.suggestNextRound($scope.new_state, i);
         }
         $scope.updatePlayersOptions();
       };
 
       $scope.registerNextRound = function() {
         $scope.state.bracket = $scope.new_state.bracket;
-        $scope.state.rounds = rounds.registerNextRound($scope.new_state.rounds,
-                                                       $scope.next_round);
+        $scope.state.rounds = roundsService.registerNextRound($scope.next_round,
+                                                              $scope.new_state.rounds);
         $scope.storeState();
         $scope.goToState('rounds.nth', { pane: $scope.state.rounds.length-1 });
       };
 
       $scope.updatePlayer = function(gr_index, ga_index, key) {
         $scope.next_round[gr_index] =
-          round.updatePlayer($scope.next_round[gr_index], ga_index, key);
+          roundService.updatePlayer(ga_index, key, $scope.next_round[gr_index]);
         $scope.updatePlayersOptions();
       };
       $scope.updateTable = function(gr_index, ga_index) {
         $scope.next_round[gr_index] =
-          round.updateTable($scope.next_round[gr_index], ga_index,
-                            _.min($scope.tables_ranges[gr_index]));
+          roundService.updateTable(ga_index, R.min($scope.tables_ranges[gr_index]),
+                                   $scope.next_round[gr_index]);
         $scope.updatePlayersOptions();
       };
     }
@@ -140,14 +141,14 @@ angular.module('srApp.controllers')
     'state',
     function($scope,
              $stateParams,
-             prompt,
-             rounds,
-             fileExport,
-             state) {
+             promptService,
+             roundsService,
+             fileExportService,
+             stateService) {
       console.log('init roundsNthCtrl', $stateParams.pane);
       $scope.round.current = parseFloat($stateParams.pane);
       $scope.r = $scope.state.rounds[$scope.round.current];
-      if(!_.exists($scope.r)) {
+      if(R.isNil($scope.r)) {
         $scope.goToState('rounds.sum');
         return;
       }
@@ -156,12 +157,16 @@ angular.module('srApp.controllers')
         $scope.exports = {
           csv: {
             name: 'round_'+($scope.round.current+1)+'.csv',
-            url: fileExport.generate('csv', state.roundTables($scope.state, $scope.round.current)),
+            url: fileExportService
+              .generate('csv', stateService.roundTables($scope.round.current,
+                                                        $scope.state)),
             label: 'CSV Round'
           },
           bb: {
             name: 'round_'+($scope.round.current+1)+'.txt',
-            url: fileExport.generate('bb', state.roundTables($scope.state, $scope.round.current)),
+            url: fileExportService
+              .generate('bb', stateService.roundTables($scope.round.current,
+                                                       $scope.state)),
             label: 'BBCode Round'
           }
         };
@@ -169,9 +174,9 @@ angular.module('srApp.controllers')
       $scope.updateExports();
       
       $scope.doDeleteRound = function(r) {
-        prompt.prompt('confirm', 'You sure ?')
+        promptService.prompt('confirm', 'You sure ?')
           .then(function() {
-            $scope.state.rounds = rounds.drop($scope.state.rounds, parseFloat(r));
+            $scope.state.rounds = roundsService.drop(parseFloat(r), $scope.state.rounds);
             $scope.updatePoints();
             $scope.storeState();
             $scope.goToState('rounds.sum');

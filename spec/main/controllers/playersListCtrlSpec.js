@@ -191,7 +191,7 @@ describe('controllers', function() {
       }, function() {
         it('should delete player from state', function() {
           expect(this.playersService.drop)
-            .toHaveBeenCalledWith(this.state_players, this.player);
+            .toHaveBeenCalledWith(this.player, this.state_players);
           expect(this.scope.state.players)
             .toBe('players.drop.returnValue');
         });

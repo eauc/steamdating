@@ -44,7 +44,7 @@ describe('controllers', function() {
 
       it('should setup edit object', function() {
         expect(this.roundService.gameForPlayer)
-          .toHaveBeenCalledWith(this.dummy_round, this.dummy_player);
+          .toHaveBeenCalledWith(this.dummy_player, this.dummy_round);
         expect(this.scope.edit).toEqual({
           game: 'round.gameForPlayer.returnValue',
           back: 'current_state',

@@ -26,9 +26,9 @@ describe('service', function() {
           .suggestTableFor(this.dummy_rounds, this.availables, 'p1', 'p2');
 
         expect(this.roundsService.tablesForPlayer)
-          .toHaveBeenCalledWith(this.dummy_rounds, 'p1');
+          .toHaveBeenCalledWith('p1', this.dummy_rounds);
         expect(this.roundsService.tablesForPlayer)
-          .toHaveBeenCalledWith(this.dummy_rounds, 'p2');
+          .toHaveBeenCalledWith('p2', this.dummy_rounds);
       });
 
       using([
@@ -55,7 +55,7 @@ describe('service', function() {
                                          p2: [ 3, 5 ] }   , [ 2, 4, 6 ] ],
       ], function(e,d) {
         it('should pick a random new table for both players, '+d, function() {
-          this.roundsService.tablesForPlayer.and.callFake(function(rs, p) {
+          this.roundsService.tablesForPlayer.and.callFake(function(p, rs) {
             return e.played[p];
           });
 

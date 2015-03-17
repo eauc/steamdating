@@ -98,7 +98,7 @@ describe('service', function() {
             this.testOnLoad();
 
             expect(this[e.type+'ParserService'].parse)
-              .toHaveBeenCalledWith('result', 'factions');
+              .toHaveBeenCalledWith('factions', 'result');
           });
         });
 

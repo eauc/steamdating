@@ -23,7 +23,7 @@ describe('service', function() {
           { name: 'p3' },
         ];
         this.roundsService = spyOnService('rounds');
-        this.roundsService.gamesForPlayer.and.callFake(function(rs, p) {
+        this.roundsService.gamesForPlayer.and.callFake(function(p, rs) {
           return [p+'Games'];
         });
         this.state = {
@@ -41,13 +41,13 @@ describe('service', function() {
           ]);
 
         expect(this.playersService.forFaction)
-          .toHaveBeenCalledWith(['players'], 'factionVal');
+          .toHaveBeenCalledWith('factionVal', ['players']);
         expect(this.roundsService.gamesForPlayer)
-          .toHaveBeenCalledWith(['rounds'], 'p1');
+          .toHaveBeenCalledWith('p1', ['rounds']);
         expect(this.roundsService.gamesForPlayer)
-          .toHaveBeenCalledWith(['rounds'], 'p2');
+          .toHaveBeenCalledWith('p2', ['rounds']);
         expect(this.roundsService.gamesForPlayer)
-          .toHaveBeenCalledWith(['rounds'], 'p3');
+          .toHaveBeenCalledWith('p3', ['rounds']);
       });
     });
   });
@@ -63,7 +63,7 @@ describe('service', function() {
     describe('select(<state>, <value>)', function() {
       beforeEach(function() {
         this.roundsService = spyOnService('rounds');
-        this.roundsService.gamesForPlayer.and.callFake(function(rs, p) {
+        this.roundsService.gamesForPlayer.and.callFake(function(p, rs) {
           return [p+'Games'];
         });
         this.state = {
@@ -79,7 +79,7 @@ describe('service', function() {
           ]);
 
         expect(this.roundsService.gamesForPlayer)
-          .toHaveBeenCalledWith(['rounds'], 'playerVal');
+          .toHaveBeenCalledWith('playerVal', ['rounds']);
       });
     });
   });
@@ -101,11 +101,11 @@ describe('service', function() {
           { name: 'p3' },
         ];
         this.roundsService = spyOnService('rounds');
-        this.roundsService.gamesForPlayer.and.callFake(function(rs, p) {
+        this.roundsService.gamesForPlayer.and.callFake(function(p, rs) {
           return [p+'Games'];
         });
         this.gamesService = spyOnService('games');
-        this.gamesService.forCaster.and.callFake(function(gs, p, c) {
+        this.gamesService.forCaster.and.callFake(function(p, c, gs) {
           return [p+c+'Games'];
         });
         this.state = {
@@ -123,21 +123,21 @@ describe('service', function() {
           ]);
 
         expect(this.playersService.forCaster)
-          .toHaveBeenCalledWith(['players'], 'casterVal');
+          .toHaveBeenCalledWith('casterVal', ['players']);
 
         expect(this.roundsService.gamesForPlayer)
-          .toHaveBeenCalledWith(['rounds'], 'p1');
+          .toHaveBeenCalledWith('p1', ['rounds']);
         expect(this.roundsService.gamesForPlayer)
-          .toHaveBeenCalledWith(['rounds'], 'p2');
+          .toHaveBeenCalledWith('p2', ['rounds']);
         expect(this.roundsService.gamesForPlayer)
-          .toHaveBeenCalledWith(['rounds'], 'p3');
+          .toHaveBeenCalledWith('p3', ['rounds']);
 
         expect(this.gamesService.forCaster)
-          .toHaveBeenCalledWith(['p1Games'], 'p1', 'casterVal');
+          .toHaveBeenCalledWith('p1', 'casterVal', ['p1Games']);
         expect(this.gamesService.forCaster)
-          .toHaveBeenCalledWith(['p2Games'], 'p2', 'casterVal');
+          .toHaveBeenCalledWith('p2', 'casterVal', ['p2Games']);
         expect(this.gamesService.forCaster)
-          .toHaveBeenCalledWith(['p3Games'], 'p3', 'casterVal');
+          .toHaveBeenCalledWith('p3', 'casterVal', ['p3Games']);
       });
     });
   });

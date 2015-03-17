@@ -76,7 +76,7 @@ describe('controllers', function() {
       expect(this.scope.exports).toBeAn('Object');
 
       expect(this.stateService.roundTables)
-        .toHaveBeenCalledWith(this.scope.state, 1);
+        .toHaveBeenCalledWith(1, this.scope.state);
 
       expect(this.scope.exports.csv)
         .toEqual({
@@ -113,7 +113,7 @@ describe('controllers', function() {
       }, function() {
         it('should drop round <index>', function() {
           expect(this.roundsService.drop)
-            .toHaveBeenCalledWith([ 'rounds' ], 4);
+            .toHaveBeenCalledWith(4, [ 'rounds' ]);
           expect(this.scope.state.rounds)
             .toBe('rounds.drop.returnValue');
         });

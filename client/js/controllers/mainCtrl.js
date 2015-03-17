@@ -11,22 +11,21 @@ angular.module('srApp.controllers')
     function($scope,
              $state,
              $q,
-             factions,
-             state,
-             players) {
+             factionsService,
+             stateService) {
       console.log('init mainCtrl');
 
-      factions.init();
+      factionsService.init();
       $scope.resetState = function(data) {
-        $scope.state = state.create(data);
+        $scope.state = stateService.create(data);
       };
-      $scope.state = state.init();
-      // $scope.state = state.test(state.create());
+      $scope.state = stateService.init();
+      // $scope.state = stateService.test(stateService.create());
       // console.log('test state', $scope.state);
 
-      $scope.goToState = _.bind($state.go, $state);
-      $scope.currentState = _.bind(_.getPath, _, $state, 'current.name');
-      $scope.stateIs = _.bind($state.is, $state);
+      $scope.goToState = R.bind($state.go, $state);
+      $scope.currentState = function() { return $state.current.name; };
+      $scope.stateIs = R.bind($state.is, $state);
 
       $scope.edit = {};
       $scope.doEditPlayer = function(player) {
@@ -36,11 +35,11 @@ angular.module('srApp.controllers')
       };
 
       $scope.updatePoints = function() {
-        $scope.state = state.updatePlayersPoints($scope.state);
-        $scope.state = state.updateBestsPlayers($scope.state);
+        $scope.state = stateService.updatePlayersPoints($scope.state);
+        $scope.state = stateService.updateBestsPlayers($scope.state);
       };
       $scope.storeState = function() {
-        state.store($scope.state);
+        stateService.store($scope.state);
       };
     }
   ]);

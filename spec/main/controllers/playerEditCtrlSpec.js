@@ -62,8 +62,8 @@ describe('controllers', function() {
 
     it('should init factions & origins', function() {
       expect(this.playersService.factions)
-        .toHaveBeenCalledWith(this.scope.state.players,
-                              'factions.baseFactions.returnValue');
+        .toHaveBeenCalledWith('factions.baseFactions.returnValue',
+                              this.scope.state.players);
       expect(this.playersService.origins)
         .toHaveBeenCalledWith(this.scope.state.players);
 
@@ -98,8 +98,8 @@ describe('controllers', function() {
         expect(this.listService.create)
           .toHaveBeenCalledWith({ faction: this.scope.edit.player.faction });
         expect(this.listsService.add)
-          .toHaveBeenCalledWith(this.scope.edit.player.lists,
-                                'list.create.returnValue');
+          .toHaveBeenCalledWith('list.create.returnValue',
+                                this.scope.edit.player.lists);
         expect(this.scope.player.lists).toBe('lists.add.returnValue');
       });
     });
@@ -117,7 +117,7 @@ describe('controllers', function() {
 
       it('should drop list <i> from player.lists', function() {
         expect(this.listsService.drop)
-          .toHaveBeenCalledWith(this.scope.edit.player.lists, 2);
+          .toHaveBeenCalledWith(2, this.scope.edit.player.lists);
         expect(this.scope.player.lists).toBe('lists.drop.returnValue');
       });
     });
@@ -221,9 +221,9 @@ describe('controllers', function() {
             this.scope.doClose(true);
 
             expect(this.playersService.add)
-              .toHaveBeenCalledWith(this.current_state.players,
+              .toHaveBeenCalledWith(this.scope.edit.group,
                                     this.scope.player,
-                                    this.scope.edit.group);
+                                    this.current_state.players);
             expect(this.scope.state.players).toBe('players.add.returnValue');
           });
         });

@@ -3,7 +3,7 @@
 angular.module('srApp.services')
   .factory('ranking', [
     function() {
-      var ranking = {
+      var rankingService = {
         criterions: {
           SR: {
             'Baseline': {
@@ -28,7 +28,7 @@ angular.module('srApp.services')
             baseCritFun = new Function('n_rounds', 'n_players',
                                        'player_custom', 'tp', 'sos', 'cp', 'ap', 'ck', 'game_custom',
                                        'return '+body+';');
-            critFun = _.partial(baseCritFun, n_rounds, n_players);
+            critFun = R.partial(baseCritFun, n_rounds, n_players);
           }
           catch(e) {
             return "Error : " + e.message;
@@ -36,6 +36,7 @@ angular.module('srApp.services')
           return critFun;
         }
       };
-      return ranking;
+      R.curryService(rankingService);
+      return rankingService;
     }
   ]);

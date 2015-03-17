@@ -37,7 +37,7 @@ describe('service', function() {
             "Player: titi\nOrigin: Lyon\nFaction: Cryx\n\n"+
             // parse faction name
             "Player: tatA\nOrigin: Grenoble\nFaction: The Protectorate of Menoth\n\n";
-        var res = fkParser.parse(string, this.factions);
+        var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(3);
         expect(res[1].length).toBe(0);
@@ -61,7 +61,7 @@ describe('service', function() {
       it('should log error when player name is invalid', function() {
         var string =
 "Player: \nOrigin: Chambery\nFaction: Cryx\n\n";
-        var res = fkParser.parse(string, this.factions);
+        var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(0);
         expect(res[1].length).toBe(1);
@@ -73,7 +73,7 @@ describe('service', function() {
         var string =
 "Player: Toto\nOrigin: Chambery\nFaction: Cryx\n\n"+
 "Player: Toto\nOrigin: Chambery\nFaction: Cryx\n\n";
-        var res = fkParser.parse(string, this.factions);
+        var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(1);
         expect(res[1].length).toBe(1);
@@ -84,7 +84,7 @@ describe('service', function() {
       it('should warn about unknown player factions', function() {
         var string =
 "Player: Toto\nOrigin: Chambery\nFaction: Unknown\n\n";
-        var res = fkParser.parse(string, this.factions);
+        var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(1);
         expect(res[1].length).toBe(1);
@@ -128,7 +128,7 @@ describe('service', function() {
               '\nList:\n'+e.list1+
               '\n\nList:\nTheme: Saeryn - Fallen Angels\n'+e.list2+
               '\n\n';
-          var res = fkParser.parse(string, this.factions);
+          var res = fkParser.parse(this.factions, string);
 
           expect(res[0].length).toBe(1);
           expect(res[1].length).toBe(0);
@@ -151,7 +151,7 @@ describe('service', function() {
         var string =
 "Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
 "List:\nToto le gros\n* Carnivean\n\n\n";
-        var res = fkParser.parse(string, this.factions);
+        var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(1);
         expect(res[1].length).toBe(1);
@@ -171,7 +171,7 @@ describe('service', function() {
 "Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
 "Player: \nOrigin: Chambery\nFaction: Cryx\n\n"+
 "List:\nToto le gros\n* Carnivean\n\n\n";
-        var res = fkParser.parse(string, this.factions);
+        var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(1);
         expect(res[1].length).toBe(2);
@@ -187,7 +187,7 @@ describe('service', function() {
 "Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\nNew: blah\n\n"+
 "List:\nUnknown: X\n"+
 "Toto le gros\n* Carnivean\nFaction: Toto\n\n\n";
-        var res = fkParser.parse(string, this.factions);
+        var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(1);
         expect(res[1].length).toBe(3);

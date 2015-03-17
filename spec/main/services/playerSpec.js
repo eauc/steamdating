@@ -22,7 +22,7 @@ describe('service', function() {
         [ 'tata'   , null    , false ],
       ], function(e, d) {
         it('should test if player is <name>, '+d, function() {
-          expect(player.is({ name: e.player }, e.name)).toBe(e.is);
+          expect(player.is(e.name, { name: e.player })).toBe(e.is);
         });
       });
     });
@@ -36,10 +36,10 @@ describe('service', function() {
         var p = player.create({ name: 'toto' });
         var dummy_rounds = [ 'tata' ];
 
-        expect(player.updateListsPlayed(p, dummy_rounds).lists_played)
+        expect(player.updateListsPlayed(dummy_rounds, p).lists_played)
           .toBe('rounds.listsForPlayer.returnValue');
         expect(this.roundsService.listsForPlayer)
-          .toHaveBeenCalledWith(dummy_rounds, 'toto');
+          .toHaveBeenCalledWith('toto', dummy_rounds);
       });
     });
 
@@ -76,7 +76,7 @@ describe('service', function() {
       });
 
       it('should call <critFn> with player\'s points', function() {
-        player.rank(this.dummy_player, this.critFn);
+        player.rank(this.critFn, this.dummy_player);
 
         expect(this.critFn).toHaveBeenCalledWith(21, 42, 71, 69, 83, 32, 27);
       });
@@ -85,7 +85,7 @@ describe('service', function() {
         this.critFn.and.returnValue(2015);
       }, function() {
         it('should return the result of critFn', function() {
-          var result = player.rank(this.dummy_player, this.critFn);
+          var result = player.rank(this.critFn, this.dummy_player);
 
           expect(result).toBe(2015);
         });
@@ -95,7 +95,7 @@ describe('service', function() {
         this.critFn.and.callFake(function() { throw new Error('blah'); });
       }, function() {
         it('should return the error message', function() {
-          var result = player.rank(this.dummy_player, this.critFn);
+          var result = player.rank(this.critFn, this.dummy_player);
 
           expect(result).toBe('Error : blah');
         });
@@ -113,18 +113,17 @@ describe('service', function() {
         var bracket_start = 8;
         var bracket_weight = 42;
 
-        expect(player.updatePoints(p, dummy_rounds, bracket_start, bracket_weight).points)
+        expect(player.updatePoints(bracket_start, bracket_weight, dummy_rounds, p).points)
           .toBe('rounds.pointsForPlayer.returnValue');
         expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith(dummy_rounds, 'toto', 8, 42);
+          .toHaveBeenCalledWith('toto', 8, 42, dummy_rounds);
       });
     });
 
     describe('drop(<player>, <after_round>)', function() {
       it('should remember the round after which the player droped', function() {
         var p = { droped: null };
-        expect(player.drop(p, 42)).toEqual({droped: 42});
-        expect(p).toEqual({droped: 42});
+        expect(player.drop(42, p)).toEqual({droped: 42});
       });
     });
 
@@ -132,7 +131,6 @@ describe('service', function() {
       it('should reset player\'s drop', function() {
         var p = { droped: 42 };
         expect(player.undrop(p)).toEqual({droped: null});
-        expect(p).toEqual({droped: null});
       });
     });
 
@@ -156,7 +154,7 @@ describe('service', function() {
         [ 4                    , null          , true         ],
       ], function(e, d) {
         it('should check whether player had already droped by <round_index>, '+d, function() {
-          expect(player.hasDropedInRound({droped: e.droped_after_round}, e.round_index))
+          expect(player.hasDropedInRound(e.round_index, {droped: e.droped_after_round}))
             .toBe(e.has_droped);
         });
       });

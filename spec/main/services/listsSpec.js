@@ -95,24 +95,26 @@ describe('service', function() {
 
     describe('add(<l>)', function() {
       it('should append list to collection', function() {
-        expect(lists.add([ { caster: '1' }, { caster: '2' } ],
-                         { caster: '3' })).toEqual([
-                           { caster: '1' },
-                           { caster: '2' },
-                           { caster: '3' }
-                         ]);
+        expect(lists.add({ caster: '3' },
+                         [ { caster: '1' }, { caster: '2' } ]))
+          .toEqual([
+            { caster: '1' },
+            { caster: '2' },
+            { caster: '3' }
+          ]);
       });
     });
 
     describe('drop(<i>)', function() {
       it('should drop index <i> from collection', function() {
-        expect(lists.drop([ { caster: '1' },
-                            { caster: '2' },
-                            { caster: '3' }
-                          ], 1)).toEqual([
-                           { caster: '1' },
-                           { caster: '3' }
-                         ]);
+        expect(lists.drop(1, [ { caster: '1' },
+                               { caster: '2' },
+                               { caster: '3' }
+                             ]))
+          .toEqual([
+            { caster: '1' },
+            { caster: '3' }
+          ]);
       });
     });
 
@@ -134,11 +136,11 @@ describe('service', function() {
         [ '4' , undefined ]
       ], function(e, d) {
         it('should return caster list, '+d, function() {
-          expect(lists.listForCaster([
+          expect(lists.listForCaster(e.c, [
             { caster: '1', list: 1 },
             { caster: '2', list: 2 },
             { caster: '3', list: 3 }
-          ], e.c)).toEqual(e.list);
+          ])).toEqual(e.list);
         });
       });
     });
@@ -151,11 +153,11 @@ describe('service', function() {
         [ '4' , undefined ]
       ], function(e, d) {
         it('should return caster Theme name, '+d, function() {
-          expect(lists.themeForCaster([
+          expect(lists.themeForCaster(e.c, [
             { caster: '1', theme: 'Theme1' },
             { caster: '2', theme: 'Theme2' },
             { caster: '3', theme: null }
-          ], e.c)).toEqual(e.theme);
+          ])).toEqual(e.theme);
         });
       });
     });
@@ -168,11 +170,11 @@ describe('service', function() {
         [ '4' , false      ]
       ], function(e, d) {
         it('should check whether lists contains caster, '+d, function() {
-          expect(lists.containsCaster([
+          expect(lists.containsCaster(e.c, [
             { caster: '1' },
             { caster: '2' },
             { caster: '3' }
-          ], e.c)).toEqual(e.contains);
+          ])).toEqual(e.contains);
         });
       });
     });

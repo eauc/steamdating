@@ -4,93 +4,80 @@ angular.module('srApp.services')
  .factory('round', [
     'game',
     function(gameService) {
-      var round = {
-        gameForPlayer: function(coll, player_name) {
-          if(!_.isArray(coll) ||
-             coll.length === 0) return;
+      var roundService = {
+        gameForPlayer: function(player_name, coll) {
+          if(R.type(coll) !== 'Array' ||
+             R.isEmpty(coll)) return;
 
-          return _.chain(coll)
-            .map(_.partial(gameService.forPlayer, _, player_name))
-            .without(undefined)
-            .first()
-            .value();
+          return R.pipe(
+            R.map(gameService.forPlayer$(player_name)),
+            R.reject(R.isNil),
+            R.head
+          )(coll);
         },
-        gamesForGroup: function(coll, players, group_index) {
-          var start_index = Math.ceil(_.chain(players)
-                                      .slice(0, group_index)
-                                      .flatten()
-                                      .value()
-                                      .length / 2);
+        gamesForGroup: function(players, group_index, coll) {
+          var start_index = Math.ceil(R.pipe(
+            R.slice(0, group_index),
+            R.flatten,
+            R.length
+          )(players) / 2);
           var end_index = Math.ceil(start_index +
                                     players[group_index].length / 2);
-          return _.chain(coll)
-            .slice(start_index, end_index)
-            .value();
+          return R.slice(start_index, end_index, coll);
         },
         pairedPlayers: function(coll) {
-          return _.chain(coll)
-            .flatten()
-            .mapcat(function(game) {
+          return R.pipe(
+            R.flatten,
+            R.chain(function(game) {
               return [ game.p1.name, game.p2.name ];
-            })
-            .uniq()
-            .without(null, undefined)
-            .value();
+            }),
+            R.reject(R.isNil),
+            R.uniq()
+          )(coll);
         },
-        isPlayerPaired: function(coll, player) {
-          return (0 <= _.chain(coll)
-                  .apply(round.pairedPlayers)
-                  .indexOf(player.name)
-                  .value());
+        isPlayerPaired: function(player, coll) {
+          return (0 <= R.indexOf(player.name, roundService.pairedPlayers(coll)));
         },
-        updatePlayer: function(coll, index, key) {
+        updatePlayer: function(index, key, coll) {
           var name = coll[index][key].name;
-          return _.chain(coll)
-            .map(function(game, game_index) {
+          return R.pipe(
+            R.mapIndexed(function(game, game_index) {
               if(game_index === index && key === 'p1') return game;
               if(game.p1.name === name) {
-                var new_game = _.snapshot(game);
-                new_game.p1.name = null;
-                return new_game;
+                return R.assocPath(['p1','name'], null, game);
               }
               return game;
-            })
-            .map(function(game, game_index) {
+            }),
+            R.mapIndexed(function(game, game_index) {
               if(game_index === index && key === 'p2') return game;
               if(game.p2.name === name) {
-                var new_game = _.snapshot(game);
-                new_game.p2.name = null;
-                return new_game;
+                return R.assocPath(['p2','name'], null, game);
               }
               return game;
             })
-            .value();
+          )(coll);
         },
-        updateTable: function(coll, index, min_table) {
+        updateTable: function(index, min_table, coll) {
           var table = coll[index].table;
           var other_index = table - min_table;
           
-          coll[other_index] = _.snapshot(coll[other_index]);
-          coll[other_index].table = min_table + index;
+          coll[other_index] = R.assoc('table',
+                                      min_table + index,
+                                      coll[other_index]);
           
-          return _.chain(coll)
-            .sortBy('table')
-            .value();
+          return R.sortBy(R.prop('table'), coll);
         },
         allGamesHaveResult: function(coll) {
-          return _.chain(coll)
-            .map(gameService.hasResult)
-            .all()
-            .value();
+          return R.pipe(
+            R.map(gameService.hasResult),
+            R.all(R.identity)
+          )(coll);
         },
-        winners: function(coll) {
-          return _.map(coll, gameService.winner);
-        },
-        losers: function(coll) {
-          return _.map(coll, gameService.loser);
-        }
+        winners: R.map(gameService.winner),
+        losers: R.map(gameService.loser)
       };
-      return round;
+      R.curryService(roundService);
+      return roundService;
     }
   ])
   .factory('rounds', [
@@ -102,84 +89,83 @@ angular.module('srApp.services')
              gamesService) {
       var roundsService = {
         lastRoundIsComplete: function(coll) {
-          return ( _.isEmpty(coll) ||
-                   _.chain(coll)
-                   .last()
-                   .apply(roundService.allGamesHaveResult)
-                   .value() );
+          return ( R.isEmpty(coll) ||
+                   roundService.allGamesHaveResult(R.last(coll))
+                 );
         },
         createNextRound: function(players) {
           var table = 1;
-          return _.chain(players)
-            .map(function(group) {
-              return _.chain(group.length/2)
-                .range()
-                .map(function() {
-                  return gameService.create({ table: table++ });
-                })
-                .value();
-            })
-            .value();
+          return R.map(function(group) {
+            return R.pipe(
+              R.range(0),
+              R.map(function() {
+                return gameService.create({ table: table++ });
+              })
+            )(group.length/2);
+          }, players);
         },
-        registerNextRound: function(coll, next) {
-          return _.cat(coll, [_.flatten(next)]);
+        registerNextRound: function(next, coll) {
+          return R.append(R.flatten(next), coll);
         },
-        drop: function(coll, round_index) {
-          var new_coll = _.clone(coll);
-          new_coll.splice(round_index, 1);
-          return new_coll;
+        drop: function(round_index, coll) {
+          return R.remove(round_index, 1, coll);
         },
-        pointsForPlayer: function(coll, player_name, bracket_start, base_weight) {
-          return _.chain(coll)
-            .mapWith(roundService.gameForPlayer, player_name)
-            .map(function(game) {
+        pointsForPlayer: function(player_name, bracket_start, base_weight, coll) {
+          return R.pipe(
+            R.map(roundService.gameForPlayer$(player_name)),
+            R.map(function(game) {
               // replace undefined with dummy game
               // it's important to keep the games indices correct in regards to rounds
               // otherwise bracket calculation is not possible
-              if(!_.exists(game)) {
+              if(R.isNil(game)) {
                 return { p1: { name: player_name,
                                tournament: 0, control: 0,
                                army: 0, custom_field: 0 } };
               }
               return game;
-            })
-            .apply(gamesService.pointsForPlayer, player_name, bracket_start, base_weight)
-            .value();
+            }),
+            gamesService.pointsForPlayer$(player_name, bracket_start, base_weight)
+          )(coll);
         },
-        gamesForPlayer: function(coll, player_name) {
-          return _.chain(coll)
-            .mapWith(roundService.gameForPlayer, player_name)
-            .without(undefined)
-            .value();
+        gamesForPlayer: function(player_name, coll) {
+          return R.pipe(
+            R.map(roundService.gameForPlayer$(player_name)),
+            R.reject(R.isNil)
+          )(coll);
         },
-        opponentsForPlayer: function(coll, player_name) {
-          return _.chain(coll)
-            .mapWith(roundService.gameForPlayer, player_name)
-            .without(undefined)
-            .apply(gamesService.opponentsForPlayer, player_name)
-            .value();
+        opponentsForPlayer: function(player_name, coll) {
+          return R.pipe(
+            R.map(roundService.gameForPlayer$(player_name)),
+            R.reject(R.isNil),
+            gamesService.opponentsForPlayer$(player_name)
+          )(coll);
         },
-        pairAlreadyExists: function(coll, game) {
-          if(!_.exists(_.getPath(game, 'p1.name')) ||
-             !_.exists(_.getPath(game, 'p2.name'))) return false;
-          return (_.chain(coll)
-                  .apply(roundsService.opponentsForPlayer, game.p1.name)
-                  .indexOf(game.p2.name)
-                  .value() >= 0);
+        pairAlreadyExists: function(game, coll) {
+          if( R.isNil(R.path(['p1','name'], game)) ||
+              R.isNil(R.path(['p2','name'], game))
+            ) return false;
+          return ( 0 <= R.pipe(
+            roundsService.opponentsForPlayer$(game.p1.name),
+            R.indexOf(game.p2.name)
+          )(coll)
+                 );
         },
-        listsForPlayer: function(coll, player_name) {
-          return _.chain(coll)
-            .mapWith(roundService.gameForPlayer, player_name)
-            .apply(gamesService.listsForPlayer, player_name)
-            .value();
+        listsForPlayer: function(player_name, coll) {
+          return R.pipe(
+            R.map(roundService.gameForPlayer$(player_name)),
+            R.reject(R.isNil),
+            gamesService.listsForPlayer$(player_name)
+          )(coll);
         },
-        tablesForPlayer: function(coll, player_name) {
-          return _.chain(coll)
-            .mapWith(roundService.gameForPlayer, player_name)
-            .apply(gamesService.tablesForPlayer, player_name)
-            .value();
+        tablesForPlayer: function(player_name, coll) {
+          return R.pipe(
+            R.map(roundService.gameForPlayer$(player_name)),
+            R.reject(R.isNil),
+            gamesService.tablesForPlayer$(player_name)
+          )(coll);
         }
       };
+      R.curryService(roundsService);
       return roundsService;
     }
   ]);

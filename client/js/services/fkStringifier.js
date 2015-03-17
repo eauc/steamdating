@@ -4,32 +4,36 @@ angular.module('srApp.services')
   .factory('fkStringifier', [
     function() {
       var EOL = '\r\n';
-      var fkStringifier = {
+      var fkStringifierService = {
         stringify: function(players) {
-          return _.chain(players)
-            .flatten()
-            .map(stringifyPlayer)
-            .join(EOL)
-            .value();
+          return R.pipe(
+            R.flatten,
+            R.map(stringifyPlayer),
+            R.join(EOL)
+          )(players);
         }
       };
       function stringifyPlayer(player) {
         var ret = [ 'Player: '+player.name ];
-        if(_.exists(player.origin)) ret.push( 'Origin: '+player.origin );
-        if(_.exists(player.faction)) ret.push( 'Faction: '+player.faction );
+        if(!R.isNil(player.origin)) ret.push( 'Origin: '+player.origin );
+        if(!R.isNil(player.faction)) ret.push( 'Faction: '+player.faction );
         if(player.lists.length > 0) {
           ret.push('');
-          ret.push(_.map(player.lists, stringifyList).join(EOL));
+          ret.push(R.pipe(
+            R.map(stringifyList),
+            R.join(EOL)
+          )(player.lists));
         }
-        return ret.join(EOL) + EOL;
+        return R.join(EOL, ret) + EOL;
       }
       function stringifyList(list) {
         var ret = ['List:'];
-        if(_.exists(list.theme)) ret.push('Theme: '+list.theme);
+        if(!R.isNil(list.theme)) ret.push('Theme: '+list.theme);
         ret.push(list.fk);
         ret.push('');
-        return ret.join(EOL);
+        return R.join(EOL, ret);
       }
-      return fkStringifier;
+      R.curryService(fkStringifierService);
+      return fkStringifierService;
     }
   ]);

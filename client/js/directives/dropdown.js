@@ -21,7 +21,7 @@ angular.module('srApp.directives')
         link: function(scope, element, attrs) {
           var target_id = attrs.openDropdown;
           var target = angular.element(document.getElementById(target_id));
-          if(!_.exists(target)) {
+          if(R.isNil(target)) {
             console.log('openDropdown : cannot find target', target_id);
             return;
           }

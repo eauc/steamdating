@@ -3,12 +3,13 @@
 angular.module('srApp.services')
   .factory('statsGroupByTotal', [
     function() {
-      var statsGroupByTotal = {
+      var statsGroupByTotalService = {
         group: function(state, selection) {
           return [['Total', selection]];
         }
       };
-      return statsGroupByTotal;
+      R.curryService(statsGroupByTotalService);
+      return statsGroupByTotalService;
     }
   ])
   .factory('statsGroupByOppFaction', [
@@ -16,35 +17,43 @@ angular.module('srApp.services')
     'players',
     function(gameService,
              playersService) {
-      function selPlayer(entry) { return entry[0]; }
-      function selGames(entry) { return entry[1]; }
+      var selPlayer = R.head;
+      var selGames = R.nth(1);
 
-      var statsGroupByOppFaction = {
+      var statsGroupByOppFactionService = {
         group: function(state, selection) {
-          return _.chain(selection)
-            .map(function(sel_entry) {
+          return R.pipe(
+            R.map(function(sel_entry) {
               return [ selPlayer(sel_entry),
-                       _.groupBy(selGames(sel_entry), function(game) {
-                         var opp_name = gameService.opponentForPlayer(game, selPlayer(sel_entry));
-                         var opp = playersService.player(state.players, opp_name);
-                         return s.capitalize(_.getPath(opp, 'faction') || 'NULL');
-                       })
+                       R.pipe(
+                         selGames,
+                         R.groupBy(function(game) {
+                           var opp_name = gameService.opponentForPlayer(selPlayer(sel_entry), game);
+                           var opp = playersService.player(opp_name, state.players);
+                           return s.capitalize(R.defaultTo('NULL', R.prop('faction', opp)));
+                         }),
+                         R.omit(['NULL'])
+                       )(sel_entry)
                      ];
-            })
-            .omit('NULL')
-            .reduce(function(mem, fct_entry) {
-              _.each(selGames(fct_entry), function(games, faction) {
-                mem[faction] = mem[faction] || [];
-                mem[faction].push([selPlayer(fct_entry), games]);
-              });
+            }),
+            R.reduce(function(mem, fct_entry) {
+              var games_by_faction = selGames(fct_entry);
+              R.forEach(function(faction) {
+                mem[faction] = R.defaultTo([], mem[faction]);
+                mem[faction].push([
+                  selPlayer(fct_entry),
+                  games_by_faction[faction]
+                ]);
+              }, R.keys(games_by_faction));
               return mem;
-            }, {})
-            .toHeaderList()
-            .sortBy(_.first)
-            .value();
+            }, {}),
+            R.toHeaderList,
+            R.sortBy(R.head)
+          )(selection);
         }
       };
-      return statsGroupByOppFaction;
+      R.curryService(statsGroupByOppFactionService);
+      return statsGroupByOppFactionService;
     }
   ])
   .factory('statsGroupByOppCaster', [
@@ -52,33 +61,42 @@ angular.module('srApp.services')
     'players',
     function(gameService,
              playersService) {
-      function selPlayer(entry) { return entry[0]; }
-      function selGames(entry) { return entry[1]; }
+      var selPlayer = R.head;
+      var selGames = R.nth(1);
 
-      var statsGroupByOppCaster = {
+      var statsGroupByOppCasterService = {
         group: function(state, selection) {
-          return _.chain(selection)
-            .map(function(sel_entry) {
+          return R.pipe(
+            R.map(function(sel_entry) {
               return [ selPlayer(sel_entry),
-                       _.groupBy(selGames(sel_entry), function(game) {
-                         var opp_name = gameService.opponentForPlayer(game, selPlayer(sel_entry));
-                         var opp_game = gameService.player(game, opp_name);
-                         return s.capitalize(_.getPath(opp_game, 'list') || 'NULL');
-              }) ];
-            })
-            .omit('NULL')
-            .reduce(function(mem, fct_entry) {
-              _.each(selGames(fct_entry), function(games, caster) {
-                mem[caster] = mem[caster] || [];
-                mem[caster].push([selPlayer(fct_entry), games]);
-              });
+                       R.pipe(
+                         selGames,
+                         R.groupBy(function(game) {
+                           var opp_name = gameService.opponentForPlayer(selPlayer(sel_entry), game);
+                           var opp_game = gameService.player(opp_name, game);
+                           return s.capitalize(R.defaultTo('NULL', R.prop('list', opp_game)));
+                         }),
+                         R.omit(['NULL'])
+                       )(sel_entry)
+                     ];
+            }),
+            R.reduce(function(mem, fct_entry) {
+              var games_by_caster = selGames(fct_entry);
+              R.forEach(function(caster) {
+                mem[caster] = R.defaultTo([], mem[caster]);
+                mem[caster].push([
+                  selPlayer(fct_entry),
+                  games_by_caster[caster]
+                ]);
+              }, R.keys(games_by_caster));
               return mem;
-            }, {})
-            .toHeaderList()
-            .sortBy(_.first)
-            .value();
+            }, {}),
+            R.toHeaderList,
+            R.sortBy(R.head)
+          )(selection);
         }
       };
-      return statsGroupByOppCaster;
+      R.curryService(statsGroupByOppCasterService);
+      return statsGroupByOppCasterService;
     }
   ]);

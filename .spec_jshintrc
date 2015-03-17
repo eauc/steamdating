@@ -5,6 +5,7 @@
     "angular": false,
     "_": false,
     "s": false,
+    "R": false,
     "jasmine": false,
     "console": false,
     "window": false,

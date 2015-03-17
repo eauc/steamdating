@@ -36,7 +36,7 @@ describe('service', function() {
       }, function(){
         it('should sum points for <name>', function() {
           // uniq
-          expect(games.pointsForPlayer(this.coll, 'toto', undefined, 32)).toEqual({
+          expect(games.pointsForPlayer('toto', undefined, 32, this.coll)).toEqual({
             bracket: 0,
             tournament : 2,
             control: 222,
@@ -51,7 +51,7 @@ describe('service', function() {
       when('bracket is defined', function() {
       }, function(){
         it('should sum points for <name>', function() {
-          expect(games.pointsForPlayer(this.coll, 'toto', 2, 32))
+          expect(games.pointsForPlayer('toto', 2, 32, this.coll))
             .toEqual({
               bracket: 32,
               tournament : 2,
@@ -87,7 +87,7 @@ describe('service', function() {
       }, function(){
         it('should sum points for <name>', function() {
           // uniq
-          expect(games.pointsAgainstPlayer(this.coll, 'toto', undefined, 32)).toEqual({
+          expect(games.pointsAgainstPlayer('toto', undefined, 32, this.coll)).toEqual({
             bracket: 0,
             tournament : 2,
             control: 555,
@@ -102,7 +102,7 @@ describe('service', function() {
       when('bracket is defined', function() {
       }, function(){
         it('should sum points for <name>', function() {
-          expect(games.pointsAgainstPlayer(this.coll, 'toto', 2, 32))
+          expect(games.pointsAgainstPlayer('toto', 2, 32, this.coll))
             .toEqual({
               bracket: 16,
               tournament : 2,
@@ -116,7 +116,7 @@ describe('service', function() {
       });
     });
 
-    describe('reducePoints(<player_games>, <bracket_start>, <bracket_end>)', function() {
+    describe('reducePoints(<bracket_start>, <bracket_end>, <player_games>)', function() {
       beforeEach(function() {
         this.coll = [
           { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 6 },
@@ -130,7 +130,7 @@ describe('service', function() {
       }, function(){
         it('should sum points', function() {
           // uniq
-          expect(games.reducePoints(this.coll, undefined, 32)).toEqual({
+          expect(games.reducePoints(undefined, 32, this.coll)).toEqual({
             bracket: 0,
             tournament : 111,
             control: 222,
@@ -168,7 +168,7 @@ describe('service', function() {
                                 sos: 0 } ],
         ], function(e, d) {
           it('should sum points, '+d, function() {
-            expect(games.reducePoints(this.coll, e.bracket_start, 32))
+            expect(games.reducePoints(e.bracket_start, 32, this.coll))
               .toEqual(e.points);
           });
         });
@@ -188,7 +188,7 @@ describe('service', function() {
         [ 'toto'    , ['tata', 'tutu'] ],
       ], function(e, d) {
         it('should return opponents played by <name>, '+d, function() {
-          expect(games.opponentsForPlayer(this.coll, e.name))
+          expect(games.opponentsForPlayer(e.name, this.coll))
             .toEqual(e.opponents);
         });
       });
@@ -207,7 +207,7 @@ describe('service', function() {
         [ 'toto'    , [1, 3]   ],
       ], function(e, d) {
         it('should return tables played on by <name>, '+d, function() {
-          expect(games.tablesForPlayer(this.coll, e.name))
+          expect(games.tablesForPlayer(e.name, this.coll))
             .toEqual(e.tables);
         });
       });
@@ -230,7 +230,7 @@ describe('service', function() {
         [ 'toto'   , ['caster1', 'caster3'] ],
       ], function(e, d) {
         it('should return lists played by <name>, '+d, function() {
-          expect(games.listsForPlayer(this.coll, e.name))
+          expect(games.listsForPlayer(e.name, this.coll))
             .toEqual(e.lists);
         });
       });
@@ -259,7 +259,7 @@ describe('service', function() {
                                   p2 : { name : 'tata' }, games : [  ] }] ],
       ], function(e, d) {
         it('should filter list where <p> played list <c>, '+d, function() {
-          expect(games.forCaster(this.coll, e.p, e.c))
+          expect(games.forCaster(e.p, e.c, this.coll))
             .toEqual(e.games);
         });
       });

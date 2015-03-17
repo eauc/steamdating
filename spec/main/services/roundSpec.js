@@ -16,11 +16,9 @@ describe('service', function() {
 
     describe('gameForPlayer(<name>)', function() {
       var coll = [
-        { p1: { name: 'toto'}, p2: {name: 'tata' }, games: [] },
-        { p1: { name: 'tutu'}, p2: {name: 'titi' }, games: [] },
-        { p1: { name: 't1' }, p2: { name: 't2' },
-          games: [ { p1: { name: 'p1'}, p2: {name: 'p2' }, games: [] },
-                   { p1: { name: 'p3'}, p2: {name: 'p4' }, games: [] } ] }
+        { p1: { name: 'toto'}, p2: {name: 'tata' } },
+        { p1: { name: 'tutu'}, p2: {name: 'titi' } },
+        { p1: { name: 't1' } , p2: { name: 't2' } }
       ];
 
       using([
@@ -28,12 +26,10 @@ describe('service', function() {
         [ 'toto'    , coll[0]          ],
         [ 'titi'    , coll[1]          ],
         [ 't2'      , coll[2]          ],
-        [ 'p1'      , coll[2].games[0] ],
-        [ 'p4'      , coll[2].games[1] ],
         [ 'unknown' , undefined        ],
       ], function(e, d) {
         it('should return game involving <name>, '+d, function() {
-          expect(round.gameForPlayer(coll, e.name)).toBe(e.game);
+          expect(round.gameForPlayer(e.name, coll)).toBe(e.game);
         });
       });
     });
@@ -47,7 +43,7 @@ describe('service', function() {
           { table: 4 },
         ];
         var players = [ [ {}, {} ], [ {}, {}, {}, {} ], [ {}, {} ] ];
-        expect(round.gamesForGroup(coll, players, 1)).toEqual([
+        expect(round.gamesForGroup(players, 1, coll)).toEqual([
           { table: 2 },
           { table: 3 }
         ]);
@@ -61,7 +57,7 @@ describe('service', function() {
           { table: 4 },
         ];
         var players = [ [ {}, {}, {} ], [ {}, {}, {} ], [ {}, {} ] ];
-        expect(round.gamesForGroup(coll, players, 1)).toEqual([
+        expect(round.gamesForGroup(players, 1, coll)).toEqual([
           { table: 3 },
           { table: 4 }
         ]);
@@ -105,7 +101,8 @@ describe('service', function() {
             { p1: { name: 'p5' }, p2: { name: 'p1' } }
           ];
 
-          expect(round.isPlayerPaired(this.coll, { name: e.name })).toBe(e.isPaired);
+          expect(round.isPlayerPaired({ name: e.name }, this.coll))
+            .toBe(e.isPaired);
         });
       });
     });
@@ -120,13 +117,13 @@ describe('service', function() {
       });
 
       it('should remove game[<game_index>][<player_key>] player from all other games', function() {
-        expect(round.updatePlayer(this.coll, 1, 'p1')).toEqual([
+        expect(round.updatePlayer(1, 'p1', this.coll)).toEqual([
           { p1: { name: 'p1' }, p2: { name: null } },
           { p1: { name: 'p2' }, p2: { name: null } },
           { p1: { name: 'p5' }, p2: { name: 'p1' } }
         ]);
 
-        expect(round.updatePlayer(this.coll, 0, 'p2')).toEqual([
+        expect(round.updatePlayer(0, 'p2', this.coll)).toEqual([
           { p1: { name: 'p1' }, p2: { name: 'p2' } },
           { p1: { name: null }, p2: { name: null } },
           { p1: { name: 'p5' }, p2: { name: 'p1' } }
@@ -144,7 +141,7 @@ describe('service', function() {
       });
 
       it('should reorder tables', function() {
-        expect(round.updateTable(this.coll, 2, 4)).toEqual([
+        expect(round.updateTable(2, 4, this.coll)).toEqual([
           { table : 4, p1 : { name : 'p5' }, p2 : { name : 'p1' } },
           { table : 5, p1 : { name : 'p2' }, p2 : { name : null } },
           { table : 6, p1 : { name : 'p1' }, p2 : { name : 'p2' } }

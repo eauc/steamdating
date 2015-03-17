@@ -5,8 +5,8 @@ angular.module('srApp.filters')
     'state',
     function(state) {
       return function(input, method) {
-        var args = _.rest(_.rest(arguments));
-        return state[method].apply(null, _.cons(input, args));
+        var args = R.tail(R.tail(arguments));
+        return state[method].apply(null, R.append(input, args));
       };
     }
   ]);

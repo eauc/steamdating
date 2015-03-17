@@ -9,27 +9,24 @@ angular.module('srApp.controllers')
     'stats',
     function($scope,
              $q,
-             factions,
-             players,
-             stats) {
+             factionsService,
+             playersService,
+             statsService) {
       console.log('init statsCtrl');
 
-      $scope.factions = players.factions($scope.state.players);
-      console.log('factions', $scope.factions);
-      $scope.players = players.names($scope.state.players);
-      console.log('players', $scope.players);
-      $scope.casters = players.casters($scope.state.players);
-      console.log('casters', $scope.casters);
+      $scope.factions = playersService.factions([], $scope.state.players);
+      $scope.players = playersService.names($scope.state.players);
+      $scope.casters = playersService.casters($scope.state.players);
 
       $scope.stats = {};
       var group;
       $scope.getStats = function() {
         var value = $scope.selection[$scope.selection.type];
-        var ret = stats.get($scope.state,
-                            $scope.selection.type, value,
-                            $scope.selection.group_by,
-                            $scope.stats);
-        if(_.indexOf(_.mapWith(ret, _.first), $scope.group) < 0) {
+        var ret = statsService.get($scope.state,
+                                   $scope.selection.type, value,
+                                   $scope.selection.group_by,
+                                   $scope.stats);
+        if(0 > R.indexOf($scope.group, R.map(R.head, ret))) {
           $scope.group = ret[0][0];
         }
         return ret;
@@ -40,9 +37,9 @@ angular.module('srApp.controllers')
         // type: 'player',
         // type: 'caster',
         group_by: 'total',
-        faction: _.first($scope.factions),
-        player: _.first($scope.players),
-        caster: _.getPath(_.first($scope.casters), 'name'),
+        faction: R.head($scope.factions),
+        player: R.head($scope.players),
+        caster: R.prop('name', R.head($scope.casters)),
       };
       $scope.setGroup = function(gr) {
         $scope.group = gr;

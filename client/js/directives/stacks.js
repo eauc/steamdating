@@ -5,24 +5,24 @@ angular.module('srApp.directives')
     '$scope',
     function($scope) {
       $scope.$watch('values', function(values) {
-        if(!_.exists(values)) {
+        if(R.isNil(values)) {
           $scope.stacks = [];
           return;
         }
-        // console.log('values', values);
-        var totals = _.reduce(values.values, function(mem, s, k) {
-          mem[k] = _.reduce(s, function(m,v) { return m+v; }, 0);
+
+        var totals = R.reduce(function(mem, k) {
+          mem[k] = R.reduce(R.add, 0, values.values[k]);
           return mem;
-        }, {});
-        // console.log('totals', totals);
-        $scope.stacks = _.map(values.values, function(_s, name) {
+        }, {}, R.keys(values.values));
+
+        $scope.stacks = R.map(function(name) {
           var x = 0;
           return {
             name: name,
-            layers: _.map(_s, function(v, i) {
+            layers: R.mapIndexed(function(v, i) {
               var width = (0 < totals[name]) ?
                 $scope.width * v / totals[name] :
-                $scope.width / _s.length;
+                $scope.width / values.values[name].length;
               var layer = {
                 x: x,
                 width: width,
@@ -31,10 +31,9 @@ angular.module('srApp.directives')
               };
               x += width;
               return layer;
-            })
+            }, values.values[name])
           };
-        });
-        // console.log('stacks', $scope);
+        }, R.keys(values.values));
       });
     }
   ])
@@ -50,7 +49,6 @@ angular.module('srApp.directives')
         link: function(scope, element, attrs) {
           scope.width = (element[0].querySelector('table').offsetWidth >> 0) * 0.7;
           scope.height = 50;
-          // console.log('stacks', element);
         }
       };
     }

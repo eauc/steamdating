@@ -4,6 +4,7 @@
   "globals": {
     "_": false,
     "s": false,
+    "R": false,
     "$": false,
     "angular": false,
     "console": false,

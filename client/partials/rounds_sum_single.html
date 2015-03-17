@@ -27,7 +27,7 @@
     <tr ng-repeat="p in ::gr track by p.name">
       <td style="
           cursor:pointer;
-          background-color:{{::(p | player:'isDroped':state.rounds.length) ? '#CCC' : 'auto'}};
+          background-color:{{::(p | player:'isDroped') ? '#CCC' : 'auto'}};
           "
           ng-click="doEditPlayer(p)">
         {{::p.name}}

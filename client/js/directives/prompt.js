@@ -8,7 +8,7 @@ angular.module('srApp.directives')
       var defer;
       var state_defers = [];
       function getState() {
-        if(_.exists(state)) return state;
+        if(R.exists(state)) return state;
         var defer = $q.defer();
         state_defers.push(defer);
         return defer.promise;
@@ -31,16 +31,16 @@ angular.module('srApp.directives')
             defer = null;
           };
 
-          _.each(state_defers, function(d) {
+          R.forEach(function(d) {
             d.resolve(state);
-          });
+          }, state_defers);
           state_defers = [];
         },
         prompt: function(type, msg) {
           defer = $q.defer();
           $q.when(getState()).then(function(state) {
             state.type = type;
-            state.message = _.isString(msg) ? [msg] : msg;
+            state.message = (R.type(msg) === 'String') ? [msg] : msg;
             state.input = null;
             state.open();
           });

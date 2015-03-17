@@ -26,7 +26,6 @@ describe('service', function() {
                   tournament: null, control: null, army: null, custom_field: null },
             p2: { name: 'titi', list: null,
                   tournament: null, control: null, army: null, custom_field: null },
-            games: []
           });
       });
     });
@@ -39,8 +38,8 @@ describe('service', function() {
       });
 
       it('should return player\'s info for <name>', function() {
-        expect(game.player(this.game, 'toto')).toBe(this.game.p1);
-        expect(game.player(this.game, 'titi')).toBe(this.game.p2);
+        expect(game.player('toto', this.game)).toBe(this.game.p1);
+        expect(game.player('titi', this.game)).toBe(this.game.p2);
       });
     });
 
@@ -54,8 +53,8 @@ describe('service', function() {
       });
 
       it('should return player\'s list', function() {
-        expect(game.listForPlayer(this.game, 'toto')).toBe('caster1');
-        expect(game.listForPlayer(this.game, 'titi')).toBe('caster2');
+        expect(game.listForPlayer('toto', this.game)).toBe('caster1');
+        expect(game.listForPlayer('titi', this.game)).toBe('caster2');
       });
     });
 
@@ -66,29 +65,10 @@ describe('service', function() {
                                   p2: { name: 'titi' } });
       }, function() {
         it('should return <game>', function() {
-          expect(game.forPlayer(this.game, 'toto')).toBe(this.game);
-          expect(game.forPlayer(this.game, 'titi')).toBe(this.game);
+          expect(game.forPlayer('toto', this.game)).toBe(this.game);
+          expect(game.forPlayer('titi', this.game)).toBe(this.game);
 
-          expect(game.forPlayer(this.game, 'tata')).toBe(undefined);
-        });
-      });
-
-      when('<game>\'s sub-games involves player', function() {
-        var g  = game.create({ table: 4,
-                               p1: { name: 'toto' },
-                               p2: { name: 'titi' } });
-        _.range(3).map(function(i) {
-          g.games.push(game.create({ table: i+1,
-                                     p1: { name: 'p'+(i+1) },
-                                     p2: { name: 'p'+(i+3) } }));
-        });
-        this.game = g;
-      }, function() {
-        it('should return <game>\'s sub-game for this player', function() {
-          expect(game.forPlayer(this.game, 'p1')).toBe(this.game.games[0]);
-          expect(game.forPlayer(this.game, 'p5')).toBe(this.game.games[2]);
-
-          expect(game.forPlayer(this.game, 'tata')).toBe(undefined);
+          expect(game.forPlayer('tata', this.game)).toBe(undefined);
         });
       });
     });
@@ -101,8 +81,8 @@ describe('service', function() {
       });
 
       it('should return player\'s list', function() {
-        expect(game.tableForPlayer(this.game, 'toto')).toBe(4);
-        expect(game.tableForPlayer(this.game, 'titi')).toBe(4);
+        expect(game.tableForPlayer('toto', this.game)).toBe(4);
+        expect(game.tableForPlayer('titi', this.game)).toBe(4);
       });
     });
 
@@ -114,8 +94,8 @@ describe('service', function() {
       });
 
       it('should return player\'s list', function() {
-        expect(game.opponentForPlayer(this.game, 'toto')).toBe('titi');
-        expect(game.opponentForPlayer(this.game, 'titi')).toBe('toto');
+        expect(game.opponentForPlayer('toto', this.game)).toBe('titi');
+        expect(game.opponentForPlayer('titi', this.game)).toBe('toto');
       });
     });
 
@@ -146,8 +126,8 @@ describe('service', function() {
       when('result is not defined', function(){
       }, function() {
         it('should return undefined', function() {
-          expect(game.winForPlayer(this.game, 'toto')).toBe(undefined);
-          expect(game.winForPlayer(this.game, 'titi')).toBe(undefined);
+          expect(game.winForPlayer('toto', this.game)).toBe(undefined);
+          expect(game.winForPlayer('titi', this.game)).toBe(undefined);
         });
       });
 
@@ -156,8 +136,8 @@ describe('service', function() {
         this.game.p2.tournament = 0;
       }, function() {
         it('should return whether <name> has won', function() {
-          expect(game.winForPlayer(this.game, 'toto')).toBe(true);
-          expect(game.winForPlayer(this.game, 'titi')).toBe(false);
+          expect(game.winForPlayer('toto', this.game)).toBe(true);
+          expect(game.winForPlayer('titi', this.game)).toBe(false);
         });
       });
     });
@@ -172,8 +152,8 @@ describe('service', function() {
       when('result is not defined', function(){
       }, function() {
         it('should return undefined', function() {
-          expect(game.lossForPlayer(this.game, 'toto')).toBe(undefined);
-          expect(game.lossForPlayer(this.game, 'titi')).toBe(undefined);
+          expect(game.lossForPlayer('toto', this.game)).toBe(undefined);
+          expect(game.lossForPlayer('titi', this.game)).toBe(undefined);
         });
       });
 
@@ -182,8 +162,8 @@ describe('service', function() {
         this.game.p2.tournament = 0;
       }, function() {
         it('should return whether <name> has won', function() {
-          expect(game.lossForPlayer(this.game, 'toto')).toBe(false);
-          expect(game.lossForPlayer(this.game, 'titi')).toBe(true);
+          expect(game.lossForPlayer('toto', this.game)).toBe(false);
+          expect(game.lossForPlayer('titi', this.game)).toBe(true);
         });
       });
     });
@@ -212,10 +192,10 @@ describe('service', function() {
         [ 'other'         , false ],
       ], function(e, d) {
         it('should check whether both players are defined, '+d, function() {
-          expect(game.isAssassination(game.create({ table: 3,
-                                                    victory: e.victory,
-                                                    p1: { name: e.p1 },
-                                                    p2: { name: e.p2 } })))
+          expect(game.isAssassination$(game.create({ table: 3,
+                                                     victory: e.victory,
+                                                     p1: { name: e.p1 },
+                                                     p2: { name: e.p2 } })))
             .toBe(e.isAssassination);
         });
       });
@@ -288,15 +268,14 @@ describe('service', function() {
         [ true        , false , [ 21, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5, 0, 42, 24 ] ],
       ], function(e, d) {
         it('should convert game to array, '+d, function() {
-          expect(game.toArray({
+          expect(game.toArray(e.withCustom, {
             table: 21,
             victory: e.ck ? 'assassination' : null,
             p1: { name: 'toto', list: 'list1', tournament: 1,
                   control: 2, army: 3, custom_field: 42 },
             p2: { name: 'titi', list: 'list2', tournament: 0,
-                  control: 4, army: 5, custom_field: 24 },
-            games: []
-          }, e.withCustom)).toEqual(e.array);
+                  control: 4, army: 5, custom_field: 24 }
+          })).toEqual(e.array);
         });
       });
     });

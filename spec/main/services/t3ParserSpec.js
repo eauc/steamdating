@@ -26,7 +26,7 @@ describe('service', function() {
       it('should ignore first line', function() {
         var string =
 "Place;Prénom;Nom de famille;Pseudo;Armée;Origine;Équipe;Liste d'armée;Note de compo;Payé\n";
-        var res = t3Parser.parse(string, this.factions);
+        var res = t3Parser.parse(this.factions, string);
 
         expect(res[0].length).toBe(0);
         expect(res[1].length).toBe(0);
@@ -38,7 +38,7 @@ describe('service', function() {
 '1;Vladimir;Bobroff;"Sun;Hunter";Protectorat de Menoth;Talence;GUILD;oui;;Oui\n'+
 '2;Alexandre;Rey;elrey22;Cryx;"Tou""louse";;oui;;Oui\n'+
 '6;Sylvester;Staline;communiste;Légion d\'Everblight;Moscul;31 décapsule;oui;;Oui\n';
-        var res = t3Parser.parse(string, this.factions);
+        var res = t3Parser.parse(this.factions, string);
 
         expect(res[0].length).toBe(3);
         expect(res[1].length).toBe(0);
@@ -64,7 +64,7 @@ describe('service', function() {
 "1;Vladimir;Bobroff;SunHunter;Protectorat de Menoth;Talence;GUILD;oui;;Oui\n"+
 "\n"+
 "6;Sylvester;Staline;communiste;Légion d'Everblight;Moscul;31 décapsule;oui;;Oui\n";
-        var res = t3Parser.parse(string, this.factions);
+        var res = t3Parser.parse(this.factions, string);
 
         expect(res[0].length).toBe(2);
         expect(res[1].length).toBe(0);
@@ -86,7 +86,7 @@ describe('service', function() {
 // too long
 "2;Alexandre;Rey;elrey22;Cryx;Toulouse;;oui;;Oui;toto;\n"+
 "6;Sylvester;Staline;communiste;Légion d'Everblight;Moscul;31 décapsule;oui;;Oui\n";
-        var res = t3Parser.parse(string, this.factions);
+        var res = t3Parser.parse(this.factions, string);
 
         expect(res[0].length).toBe(1);
         expect(res[1].length).toBe(2);
@@ -105,7 +105,7 @@ describe('service', function() {
 "1;Vladimir;Bobroff;SunHunter;Protectorat de Menoth;Talence;GUILD;oui;;Oui\n"+
 "2;Alexandre;Rey;;Cryx;Toulouse;;oui;;Oui\n"+
 "6;Sylvester;Staline;SunHunter;Légion d'Everblight;Moscul;31 décapsule;oui;;Oui\n";
-        var res = t3Parser.parse(string, this.factions);
+        var res = t3Parser.parse(this.factions, string);
 
         expect(res[0].length).toBe(1);
         expect(res[1].length).toBe(2);

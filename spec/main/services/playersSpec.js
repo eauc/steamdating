@@ -24,7 +24,7 @@ describe('service', function() {
       });
 
       it('should add <player> to <group>', function() {
-        expect(players.add(this.coll, {name: 'toto2'}, 1)).toEqual([
+        expect(players.add(1, {name: 'toto2'}, this.coll)).toEqual([
           [],
           [
             { name: 'toto2' },
@@ -80,12 +80,12 @@ describe('service', function() {
                       ] ] ],
       ], function(e, d) {
         it('should drop <player> from any group, '+d, function() {
-          expect(players.drop(this.coll, {name: e.name})).toEqual(e.dropped);
+          expect(players.drop({name: e.name}, this.coll)).toEqual(e.dropped);
         });
       });
 
       it('should leave at least one group', function() {
-        expect(players.drop([ [{ name: 'toto1' }] ], { name: 'toto1' }))
+        expect(players.drop({ name: 'toto1' }, [ [{ name: 'toto1' }] ]))
           .toEqual([[]]);
       });
     });
@@ -106,7 +106,7 @@ describe('service', function() {
       });
 
       it('should return player', function() {
-        expect(players.player(this.coll, 'tata2')).toBe(this.coll[1][1]);
+        expect(players.player('tata2', this.coll)).toBe(this.coll[1][1]);
       });
     });
 
@@ -178,7 +178,7 @@ describe('service', function() {
       });
 
       it('should return sorted uniq faction names list appended with base factions', function() {
-        expect(players.factions(this.coll, { toto2: {}, base1: {} })).toEqual([
+        expect(players.factions({ toto2: {}, base1: {} }, this.coll)).toEqual([
           'base1', 'tata1', 'toto1', 'toto2', 'tutu2'
         ]);
       });
@@ -215,7 +215,7 @@ describe('service', function() {
         [ 'f3' , [ ] ],
       ], function(e, d) {
         it('should return list of players for faction <f>, '+d, function() {
-          expect(players.forFaction(this.coll, e.f)).toEqual(e.players);
+          expect(players.forFaction(e.f, this.coll)).toEqual(e.players);
         });
       });
     });
@@ -240,7 +240,7 @@ describe('service', function() {
       it('should update lists played in <rounds>', function() {
         var dummy_rounds = [ 'tata' ];
 
-        var res = players.updateListsPlayed(this.coll, dummy_rounds);
+        var res = players.updateListsPlayed(dummy_rounds, this.coll);
 
         expect(this.roundsService.listsForPlayer.calls.count()).toBe(5);
         expect(res[0][2].lists_played)
@@ -332,7 +332,7 @@ describe('service', function() {
         [ 'caster5', [ ] ],
       ], function(e,d) {
         it('should return players list for caster <c>', function() {
-          expect(players.forCaster(this.coll, e.c)).toEqual(e.players);
+          expect(players.forCaster(e.c, this.coll)).toEqual(e.players);
         });
       });
     });
@@ -362,20 +362,21 @@ describe('service', function() {
         var dummy_rounds = [ 'tata' ];
         var bracket_start = [ 3, 4 ];
         var bracket_weight = [ 32, 42 ];
-        var res = players.updatePoints(this.coll, dummy_rounds,
-                                       bracket_start, bracket_weight);
+        var res = players.updatePoints(bracket_start, bracket_weight,
+                                       dummy_rounds,
+                                       this.coll);
 
         expect(this.roundsService.pointsForPlayer.calls.count()).toBe(5);
         expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith(dummy_rounds, 'toto1', 3, 32);
+          .toHaveBeenCalledWith('toto1', 3, 32, dummy_rounds);
         expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith(dummy_rounds, 'toto2', 3, 32);
+          .toHaveBeenCalledWith('toto2', 3, 32, dummy_rounds);
         expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith(dummy_rounds, 'toto3', 3, 32);
+          .toHaveBeenCalledWith('toto3', 3, 32, dummy_rounds);
         expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith(dummy_rounds, 'tata1', 4, 42);
+          .toHaveBeenCalledWith('tata1', 4, 42, dummy_rounds);
         expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith(dummy_rounds, 'tata2', 4, 42);
+          .toHaveBeenCalledWith('tata2', 4, 42, dummy_rounds);
 
         expect(res[0][2].points)
           .toEqual([ 'rounds.pointsForPlayer.returnValue' ]);
@@ -388,16 +389,17 @@ describe('service', function() {
         var bracket_start = [ 3, 4 ];
         var bracket_weight = [ 32, 42 ];
 
-        var res = players.updatePoints(this.coll, dummy_rounds,
-                                       bracket_start, bracket_weight);
+        var res = players.updatePoints(bracket_start, bracket_weight,
+                                       dummy_rounds,
+                                       this.coll);
 
         expect(this.roundsService.opponentsForPlayer)
-          .toHaveBeenCalledWith(dummy_rounds, jasmine.any(String));
+          .toHaveBeenCalledWith(jasmine.any(String), dummy_rounds);
         expect(this.roundsService.opponentsForPlayer.calls.count()).toBe(5);
 
         expect(players.sosFromPlayers)
-          .toHaveBeenCalledWith(jasmine.any(Object),
-                                'rounds.opponentsForPlayer.returnValue');
+          .toHaveBeenCalledWith('rounds.opponentsForPlayer.returnValue',
+                                jasmine.any(Object));
         expect(players.sosFromPlayers.calls.count()).toBe(5);
 
         expect(res[0][2].points.sos).toBe(45);
@@ -426,7 +428,7 @@ describe('service', function() {
         [ ['toto2', 'tata1']          , 6     ],
       ], function(e, d) {
         it('should return SoS calculated from <players>, '+d, function() {
-          expect(players.sosFromPlayers(this.coll, e.players))
+          expect(players.sosFromPlayers(e.players, this.coll))
             .toEqual(e.sos);
         });
       });
@@ -440,19 +442,19 @@ describe('service', function() {
           ranking: {}
         };
         this.is_bracket = [ false, false, true ];
-        spyOn(players, 'sortGroup').and.callFake(function(g) { return g+'sorted'; });
+        spyOn(players, 'sortGroup').and.callFake(function(s, b, g) { return g+'sorted'; });
       });
 
       it('should sort each group using players.sortGroup', function() {
-        expect(players.sort(this.coll, this.state, this.is_bracket))
+        expect(players.sort(this.state, this.is_bracket, this.coll))
           .toEqual([ 'group1sorted', 'group2sorted', 'group3sorted' ]);
 
         expect(players.sortGroup)
-          .toHaveBeenCalledWith(this.coll[0], this.state, this.is_bracket[0]);
+          .toHaveBeenCalledWith(this.state, this.is_bracket[0], this.coll[0]);
         expect(players.sortGroup)
-          .toHaveBeenCalledWith(this.coll[1], this.state, this.is_bracket[1]);
+          .toHaveBeenCalledWith(this.state, this.is_bracket[1], this.coll[1]);
         expect(players.sortGroup)
-          .toHaveBeenCalledWith(this.coll[2], this.state, this.is_bracket[2]);
+          .toHaveBeenCalledWith(this.state, this.is_bracket[2], this.coll[2]);
       });
     });
 
@@ -502,7 +504,7 @@ describe('service', function() {
         ], function(e, d) {
           it('should sort group using <state.ranking.player> criterion, '+d, function() {
           this.state.ranking.player = e.crit;
-          var res = players.sortGroup(coll, this.state);
+          var res = players.sortGroup(this.state, false, coll);
           expect(res).toEqual(e.sorted);
           });
         });
@@ -511,7 +513,7 @@ describe('service', function() {
       when('<is bracket> is true', function() {
       }, function() {
         it('should sort group using <player.points.bracket>', function() {
-          var res = players.sortGroup(this.coll, this.state, true);
+          var res = players.sortGroup(this.state, true, this.coll);
           expect(res).toEqual([
 { rank: 1, 
   players: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } },
@@ -547,7 +549,7 @@ describe('service', function() {
       ], function(e, d) {
         it('should check whether all players are paired in <round>, '+d, function() {
           this.round.pairedPlayers.and.returnValue(e.paired);
-          expect(players.areAllPaired(this.coll, this.dummy_round)).toBe(e.all);
+          expect(players.areAllPaired(this.dummy_round, this.coll)).toBe(e.all);
         });
       });
     });
@@ -572,7 +574,7 @@ describe('service', function() {
         [ 4       , [ 9,11 ] ],
       ], function(e,d) {
         it('should return global players\' index range for <group>, '+d, function() {
-          expect(players.indexRangeForGroup(this.players, e.group)).toEqual(e.range);
+          expect(players.indexRangeForGroup(e.group, this.players)).toEqual(e.range);
         });
       });
     });
@@ -594,7 +596,7 @@ describe('service', function() {
             [ {}, {}, {}, {} ],
             [ {}, {} ]
           ];
-          expect(players.chunkGroups(coll, e.size)).toEqual(e.chunked);
+          expect(players.chunkGroups(e.size, coll)).toEqual(e.chunked);
         });
       });
     });
@@ -618,7 +620,7 @@ describe('service', function() {
             [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
             [ { name: 'p8' }, { name: 'p9' } ]
           ];
-          expect(players.splitNewGroup(coll, e.players))
+          expect(players.splitNewGroup(e.players, coll))
             .toEqual(e.splited);
         });
       });
@@ -637,7 +639,7 @@ describe('service', function() {
             [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
             [ { name: 'p8' }, { name: 'p9' } ]
           ];
-          expect(players.groupForPlayer(coll, e.player)).toEqual(e.group);
+          expect(players.groupForPlayer(e.player, coll)).toEqual(e.group);
         });
       });
     });
@@ -655,7 +657,7 @@ describe('service', function() {
         this.player_name = 'p5';
       }, function() {
         it('should move <player_name> in previous group', function() {
-          expect(players.movePlayerGroupFront(this.coll, this.player_name))
+          expect(players.movePlayerGroupFront(this.player_name, this.coll))
             .toEqual([
               [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' }, { name: 'p5' } ],
               [ { name: 'p4' }, { name: 'p6' }, { name: 'p7' } ],
@@ -668,7 +670,7 @@ describe('service', function() {
         this.player_name = 'p2';
       }, function() {
         it('should not modify players', function() {
-          expect(players.movePlayerGroupFront(this.coll, this.player_name))
+          expect(players.movePlayerGroupFront(this.player_name, this.coll))
             .toEqual([
               [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
               [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
@@ -691,7 +693,7 @@ describe('service', function() {
         this.player_name = 'p5';
       }, function() {
         it('should move <player_name> in previous group', function() {
-          expect(players.movePlayerGroupBack(this.coll, this.player_name))
+          expect(players.movePlayerGroupBack(this.player_name, this.coll))
             .toEqual([
               [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
               [ { name: 'p4' }, { name: 'p6' }, { name: 'p7' } ],
@@ -704,7 +706,7 @@ describe('service', function() {
         this.player_name = 'p9';
       }, function() {
         it('should not modify players', function() {
-          expect(players.movePlayerGroupBack(this.coll, this.player_name))
+          expect(players.movePlayerGroupBack(this.player_name, this.coll))
             .toEqual([
               [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
               [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
@@ -727,7 +729,7 @@ describe('service', function() {
         this.group_index = 1;
       }, function() {
         it('should move <group_index> one place front', function() {
-          expect(players.moveGroupFront(this.coll, this.group_index))
+          expect(players.moveGroupFront(this.group_index, this.coll))
             .toEqual([
               [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
               [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
@@ -740,7 +742,7 @@ describe('service', function() {
         this.group_index = 0;
       }, function() {
         it('should not modify players', function() {
-          expect(players.moveGroupFront(this.coll, this.group_index))
+          expect(players.moveGroupFront(this.group_index, this.coll))
             .toEqual([
               [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
               [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
@@ -763,7 +765,7 @@ describe('service', function() {
         this.group_index = 1;
       }, function() {
         it('should move <group_index> one place back', function() {
-          expect(players.moveGroupBack(this.coll, this.group_index))
+          expect(players.moveGroupBack(this.group_index, this.coll))
             .toEqual([
               [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
               [ { name: 'p8' }, { name: 'p9' } ],
@@ -776,7 +778,7 @@ describe('service', function() {
         this.group_index = 2;
       }, function() {
         it('should not modify players', function() {
-          expect(players.moveGroupBack(this.coll, this.group_index))
+          expect(players.moveGroupBack(this.group_index, this.coll))
             .toEqual([
               [ { name: 'p1' }, { name: 'p2' }, { name: 'p3' } ],
               [ { name: 'p4' }, { name: 'p5' }, { name: 'p6' }, { name: 'p7' } ],
@@ -844,7 +846,7 @@ describe('service', function() {
         ],
       ], function(e ,d) {
         it('should filter player that did drop by <round_index>, '+d, function() {
-          expect(players.dropedInRound(e.players, e.round_index))
+          expect(players.dropedInRound(e.round_index, e.players))
             .toEqual(e.not_droped);
         });
       });
@@ -884,7 +886,7 @@ describe('service', function() {
         ],
       ], function(e ,d) {
         it('should filter player that did not drop by <round_index>, '+d, function() {
-          expect(players.notDropedInRound(e.players, e.round_index))
+          expect(players.notDropedInRound(e.round_index, e.players))
             .toEqual(e.not_droped);
         });
       });
@@ -910,7 +912,7 @@ describe('service', function() {
         [ [ { droped: null }, { droped: 5 } ]    , 5             , false    ],
       ], function(e ,d) {
         it('should check whether <group> size is even in <round_index>, '+d, function() {
-          expect(players.groupSizeIsEven(e.group, e.round_index)).toBe(e.isEven);
+          expect(players.groupSizeIsEven(e.round_index, e.group)).toBe(e.isEven);
         });
       });
     });
@@ -935,7 +937,7 @@ describe('service', function() {
         [ 4       , [ 6 ]    ],
       ], function(e, d) {
         it('should calculate table range for <group>, '+d, function() {
-          expect(players.tableRangeForGroup(this.players, e.group)).toEqual(e.range);
+          expect(players.tableRangeForGroup(e.group, this.players)).toEqual(e.range);
         });
       });
     });
@@ -968,7 +970,7 @@ describe('service', function() {
         [ 'points.tournament' , 0 ,  [ ] ],
       ], function(e, d) {
         it('should return the players names with <key> points === <value>, '+d, function() {
-          expect(players.withPoints(this.players, e.key, e.value)).toEqual(e.result);
+          expect(players.withPoints(e.key, e.value, this.players)).toEqual(e.result);
         });
       });
     });
@@ -998,7 +1000,7 @@ describe('service', function() {
         [ 'points.tournament' , 4 ],
       ], function(e, d) {
         it('should return the max <key> points in players, '+d, function() {
-          expect(players.maxPoints(this.players, e.key)).toEqual(e.max);
+          expect(players.maxPoints(e.key, this.players)).toEqual(e.max);
         });
       });
     });
@@ -1027,7 +1029,7 @@ describe('service', function() {
       });
 
       it('should compute bests players lists', function() {
-        expect(players.bests(this.players, 4)).toEqual({
+        expect(players.bests(4, this.players)).toEqual({
           undefeated : [ '4' ],
           custom_field : [ '3' ],
           points : {

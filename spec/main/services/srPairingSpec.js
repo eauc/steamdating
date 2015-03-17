@@ -23,7 +23,7 @@ describe('service', function() {
           { name: 'p4', points: { tournament: 1 } },
           { name: 'p5', points: { tournament: 2 } },
         ];
-        spyOn(_, 'shuffle').and.callFake(function(a) { return a; });
+        spyOn(R, 'shuffle').and.callFake(function(a) { return a; });
       });
 
       it('should sort players by reverse tournament points', function() {
@@ -37,7 +37,7 @@ describe('service', function() {
       });
 
       it('should shuffle players inside each tournament points group', function() {
-        _.shuffle.and.callFake(function(a) {
+        R.shuffle.and.callFake(function(a) {
           // reverse-sort by 'name' property
           return _.sortBy(a, _.property('name')).reverse();
         });
@@ -55,12 +55,12 @@ describe('service', function() {
     describe('sortAvailablePlayersFor(<players>, <for_player>)', function() {
       beforeEach(function() {
         this.players = [
-          { name: 'p1', city: 'same', points: { tournament: 1 } },
-          { name: 'p2', city: 'other', points: { tournament: 1 } },
-          { name: 'p3', city: 'same', points: { tournament: 0 } },
-          { name: 'p4', city: 'other', points: { tournament: 0 } },
+          { name: 'p1', origin: 'same', points: { tournament: 1 } },
+          { name: 'p2', origin: 'other', points: { tournament: 1 } },
+          { name: 'p3', origin: 'same', points: { tournament: 0 } },
+          { name: 'p4', origin: 'other', points: { tournament: 0 } },
         ];
-        this.for_player = { name: 'p5', city: 'same', points: { tournament: 2 } };
+        this.for_player = { name: 'p5', origin: 'same', points: { tournament: 2 } };
       });
 
       it('should sort players from other cities first', function() {
@@ -102,11 +102,11 @@ describe('service', function() {
         this.tables = [ 41, 42, 43 ];
         this.tables_groups_size = 4;
         this.sorted_players = [
-          { name: 'p5', city: 'same', points: { tournament: 2 } },
-          { name: 'p1', city: 'same', points: { tournament: 1 } },
-          { name: 'p4', city: 'other', points: { tournament: 1 } },
-          { name: 'p2', city: 'same', points: { tournament: 0 } },
-          { name: 'p3', city: 'other', points: { tournament: 0 } },
+          { name: 'p5', origin: 'same', points: { tournament: 2 } },
+          { name: 'p1', origin: 'same', points: { tournament: 1 } },
+          { name: 'p4', origin: 'other', points: { tournament: 1 } },
+          { name: 'p2', origin: 'same', points: { tournament: 0 } },
+          { name: 'p3', origin: 'other', points: { tournament: 0 } },
         ];
         this.dummy_rounds = ['rounds'];
         this.opponents = [ 'p4', 'p1' ];
@@ -127,10 +127,10 @@ describe('service', function() {
 
       it('should request opponents list for first player', function() {
         expect(this.roundsService.opponentsForPlayer)
-          .toHaveBeenCalledWith(this.dummy_rounds, 'p5');
+          .toHaveBeenCalledWith('p5', this.dummy_rounds);
       });
 
-      it('should find new opponent from another city for first player', function() {
+      it('should find new opponent from another origin for first player', function() {
         expect(this.res_game.p1.name).toBe('p5');
         expect(this.res_game.p2.name).toBe('p3');
       });
@@ -148,9 +148,9 @@ describe('service', function() {
 
       it('should return players list with both players removed', function() {
         expect(this.res_players).toEqual([
-          { name: 'p1', city: 'same', points: { tournament: 1 } },
-          { name: 'p4', city: 'other', points: { tournament: 1 } },
-          { name: 'p2', city: 'same', points: { tournament: 0 } },
+          { name: 'p1', origin: 'same', points: { tournament: 1 } },
+          { name: 'p4', origin: 'other', points: { tournament: 1 } },
+          { name: 'p2', origin: 'same', points: { tournament: 0 } },
         ]);
       });
 
@@ -200,7 +200,7 @@ describe('service', function() {
 
       it('should build table range', function() {
         expect(this.playersService.tableRangeForGroup)
-          .toHaveBeenCalledWith(this.players_not_droped, 1);
+          .toHaveBeenCalledWith(1, this.players_not_droped);
       });
 
       it('should build sorted players list', function() {

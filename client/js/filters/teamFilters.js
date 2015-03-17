@@ -5,8 +5,8 @@ angular.module('srApp.filters')
     'teams',
     function(teams) {
       return function(input, method) {
-        var args = _.rest(_.rest(arguments));
-        return teams[method].apply(null, _.cons(input, args));
+        var args = R.tail(R.tail(arguments));
+        return teams[method].apply(null, R.append(input, args));
       };
     }
   ]);

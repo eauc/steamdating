@@ -5,8 +5,8 @@ angular.module('srApp.filters')
     'factions',
     function(factions) {
       return function(input, method) {
-        var args = _.rest(_.rest(arguments));
-        return factions[method].apply(null, _.cons(input, args));
+        var args = R.tail(R.tail(arguments));
+        return factions[method].apply(null, R.append(input, args));
       };
     }
   ]);

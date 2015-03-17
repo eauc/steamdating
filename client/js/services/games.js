@@ -5,7 +5,7 @@ angular.module('srApp.services')
     function() {
       var gameService = {
         create: function(data) {
-          return _.deepExtend({
+          return R.deepExtend({
             table: null,
             victory: null,
             p1: {
@@ -23,95 +23,99 @@ angular.module('srApp.services')
               control: null,
               army: null,
               custom_field: null
-            },
-            games: []
+            }
           }, data);
         },
-        forPlayer: function(game, player_name) {
+        forPlayer: function(player_name, game) {
           if(player_name === game.p1.name ||
              player_name === game.p2.name) return game;
-          if(0 === game.games.length) return;
-          return _.chain(game.games)
-            .filter(_.partial(gameService.forPlayer, _, player_name))
-            .first()
-            .value();
         },
-        player: function(game, player_name) {
-          var p1_name = _.getPath(game, 'p1.name');
+        player: function(player_name, game) {
+          var p1_name = R.path(['p1','name'], game);
           return ( p1_name === player_name ?
-                   _.getPath(game, 'p1') :
-                   _.getPath(game, 'p2') );
+                   R.prop('p1', game) :
+                   R.prop('p2', game) );
         },
-        opponentForPlayer: function(game, player_name) {
-          var p1_name = _.getPath(game, 'p1.name');
+        opponentForPlayer: function(player_name, game) {
+          var p1_name = R.path(['p1','name'], game);
           return ( p1_name === player_name ?
-                   _.getPath(game, 'p2.name') :
+                   R.path(['p2','name'], game) :
                    p1_name );
         },
         hasResult: function(game) {
-          return ( _.isNumber(game.p1.tournament) &&
-                   _.isNumber(game.p2.tournament) );
+          return ( R.type(game.p1.tournament) === 'Number' &&
+                   R.type(game.p2.tournament) === 'Number' );
         },
-        winForPlayer: function(game, player_name) {
-          var tournament_point = _.chain(game)
-            .apply(gameService.player, player_name)
-            .getPath('tournament')
-            .value();
-          return (tournament_point === 1 ? true :
-                  (tournament_point === 0 ? false : undefined));
+        winForPlayer: function(player_name, game) {
+          var tournament_point = R.prop('tournament',
+                                        gameService.player(player_name, game));
+          return ( tournament_point === 1 ?
+                   true :
+                   ( tournament_point === 0 ?
+                     false :
+                     undefined
+                   )
+                 );
         },
-        lossForPlayer: function(game, player_name) {
-          var tournament_point = _.chain(game)
-            .apply(gameService.player, player_name)
-            .getPath('tournament')
-            .value();
-          return (tournament_point === 0 ? true :
-                  (tournament_point === 1 ? false : undefined));
+        lossForPlayer: function(player_name, game) {
+          var tournament_point = R.prop('tournament',
+                                        gameService.player(player_name, game));
+          return ( tournament_point === 0 ?
+                   true :
+                   ( tournament_point === 1 ?
+                     false :
+                     undefined
+                   )
+                 );
         },
-        listForPlayer: function(game, player_name) {
-          return _.chain(game)
-            .apply(gameService.player, player_name)
-            .getPath('list')
-            .value();
+        listForPlayer: function(player_name, game) {
+          return R.prop('list', gameService.player(player_name, game));
         },
-        tableForPlayer: _.partial(_.getPath, _, 'table'),
+        tableForPlayer: function(player_name, game) {
+          return R.prop('table', game);
+        },
         isValid: function(game) {
-          return (_.isString(game.p1.name) &&
-                  _.isString(game.p2.name));
+          return ( R.type(R.path(['p1','name'], game)) === 'String' &&
+                   R.type(R.path(['p2','name'], game)) === 'String' );
         },
-        isAssassination: function(game) {
-          return game.victory === 'assassination';
-        },
+        isAssassination$: R.propEq('victory', 'assassination'),
         winner: function(game) {
-          return (game.p1.tournament === 1 ? game.p1.name :
-                  game.p2.tournament === 1 ? game.p2.name :
-                  undefined);
+          return ( R.pathEq(['p1','tournament'], 1, game) ?
+                   game.p1.name :
+                   ( R.pathEq(['p2','tournament'], 1, game) ?
+                     game.p2.name :
+                     undefined
+                   )
+                 );
         },
         loser: function(game) {
-          return _.chain(game)
-            .apply(gameService.winner)
-            .apply(function(winner) {
-              return ( _.exists(winner) ?
-                       gameService.opponentForPlayer(game, winner) :
-                       undefined );
-            })
-            .value();
+          return R.pipe(
+            gameService.winner,
+            function(winner) {
+              return ( R.exists(winner) ?
+                       gameService.opponentForPlayer(winner, game) :
+                       undefined
+                     );
+            }
+          )(game);
         },
-        toArray: function(game, with_custom_field) {
-          var ret = [ game.table,
-                      game.p1.name, game.p2.name,
-                      game.p1.list, game.p2.list,
-                      game.p1.tournament, game.p2.tournament,
-                      game.p1.control, game.p2.control,
-                      game.p1.army, game.p2.army,
-                      gameService.isAssassination(game) ? 1 : 0
-                    ];
+        toArray: function(with_custom_field, game) {
+          var ret = [
+            game.table,
+            game.p1.name, game.p2.name,
+            game.p1.list, game.p2.list,
+            game.p1.tournament, game.p2.tournament,
+            game.p1.control, game.p2.control,
+            game.p1.army, game.p2.army,
+            gameService.isAssassination$(game) ? 1 : 0
+          ];
           if(with_custom_field) {
-            ret = _.cat(ret, [game.p1.custom_field, game.p2.custom_field]);
+            ret = R.concat(ret, [game.p1.custom_field, game.p2.custom_field]);
           }
           return ret;
         }
       };
+      R.curryService(gameService);
       return gameService;
     }
   ])
@@ -119,87 +123,79 @@ angular.module('srApp.services')
     'game',
     function(gameService) {
       var gamesService = {
-        pointsForPlayer: function(games, player_name, bracket_start, base_weight) {
-          var ret = _.chain(games)
-            .mapWith(gameService.player, player_name)
-            .apply(gamesService.reducePoints, bracket_start, base_weight)
-              .value();
-          ret.assassination = _.chain(games)
-            .filter(_.partial(gameService.winForPlayer, _, player_name))
-            .filter(gameService.isAssassination)
-            .size()
-            .value();
+        pointsForPlayer: function(player_name, bracket_start, base_weight, games) {
+          var ret = R.pipe(
+            R.map(gameService.player$(player_name)),
+            gamesService.reducePoints$(bracket_start, base_weight)
+          )(games);
+          ret.assassination = R.pipe(
+            R.filter(gameService.winForPlayer$(player_name)),
+            R.filter(gameService.isAssassination$),
+            R.length
+          )(games);
           return ret;
         },
-        pointsAgainstPlayer: function(games, player_name, bracket_start, base_weight) {
-          var ret = _.chain(games)
-            .map(function(game) {
-              var opponent_name = gameService.opponentForPlayer(game, player_name);
-              return gameService.player(game, opponent_name);
-            })
-            .apply(gamesService.reducePoints, bracket_start, base_weight)
-            .value();
-          ret.assassination = _.chain(games)
-            .filter(_.partial(gameService.lossForPlayer, _, player_name))
-            .filter(gameService.isAssassination)
-            .size()
-            .value();
+        pointsAgainstPlayer: function(player_name, bracket_start, base_weight, games) {
+          var ret = R.pipe(
+            R.map(function(game) {
+              var opponent_name = gameService.opponentForPlayer(player_name, game);
+              return gameService.player(opponent_name, game);
+            }),
+            gamesService.reducePoints$(bracket_start, base_weight)
+          )(games);
+          ret.assassination = R.pipe(
+            R.filter(gameService.lossForPlayer$(player_name)),
+            R.filter(gameService.isAssassination$),
+            R.length
+          )(games);
           return ret;
         },
-        reducePoints: function(results, bracket_start, base_weight) {
-          return _.chain(results)
-            .reduce(function(mem, result, result_index) {
-              return {
-                bracket: calculateBracketPoints(mem.bracket,
-                                                result, result_index,
-                                                bracket_start, base_weight),
-                tournament: mem.tournament + (result.tournament || 0),
-                control: mem.control + (result.control || 0),
-                army: mem.army + (result.army || 0),
-                custom_field: mem.custom_field + (result.custom_field || 0),
-                sos: 0
-              };
-            }, {
-              bracket: 0,
-              tournament: 0,
-              control: 0,
-              army: 0,
-              custom_field: 0,
+        reducePoints: function(bracket_start, base_weight, results) {
+          return R.reduceIndexed(function(mem, result, result_index) {
+            return {
+              bracket: calculateBracketPoints(mem.bracket,
+                                              result, result_index,
+                                              bracket_start, base_weight),
+              tournament: mem.tournament + (result.tournament || 0),
+              control: mem.control + (result.control || 0),
+              army: mem.army + (result.army || 0),
+              custom_field: mem.custom_field + (result.custom_field || 0),
               sos: 0
-            })
-            .value();
+            };
+          }, {
+            bracket: 0,
+            tournament: 0,
+            control: 0,
+            army: 0,
+            custom_field: 0,
+            sos: 0
+          }, results);
         },
-        opponentsForPlayer: function(coll, player_name) {
-          return _.chain(coll)
-            .mapWith(gameService.opponentForPlayer, player_name)
-            .without(undefined)
-            .value();
+        opponentsForPlayer: function(player_name, coll) {
+          return R.pipe(
+            R.map(gameService.opponentForPlayer$(player_name)),
+            R.reject(R.isNil)
+          )(coll);
         },
-        listsForPlayer: function(coll, player_name) {
-          return _.chain(coll)
-            .mapWith(gameService.listForPlayer, player_name)
-            .uniq()
-            .without(undefined, null)
-            .value();
+        listsForPlayer: function(player_name, coll) {
+          return R.pipe(
+            R.map(gameService.listForPlayer$(player_name)),
+            R.uniq,
+            R.reject(R.isNil)
+          )(coll);
         },
-        tablesForPlayer: function(coll, player_name) {
-          return _.chain(coll)
-            .mapWith(gameService.tableForPlayer, player_name)
-            .without(undefined, null)
-            .value();
+        tablesForPlayer: function(player_name, coll) {
+          return R.pipe(
+            R.map(gameService.tableForPlayer$(player_name)),
+            R.reject(R.isNil)
+          )(coll);
         },
-        forCaster: function(coll, player_name, caster_name) {
-          return _.filter(coll, function(game) {
-            return _.chain(game)
-              .apply(gameService.listForPlayer, player_name)
-              .value() === caster_name;
-          });
+        forCaster: function(player_name, caster_name, coll) {
+          return R.filter(R.compose(R.eq(caster_name),
+                                    gameService.listForPlayer$(player_name)),
+                          coll);
         },
       };
-      function isInBracket(result_index, bracket_start) {
-        return (_.exists(bracket_start) &&
-                result_index >= bracket_start);
-      }
       function calculateBracketPoints(current_bracket_points,
                                       result, result_index,
                                       bracket_start,  base_weight) {
@@ -208,6 +204,11 @@ angular.module('srApp.services')
                  current_bracket_points + bracket_weight * result.tournament :
                  current_bracket_points );
       }
+      function isInBracket(result_index, bracket_start) {
+        return (!R.isNil(bracket_start) &&
+                result_index >= bracket_start);
+      }
+      R.curryService(gamesService);
       return gamesService;
     }
   ]);

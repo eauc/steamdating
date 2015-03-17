@@ -75,7 +75,7 @@ describe('controllers', function() {
         expect(this.scope.next_round[2])
           .toBe('round.updatePlayer.returnValue');
         expect(this.roundService.updatePlayer)
-          .toHaveBeenCalledWith('group3', 3, 'key');
+          .toHaveBeenCalledWith(3, 'key', 'group3');
       });
 
       it('should update players options lists', function() {
@@ -96,7 +96,7 @@ describe('controllers', function() {
         expect(this.scope.next_round[2])
           .toBe('round.updateTable.returnValue');
         expect(this.roundService.updateTable)
-          .toHaveBeenCalledWith('group3', 3, 4);
+          .toHaveBeenCalledWith(3, 4, 'group3');
       });
 
       it('should update players options lists', function() {
@@ -113,11 +113,11 @@ describe('controllers', function() {
         ];
         this.scope.new_state.rounds = ['rounds'];
         this.scope.next_round = [ [ 'gr1g1', 'gr1g2' ], [ 'gr2g1' ] ];
-        this.roundService.isPlayerPaired.and.callFake(function(r, p) {
+        this.roundService.isPlayerPaired.and.callFake(function(p, r) {
           return s.startsWith(p.name, 'paired');
         });
         this.roundsService.pairAlreadyExists.calls.reset();
-        this.roundsService.pairAlreadyExists.and.callFake(function(r, g) {
+        this.roundsService.pairAlreadyExists.and.callFake(function(g, r) {
           return 'rounds.pairAlreadyExists.returnValue('+g+')';
         });
       });
@@ -149,11 +149,11 @@ describe('controllers', function() {
         this.scope.updatePlayersOptions();
 
         expect(this.roundsService.pairAlreadyExists)
-          .toHaveBeenCalledWith(['rounds'], 'gr1g1');
+          .toHaveBeenCalledWith('gr1g1', ['rounds']);
         expect(this.roundsService.pairAlreadyExists)
-          .toHaveBeenCalledWith(['rounds'], 'gr1g2');
+          .toHaveBeenCalledWith('gr1g2', ['rounds']);
         expect(this.roundsService.pairAlreadyExists)
-          .toHaveBeenCalledWith(['rounds'], 'gr2g1');
+          .toHaveBeenCalledWith('gr2g1', ['rounds']);
         expect(this.scope.pairs_already).toEqual([
           [ 'rounds.pairAlreadyExists.returnValue(gr1g1)',
             'rounds.pairAlreadyExists.returnValue(gr1g2)' ],
@@ -178,8 +178,8 @@ describe('controllers', function() {
 
       it('should register next round', function() {
         expect(this.roundsService.registerNextRound)
-          .toHaveBeenCalledWith(this.scope.new_state.rounds,
-                                this.scope.next_round);
+          .toHaveBeenCalledWith(this.scope.next_round,
+                                this.scope.new_state.rounds);
         expect(this.scope.state.rounds).toBe(this.new_rounds);
       });
 
@@ -201,7 +201,7 @@ describe('controllers', function() {
       }, function() {
         it('should reset bracket for this group', function() {
           expect(this.stateService.resetBracket)
-            .toHaveBeenCalledWith(this.scope.new_state, 1);
+            .toHaveBeenCalledWith(1, this.scope.new_state);
         });
 
         it('should suggest SR pairing for <group_index>', function() {
@@ -224,7 +224,7 @@ describe('controllers', function() {
       }, function() {
         it('should reset bracket for this group', function() {
           expect(this.stateService.setBracket)
-            .toHaveBeenCalledWith(this.scope.new_state, 1);
+            .toHaveBeenCalledWith(1, this.scope.new_state);
         });
 
         it('should suggest SR pairing for <group_index>', function() {

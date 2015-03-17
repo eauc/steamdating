@@ -74,9 +74,10 @@ describe('controllers', function() {
           expect(this.scope.edit.game).toEqual({
             table: 4,
             victory: 'assassination',
-            p1: { name: 'toto', tournament: 1, control: 3, army: 45 },
-            p2: { name: 'titi', tournament: 0, control: 1, army: 25 },
-            games: []
+            p1: { name: 'toto', list: null,
+                  tournament: 1, control: 3, army: 45, custom_field: null },
+            p2: { name: 'titi', list: null,
+                  tournament: 0, control: 1, army: 25, custom_field: null },
           });
         });
         

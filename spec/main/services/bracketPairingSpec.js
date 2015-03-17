@@ -71,7 +71,7 @@ describe('service', function() {
 
       it('should request table range for group', function() {
         expect(this.playersService.tableRangeForGroup)
-          .toHaveBeenCalledWith(this.not_droped_players, this.gri);
+          .toHaveBeenCalledWith(this.gri, this.not_droped_players);
       });
 
       it('should request table suggestions for each pairing', function() {
@@ -87,7 +87,8 @@ describe('service', function() {
 
       it('should sort group using SR criterion', function() {
         expect(this.playersService.sortGroup)
-          .toHaveBeenCalledWith(this.not_droped_players[this.gri], this.state, false);
+          .toHaveBeenCalledWith(this.state, false,
+                                this.not_droped_players[this.gri]);
       });
 
       using([
@@ -153,14 +154,15 @@ describe('service', function() {
         this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
 
         expect(this.playersService.tableRangeForGroup)
-          .toHaveBeenCalledWith(this.not_droped_players, this.gri);
+          .toHaveBeenCalledWith(this.gri, this.not_droped_players);
       });
 
       it('should request last round\'s game for group', function() {
         this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
 
         expect(this.roundService.gamesForGroup)
-          .toHaveBeenCalledWith(['last_round'], this.not_droped_players, this.gri);
+          .toHaveBeenCalledWith(this.not_droped_players, this.gri,
+                                ['last_round']);
       });
 
       it('should request table suggestions for each pairing', function() {

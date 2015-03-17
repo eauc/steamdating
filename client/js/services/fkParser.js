@@ -9,7 +9,7 @@ angular.module('srApp.services')
              listService,
              listsService) {
       var fkParserService =  {
-        parse: function(string, factions) {
+        parse: function(factions, string) {
           var ctxt = {
             factions: factions,
             state: DEFAULT_STATE,
@@ -17,111 +17,37 @@ angular.module('srApp.services')
             errors: [],
             players: []
           };
-          _.chain(string)
-            .apply(s.lines)
-            .cat('')
-            .mapWith(parseLine, ctxt)
-            .value();
+          R.pipe(
+            s.lines,
+            R.append(''),
+            R.mapIndexed(parseLine$(ctxt))
+          )(string);
           console.log('fkParser result', ctxt.result);
           return [ctxt.result, ctxt.errors];
         }
       };
+      function parseLine(ctxt, line, line_index) {
+        ctxt.line_number = line_index+1;
+        return R.cond(
+          [ isParam, function(line) {
+            return ctxt.state.onParam(ctxt,
+                                      s(line).strLeft(':').trim().value(),
+                                      s(line).strRight(':').trim().value(),
+                                      s.trim(line));
+          } ],
+          [ s.isBlank, function(line) {
+            return ctxt.state.onSeparator(ctxt);
+          } ],
+          [ R.T, function(line) {
+            return ctxt.state.onLine(ctxt, s.trim(line));
+          } ]
+        )(line);
+      }
+      var parseLine$ = R.curry(parseLine);
       function isParam(line) {
         return s.include(line, ':');
       }
-      function parseLine(line, ctxt, line_index) {
-        ctxt.line_number = line_index+1;
-        if(isParam(line)) {
-          return ctxt.state.onParam(ctxt,
-                                    s(line).strLeft(':').trim().value(),
-                                    s(line).strRight(':').trim().value(),
-                                    s.trim(line));
-        }
-        else if(s.isBlank(line)) {
-          return ctxt.state.onSeparator(ctxt);
-        }
-        else {
-          return ctxt.state.onLine(ctxt, s.trim(line));
-        }
-      }
-      function pushError(ctxt, string) {
-        ctxt.errors.push('line '+ctxt.line_number+' '+string);
-      }
 
-      function newPlayer(ctxt, name) {
-        if(s.isBlank(name)) {
-          pushError(ctxt, 'empty player name');
-          ctxt.player = null;
-          ctxt.state = ERROR_STATE;
-          return;
-        }
-        name = s.capitalize(name);
-        if(0 <= _.indexOf(ctxt.players, name)) {
-          pushError(ctxt, 'player name "'+name+'" already exists');
-          ctxt.player = null;
-          ctxt.state = ERROR_STATE;
-          return;
-        }
-        ctxt.players.push(name);
-        ctxt.player = { name: name };
-        ctxt.state = PLAYER_STATE;
-      }
-      function newList(ctxt) {
-        if(!_.exists(ctxt.player)) {
-          pushError(ctxt, 'unexpected list definition');
-          ctxt.state = ERROR_STATE;
-          return;
-        }
-        ctxt.list = { content: [], faction: ctxt.player.faction };
-        ctxt.state = LIST_STATE;
-      }
-      function playerFaction(ctxt, faction) {
-        var faction_key = _.findKey(ctxt.factions, function(faction_info) {
-          return faction_info.name === faction;
-        });
-        if(!_.exists(faction_key)) {
-          pushError(ctxt, 'unknown faction "'+faction+'"');
-          ctxt.player.faction = faction;
-          return;
-        }
-        ctxt.player.faction = faction_key;
-      }
-      function playerOrigin(ctxt, origin) {
-        ctxt.player.origin = origin;
-      }
-      function listCaster(ctxt, line) {
-        var caster = _.chain(ctxt.factions)
-            .getPath(ctxt.list.faction+'.casters')
-            .findKey(function(caster) {
-              return s.startsWith(line, caster.name);
-            })
-            .value();
-        if(!_.exists(caster)) {
-          var match = line.match(/([a-zA-Z\s,]+)/);
-          if(_.exists(match)) caster = match[1];
-          else caster = 'UNKNOWN';
-          pushError(ctxt, 'unknown caster "'+line+'"');
-        }
-        ctxt.list.caster = caster;
-        ctxt.list.content.push(line);
-        ctxt.state = LIST_CONTENT_STATE;
-      }
-      function addPlayer(ctxt) {
-        ctxt.result.push(playerService.create({ name: ctxt.player.name,
-                                                faction: ctxt.player.faction,
-                                                origin: ctxt.player.origin }));
-        ctxt.state = DEFAULT_STATE;
-      }
-      function addPlayerList(ctxt) {
-        var list = listService.create({ faction: ctxt.list.faction,
-                                        caster: ctxt.list.caster,
-                                        theme: ctxt.list.theme,
-                                        fk: ctxt.list.content.join('\n') });
-        var player = _.last(ctxt.result);
-        player.lists = listsService.add(player.lists, list);
-        ctxt.state = DEFAULT_STATE;
-      }
-      
       var BASE_STATE = {
         onParam: function(ctxt, key, value) {
           pushError(ctxt, ' parameter "'+key+'"="'+s.truncate(value, 8)+
@@ -133,18 +59,11 @@ angular.module('srApp.services')
           pushError(ctxt, 'ignored : '+s.truncate(line, 15));
         }
       };
+      function pushError(ctxt, string) {
+        ctxt.errors.push('line '+ctxt.line_number+' '+string);
+      }
 
-      var ERROR_STATE = _.defaults({
-        onParam: function(ctxt, key, value) {
-        },
-        onSeparator: function(ctxt) {
-          ctxt.state = DEFAULT_STATE;
-        },
-        onLine: function(ctxt, line) {
-        }
-      }, BASE_STATE);
-
-      var DEFAULT_STATE = _.defaults({
+      var DEFAULT_STATE = R.merge(BASE_STATE, {
         onParam: function(ctxt, key, value) {
           switch(key) {
           case 'Player':
@@ -163,9 +82,36 @@ angular.module('srApp.services')
             }
           }
         }
-      }, BASE_STATE);
+      });
+      function newPlayer(ctxt, name) {
+        if(s.isBlank(name)) {
+          pushError(ctxt, 'empty player name');
+          ctxt.player = null;
+          ctxt.state = ERROR_STATE;
+          return;
+        }
+        name = s.capitalize(name);
+        if(0 <= R.indexOf(name, ctxt.players)) {
+          pushError(ctxt, 'player name "'+name+'" already exists');
+          ctxt.player = null;
+          ctxt.state = ERROR_STATE;
+          return;
+        }
+        ctxt.players.push(name);
+        ctxt.player = { name: name };
+        ctxt.state = PLAYER_STATE;
+      }
+      function newList(ctxt) {
+        if(R.isNil(ctxt.player)) {
+          pushError(ctxt, 'unexpected list definition');
+          ctxt.state = ERROR_STATE;
+          return;
+        }
+        ctxt.list = { content: [], faction: ctxt.player.faction };
+        ctxt.state = LIST_STATE;
+      }
 
-      var PLAYER_STATE = _.defaults({
+      var PLAYER_STATE = R.merge(BASE_STATE, {
         onParam: function(ctxt, key, value) {
           switch(key) {
           case 'Faction':
@@ -185,9 +131,33 @@ angular.module('srApp.services')
           }
         },
         onSeparator: addPlayer
-      }, BASE_STATE);
+      });
+      function playerFaction(ctxt, faction) {
+        var faction_key = R.pipe(
+          R.keys,
+          R.filter(function(key) {
+            return ctxt.factions[key].name === faction;
+          }),
+          R.head
+        )(ctxt.factions);
+        if(R.isNil(faction_key)) {
+          pushError(ctxt, 'unknown faction "'+faction+'"');
+          ctxt.player.faction = faction;
+          return;
+        }
+        ctxt.player.faction = faction_key;
+      }
+      function playerOrigin(ctxt, origin) {
+        ctxt.player.origin = origin;
+      }
+      function addPlayer(ctxt) {
+        ctxt.result.push(playerService.create({ name: ctxt.player.name,
+                                                faction: ctxt.player.faction,
+                                                origin: ctxt.player.origin }));
+        ctxt.state = DEFAULT_STATE;
+      }
       
-      var LIST_STATE = _.defaults({
+      var LIST_STATE = R.merge(BASE_STATE, {
         onParam: function(ctxt, key, value, line) {
           switch(key) {
           case 'Theme':
@@ -210,9 +180,38 @@ angular.module('srApp.services')
         },
         onSeparator: addPlayerList,
         onLine: listCaster
-      }, BASE_STATE);
+      });
+      function addPlayerList(ctxt) {
+        var list = listService.create({ faction: ctxt.list.faction,
+                                        caster: ctxt.list.caster,
+                                        theme: ctxt.list.theme,
+                                        fk: ctxt.list.content.join('\n') });
+        var player = R.last(ctxt.result);
+        player.lists = listsService.add(list, player.lists);
+        ctxt.state = DEFAULT_STATE;
+      }
+      function listCaster(ctxt, line) {
+        var casters;
+        var caster = R.pipe(
+          R.path([ctxt.list.faction, 'casters']),
+          R.tap(function(cs) { casters = cs; }),
+          R.keys,
+          R.find(function(key) {
+            return s.startsWith(line, casters[key].name);
+          })
+        )(ctxt.factions);
+        if(R.isNil(caster)) {
+          var match = line.match(/([a-zA-Z\s,]+)/);
+          if(!R.isNil(match)) caster = match[1];
+          else caster = 'UNKNOWN';
+          pushError(ctxt, 'unknown caster "'+line+'"');
+        }
+        ctxt.list.caster = caster;
+        ctxt.list.content.push(line);
+        ctxt.state = LIST_CONTENT_STATE;
+      }
 
-      var LIST_CONTENT_STATE = _.defaults({
+      var LIST_CONTENT_STATE = R.merge(BASE_STATE, {
         onSeparator: LIST_STATE.onSeparator,
         onParam: function(ctxt, key, value, line) {
           LIST_CONTENT_STATE.onLine(ctxt, line);
@@ -222,6 +221,17 @@ angular.module('srApp.services')
         }
       }, BASE_STATE);
 
+      var ERROR_STATE = R.merge(BASE_STATE, {
+        onParam: function(ctxt, key, value) {
+        },
+        onSeparator: function(ctxt) {
+          ctxt.state = DEFAULT_STATE;
+        },
+        onLine: function(ctxt, line) {
+        }
+      });
+
+      R.curryService(fkParserService);
       return fkParserService;
     }
   ]);

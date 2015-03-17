@@ -18,8 +18,8 @@
         style="border-bottom:1px solid black;">
       Group{{::$index+1}}
     </h2>
-    <h3 ng-if="new_state | state:'isBracketTournament':gri">
-      Bracket - {{::new_state | state:'bracketRoundOf':gri}}
+    <h3 ng-if="new_state | state:'isBracketTournament':gri:null">
+      Bracket - {{::new_state | state:'bracketRoundOf':gri:null}}
     </h3>
     <strong class="text-warning"
             ng-if="::!(gr | players:'groupSizeIsEven':state.rounds.length)">

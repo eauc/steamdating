@@ -5,28 +5,43 @@ angular.module('srApp.services')
     function() {
       var EOL = '\r\n';
       function stringifyCell(cell) {
-        return _.chain(cell)
-          .apply(function(cell) { return _.isArray(cell) ? cell.join(' ') : cell; })
-          .apply(function(cell) { return _.isString(cell) ? cell.replace(/\"/g, '""') : cell; })
-          .apply(function(cell) { return _.exists(cell) ? cell : ''; })
-          .apply(function(cell) { return '"'+cell+'"'; })
-          .value();
+        return R.pipe(
+          function(cell) {
+            return ( R.type(cell) === 'Array' ?
+                     cell.join(' ') :
+                     cell
+                   );
+          },
+          function(cell) {
+            return ( R.type(cell) === 'String' ?
+                     cell.replace(/\"/g, '""') :
+                     cell
+                   );
+          },
+          R.defaultTo(''),
+          function(cell) {
+            return '"'+cell+'"';
+          }
+        )(cell);
       }
       function stringifyRow(row, row_index) {
-        return _.map(row, stringifyCell).join(',');
+        return R.pipe(
+          R.map(stringifyCell),
+          R.join(',')
+        )(row);
       }
       function stringifyGroup(group, group_index) {
-        return _.chain(group)
-          .map(stringifyRow)
-          .join(EOL)
-          .value();
+        return R.pipe(
+          R.mapIndexed(stringifyRow),
+          R.join(EOL)
+        )(group);
       }
       var csvStringifier = {
         stringify: function(tables) {
-          return _.chain(tables)
-            .map(stringifyGroup)
-            .join(EOL+EOL)
-            .value();
+          return R.pipe(
+            R.mapIndexed(stringifyGroup),
+            R.join(EOL+EOL)
+          )(tables);
         }
       };
       return csvStringifier;
