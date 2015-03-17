@@ -6,7 +6,7 @@ var toBeAMatcher = (function() {
       return {
         compare: function(actual, expected) {
           var result = {};
-          result.pass = _['is'+expected](actual);
+          result.pass = (R.type(actual) === expected);
           if(result.pass) {
             result.message = "Expected " + actual + " not to be "+a+" " + expected;
           }

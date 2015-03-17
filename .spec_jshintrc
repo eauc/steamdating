@@ -2,10 +2,9 @@
   // disable: Use the function form of "use strict".
   "-W097": true,
   "globals": {
-    "angular": false,
-    "_": false,
-    "s": false,
     "R": false,
+    "s": false,
+    "angular": false,
     "jasmine": false,
     "console": false,
     "window": false,

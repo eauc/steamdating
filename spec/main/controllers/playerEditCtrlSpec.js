@@ -34,7 +34,7 @@ describe('controllers', function() {
             players: [ { name: 'titi'}, { name: 'toto' } ],
             store: jasmine.createSpy('storeState')
           };
-          ctxt.scope.state = _.clone(ctxt.current_state);
+          ctxt.scope.state = R.clone(ctxt.current_state);
 
           $controller('playerEditCtrl', { 
             '$scope': ctxt.scope,

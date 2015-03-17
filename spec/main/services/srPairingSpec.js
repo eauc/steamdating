@@ -39,7 +39,7 @@ describe('service', function() {
       it('should shuffle players inside each tournament points group', function() {
         R.shuffle.and.callFake(function(a) {
           // reverse-sort by 'name' property
-          return _.sortBy(a, _.property('name')).reverse();
+          return R.sortBy(R.prop('name'), a).reverse();
         });
 
         expect(srPairing.sortPlayers(this.players)).toEqual([

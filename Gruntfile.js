@@ -51,10 +51,8 @@ module.exports = function(grunt) {
           specs: spec_js_src,
           helpers: spec_js_helpers,
           vendor: [
-            'client/lib/underscore/underscore.js',
-            'client/lib/underscore/underscore-contrib.js',
-            'client/lib/underscore.string/underscore.string.js',
             'client/lib/ramda/ramda.js',
+            'client/lib/underscore.string/underscore.string.js',
             'client/lib/angular/angular.js',
             'client/lib/angular-ui-router/angular-ui-router.min.js',
             'client/lib/angular/angular-mocks.js'
@@ -72,10 +70,8 @@ module.exports = function(grunt) {
           specs: stats_spec_js_src,
           helpers: spec_js_helpers,
           vendor: [
-            'client/lib/underscore/underscore.js',
-            'client/lib/underscore/underscore-contrib.js',
-            'client/lib/underscore.string/underscore.string.js',
             'client/lib/ramda/ramda.js',
+            'client/lib/underscore.string/underscore.string.js',
             'client/lib/angular/angular.js',
             'client/lib/angular-ui-router/angular-ui-router.min.js',
             'client/lib/angular/angular-mocks.js'

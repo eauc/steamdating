@@ -3,26 +3,33 @@
 window.using = (function() {
   RegExp.prototype.toJSON = RegExp.prototype.toString;
   function using(vals, func) {
-    var keys = _.first(vals);
-    _.chain(vals)
-      .rest()
-      .map(function(row, i) {
-        return _.reduce(keys, function(mem, k, i) {
+    var keys = R.head(vals);
+    R.pipe(
+      R.tail,
+      R.map(function(row) {
+        return R.reduceIndexed(function(mem, k, i) {
           mem[k] = row[i];
           return mem;
-        }, {});
+        }, {}, keys);
+      }),
+      R.forEach(function(e) {
+        func(e, using.desc(e));
       })
-      .each(function(e) { func(e, using.desc(e)); });
+    )(vals);
   }
   using.desc = function usingDesc(obj, prune_length) {
-    prune_length = _.exists(prune_length) ? prune_length : 15;
-    return 'with { ' + _.chain(obj)
-      .map(function(v, k) {
+    prune_length = R.defaultTo(15, prune_length);
+    return 'with { ' + R.pipe(
+      R.keys,
+      R.map(function(k) {
         return k + ': ' +
-          (_.isFunction(v) ? 'func()' : s.prune(JSON.stringify(v), prune_length));
-      })
-      .join(', ')
-      .value() + ' }';
+          (R.type(obj[k]) === 'Function' ?
+           'func()' :
+           s.prune(JSON.stringify(obj[k]), prune_length)
+          );
+      }),
+      R.join(', ')
+    )(obj) + ' }';
   };
   return using;
 })();

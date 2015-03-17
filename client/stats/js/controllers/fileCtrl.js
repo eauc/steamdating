@@ -8,13 +8,12 @@ angular.module('srAppStats.controllers')
     'fileImport',
     function($scope,
              $q,
-             prompt,
-             fileImport
-            ) {
+             promptService,
+             fileImportService) {
       console.log('init fileCtrl');
 
       $scope.doReset = function() {
-        prompt.prompt('confirm', 'You sure ?')
+        promptService.prompt('confirm', 'You sure ?')
           .then(function() {
             $scope.resetState();
           });
@@ -22,8 +21,8 @@ angular.module('srAppStats.controllers')
 
       $scope.doOpenFile = function(files) {
         console.log('openFile', files);
-        _.each(files, function(file) {
-          fileImport.read('json', file)
+        R.forEach(function(file) {
+          fileImportService.read('json', file)
             .then(function(data) {
               var state = data[0];
               var error = data[1];
@@ -35,7 +34,7 @@ angular.module('srAppStats.controllers')
             }, function(error) {
               $scope['open_result'] = error;
             });
-        });
+        }, files);
       };
       $scope.doDropFile = function(index) {
         $scope.dropState(index);

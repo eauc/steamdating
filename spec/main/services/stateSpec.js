@@ -222,7 +222,7 @@ describe('service', function() {
 
     describe('clearBracket()', function() {
       it('should clear all brackets', function() {
-        expect(state.clearBracket({ players: _.repeat(3, {}) }))
+        expect(state.clearBracket({ players: R.repeat({}, 3) }))
           .toEqual([undefined, undefined, undefined]);
       });
     });
@@ -337,13 +337,13 @@ describe('service', function() {
       using([
         [ 'players'           , 'can' ],
         [ [ [] ]              , false ],
-        [ [ _.repeat(1, {}) ] , true  ],
-        [ [ _.repeat(2, {}) ] , true  ],
-        [ [ _.repeat(3, {}) ] , false ],
-        [ [ _.repeat(4, {}) ] , true  ],
-        [ [ _.repeat(5, {}) ] , false ],
-        [ [ _.repeat(7, {}) ] , false ],
-        [ [ _.repeat(8, {}) ] , true  ],
+        [ [ R.repeat({}, 1) ] , true  ],
+        [ [ R.repeat({}, 2) ] , true  ],
+        [ [ R.repeat({}, 3) ] , false ],
+        [ [ R.repeat({}, 4) ] , true  ],
+        [ [ R.repeat({}, 5) ] , false ],
+        [ [ R.repeat({}, 7) ] , false ],
+        [ [ R.repeat({}, 8) ] , true  ],
       ], function(e, d) {              
         it('should test whether group\'s length is a power of 2, '+d, function() {
           state.playersNotDropedInLastRound.and.returnValue(e.players);
@@ -404,7 +404,7 @@ describe('service', function() {
           it('should return a description of the bracket round, '+d, function() {
             expect(state.bracketRoundOf(0, e.round_index, {
               bracket: [0],
-              players: [ _.repeat(16, {}) ],
+              players: [ R.repeat({}, 16) ],
               rounds: []
             })).toMatch(e.desc);
           });
@@ -418,7 +418,7 @@ describe('service', function() {
       });
 
       it('should call players.updatePoints with bracket information', function() {
-        var dummy_players = [ _.repeat(4, {}), _.repeat(2, {}), _.repeat(5, {}) ];
+        var dummy_players = [ R.repeat({}, 4), R.repeat({}, 2), R.repeat({}, 5) ];
         var dummy_bracket = [ 4, undefined, 2 ];
         
         expect(state.updatePlayersPoints({
@@ -458,7 +458,7 @@ describe('service', function() {
             },
           ]]);
 
-        this.dummy_players = [ _.repeat(4, {}), _.repeat(2, {}), _.repeat(5, {}) ];
+        this.dummy_players = [ R.repeat({}, 4), R.repeat({}, 2), R.repeat({}, 5) ];
         this.ret = state.updateBestsPlayers({
           players: this.dummy_players,
           rounds: ['round1', 'round2', 'round3']
@@ -554,12 +554,12 @@ describe('service', function() {
       });
 
       it('should call players.sort with bracket information', function() {
-        var dummy_players = [ _.repeat(4, {}), _.repeat(2, {}), _.repeat(5, {}) ];
+        var dummy_players = [ R.repeat({}, 4), R.repeat({}, 2), R.repeat({}, 5) ];
         var dummy_bracket = [ 4, undefined, 2 ];
         var st = {
           bracket: dummy_bracket,
           players: dummy_players,
-          rounds: _.repeat(3, {})
+          rounds: R.repeat({}, 3)
         };
 
         expect(state.sortPlayersByRank(st))
@@ -575,7 +575,7 @@ describe('service', function() {
       });
 
       it('should call players.sort with bracket information', function() {
-        var dummy_players = [ _.repeat(4, {}), _.repeat(2, {}), _.repeat(5, {}) ];
+        var dummy_players = [ R.repeat({}, 4), R.repeat({}, 2), R.repeat({}, 5) ];
         var dummy_bracket = [ 4, undefined, 2 ];
         var st = {
           players: [

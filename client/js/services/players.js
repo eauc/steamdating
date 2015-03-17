@@ -152,7 +152,7 @@ angular.module('srApp.services')
         factions: function(base_factions, coll) {
           return R.pipe(R.flatten,
                         R.pluck('faction'),
-                        R.union(R.keys(base_factions)),
+                        R.union(R.keys(R.defaultTo({}, base_factions))),
                         R.reject(R.isNil),
                         R.sortBy(R.identity)
                        )(coll);

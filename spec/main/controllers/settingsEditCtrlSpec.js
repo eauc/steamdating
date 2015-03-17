@@ -59,11 +59,10 @@ describe('controllers', function() {
       var computePlayerTestRankings;
 
       beforeEach(function() {
-        _.each(this.scope.$watch.calls.all(), function(c) {
-          if(c.args[0] === 'player_test') {
-            computePlayerTestRankings = c.args[1];
-          }
-        });
+        computePlayerTestRankings = findCallByArgs(this.scope.$watch, function(args) {
+          return (args[0] === 'player_test');
+        }).args[1];
+
         expect(computePlayerTestRankings).toBeA('Function');
       });
 

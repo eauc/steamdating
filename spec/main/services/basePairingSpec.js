@@ -59,14 +59,14 @@ describe('service', function() {
             return e.played[p];
           });
 
-          _.times(100, function() {
+          R.times(function() {
             var suggest = basePairing.suggestTableFor(['rounds'],
                                                       e.availables,
                                                       'p1', 'p2',
                                                       e.group_size);
 
-            expect(_.indexOf(e.possibles, suggest) >= 0).toBe(true);
-          });
+            expect(R.indexOf(suggest, e.possibles) >= 0).toBe(true);
+          }, 100);
         });
       });
     });

@@ -2,9 +2,8 @@
   "multistr": true,
   "newcap": false,
   "globals": {
-    "_": false,
-    "s": false,
     "R": false,
+    "s": false,
     "$": false,
     "angular": false,
     "console": false,

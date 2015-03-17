@@ -61,12 +61,9 @@ describe('controllers', function() {
 
     describe('on destroy', function() {
       beforeEach(function() {
-        var ctxt = this;
-        _.each(this.scope.$on.calls.all(), function(c) {
-          if(c.args[0] === '$destroy') {
-            ctxt.onDestroy = c.args[1];
-          }
-        });
+        this.onDestroy = findCallByArgs(this.scope.$on, function(args) {
+          return (args[0] === '$destroy');
+        }).args[1];
 
         expect(this.onDestroy).toBeA('Function');
       });

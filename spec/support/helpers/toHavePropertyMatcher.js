@@ -6,7 +6,7 @@ var toHavePropertyMatcher = (function() {
       return {
         compare: function(actual, expected) {
           var result = {};
-          result.pass = _.has(actual, expected);
+          result.pass = R.has(expected, actual);
           if(result.pass) {
             result.message = "Expected " + JSON.stringify(actual) +
               " not to have property [" + expected + "]";

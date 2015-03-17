@@ -438,7 +438,7 @@ describe('service', function() {
       beforeEach(function() {
         this.coll = [ 'group1', 'group2', 'group3' ];
         this.state = {
-          rounds: _.repeat(4, {}),
+          rounds: R.repeat({}, 4),
           ranking: {}
         };
         this.is_bracket = [ false, false, true ];
@@ -469,7 +469,7 @@ describe('service', function() {
       beforeEach(function() {
         this.coll = coll;
         this.state = {
-          rounds: _.repeat(4, {}),
+          rounds: R.repeat({}, 4),
           ranking: {}
         };
       });

@@ -13,73 +13,71 @@ angular.module('srAppStats.services')
     'statsOppCastersEntry',
     'statsTiersEntry',
     'statsReferencesEntry',
-    function(statsFactionSelector,
-             statsPlayerSelector,
-             statsCasterSelector,
-             statsGroupByTotal,
-             statsGroupByOppFaction,
-             statsGroupByOppCaster,
-             statsPointsEntry,
-             statsCastersEntry,
-             statsOppCastersEntry,
-             statsTiersEntry,
-             statsReferencesEntry) {
+    function(statsFactionSelectorService,
+             statsPlayerSelectorService,
+             statsCasterSelectorService,
+             statsGroupByTotalService,
+             statsGroupByOppFactionService,
+             statsGroupByOppCasterService,
+             statsPointsEntryService,
+             statsCastersEntryService,
+             statsOppCastersEntryService,
+             statsTiersEntryService,
+             statsReferencesEntryService) {
       var SELECTORS = {
-        'faction': statsFactionSelector,
-        'player': statsPlayerSelector,
-        'caster': statsCasterSelector,
+        'faction': statsFactionSelectorService,
+        'player': statsPlayerSelectorService,
+        'caster': statsCasterSelectorService,
       };
       var GROUPS = {
-        'total': statsGroupByTotal,
-        'opp_faction': statsGroupByOppFaction,
-        'opp_caster': statsGroupByOppCaster,
+        'total': statsGroupByTotalService,
+        'opp_faction': statsGroupByOppFactionService,
+        'opp_caster': statsGroupByOppCasterService,
       };
       var stats = {
         get: function(states_list, selector, sel_value, group_by, cache) {
-          cache[selector] = cache[selector] || {};
-          cache[selector][sel_value] = cache[selector][sel_value] || {};
+          cache[selector] = R.defaultTo({}, cache[selector]);
+          cache[selector][sel_value] = R.defaultTo({}, cache[selector][sel_value]);
           
-          if(!_.exists(cache[selector][sel_value][group_by])) {
-            cache[selector][sel_value][group_by] = _.chain(states_list)
-              .map(function(state_info) {
+          if(R.isNil(cache[selector][sel_value][group_by])) {
+            cache[selector][sel_value][group_by] = R.pipe(
+              R.map(function(state_info) {
                 var selection = SELECTORS[selector].select(state_info.state, sel_value);
                 selection = GROUPS[group_by].group(state_info.state, selection);
-                console.log('selection', selection);
                 
-                return _.map(selection, function(sel_group) {
+                return R.map(function(sel_group) {
                   return [ sel_group[0], {
-                    points: statsPointsEntry.count(state_info.state, sel_group[1]),
-                    casters: statsCastersEntry.count(state_info.state, sel_group[1]),
-                    opp_casters: statsOppCastersEntry.count(state_info.state, sel_group[1]),
-                    tiers: statsTiersEntry.count(state_info.state, sel_group[1]),
-                    references: statsReferencesEntry.count(state_info.state, sel_group[1]),
+                    points: statsPointsEntryService.count(state_info.state, sel_group[1]),
+                    casters: statsCastersEntryService.count(state_info.state, sel_group[1]),
+                    opp_casters: statsOppCastersEntryService.count(state_info.state, sel_group[1]),
+                    tiers: statsTiersEntryService.count(state_info.state, sel_group[1]),
+                    references: statsReferencesEntryService.count(state_info.state, sel_group[1]),
                   } ];
-                });
-              })
-              .reduce(function(mem, state_stats) {
-                return _.addHeaderLists(mem, state_stats, addStats);
+                }, selection);
+              }),
+              R.reduce(function(mem, state_stats) {
+                return R.addHeaderLists(addStats, mem, state_stats);
               }, [])
-              .value();
-            console.log('cache', cache);
+            )(states_list);
           }
           return cache[selector][sel_value][group_by];
         }
       };
-      function statGroup(entry) { return entry[0]; }
-      function statValues(entry) { return entry[1]; }
+      var statGroup = R.head;
+      var statValues = R.nth(1);
 
       function addStats(base, other) {
         return {
-          points: statsPointsEntry.sum(base.points,
-                                       other.points),
-          casters: statsCastersEntry.sum(base.casters,
-                                         other.casters),
-          opp_casters: statsOppCastersEntry.sum(base.opp_casters,
-                                                other.opp_casters),
-          tiers: statsTiersEntry.sum(base.tiers,
-                                     other.tiers),
-          references: statsReferencesEntry.sum(base.references,
-                                               other.references)
+          points: statsPointsEntryService.sum(base.points,
+                                              other.points),
+          casters: statsCastersEntryService.sum(base.casters,
+                                                other.casters),
+          opp_casters: statsOppCastersEntryService.sum(base.opp_casters,
+                                                       other.opp_casters),
+          tiers: statsTiersEntryService.sum(base.tiers,
+                                            other.tiers),
+          references: statsReferencesEntryService.sum(base.references,
+                                                      other.references)
         };
       }
       
