@@ -31,6 +31,7 @@ angular.module('srApp.services')
              player_name === game.p2.name) return game;
         },
         player: function(player_name, game) {
+          game = R.defaultTo({}, game);
           var p1_name = R.path(['p1','name'], game);
           return ( p1_name === player_name ?
                    R.prop('p1', game) :
@@ -48,7 +49,7 @@ angular.module('srApp.services')
         },
         winForPlayer: function(player_name, game) {
           var tournament_point = R.prop('tournament',
-                                        gameService.player(player_name, game));
+                                        R.defaultTo({}, gameService.player(player_name, game)));
           return ( tournament_point === 1 ?
                    true :
                    ( tournament_point === 0 ?
@@ -72,6 +73,7 @@ angular.module('srApp.services')
           return R.prop('list', gameService.player(player_name, game));
         },
         tableForPlayer: function(player_name, game) {
+          game = R.defaultTo({}, game);
           return R.prop('table', game);
         },
         isValid: function(game) {

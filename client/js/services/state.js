@@ -324,7 +324,7 @@ angular.module('srApp.services')
             })
           )(state);
         },
-        roundTables: function(state, round_index) {
+        roundTables: function(round_index, state) {
           var has_game_custom_field = stateService.hasGameCustomField(state);
           var round = state.rounds[round_index];
           return R.pipe(
@@ -332,7 +332,7 @@ angular.module('srApp.services')
               return roundService.gamesForGroup(state.players, group_index, round);
             }),
             R.map(R.map(gameService.toArray$(has_game_custom_field))),
-            R.map(function(group) {
+            R.mapIndexed(function(group, group_index) {
               var headers = [ 'Table',
                               'Player1', 'Player2',
                               'Player1.list', 'Player2.list',
@@ -346,7 +346,9 @@ angular.module('srApp.services')
                                               'Player2.'+state.custom_fields.game
                                             ]);
               }
-              return R.concat([headers], group);
+              return R.concat([ ['Group'+(group_index+1)],
+                                headers
+                              ], group);
             })
           )(state.players);
         }
@@ -523,6 +525,11 @@ angular.module('srApp.services')
           }
           
           var game = roundService.gameForPlayer(player.name, round);
+          if(R.isNil(game)) {
+            row.push('-');
+            return;
+          }
+            
           row.push( (gameService.winForPlayer(player.name, game) ? 'W' : 'L') +
                     ' - ' +
                     gameService.opponentForPlayer(player.name, game) );

@@ -117,7 +117,6 @@ angular.module('srApp.services')
                        ];
               }, selGames(sel_entry));
             }),
-            R.spy('blah'),
             R.reject(R.or(R.compose(R.isNil, listPlayer),
                           R.compose(R.isNil, listCaster)
                          )
@@ -177,11 +176,13 @@ angular.module('srApp.services')
             R.groupBy(function(list_entry) {
               return R.pipe(
                 playersService.player$(listPlayer(list_entry)),
+                R.defaultTo({}),
                 R.prop('faction')
               )(state.players);
             }),
             R.tap(function(l) { list_entries_by_faction = l; }),
             R.keys,
+            R.reject(R.eq('undefined')),
             R.map(function(faction) {
               var casters = R.map(listCaster, list_entries_by_faction[faction]);
               return [ faction,

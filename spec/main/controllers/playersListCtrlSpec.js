@@ -142,7 +142,7 @@ describe('controllers', function() {
       }, function() {
         it('should drop player', function() {
           expect(this.playerService.drop)
-            .toHaveBeenCalledWith(this.player, 2);
+            .toHaveBeenCalledWith(2, this.player);
         });
       });
 

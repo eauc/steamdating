@@ -678,14 +678,16 @@ describe('service', function() {
           player: 'pCustom',
           game: 'gCustom'
         } };
-        var res = state.roundTables(st, 1);
+        var res = state.roundTables(1, st);
         expect(res).toEqual([
-          [ [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
+          [ ['Group1'],
+            [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
               'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp',
               'Player1.ap', 'Player2.ap', 'CasterKill', 'Player1.gCustom', 'Player2.gCustom' ],
             [ 1, 'p1', 'p2', 'list1', 'list2', 1, 2, 2, 4, 3, 6, 1, 21, 12 ]
           ],
-          [ [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
+          [ ['Group2'],
+            [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
               'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp',
               'Player1.ap', 'Player2.ap', 'CasterKill', 'Player1.gCustom', 'Player2.gCustom' ],
             [ 2, 'p3', 'p4', 'list3', 'list4', 3, 4, 6, 8, 9, 12, 0, 24, 42 ],

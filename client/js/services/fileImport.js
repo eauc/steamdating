@@ -14,7 +14,7 @@ angular.module('srApp.services')
         't3': t3ParserService,
         'fk': fkParserService,
         'json': {
-          parse: function(string) {
+          parse: function(factions, string) {
             return [JSON.parse(string), []];
           }
         }

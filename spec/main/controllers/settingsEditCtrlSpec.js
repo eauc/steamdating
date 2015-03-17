@@ -101,16 +101,16 @@ describe('controllers', function() {
           computePlayerTestRankings();
 
           expect(this.playerService.rank)
-            .toHaveBeenCalledWith(this.scope.player_test.player1,
-                                  this.critFun);
+            .toHaveBeenCalledWith(this.critFun,
+                                  this.scope.player_test.player1);
           expect(this.playerService.rank)
-            .toHaveBeenCalledWith(this.scope.player_test.player2,
-                                  this.critFun);
+            .toHaveBeenCalledWith(this.critFun,
+                                  this.scope.player_test.player2);
         });
 
         when('player1 ranking fails', function() {
           var ctxt = this;
-          this.playerService.rank.and.callFake(function(p) {
+          this.playerService.rank.and.callFake(function(f, p) {
             return (p.name === 'p1') ? 'Error' : 4;
           });
         }, function() {
@@ -126,7 +126,7 @@ describe('controllers', function() {
 
         when('player2 ranking fails', function() {
           var ctxt = this;
-          this.playerService.rank.and.callFake(function(p) {
+          this.playerService.rank.and.callFake(function(f, p) {
             return (p.name === 'p2') ? 'Error' : 4;
           });
         }, function() {
@@ -142,7 +142,7 @@ describe('controllers', function() {
 
         when('both rankings succeed', function() {
           var ctxt = this;
-          this.playerService.rank.and.callFake(function(p) {
+          this.playerService.rank.and.callFake(function(f, p) {
             return (p.name === 'p1') ? 1 : 4;
           });
         }, function() {

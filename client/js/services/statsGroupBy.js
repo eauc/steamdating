@@ -29,7 +29,7 @@ angular.module('srApp.services')
                          selGames,
                          R.groupBy(function(game) {
                            var opp_name = gameService.opponentForPlayer(selPlayer(sel_entry), game);
-                           var opp = playersService.player(opp_name, state.players);
+                           var opp = R.defaultTo({}, playersService.player(opp_name, state.players));
                            return s.capitalize(R.defaultTo('NULL', R.prop('faction', opp)));
                          }),
                          R.omit(['NULL'])
@@ -73,7 +73,7 @@ angular.module('srApp.services')
                          selGames,
                          R.groupBy(function(game) {
                            var opp_name = gameService.opponentForPlayer(selPlayer(sel_entry), game);
-                           var opp_game = gameService.player(opp_name, game);
+                           var opp_game = R.defaultTo({}, gameService.player(opp_name, game));
                            return s.capitalize(R.defaultTo('NULL', R.prop('list', opp_game)));
                          }),
                          R.omit(['NULL'])

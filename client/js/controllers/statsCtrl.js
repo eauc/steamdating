@@ -39,7 +39,7 @@ angular.module('srApp.controllers')
         group_by: 'total',
         faction: R.head($scope.factions),
         player: R.head($scope.players),
-        caster: R.prop('name', R.head($scope.casters)),
+        caster: R.prop('name', R.defaultTo({}, R.head($scope.casters))),
       };
       $scope.setGroup = function(gr) {
         $scope.group = gr;

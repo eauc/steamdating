@@ -60,10 +60,10 @@ angular.module('srApp.controllers')
       };
 
       $scope.doDropPlayer = function(do_drop, p, event) {
-        p = (do_drop ?
-             playerService.drop(p, $scope.state.rounds.length) :
-             playerService.undrop(p)
-            );
+        R.deepExtend(p, do_drop ?
+                     playerService.drop($scope.state.rounds.length, p) :
+                     playerService.undrop(p)
+                    );
         stateService.store($scope.state);
         event.stopPropagation();
       };
@@ -126,7 +126,7 @@ angular.module('srApp.controllers')
                                                       $scope.state.players);
           }
           else {
-            R.deepExtend($scope.edit.player, $scope.player);
+            R.extend($scope.edit.player, $scope.player);
           }
           $scope.storeState();
         }

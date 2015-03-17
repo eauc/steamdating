@@ -59,13 +59,13 @@ angular.module('srApp.controllers')
         }
 
         $scope.player_test.player1.rank =
-          playerService.rank($scope.player_test.player1, critFun);
+          playerService.rank(critFun, $scope.player_test.player1);
         if('Number' !== R.type($scope.player_test.player1.rank)) {
           $scope.player_ranking_valid = false;
         }
         
         $scope.player_test.player2.rank =
-          playerService.rank($scope.player_test.player2, critFun);
+          playerService.rank(critFun, $scope.player_test.player2);
         if('Number' !== R.type($scope.player_test.player2.rank)) {
           $scope.player_ranking_valid = false;
         }

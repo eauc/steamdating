@@ -31,7 +31,7 @@ angular.module('srApp.directives')
             }, bs);
           },
           R.mapIndexed(function(v,i) {
-            if(R.exists(R.prop(v.k, $scope.hues))) {
+            if(R.exists(R.prop(v.k, R.defaultTo({}, $scope.hues)))) {
               v.color = ('hsl('+R.prop(v.k, $scope.hues)[0]+
                          ', '+R.prop(v.k, $scope.hues)[1]+
                          '%, 52%)');

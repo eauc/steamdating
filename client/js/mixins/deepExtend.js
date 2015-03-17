@@ -1,3 +1,18 @@
+R.extend =(function() {
+  return function(obj) {
+    var parentRE = /#{\s*?_\s*?}/,
+        slice = Array.prototype.slice;
+
+    // obj = R.clone(obj);
+    R.forEach(function(source) {
+      for(var prop in source) {
+        obj[prop] = source[prop];
+      }
+    }, slice.call(arguments, 1));
+    return obj;
+  };
+})();
+
 R.deepExtend =(function() {
   return function(obj) {
     var parentRE = /#{\s*?_\s*?}/,

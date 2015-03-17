@@ -47,7 +47,7 @@
           ng-click="doGameEdit(r, g.p1.name, round.current)"
           style="cursor:pointer;">
         <td>
-          <span class="glyphicon glyphicon-{{::(g | game:'isAssassination') ? 'ok' : ''}}">
+          <span class="glyphicon glyphicon-{{::(g | game:'isAssassination$') ? 'ok' : ''}}">
           </span>
         </td>
         <td>{{::g.p1.army}}</td>
