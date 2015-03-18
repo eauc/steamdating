@@ -251,6 +251,13 @@ angular.module('srApp.services')
             }
           };
         },
+        gamesForRounds: function(rounds, coll) {
+          return R.map(function(group) {
+            return R.map(function(player) {
+              return R.map(roundService.gameForPlayer$(player.name), rounds);
+            }, group);
+          }, coll);
+        },
         updateListsPlayed: function(rounds, coll) {
           return R.map(R.map(playerService.updateListsPlayed$(rounds)))(coll);
         },

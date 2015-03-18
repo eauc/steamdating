@@ -1,9 +1,9 @@
 <div ng-repeat="f in exports"
      style="margin:10px 0;">
-  <a ng-if="f.url"
-     ng-href="{{f.url}}"
-     download="{{f.name}}">
-    Download {{f.label}} File
+  <a ng-if="::f.url"
+     ng-href="{{::f.url}}"
+     download="{{::f.name}}">
+    Download {{::f.label}} File
   </a>
 </div>
 <div ng-repeat="(gri, gr) in ::sorted_players">
@@ -18,13 +18,13 @@
       <th>Lists Played</th>
       <th ng-repeat="(ri,r) in ::state.rounds">
         {{
-        (state | state:'isBracketTournament':gri:$index) ?
+        ::(state | state:'isBracketTournament':gri:$index) ?
         (state | state:'bracketRoundOf':gri:$index) :
         'Round'+(ri+1)
         }}
       </th>
     </tr>
-    <tr ng-repeat="p in ::gr track by p.name">
+    <tr ng-repeat="(pi, p) in ::gr track by p.name">
       <td style="
           cursor:pointer;
           background-color:{{::(p | player:'isDroped') ? '#CCC' : 'auto'}};
@@ -33,28 +33,30 @@
         {{::p.name}}
       </td>
       <td style="font-size:0.8em;"
-          ng-class="{
-          'info': (p | player:'allListsHaveBeenPlayed'),
-          'warning': !(p | player:'allListsHaveBeenPlayed'),
-          }"
+          class="
+          {{::(p | player:'allListsHaveBeenPlayed') ? 'info' : ''}}
+          {{::!(p | player:'allListsHaveBeenPlayed') ? 'warning' : ''}}
+          "
           >
-        {{::p.lists_played.length}}/{{::p.lists.length}} -
-        <span ng-repeat="c in ::p.lists_played">
-          {{::c}}
-        </span>
+        {{
+        ::p.lists_played.length
+        +'/'+
+        p.lists.length
+        +' - '+
+        p.lists_played.join(' ')
+        }}
       </td>
       <td ng-repeat="(ri,r) in ::state.rounds"
           ng-click="doGameEdit(r, p.name)"
           style="
           background-color:{{::(p | player:'hasDropedInRound':ri) ? '#CCC' : 'auto'}};
           "
-          ng-class="{
-          'success': (r | round:'gameForPlayer':p.name | game:'winForPlayer':p.name),
-          'danger': (r | round:'gameForPlayer':p.name | game:'winForPlayer':p.name) === false,
-          }"
+          class="
+          {{::(games_by_players[gri][pi][ri] | game:'winForPlayer':p.name) ? 'success' : 'danger'}}
+          "
           style="cursor:pointer;">
-        {{ ::r | round:'gameForPlayer':p.name | game:'tableForPlayer':p.name }} -
-        {{ ::r | round:'gameForPlayer':p.name | game:'opponentForPlayer':p.name }}
+        {{ ::games_by_players[gri][pi][ri] | game:'tableForPlayer':p.name }} -
+        {{ ::games_by_players[gri][pi][ri] | game:'opponentForPlayer':p.name }}
       </td>
     </tr>
   </table>

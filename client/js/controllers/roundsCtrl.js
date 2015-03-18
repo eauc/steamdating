@@ -22,17 +22,21 @@ angular.module('srApp.controllers')
   .controller('roundsSumCtrl', [
     '$scope',
     'players',
+    'round',
     'state',
     'fileExport',
     function($scope,
              playersService,
+             roundService,
              stateService,
              fileExportService) {
-      console.log('init roundsSumCtrl');
+      console.log('init roundsSumCtrl', $scope);
       $scope.state.players = playersService.updateListsPlayed($scope.state.rounds,
                                                               $scope.state.players);
       $scope.sorted_players = stateService.sortPlayersByName($scope.state);
-
+      $scope.games_by_players = playersService.gamesForRounds($scope.state.rounds,
+                                                              $scope.sorted_players);
+      
       $scope.updateExports = function() {
         $scope.exports = {
           csv: {

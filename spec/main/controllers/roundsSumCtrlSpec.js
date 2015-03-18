@@ -18,8 +18,8 @@ describe('controllers', function() {
                $controller) {
         this.scope = $rootScope.$new();
         this.scope.state = {
-          players: this.state_players,
-          rounds: this.state_rounds
+          players: ['players'],
+          rounds: ['rounds']
         };
 
         this.stateService = spyOnService('state');
@@ -34,7 +34,7 @@ describe('controllers', function() {
 
     it('should refresh players\' played lists', function() {
       expect(this.playersService.updateListsPlayed)
-        .toHaveBeenCalledWith(this.state_players, this.state_rounds);
+        .toHaveBeenCalledWith(['rounds'], ['players']);
       expect(this.scope.state.players)
         .toBe('players.updateListsPlayed.returnValue');
     });
@@ -44,6 +44,14 @@ describe('controllers', function() {
         .toBe('state.sortPlayersByName.returnValue');
       expect(this.stateService.sortPlayersByName)
         .toHaveBeenCalledWith(this.scope.state);
+    });
+
+    it('should init games by players list', function() {
+      expect(this.scope.games_by_players)
+        .toBe('players.gamesForRounds.returnValue');
+      expect(this.playersService.gamesForRounds)
+        .toHaveBeenCalledWith(this.scope.state.rounds,
+                              this.scope.sorted_players);
     });
 
     it('should init exports', function() {
