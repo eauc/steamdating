@@ -223,99 +223,10 @@ describe('service', function() {
     describe('clearBracket()', function() {
       it('should clear all brackets', function() {
         expect(state.clearBracket({ players: R.repeat({}, 3) }))
-          .toEqual([undefined, undefined, undefined]);
-      });
-    });
-
-    describe('setBracketLength(<length>)', function() {
-      when('bracket is longer than <length>', function() {
-        this.coll = { bracket: [ undefined, 4, 5 ] };
-      }, function() {
-        it('should return bracket', function() {
-          expect(state.setBracketLength(1, this.coll))
-            .toEqual(this.coll.bracket);
-          expect(state.setBracketLength(2, this.coll))
-            .toEqual(this.coll.bracket);
-          expect(state.setBracketLength(3, this.coll))
-            .toEqual(this.coll.bracket);
-        });
-      });
-
-      when('bracket is shorter than <length>', function() {
-        this.coll = { bracket: [ undefined, 4, 5 ] };
-      }, function() {
-        it('should append undefined', function() {
-          expect(state.setBracketLength(4, this.coll))
-            .toEqual([ undefined, 4, 5, undefined ]);
-          expect(state.setBracketLength(6, this.coll))
-            .toEqual([ undefined, 4, 5, undefined, undefined, undefined ]);
-        });
-      });
-    });
-
-    describe('setBracket(<index>)', function() {
-      when('bracket is shorter than <length>', function() {
-        this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
-      }, function() {
-        it('should append undefined and set bracket[<index>]', function() {
-          expect(state.setBracket(3, this.coll))
-            .toEqual([ undefined, 4, 5, 2 ]);
-          expect(state.setBracket(5, this.coll))
-            .toEqual([ undefined, 4, 5, undefined, undefined, 2 ]);
-        });
-      });
-
-      when('bracket is not set', function() {
-        this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
-      }, function() {
-        it('should set bracket[<index>]', function() {
-          expect(state.setBracket(0, this.coll))
-            .toEqual([ 2, 4, 5 ]);
-        });
-      });
-
-      when('bracket is set', function() {
-        this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
-      }, function() {
-        it('should not modify bracket[<index>]', function() {
-          expect(state.setBracket(1, this.coll))
-            .toEqual([ undefined, 4, 5 ]);
-          expect(state.setBracket(2, this.coll))
-            .toEqual([ undefined, 4, 5 ]);
-        });
-      });
-    });
-
-    describe('resetBracket(<index>)', function() {
-      when('bracket is shorter than <length>', function() {
-        this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
-      }, function() {
-        it('should append undefined', function() {
-          expect(state.resetBracket(3, this.coll))
-            .toEqual([ undefined, 4, 5, undefined ]);
-          expect(state.resetBracket(5, this.coll))
-            .toEqual([ undefined, 4, 5, undefined, undefined, undefined ]);
-        });
-      });
-
-      when('bracket is not set', function() {
-        this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
-      }, function() {
-        it('should not modify bracket', function() {
-          expect(state.resetBracket(0, this.coll))
-            .toEqual([ undefined, 4, 5 ]);
-        });
-      });
-
-      when('bracket is set', function() {
-        this.coll = { rounds: [ [], [] ], bracket: [ undefined, 4, 5 ] };
-      }, function() {
-        it('should not modify bracket[<index>]', function() {
-          expect(state.resetBracket(1, this.coll))
-            .toEqual([ undefined, undefined, 5 ]);
-          expect(state.resetBracket(2, this.coll))
-            .toEqual([ undefined, 4, undefined ]);
-        });
+          .toEqual({
+            players: R.repeat({}, 3),
+            bracket: [undefined, undefined, undefined]
+          });
       });
     });
 
@@ -386,7 +297,8 @@ describe('service', function() {
         it('should return "Not in bracket"', function() {
           expect(state.bracketRoundOf(0, 0, {
             bracket: [],
-            rounds: []
+            rounds: [],
+            players: [[]]
           })).toMatch(/not in bracket/i);
         });
       });

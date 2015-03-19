@@ -59,6 +59,7 @@ angular.module('srApp.controllers')
   .controller('roundsNextCtrl', [
     '$scope',
     'state',
+    'bracket',
     'round',
     'rounds',
     'players',
@@ -66,6 +67,7 @@ angular.module('srApp.controllers')
     'bracketPairing',
     function($scope,
              stateService,
+             bracketService,
              roundService,
              roundsService,
              playersService,
@@ -105,11 +107,11 @@ angular.module('srApp.controllers')
 
       $scope.suggestNextRound = function(i, type) {
         if('bracket' === type) {
-          $scope.new_state.bracket = stateService.setBracket(i, $scope.new_state);
+          $scope.new_state.bracket = bracketService.set(i, $scope.new_state.bracket);
           $scope.next_round[i] = bracketPairingService.suggestRound($scope.new_state, i);
         }
         if('sr' === type) {
-          $scope.new_state.bracket = stateService.resetBracket(i, $scope.new_state);
+          $scope.new_state.bracket = bracketService.reset(i, $scope.new_state.bracket);
           $scope.next_round[i] = srPairingService.suggestNextRound($scope.new_state, i);
         }
         $scope.updatePlayersOptions();

@@ -12,6 +12,7 @@ angular.module('srApp.services')
     'ranking',
     'round',
     'rounds',
+    'bracket',
     function($window,
              jsonStringifierService,
              playerService,
@@ -21,7 +22,8 @@ angular.module('srApp.services')
              listsService,
              rankingService,
              roundService,
-             roundsService) {
+             roundsService,
+             bracketService) {
       var STORAGE_KEY = 'sdApp.state';
       var stateService = {
         isEmpty: function(state) {
@@ -182,29 +184,9 @@ angular.module('srApp.services')
           )(state);
         },
         clearBracket: function(state) {
-          return R.repeat(undefined, state.players.length);
-        },
-        setBracketLength: function(length, state) {
-          var bracket = R.defaultTo([], state.bracket);
-          return ( bracket.length >= length ?
-                   R.clone(bracket) :
-                   R.concat(bracket,
-                            R.repeat(undefined, length - bracket.length)
-                           )
-                 );
-        },
-        setBracket: function(group_index, state) {
-          var bracket = stateService.setBracketLength(group_index+1, state);
-          bracket[group_index] = ( R.exists(bracket[group_index]) ?
-                                   bracket[group_index] :
-                                   state.rounds.length
-                                 );
-          return bracket;
-        },
-        resetBracket: function(group_index, state) {
-          var bracket = stateService.setBracketLength(group_index+1, state);
-          bracket[group_index] = undefined;
-          return bracket;
+          return R.assoc('bracket',
+                         bracketService.clear(state.players.length, state.bracket),
+                         state);
         },
         canBeBracketTournament: function(group_index, state) {
           var group_size = R.pipe(
@@ -218,51 +200,20 @@ angular.module('srApp.services')
         },
         isBracketTournament: function(group_index, round_index, state) {
           round_index = R.defaultTo(state.rounds.length, round_index);
-          var bracket = stateService.setBracketLength(group_index+1, state);
-          return ( R.exists(state.bracket[group_index]) &&
-                   round_index >= state.bracket[group_index]
-                 );
+          return bracketService.isBracketTournament(group_index, round_index, state.bracket);
         },
         bracketNbRounds: function(group_index, state) {
-          var bracket = stateService.setBracketLength(group_index+1, state);
-          return ( R.exists(bracket[group_index]) ?
-                   state.rounds.length - bracket[group_index] :
-                   0
-                 );
+          return bracketService.nbRounds(group_index, state.rounds.length, state.bracket);
         },
         bracketRoundOf: function(group_index, round_index, state) {
-          if(R.isNil(state.bracket[group_index])) return 'Not in bracket';
-          
           round_index = R.defaultTo(state.rounds.length, round_index);
           var players_not_droped = stateService.playersNotDroped(state);
-          var bracket_size = players_not_droped[group_index].length >>
-              (round_index - state.bracket[group_index] + 1);
-          switch(bracket_size) {
-          case 0:
-            {
-              return 'Ended';
-            }
-          case 1:
-            {
-              return 'Final';
-            }
-          case 2:
-            {
-              return 'Semi-finals';
-            }
-          case 4:
-            {
-              return 'Quarter-finals';
-            }
-          default:
-            {
-              return 'Round of '+bracket_size;
-            }
-          }
+          var group_size = players_not_droped[group_index].length;
+          return bracketService.roundOf(group_index, group_size, round_index, state.bracket);
         },
         updatePlayersPoints: function(state) {
           var _state = R.assoc('bracket',
-                               stateService.setBracketLength(state.players.length, state),
+                               bracketService.setLength(state.players.length, state.bracket),
                                state);
           var bracket_weights = R.map(function(group) {
             return group.length/2;

@@ -29,6 +29,7 @@ describe('controllers', function() {
         this.stateService = spyOnService('state');
         this.stateService.playersNotDropedInLastRound._retVal = [ 'players_not_droped' ];
         this.stateService.createNextRound._retVal = ['state.createNextRound.returnValue'];
+        this.bracketService = spyOnService('bracket');
         this.srPairingService = spyOnService('srPairing');
         this.bracketPairingService = spyOnService('bracketPairing');
         this.roundService = spyOnService('round');
@@ -196,12 +197,15 @@ describe('controllers', function() {
       when('type is "sr"', function() {
         this.type = 'sr';
         spyOn(this.scope, 'updatePlayersOptions');
+        this.scope.new_state.bracket = [ 'bracket' ];
 
         this.scope.suggestNextRound(1, this.type);
       }, function() {
         it('should reset bracket for this group', function() {
-          expect(this.stateService.resetBracket)
-            .toHaveBeenCalledWith(1, this.scope.new_state);
+          expect(this.scope.new_state.bracket)
+            .toBe('bracket.reset.returnValue');
+          expect(this.bracketService.reset)
+            .toHaveBeenCalledWith(1, [ 'bracket' ]);
         });
 
         it('should suggest SR pairing for <group_index>', function() {
@@ -219,12 +223,15 @@ describe('controllers', function() {
       when('type is "bracket"', function() {
         this.type = 'bracket';
         spyOn(this.scope, 'updatePlayersOptions');
+        this.scope.new_state.bracket = [ 'bracket' ];
 
         this.scope.suggestNextRound(1, this.type);
       }, function() {
         it('should reset bracket for this group', function() {
-          expect(this.stateService.setBracket)
-            .toHaveBeenCalledWith(1, this.scope.new_state);
+          expect(this.scope.new_state.bracket)
+            .toBe('bracket.set.returnValue');
+          expect(this.bracketService.set)
+            .toHaveBeenCalledWith(1, [ 'bracket' ]);
         });
 
         it('should suggest SR pairing for <group_index>', function() {

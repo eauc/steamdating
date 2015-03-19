@@ -90,17 +90,18 @@ describe('controllers', function() {
         this.promptService.prompt.resolve('5');
       }, function() {
         it('should chunk groups', function() {
-          expect(this.scope.new_state.players)
-            .toBe('players.chunkGroups.returnValue');
           expect(this.playersService.chunkGroups)
             .toHaveBeenCalledWith(5, this.new_state_players);
         });
 
         it('should reset bracket', function() {
-          expect(this.scope.new_state.bracket)
+          expect(this.scope.new_state)
             .toEqual('state.clearBracket.returnValue');
           expect(this.stateService.clearBracket)
-            .toHaveBeenCalledWith(this.scope.new_state);
+            .toHaveBeenCalledWith({
+              players : 'players.chunkGroups.returnValue',
+              bracket : [ 'bracket' ]
+            });
         });
       });
     });
@@ -117,17 +118,18 @@ describe('controllers', function() {
       });
 
       it('should split selection into new group', function() {
-        expect(this.scope.new_state.players)
-          .toEqual('players.splitNewGroup.returnValue');
         expect(this.playersService.splitNewGroup)
           .toHaveBeenCalledWith(['p1','p3'], this.new_state_players);
       });
 
       it('should reset bracket', function() {
-        expect(this.scope.new_state.bracket)
+        expect(this.scope.new_state)
           .toBe('state.clearBracket.returnValue');
         expect(this.stateService.clearBracket)
-          .toHaveBeenCalledWith(this.scope.new_state);
+          .toHaveBeenCalledWith({
+            players : 'players.splitNewGroup.returnValue',
+            bracket : [ 'bracket' ]
+          });
       });
     });
 
@@ -143,8 +145,6 @@ describe('controllers', function() {
       });
 
       it('should move players in selection to front', function() {
-        expect(this.scope.new_state.players)
-          .toBe('players.movePlayerGroupFront.returnValue');
         expect(this.playersService.movePlayerGroupFront.calls.count()).toBe(2);
         expect(this.playersService.movePlayerGroupFront)
           .toHaveBeenCalledWith('p1', this.new_state_players);
@@ -153,10 +153,13 @@ describe('controllers', function() {
       });
 
       it('should reset bracket', function() {
-        expect(this.scope.new_state.bracket)
+        expect(this.scope.new_state)
           .toBe('state.clearBracket.returnValue');
         expect(this.stateService.clearBracket)
-          .toHaveBeenCalledWith(this.scope.new_state);
+          .toHaveBeenCalledWith({
+            players : 'players.movePlayerGroupFront.returnValue',
+            bracket : [ 'bracket' ]
+          });
       });
     });
 
@@ -172,8 +175,6 @@ describe('controllers', function() {
       });
 
       it('should move players in selection to back', function() {
-        expect(this.scope.new_state.players)
-          .toBe('players.movePlayerGroupBack.returnValue');
         expect(this.playersService.movePlayerGroupBack.calls.count()).toBe(2);
         expect(this.playersService.movePlayerGroupBack)
           .toHaveBeenCalledWith('p1', this.new_state_players);
@@ -182,10 +183,13 @@ describe('controllers', function() {
       });
 
       it('should reset bracket', function() {
-        expect(this.scope.new_state.bracket)
+        expect(this.scope.new_state)
           .toBe('state.clearBracket.returnValue');
         expect(this.stateService.clearBracket)
-          .toHaveBeenCalledWith(this.scope.new_state);
+          .toHaveBeenCalledWith({
+            players : 'players.movePlayerGroupBack.returnValue',
+            bracket : [ 'bracket' ]
+          });
       });
     });
 
@@ -195,17 +199,18 @@ describe('controllers', function() {
       });
 
       it('should move <group_index> to front', function() {
-        expect(this.scope.new_state.players)
-          .toBe('players.moveGroupFront.returnValue');
         expect(this.playersService.moveGroupFront)
           .toHaveBeenCalledWith(4, this.new_state_players);
       });
 
       it('should reset bracket', function() {
-        expect(this.scope.new_state.bracket)
+        expect(this.scope.new_state)
           .toBe('state.clearBracket.returnValue');
         expect(this.stateService.clearBracket)
-          .toHaveBeenCalledWith(this.scope.new_state);
+          .toHaveBeenCalledWith({
+            players : 'players.moveGroupFront.returnValue',
+            bracket : [ 'bracket' ]
+          });
       });
     });
 
@@ -215,17 +220,18 @@ describe('controllers', function() {
       });
 
       it('should move <group_index> to back', function() {
-        expect(this.scope.new_state.players)
-          .toBe('players.moveGroupBack.returnValue');
         expect(this.playersService.moveGroupBack)
           .toHaveBeenCalledWith(4, this.new_state_players);
       });
 
       it('should reset bracket', function() {
-        expect(this.scope.new_state.bracket)
+        expect(this.scope.new_state)
           .toBe('state.clearBracket.returnValue');
         expect(this.stateService.clearBracket)
-          .toHaveBeenCalledWith(this.scope.new_state);
+          .toHaveBeenCalledWith({
+            players : 'players.moveGroupBack.returnValue',
+            bracket : [ 'bracket' ]
+          });
       });
     });
 
