@@ -124,9 +124,11 @@ angular.module('srApp.services')
             R.groupBy(function(list_entry) {
               return R.pipe(
                 playersService.player$(listPlayer(list_entry)),
+                R.defaultTo({}),
                 R.prop('faction')
               )(state.players);
             }),
+            R.omit(['undefined']),
             R.tap(function(l) { list_entries_by_faction = l; }),
             R.keys,
             R.map(function(faction) {
@@ -276,9 +278,13 @@ angular.module('srApp.services')
             }),
             R.chain(function(lst_entry) {
               return R.map(function(caster) {
-                return listsService.listForCaster(caster,
-                                                  R.prop('lists', lstPlayer(lst_entry))
-                                                 );
+                var lists = R.pipe(
+                  lstPlayer,
+                  R.defaultTo({}),
+                  R.prop('lists'),
+                  R.defaultTo([])
+                )(lst_entry);
+                return listsService.listForCaster(caster, lists);
               }, lstCasters(lst_entry));
             }),
             R.reject(R.isNil),
