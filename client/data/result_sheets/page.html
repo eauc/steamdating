@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <style>
+     table {
+       border-collapse: collapse;
+     }
+     tr.header {
+       background-color:#DDD !important;
+     }
+     th, td {
+       border:1px solid black;
+     }
+     .title {
+       font-size:18px;
+     }
+     .rounds,
+     .lists {
+       font-size:14px;
+     }
+     .rounds th,
+     .rounds td {
+       white-space:nowrap;
+       text-align:center;
+       padding:3px 8px;
+     }
+     .lists th,
+     .lists td {
+       vertical-align:top;
+       padding:3px;
+     }
+     @media print {
+       .page-break {
+         display: block;
+         page-break-before: always;
+       }
+     }
+    </style>
+  </head>
+  <body>
+    {{sheets}}
+  </body>
+</html>

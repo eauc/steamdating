@@ -28,7 +28,7 @@ angular.module('srApp', [
         templateUrl: 'partials/playersList.html',
         controller: 'playersListCtrl',
         data: { sort: 'Name',
-                exports: ['fk']
+                exports: ['fk', 'sheets']
               }
       })
       .state('players_ranking', {

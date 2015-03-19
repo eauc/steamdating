@@ -29,6 +29,7 @@ angular.module('srApp.services')
              jsonStringifierService) {
       $window.URL = $window.URL || $window.webkitURL;
       var stringifiers = {
+        text: { stringify: function(data) { return ''+data; } },
         fk: fkStringifierService,
         csv: csvStringifierService,
         bb: bbStringifierService,

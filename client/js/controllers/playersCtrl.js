@@ -4,49 +4,73 @@ angular.module('srApp.controllers')
   .controller('playersListCtrl', [
     '$scope',
     '$state',
+    '$q',
     'prompt',
     'state',
     'stateTables',
+    'resultSheetsHtml',
     'players',
     'player',
     'fileExport',
     function($scope,
              $state,
+             $q,
              promptService,
              stateService,
              stateTablesService,
+             resultSheetsHtmlService,
              playersService,
              playerService,
              fileExportService) {
       console.log('init playersListCtrl', $scope);
       $scope.updatePoints();
-      
+
       function sortPlayers() {
         $scope.sorted_players =
           stateService['sortPlayersBy'+$state.current.data.sort]($scope.state);
       }
       sortPlayers();
 
-      $scope.updateExports = function() {
-        var ranking_tables = stateTablesService.rankingTables($scope.state);
-        var exports = {
-          fk: {
+      var exporters = {
+        fk: function(exports) {
+          exports.fk = {
             name: 'players_list.txt',
             url: fileExportService.generate('fk', $scope.state.players),
             label: 'FK players list'
-          },
-          csv_rank: {
+          };
+        },
+        csv_rank: function(exports, ranking_tables) {
+          exports.csv_rank = {
             name: 'players_ranking.csv',
             url: fileExportService.generate('csv', ranking_tables),
             label: 'CSV Ranking'
-          },
-          bb_rank: {
+          };
+        },
+        bb_rank: function(exports, ranking_tables) {
+          exports.bb_rank = {
             name: 'players_ranking.txt',
             url: fileExportService.generate('bb', ranking_tables),
             label: 'BB Ranking'
-          }
-        };
-        $scope.exports = R.pick($state.current.data.exports, exports);
+          };
+        },
+        sheets: function(exports) {
+          exports.sheets = {
+            name: 'players_sheets.html',
+            url: null,
+            label: 'Players Result Sheets'
+          };
+          $q.when(resultSheetsHtmlService.generate($scope.sorted_players))
+            .then(function(html) {
+              exports.sheets.url = fileExportService.generate('text', html);
+            });
+        }
+      };
+      $scope.updateExports = function() {
+        var ranking_tables = stateTablesService.rankingTables($scope.state);
+        $scope.exports = {};
+        R.forEach(function(ex) {
+          exporters[ex]($scope.exports, ranking_tables);
+        }, $state.current.data.exports);
       };
       $scope.updateExports();
 

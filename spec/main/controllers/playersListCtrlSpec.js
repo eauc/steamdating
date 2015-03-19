@@ -21,6 +21,7 @@ describe('controllers', function() {
 
         this.stateService = spyOnService('state');
         this.stateTablesService = spyOnService('stateTables');
+        this.resultSheetsHtmlService = spyOnService('resultSheetsHtml');
         this.playerService = spyOnService('player');
         this.playersService = spyOnService('players');
         this.fileExportService = spyOnService('fileExport');
@@ -44,6 +45,7 @@ describe('controllers', function() {
             '$scope': ctxt.scope,
             '$state': ctxt.state,
           });
+          $rootScope.$digest();
         };
         initCtrl();
       }
@@ -73,6 +75,7 @@ describe('controllers', function() {
       [ 'fk'       , 'fk'   , ['titi'] ],
       [ 'csv_rank' , 'csv'  , 'stateTables.rankingTables.returnValue' ],
       [ 'bb_rank'  , 'bb'   , 'stateTables.rankingTables.returnValue' ],
+      [ 'sheets'   , 'text' , 'resultSheetsHtml.generate.returnValue' ],
     ], function(e, d) {
       it('should init exports, '+d, function() {
         initCtrl(null, [e.exports]);

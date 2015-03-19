@@ -6,16 +6,20 @@ angular.module('srApp.controllers')
     '$state',
     '$q',
     'factions',
+    'resultSheetsHtml',
     'state',
     'players',
     function($scope,
              $state,
              $q,
              factionsService,
+             resultSheetsHtmlService,
              stateService) {
       console.log('init mainCtrl');
 
       factionsService.init();
+      resultSheetsHtmlService.init();
+      
       $scope.resetState = function(data) {
         $scope.state = stateService.create(data);
       };

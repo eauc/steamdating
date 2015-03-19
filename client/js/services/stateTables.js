@@ -61,27 +61,6 @@ angular.module('srApp.services')
           )(state.players);
         }
       };
-
-      function bestsInFaction(state) {
-        return R.pipe(
-          stateService.sortPlayersByRank,
-          R.head,
-          R.chain(function(rank) {
-            return R.map(function(player) {
-              // player_array
-              return [ player.faction,
-                       player.name,
-                       rank.rank
-                     ];
-            }, rank.players);
-          }),
-          R.uniqWith(R.useWith(R.eq, R.head, R.head)),
-          R.reduce(function(mem, player_array) {
-            mem[R.head(player_array)] = R.tail(player_array);
-            return mem;
-          }, {})
-        )(state);
-      }
       
       function bestsTable(state) {
         var headers = bestsTableHeaders(state);

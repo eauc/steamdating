@@ -23,6 +23,7 @@ describe('controllers', function() {
 
         this.stateService = spyOnService('state');
         this.factionsService = spyOnService('factions');
+        this.resultSheetsHtmlService = spyOnService('resultSheetsHtml');
 
         $controller('mainCtrl', { 
           '$scope': this.scope,
@@ -33,6 +34,10 @@ describe('controllers', function() {
 
     it('should init factions', function() {
       expect(this.factionsService.init).toHaveBeenCalled();
+    });
+
+    it('should init resultSheetsHtml', function() {
+      expect(this.resultSheetsHtmlService.init).toHaveBeenCalled();
     });
 
     it('should init state', function() {
