@@ -23,6 +23,7 @@ describe('controllers', function() {
         };
 
         this.stateService = spyOnService('state');
+        this.stateTablesService = spyOnService('stateTables');
         this.playersService = spyOnService('players');
         this.fileExportService = spyOnService('fileExport');
 
@@ -57,7 +58,7 @@ describe('controllers', function() {
     it('should init exports', function() {
       expect(this.scope.exports).toBeAn('Object');
 
-      expect(this.stateService.roundsSummaryTables)
+      expect(this.stateTablesService.roundsSummaryTables)
         .toHaveBeenCalledWith(this.scope.state);
 
       expect(this.scope.exports.csv)
@@ -67,7 +68,7 @@ describe('controllers', function() {
           label: 'CSV Rounds Summary'
         });
       expect(this.fileExportService.generate)
-        .toHaveBeenCalledWith('csv', 'state.roundsSummaryTables.returnValue');
+        .toHaveBeenCalledWith('csv', 'stateTables.roundsSummaryTables.returnValue');
 
       expect(this.scope.exports.bb)
         .toEqual({
@@ -76,7 +77,7 @@ describe('controllers', function() {
           label: 'BBCode Rounds Summary'
         });
       expect(this.fileExportService.generate)
-        .toHaveBeenCalledWith('bb', 'state.roundsSummaryTables.returnValue');
+        .toHaveBeenCalledWith('bb', 'stateTables.roundsSummaryTables.returnValue');
     });
   });
 

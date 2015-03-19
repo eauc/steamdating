@@ -20,6 +20,7 @@ describe('controllers', function() {
         var ctxt = this;
 
         this.stateService = spyOnService('state');
+        this.stateTablesService = spyOnService('stateTables');
         this.playerService = spyOnService('player');
         this.playersService = spyOnService('players');
         this.fileExportService = spyOnService('fileExport');
@@ -70,8 +71,8 @@ describe('controllers', function() {
     using([
       [ 'exports'  , 'type' , 'object' ],
       [ 'fk'       , 'fk'   , ['titi'] ],
-      [ 'csv_rank' , 'csv'  , 'state.rankingTables.returnValue' ],
-      [ 'bb_rank'  , 'bb'   , 'state.rankingTables.returnValue' ],
+      [ 'csv_rank' , 'csv'  , 'stateTables.rankingTables.returnValue' ],
+      [ 'bb_rank'  , 'bb'   , 'stateTables.rankingTables.returnValue' ],
     ], function(e, d) {
       it('should init exports, '+d, function() {
         initCtrl(null, [e.exports]);

@@ -24,11 +24,13 @@ angular.module('srApp.controllers')
     'players',
     'round',
     'state',
+    'stateTables',
     'fileExport',
     function($scope,
              playersService,
              roundService,
              stateService,
+             stateTablesService,
              fileExportService) {
       console.log('init roundsSumCtrl', $scope);
       $scope.state.players = playersService.updateListsPlayed($scope.state.rounds,
@@ -38,17 +40,18 @@ angular.module('srApp.controllers')
                                                               $scope.sorted_players);
       
       $scope.updateExports = function() {
+        var summary_tables = stateTablesService.roundsSummaryTables($scope.state);
         $scope.exports = {
           csv: {
             name: 'rounds_summary.csv',
             url: fileExportService
-              .generate('csv', stateService.roundsSummaryTables($scope.state)),
+              .generate('csv', summary_tables),
             label: 'CSV Rounds Summary'
           },
           bb: {
             name: 'rounds_summary.txt',
             url: fileExportService
-              .generate('bb', stateService.roundsSummaryTables($scope.state)),
+              .generate('bb', summary_tables),
             label: 'BBCode Rounds Summary'
           }
         };
@@ -145,12 +148,14 @@ angular.module('srApp.controllers')
     'rounds',
     'fileExport',
     'state',
+    'stateTables',
     function($scope,
              $stateParams,
              promptService,
              roundsService,
              fileExportService,
-             stateService) {
+             stateService,
+             stateTablesService) {
       console.log('init roundsNthCtrl', $stateParams.pane);
       $scope.round.current = parseFloat($stateParams.pane);
       $scope.r = $scope.state.rounds[$scope.round.current];
@@ -160,19 +165,19 @@ angular.module('srApp.controllers')
       }
 
       $scope.updateExports = function() {
+        var round_tables = stateTablesService.roundTables($scope.round.current,
+                                                          $scope.state);
         $scope.exports = {
           csv: {
             name: 'round_'+($scope.round.current+1)+'.csv',
             url: fileExportService
-              .generate('csv', stateService.roundTables($scope.round.current,
-                                                        $scope.state)),
+              .generate('csv', round_tables),
             label: 'CSV Round'
           },
           bb: {
             name: 'round_'+($scope.round.current+1)+'.txt',
             url: fileExportService
-              .generate('bb', stateService.roundTables($scope.round.current,
-                                                       $scope.state)),
+              .generate('bb', round_tables),
             label: 'BBCode Round'
           }
         };

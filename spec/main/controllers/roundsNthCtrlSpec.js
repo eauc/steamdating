@@ -23,6 +23,7 @@ describe('controllers', function() {
         this.roundsService = spyOnService('rounds');
         this.fileExportService = spyOnService('fileExport');
         this.stateService = spyOnService('state');
+        this.stateTablesService = spyOnService('stateTables');
 
         initCtrlWith = function(ctxt, pane, rounds) {
           ctxt.pane = pane || '0';
@@ -75,7 +76,7 @@ describe('controllers', function() {
 
       expect(this.scope.exports).toBeAn('Object');
 
-      expect(this.stateService.roundTables)
+      expect(this.stateTablesService.roundTables)
         .toHaveBeenCalledWith(1, this.scope.state);
 
       expect(this.scope.exports.csv)
@@ -85,7 +86,7 @@ describe('controllers', function() {
           label: 'CSV Round'
         });
       expect(this.fileExportService.generate)
-        .toHaveBeenCalledWith('csv', 'state.roundTables.returnValue');
+        .toHaveBeenCalledWith('csv', 'stateTables.roundTables.returnValue');
 
       expect(this.scope.exports.bb)
         .toEqual({
@@ -94,7 +95,7 @@ describe('controllers', function() {
           label: 'BBCode Round'
         });
       expect(this.fileExportService.generate)
-        .toHaveBeenCalledWith('bb', 'state.roundTables.returnValue');
+        .toHaveBeenCalledWith('bb', 'stateTables.roundTables.returnValue');
     });
     
     describe('doDeleteRound(<index>)', function() {

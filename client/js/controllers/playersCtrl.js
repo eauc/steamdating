@@ -6,6 +6,7 @@ angular.module('srApp.controllers')
     '$state',
     'prompt',
     'state',
+    'stateTables',
     'players',
     'player',
     'fileExport',
@@ -13,6 +14,7 @@ angular.module('srApp.controllers')
              $state,
              promptService,
              stateService,
+             stateTablesService,
              playersService,
              playerService,
              fileExportService) {
@@ -26,6 +28,7 @@ angular.module('srApp.controllers')
       sortPlayers();
 
       $scope.updateExports = function() {
+        var ranking_tables = stateTablesService.rankingTables($scope.state);
         var exports = {
           fk: {
             name: 'players_list.txt',
@@ -34,12 +37,12 @@ angular.module('srApp.controllers')
           },
           csv_rank: {
             name: 'players_ranking.csv',
-            url: fileExportService.generate('csv', stateService.rankingTables($scope.state)),
+            url: fileExportService.generate('csv', ranking_tables),
             label: 'CSV Ranking'
           },
           bb_rank: {
             name: 'players_ranking.txt',
-            url: fileExportService.generate('bb', stateService.rankingTables($scope.state)),
+            url: fileExportService.generate('bb', ranking_tables),
             label: 'BB Ranking'
           }
         };
