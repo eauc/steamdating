@@ -187,7 +187,8 @@
                 ng-model="game.p1.list"
                 ng-options="
                 c as c for c in casters[game.p1.name]
-                ">
+                "
+                tabindex="1">
         </select>
       </td>
       <td>
@@ -195,7 +196,8 @@
                 ng-model="game.p2.list"
                 ng-options="
                 c as c for c in casters[game.p2.name]
-                ">
+                "
+                tabindex="5">
         </select>
       </td>
     </tr>
@@ -206,12 +208,14 @@
       <td>
         <input class="form-control"
                type="number"
-               ng-model="game.p1.control" />
+               ng-model="game.p1.control"
+               tabindex="2" />
       </td>
       <td>
         <input class="form-control"
                type="number"
-               ng-model="game.p2.control" />
+               ng-model="game.p2.control"
+               tabindex="6" />
       </td>
     </tr>
     <tr>
@@ -221,12 +225,14 @@
       <td>
         <input class="form-control"
                type="number"
-               ng-model="game.p1.army" />
+               ng-model="game.p1.army"
+               tabindex="3" />
       </td>
       <td>
         <input class="form-control"
                type="number"
-               ng-model="game.p2.army" />
+               ng-model="game.p2.army"
+               tabindex="7" />
       </td>
     </tr>
     <tr ng-if="::state | state:'hasGameCustomField'">
@@ -236,12 +242,14 @@
       <td>
         <input class="form-control"
                type="number"
-               ng-model="game.p1.custom_field" />
+               ng-model="game.p1.custom_field"
+               tabindex="4" />
       </td>
       <td>
         <input class="form-control"
                type="number"
-               ng-model="game.p2.custom_field" />
+               ng-model="game.p2.custom_field"
+               tabindex="8" />
       </td>
     </tr>
     <tr>
@@ -250,7 +258,8 @@
       </th>
       <td colspan="2">
         <textarea class="form-control"
-                  ng-model="game.notes">
+                  ng-model="game.notes"
+                  tabindex="9">
         </textarea>
       </td>
     </tr>
