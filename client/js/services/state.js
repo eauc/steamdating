@@ -25,6 +25,7 @@ angular.module('srApp.services')
              roundsService,
              bracketService) {
       var STORAGE_KEY = 'sdApp.state';
+      
       var stateService = {
         isEmpty: function(state) {
           return ( R.isEmpty(R.flatten(state.players)) &&
@@ -116,21 +117,11 @@ angular.module('srApp.services')
           _st = stateService.updatePlayersPoints(_st);
           return _st;
         },
+        version: function(state) {
+          return R.defaultTo(0, R.prop('version', R.defaultTo({}, state)));
+        },
         create: function(data) {
-          var state = R.deepExtend({
-            bracket: [],
-            players: [[]],
-            rounds: [],
-            ranking: {
-              player: rankingService.criterions.SR.Baseline.player,
-              team: rankingService.criterions.SR.Baseline.team
-            },
-            custom_fields: {
-              player: null,
-              game: null
-            },
-            tables_groups_size: null
-          }, data);
+          var state = migrate(data);
           state.players = R.map(function(group) {
             return R.map(playerService.create, group);
           }, state.players);
@@ -140,6 +131,7 @@ angular.module('srApp.services')
             }, round);
           }, state.rounds);
           state = stateService.updatePlayersPoints(state);
+          state.version = LAST_VERSION_NUMBER;
           stateService.store(state);
           console.log('state', state);
           return state;
@@ -279,6 +271,42 @@ angular.module('srApp.services')
         )(state);
       }
       
+      var MIGRATIONS = [
+        function(data) {
+        },
+        function(data) {
+          return R.assoc('rounds', R.map(function(round) {
+            return [round];
+          }, data.rounds), data);
+        }
+      ];
+      var LAST_VERSION_NUMBER = MIGRATIONS.length-1;
+      function migrate(data) {
+        data = R.deepExtend({
+          bracket: [],
+          players: [[]],
+          rounds: [],
+          ranking: {
+            player: rankingService.criterions.SR.Baseline.player,
+            team: rankingService.criterions.SR.Baseline.team
+          },
+          custom_fields: {
+            player: null,
+            game: null
+          },
+          tables_groups_size: null
+        }, data);
+        
+        var current_version = stateService.version(data);
+        if(current_version >= LAST_VERSION_NUMBER) return data;
+
+        var migration_range = R.range(current_version+1,
+                                      LAST_VERSION_NUMBER+1);
+        return R.reduce(function(state, i) {
+          return MIGRATIONS[i](state);
+        }, data, migration_range);
+      }
+
       R.curryService(stateService);
       return stateService;
     }

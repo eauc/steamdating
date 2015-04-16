@@ -51,6 +51,7 @@ describe('service', function() {
 
       it('should create default state', function() {
         expect(this.result).toEqual({
+          version: 1,
           test: 'value',
           players: [ [], 'updated' ],
           rounds: [],
@@ -63,7 +64,7 @@ describe('service', function() {
             player: null,
             game: null
           },
-            tables_groups_size: null
+          tables_groups_size: null
         });
       });
       
@@ -73,6 +74,7 @@ describe('service', function() {
 
       when('expected fields exist in data', function() {
         this.data = {
+          version: 1,
           test: 'value',
           players: [ [ { name: 'toto' } ] ],
           rounds: [ [ [ { table: 1 } ] ] ],
@@ -91,6 +93,7 @@ describe('service', function() {
       }, function() {
         it('should not modify them', function() {
           expect(this.result).toEqual({
+            version: 1,
             bracket: [ 'bracket' ],
             players: [ [ { name : 'toto', droped: null, faction : null, origin : null, team : null,
                            custom_field : 0, notes : null, lists : [  ], lists_played : [  ],
@@ -116,6 +119,33 @@ describe('service', function() {
             tables_groups_size: 4,
             test : 'value'
           });
+        });
+      });
+
+      describe('version 1 migration', function() {
+        it('should wrap rounds games into groups', function() {
+          var data = {
+            version: 0,
+            rounds: [ [ { table: 1 }, { table: 2 } ] ],
+          };
+          var result = state.create(data);
+
+          expect(result.version).toEqual(1);
+          expect(result.rounds).toEqual([ [
+            [ { table : 1, victory : null,
+                p1 : { name : null, list : null, tournament : null,
+                       control : null, army : null, custom_field : null },
+                p2 : { name : null, list : null, tournament : null,
+                       control : null, army : null, custom_field : null }
+              },
+              { table : 2, victory : null,
+                p1 : { name : null, list : null, tournament : null,
+                       control : null, army : null, custom_field : null },
+                p2 : { name : null, list : null, tournament : null,
+                       control : null, army : null, custom_field : null }
+              }
+            ]
+          ] ]);
         });
       });
     });
