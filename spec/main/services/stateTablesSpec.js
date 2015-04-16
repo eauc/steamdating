@@ -83,18 +83,26 @@ describe('service', function() {
           [ {}, {}, {}, {} ]
         ], bracket: [], rounds: [
           [],
-          [ { table:1,
-              victory: 'assassination',
-              p1: { name: 'p1', list: 'list1', tournament: 1, control: 2, army: 3, custom_field: 21 },
-              p2: { name: 'p2', list: 'list2', tournament: 2, control: 4, army: 6, custom_field: 12 } },
-            { table:2,
-              victory: null,
-              p1: { name: 'p3', list: 'list3', tournament: 3, control: 6, army: 9, custom_field: 24 },
-              p2: { name: 'p4', list: 'list4', tournament: 4, control: 8, army: 12, custom_field: 42 } },
-            { table:3,
-              victory: 'assassination',
-              p1: { name: 'p5', list: 'list5', tournament: 5, control: 10, army: 15, custom_field: 27 },
-              p2: { name: 'p6', list: 'list6', tournament: 6, control: 12, army: 18, custom_field: 72 } },
+          [ [ { table:1,
+                victory: 'assassination',
+                p1: { name: 'p1', list: 'list1', tournament: 1,
+                      control: 2, army: 3, custom_field: 21 },
+                p2: { name: 'p2', list: 'list2', tournament: 2,
+                      control: 4, army: 6, custom_field: 12 } }
+            ],
+            [ { table:2,
+                victory: null,
+                p1: { name: 'p3', list: 'list3', tournament: 3,
+                      control: 6, army: 9, custom_field: 24 },
+                p2: { name: 'p4', list: 'list4', tournament: 4,
+                      control: 8, army: 12, custom_field: 42 } },
+              { table:3,
+                victory: 'assassination',
+                p1: { name: 'p5', list: 'list5', tournament: 5,
+                      control: 10, army: 15, custom_field: 27 },
+                p2: { name: 'p6', list: 'list6', tournament: 6,
+                      control: 12, army: 18, custom_field: 72 } }
+              ],
           ]
         ], custom_fields: {
           player: 'pCustom',

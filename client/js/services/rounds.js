@@ -10,20 +10,17 @@ angular.module('srApp.services')
              R.isEmpty(coll)) return;
 
           return R.pipe(
+            R.flatten,
             R.map(gameService.forPlayer$(player_name)),
             R.reject(R.isNil),
             R.head
           )(coll);
         },
+        hasGamesGroups: function(coll) {
+          return coll.length > 1;
+        },
         gamesForGroup: function(players, group_index, coll) {
-          var start_index = Math.ceil(R.pipe(
-            R.slice(0, group_index),
-            R.flatten,
-            R.length
-          )(players) / 2);
-          var end_index = Math.ceil(start_index +
-                                    players[group_index].length / 2);
-          return R.slice(start_index, end_index, coll);
+          return R.nth(group_index, coll);
         },
         pairedPlayers: function(coll) {
           return R.pipe(
@@ -69,12 +66,23 @@ angular.module('srApp.services')
         },
         allGamesHaveResult: function(coll) {
           return R.pipe(
+            R.flatten,
             R.map(gameService.hasResult),
             R.all(R.identity)
           )(coll);
         },
-        winners: R.map(gameService.winner),
-        losers: R.map(gameService.loser)
+        winners: function(coll) {
+          return R.pipe(
+            R.flatten,
+            R.map(gameService.winner)
+          )(coll);
+        },
+        losers: function(coll) {
+          return R.pipe(
+            R.flatten,
+            R.map(gameService.loser)
+          )(coll);
+        }
       };
       R.curryService(roundService);
       return roundService;
@@ -105,7 +113,7 @@ angular.module('srApp.services')
           }, players);
         },
         registerNextRound: function(next, coll) {
-          return R.append(R.flatten(next), coll);
+          return R.append(next, coll);
         },
         drop: function(round_index, coll) {
           return R.remove(round_index, 1, coll);

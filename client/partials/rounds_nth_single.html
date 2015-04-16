@@ -12,8 +12,8 @@
       Download {{f.label}} File
     </a>
   </div>
-  <div ng-repeat="(gri,gr) in ::state.players">
-    <h2 ng-if="::state | state:'hasPlayerGroups'"
+  <div ng-repeat="(gri,gr) in ::r">
+    <h2 ng-if="::r | round:'hasGamesGroups'"
         style="border-bottom:1px solid black;">
       Group{{::gri+1}}
     </h2>
@@ -43,7 +43,7 @@
         <th class="text-center">AP</th>
         <th></th>
       </tr>
-      <tr ng-repeat="g in ::r | round:'gamesForGroup':state.players:$index"
+      <tr ng-repeat="g in ::gr"
           ng-click="doGameEdit(r, g.p1.name, round.current)"
           style="cursor:pointer;">
         <td>

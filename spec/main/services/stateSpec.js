@@ -75,7 +75,7 @@ describe('service', function() {
         this.data = {
           test: 'value',
           players: [ [ { name: 'toto' } ] ],
-          rounds: [ [ { table: 1 } ] ],
+          rounds: [ [ [ { table: 1 } ] ] ],
           bracket: [ 'bracket' ],
           ranking: {
             player: 'player',
@@ -98,13 +98,13 @@ describe('service', function() {
                                       army : 0, custom_field : 0 }
                          }
                        ], 'updated' ],
-            rounds: [ [ { table: 1,
-                          victory: null,
-                          p1 : { name : null, list : null, tournament : null,
-                                 control : null, army : null, custom_field : null },
-                          p2 : { name : null, list : null, tournament : null,
-                                 control : null, army : null, custom_field : null }
-                        } ] ],
+            rounds: [ [ [ { table: 1,
+                            victory: null,
+                            p1 : { name : null, list : null, tournament : null,
+                                   control : null, army : null, custom_field : null },
+                            p2 : { name : null, list : null, tournament : null,
+                                   control : null, army : null, custom_field : null }
+                          } ] ] ],
             ranking: {
               player : 'player',
               team : 'team'

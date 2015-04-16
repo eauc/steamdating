@@ -34,11 +34,8 @@ angular.module('srApp.services')
         },
         roundTables: function(round_index, state) {
           var has_game_custom_field = stateService.hasGameCustomField(state);
-          var round = state.rounds[round_index];
           return R.pipe(
-            R.mapIndexed(function(group, group_index) {
-              return roundService.gamesForGroup(state.players, group_index, round);
-            }),
+            R.nth(round_index),
             R.map(R.map(gameService.toArray$(has_game_custom_field))),
             R.mapIndexed(function(group, group_index) {
               var headers = [ 'Table',
@@ -58,7 +55,7 @@ angular.module('srApp.services')
                                 headers
                               ], group);
             })
-          )(state.players);
+          )(state.rounds);
         }
       };
       

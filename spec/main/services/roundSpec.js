@@ -14,18 +14,33 @@ describe('service', function() {
       round = _round;
     }]));
 
+    describe('hasGamesGroups()', function() {
+      using([
+        [ 'round' , 'hasGamesGroups' ],
+        [ []      , false      ],
+        [ [[]]    , false      ],
+        [ [[],[]] , true       ],
+      ], function(e, d) {
+        it('should check whether <round> as groups, '+d, function() {
+          expect(round.hasGamesGroups(e.round)).toBe(e.hasGamesGroups);
+        });
+      });
+    });
+
     describe('gameForPlayer(<name>)', function() {
       var coll = [
-        { p1: { name: 'toto'}, p2: {name: 'tata' } },
-        { p1: { name: 'tutu'}, p2: {name: 'titi' } },
-        { p1: { name: 't1' } , p2: { name: 't2' } }
+        [ { p1: { name: 'toto'}, p2: {name: 'tata' } },
+          { p1: { name: 'tutu'}, p2: {name: 'titi' } }
+        ],
+        [ { p1: { name: 't1' } , p2: { name: 't2' } }
+        ]
       ];
 
       using([
         [ 'name'    , 'game'           ],
-        [ 'toto'    , coll[0]          ],
-        [ 'titi'    , coll[1]          ],
-        [ 't2'      , coll[2]          ],
+        [ 'toto'    , coll[0][0]       ],
+        [ 'titi'    , coll[0][1]       ],
+        [ 't2'      , coll[1][0]       ],
         [ 'unknown' , undefined        ],
       ], function(e, d) {
         it('should return game involving <name>, '+d, function() {
@@ -37,10 +52,10 @@ describe('service', function() {
     describe('gamesForGroup(<players>, <group_index>)', function() {
       it('should extract games for <group_index>', function() {
         var coll = [
-          { table: 1 },
-          { table: 2 },
-          { table: 3 },
-          { table: 4 },
+          [ { table: 1 } ],
+          [ { table: 2 },
+            { table: 3 } ],
+          [ { table: 4 } ],
         ];
         var players = [ [ {}, {} ], [ {}, {}, {}, {} ], [ {}, {} ] ];
         expect(round.gamesForGroup(players, 1, coll)).toEqual([
@@ -51,10 +66,10 @@ describe('service', function() {
 
       it('should handle groups with odd length', function() {
         var coll = [
-          { table: 1 },
-          { table: 2 },
-          { table: 3 },
-          { table: 4 },
+          [ { table: 1 },
+            { table: 2 } ],
+          [ { table: 3 },
+            { table: 4 } ],
         ];
         var players = [ [ {}, {}, {} ], [ {}, {}, {} ], [ {}, {} ] ];
         expect(round.gamesForGroup(players, 1, coll)).toEqual([
@@ -73,15 +88,15 @@ describe('service', function() {
         ])).toEqual([ 'p1', 'p2', 'p3', 'p4', 'p5', 'p6' ]);
         // uniq
         expect(round.pairedPlayers([
-          { p1: { name: 'p1' }, p2: { name: 'p2' } },
-          { p1: { name: 'p2' }, p2: { name: 'p4' } },
-          { p1: { name: 'p5' }, p2: { name: 'p1' } }
+          [ { p1: { name: 'p1' }, p2: { name: 'p2' } },
+            { p1: { name: 'p2' }, p2: { name: 'p4' } } ],
+          [ { p1: { name: 'p5' }, p2: { name: 'p1' } } ]
         ])).toEqual([ 'p1', 'p2', 'p4', 'p5' ]);
         // without null/undefined
         expect(round.pairedPlayers([
-          { p1: { name: 'p1' }, p2: { name: 'p2' } },
-          { p1: { name: null }, p2: { name: 'p4' } },
-          { p1: { name: 'p5' }, p2: { name: undefined } }
+          [ { p1: { name: 'p1' }, p2: { name: 'p2' } },
+            { p1: { name: null }, p2: { name: 'p4' } } ],
+          [ { p1: { name: 'p5' }, p2: { name: undefined } } ]
         ])).toEqual([ 'p1', 'p2', 'p4', 'p5' ]);
       });
     });
@@ -96,9 +111,9 @@ describe('service', function() {
       ], function(e, d) {
         it('should check whether <player> is paired, '+d, function() {
           this.coll = [
-            { p1: { name: 'p1' }, p2: { name: 'p2' } },
-            { p1: { name: 'p2' }, p2: { name: null } },
-            { p1: { name: 'p5' }, p2: { name: 'p1' } }
+            [ { p1: { name: 'p1' }, p2: { name: 'p2' } },
+              { p1: { name: 'p2' }, p2: { name: null } } ],
+            [ { p1: { name: 'p5' }, p2: { name: 'p1' } } ]
           ];
 
           expect(round.isPlayerPaired({ name: e.name }, this.coll))
@@ -152,18 +167,18 @@ describe('service', function() {
     describe('allGamesHaveResult()', function() {
       it('should check whether all game have a defined result', function() {
         this.coll = [
-          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
-          { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } },
-          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+          [ { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+            { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } } ],
+          [ { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } } ]
         ];
 
         expect(round.allGamesHaveResult(this.coll)).toBe(true);
 
         this.coll = [
-          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
-          // this game has incomplete result
-          { p1: { name: 'p3', tournament: null }, p2: { name: null, tournament: 1 } },
-          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+          [ { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+            // this game has incomplete result
+            { p1: { name: 'p3', tournament: null }, p2: { name: null, tournament: 1 } } ],
+          [ { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } } ]
         ];
 
         expect(round.allGamesHaveResult(this.coll)).toBe(false);
@@ -173,9 +188,9 @@ describe('service', function() {
     describe('winners()', function() {
       it('should extract list of winners', function() {
         this.coll = [
-          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
-          { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } },
-          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+          [ { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+            { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } } ],
+          [ { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } } ]
         ];
 
         expect(round.winners(this.coll)).toEqual(['p1', null, 'p5']);
@@ -185,9 +200,9 @@ describe('service', function() {
     describe('losers()', function() {
       it('should extract list of winners', function() {
         this.coll = [
-          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
-          { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } },
-          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+          [ { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+            { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } } ],
+          [ { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } } ]
         ];
 
         expect(round.losers(this.coll)).toEqual(['p2', undefined, 'p6']);

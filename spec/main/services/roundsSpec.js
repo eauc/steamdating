@@ -288,7 +288,11 @@ describe('service', function() {
       it('should append flattened <next_round> to <coll>', function() {
         expect(rounds.registerNextRound([ ['group1'], ['group2'] ],
                                         [ ['round1'], ['round2'] ]))
-          .toEqual([ ['round1'], ['round2'], ['group1', 'group2'] ]);
+          .toEqual([
+            ['round1'],
+            ['round2'],
+            [ ['group1'], ['group2'] ]
+          ]);
       });
     });
 

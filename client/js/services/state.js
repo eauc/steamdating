@@ -135,7 +135,9 @@ angular.module('srApp.services')
             return R.map(playerService.create, group);
           }, state.players);
           state.rounds = R.map(function(round) {
-            return R.map(gameService.create, round);
+            return R.map(function(games_group) {
+              return R.map(gameService.create, games_group);
+            }, round);
           }, state.rounds);
           state = stateService.updatePlayersPoints(state);
           stateService.store(state);
