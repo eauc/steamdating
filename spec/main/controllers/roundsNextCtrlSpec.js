@@ -231,7 +231,7 @@ describe('controllers', function() {
           expect(this.scope.new_state.bracket)
             .toBe('bracket.set.returnValue');
           expect(this.bracketService.set)
-            .toHaveBeenCalledWith(1, [ 'bracket' ]);
+            .toHaveBeenCalledWith(1, 1, [ 'bracket' ]);
         });
 
         it('should suggest SR pairing for <group_index>', function() {
