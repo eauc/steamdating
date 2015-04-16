@@ -10,7 +10,7 @@ describe('controllers', function() {
   describe('gameEditCtrl', function(c) {
 
     var initCtrlWith;
-
+    
     beforeEach(inject([
       '$rootScope',
       '$controller',
@@ -49,6 +49,30 @@ describe('controllers', function() {
       expect(this.scope.casters).toEqual({
         'toto': [ 'caster1', 'caster2' ],
         'titi': [ 'caster3', 'caster4' ]
+      });
+    });
+
+    when('player1 is unknown', function() {
+      this.edit_game.p1.name = 'unknown';
+      initCtrlWith(this, this.edit_game);
+    }, function() {
+      it('should init casters lists', function() {
+        expect(this.scope.casters).toEqual({
+          'unknown': [ ],
+          'titi': [ 'caster3', 'caster4' ]
+        });
+      });
+    });
+    
+    when('player2 is unknown', function() {
+      this.edit_game.p2.name = 'unknown';
+      initCtrlWith(this, this.edit_game);
+    }, function() {
+      it('should init casters lists', function() {
+        expect(this.scope.casters).toEqual({
+          'toto': [ 'caster1', 'caster2' ],
+          'unknown': [ ],
+        });
       });
     });
 

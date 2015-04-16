@@ -31,11 +31,13 @@ angular.module('srApp.controllers')
       $scope.casters = {};
       $scope.casters[$scope.game.p1.name] = R.pipe(
         playersService.player$($scope.game.p1.name),
+        R.defaultTo({ lists: [] }),
         R.prop('lists'),
         listsService.casters
       )($scope.state.players);
       $scope.casters[$scope.game.p2.name] = R.pipe(
         playersService.player$($scope.game.p2.name),
+        R.defaultTo({ lists: [] }),
         R.prop('lists'),
         listsService.casters
       )($scope.state.players);
