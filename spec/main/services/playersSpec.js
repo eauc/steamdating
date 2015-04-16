@@ -220,6 +220,40 @@ describe('service', function() {
       });
     });
 
+    describe('factionFor(<name>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'player1', faction: 'f1' },
+            { name: 'player2', faction: 'f2' },
+            { name: 'player3', faction: 'f1' },
+          ],
+          [
+            { name: 'player4', faction: 'f1' },
+            { name: 'player5', faction: undefined },
+          ],
+          [
+            { name: 'player6', faction: 'f1' },
+            { name: 'player7', faction: 'f2' },
+          ]
+        ];
+      });
+
+      using([
+        [ 'name'    , 'faction' ],
+        [ 'player1' , 'f1'      ],
+        [ 'player4' , 'f1'      ],
+        [ 'player7' , 'f2'      ],
+        [ 'player5' , undefined ],
+        // unknown player
+        [ 'unknown' , null      ],
+      ], function(e, d) {
+        it('should return faction played by <name>, '+d, function() {
+          expect(players.factionFor(e.name, this.coll)).toEqual(e.faction);
+        });
+      });
+    });
+
     describe('gamesForRounds(<rounds>)', function() {
       beforeEach(function() {
         this.coll = [

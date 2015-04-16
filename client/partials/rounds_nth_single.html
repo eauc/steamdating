@@ -23,9 +23,9 @@
     <table class="table text-center">
       <tr>
         <th>CKill</th>
-        <th class="text-center" colspan="4">Player1</th>
+        <th class="text-center" colspan="5">Player1</th>
         <th class="text-center">Table</th>
-        <th class="text-center" colspan="4">Player2</th>
+        <th class="text-center" colspan="5">Player2</th>
         <th>Notes</th>
       </tr>
       <tr>
@@ -35,7 +35,9 @@
         <th class="text-center">List</th>
         <th class="text-center"
             style="width:25%;">Name</th>
+        <th></th>
         <th class="text-center"></th>
+        <th></th>
         <th class="text-center"
             style="width:25%;">Name</th>
         <th class="text-center">List</th>
@@ -56,12 +58,24 @@
         <td ng-class="{
             'success': (g | game:'winForPlayer':g.p1.name),
             'danger': (g | game:'winForPlayer':g.p1.name) === false,
-            }">{{::g.p1.name}}</td>
+            }">
+          {{::g.p1.name}}
+        </td>
+        <td>
+          <img ng-src="{{::state.players | players:'factionFor':g.p1.name | factions:'iconFor'}}"
+               style="height:1.8em;"/>
+        </td>
         <td>{{::g.table}}</td>
+        <td>
+          <img ng-src="{{::state.players | players:'factionFor':g.p2.name | factions:'iconFor'}}"
+               style="height:1.8em;"/>
+        </td>
         <td ng-class="{
             'success': (g | game:'winForPlayer':g.p2.name),
             'danger': (g | game:'winForPlayer':g.p2.name) === false,
-            }">{{::g.p2.name}}</td>
+            }">
+          {{::g.p2.name}}
+        </td>
         <td>{{::g.p2.list}}</td>
         <td>{{::g.p2.control}}</td>
         <td>{{::g.p2.army}}</td>

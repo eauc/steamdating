@@ -30,23 +30,27 @@
       <tr ng-class="{
           'info': (gr | players:'areAllPaired':next_round[gri])
           }">
-        <th class="text-center" colspan="3">Player1</th>
+        <th class="text-center"
+            colspan="2">Player1</th>
         <th class="text-center">Table</th>
-        <th class="text-center" colspan="3">Player2</th>
+        <th class="text-center"
+            colspan="2">Player2</th>
       </tr>
       <tr ng-repeat="(gai, g) in next_round[gri]"
           ng-class="{
           'info': (g | game:'isValid'),
           'warning': pairs_already[gri][gai]
           }">
-        <td></td>
-        <td></td>
         <td>
           <select ng-model="g.p1.name"
                   ng-change="updatePlayer(gri, gai, 'p1')"
                   ng-options="p[0] as p[1] for p in players_options[gri]"
                   class="form-control">
           </select>
+        </td>
+        <td>
+          <img ng-src="{{state.players | players:'factionFor':g.p1.name | factions:'iconFor'}}"
+               style="height:1.8em;"/>
         </td>
         <td>
           <select ng-model="g.table"
@@ -56,14 +60,16 @@
           </select>
         </td>
         <td>
+          <img ng-src="{{state.players | players:'factionFor':g.p2.name | factions:'iconFor'}}"
+               style="height:1.8em;"/>
+        </td>
+        <td>
           <select ng-model="g.p2.name"
                   ng-change="updatePlayer(gri, gai, 'p2')"
                   ng-options="p[0] as p[1] for p in players_options[gri]"
                   class="form-control">
           </select>
         </td>
-        <td></td>
-        <td></td>
       </tr>
     </table>
     <button class="btn btn-default"

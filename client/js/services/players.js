@@ -162,6 +162,13 @@ angular.module('srApp.services')
                         R.filter(R.propEq('faction', faction_name))
                        )(coll);
         },
+        factionFor: function(player_name, coll) {
+          return R.pipe(
+            playersService.player$(player_name),
+            R.defaultTo({ faction: null }),
+            R.prop('faction')
+          )(coll);
+        },
         casters: function(coll) {
           return R.pipe(R.flatten,
                         R.chain(R.prop('lists')),

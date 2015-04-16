@@ -30,6 +30,8 @@
           background-color:{{::(p | player:'isDroped') ? '#CCC' : 'auto'}};
           "
           ng-click="doEditPlayer(p)">
+        <img ng-src="{{::p.faction | factions:'iconFor'}}"
+             style="height:1.8em;"/>
         {{::p.name}}
       </td>
       <td style="font-size:0.8em;"
