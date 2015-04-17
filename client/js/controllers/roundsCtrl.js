@@ -92,10 +92,8 @@ angular.module('srApp.controllers')
             }, gr);
           })
         )($scope.new_state);
-        $scope.pairs_already = R.map(function(gr) {
-          return R.map(R.flip(roundsService.pairAlreadyExists)($scope.new_state.rounds),
-                       gr);
-        }, $scope.next_round);
+        $scope.round_fitness = stateService.evaluateRoundFitness($scope.next_round,
+                                                                 $scope.new_state);
         $scope.tables_ranges = R.pipe(
           stateService.playersNotDropedInLastRound,
           R.mapIndexed(function(group, group_index) {

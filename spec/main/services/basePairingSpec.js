@@ -55,6 +55,8 @@ describe('service', function() {
                                          p2: [ 3, 5 ] }   , [ 2, 4, 6 ] ],
       ], function(e,d) {
         it('should pick a random new table for both players, '+d, function() {
+          this.roundsService.tablesGroups.and.callThrough();
+          this.roundsService.tableGroup.and.callThrough();
           this.roundsService.tablesForPlayer.and.callFake(function(p, rs) {
             return e.played[p];
           });

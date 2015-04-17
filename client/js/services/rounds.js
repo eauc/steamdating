@@ -171,6 +171,26 @@ angular.module('srApp.services')
             R.reject(R.isNil),
             gamesService.tablesForPlayer$(player_name)
           )(coll);
+        },
+        tableAlreadyPlayed: function(game, tables_groups_size, coll) {
+          return R.pipe(
+            gameService.playerNames,
+            R.chain(function(name) {
+              return R.isNil(name) ? [] : roundsService.tablesForPlayer(name, coll);
+            }),
+            R.map(roundsService.tableGroup$(tables_groups_size)),
+            R.indexOf(roundsService.tableGroup(tables_groups_size, game.table)),
+            R.lte(0)
+          )(game);
+        },
+        tablesGroups: function(tables_groups_size, tables) {
+          return R.pipe(
+            R.map(roundsService.tableGroup$(tables_groups_size)),
+            R.uniq
+          )(tables);
+        },
+        tableGroup: function(groups_size, table_number) {
+          return Math.floor((table_number-1) / groups_size)+1;
         }
       };
       R.curryService(roundsService);

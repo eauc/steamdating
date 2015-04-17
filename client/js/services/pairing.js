@@ -11,14 +11,18 @@ angular.module('srApp.services')
           available_tables = R.shuffle(available_tables);
           tables_groups_size = R.defaultTo(R.max(available_tables)+1, tables_groups_size);
 
-          var available_tables_groups = tablesGroups(tables_groups_size, available_tables);
-          var available_tables_by_group = R.groupBy(tableGroup$(tables_groups_size), available_tables);
+          var available_tables_groups = roundsService.tablesGroups(tables_groups_size,
+                                                                        available_tables);
+          var available_tables_by_group = R.groupBy(roundsService.tableGroup$(tables_groups_size),
+                                                    available_tables);
           
           var p1_tables = roundsService.tablesForPlayer(p1, rounds);
-          var p1_tables_groups = tablesGroups(tables_groups_size, p1_tables);
+          var p1_tables_groups = roundsService.tablesGroups(tables_groups_size,
+                                                                 p1_tables);
 
           var p2_tables = roundsService.tablesForPlayer(p2, rounds);
-          var p2_tables_groups = tablesGroups(tables_groups_size, p2_tables);
+          var p2_tables_groups = roundsService.tablesGroups(tables_groups_size,
+                                                                 p2_tables);
 
           var possible_tables = R.difference(available_tables,
                                              R.concat(p1_tables, p2_tables));
@@ -33,16 +37,6 @@ angular.module('srApp.services')
                  );
         }
       };
-      function tablesGroups(tables_groups_size, tables) {
-        return R.pipe(
-          R.map(tableGroup$(tables_groups_size)),
-          R.uniq
-        )(tables);
-      }
-      function tableGroup(groups_size, table_number) {
-        return Math.floor((table_number-1) / groups_size);
-      }
-      var tableGroup$ = R.curry(tableGroup);
       R.curryService(basePairingService);
       return basePairingService;
     }

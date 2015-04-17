@@ -92,12 +92,14 @@ angular.module('srApp.services')
   .factory('players', [
     'player',
     'factions',
+    'game',
     'round',
     'rounds',
     'ranking',
     'lists',
     function(playerService,
              factionsService,
+             gameService,
              roundService,
              roundsService,
              rankingService,
@@ -203,6 +205,13 @@ angular.module('srApp.services')
                         R.sortBy(R.identity)
                        )(coll);
         },
+        originFor: function(player_name, coll) {
+          return R.pipe(
+            playersService.player$(player_name),
+            R.defaultTo({ origin: null }),
+            R.prop('origin')
+          )(coll);
+        },
         withPoints: function(key, value, coll) {
           var path = R.split('.', key);
           return R.pipe(R.flatten,
@@ -289,23 +298,24 @@ angular.module('srApp.services')
           var rankFn = buildRankingFunction(state, is_bracket, coll);
           if(R.isNil(rankFn)) return coll;
           
-          var players_grouped_by_ranking;
           var rank = 0;
           return R.pipe(
-          // group players by ranking criterion
+            // group players by ranking criterion
             R.groupBy(rankFn),
-          // store grouped players for later
-            R.tap(function(groups) { players_grouped_by_ranking = groups; }),
-          // get list of rankings and order it decrementally
-            R.keys,
-            R.sortBy(function(ranking) { return -parseFloat(ranking); }),
-          // fold each ranking list into final list
-            R.reduce(function(mem, ranking) {
-              mem.push({ rank: rank+1,
-                         players: players_grouped_by_ranking[ranking] });
-              rank += players_grouped_by_ranking[ranking].length;
-              return mem;
-            }, [])
+            function(players_grouped_by_ranking) {
+              return R.pipe(
+                // get list of rankings and order it decrementally
+                R.keys,
+                R.sortBy(function(ranking) { return -parseFloat(ranking); }),
+                // fold each ranking list into final list
+                R.reduce(function(mem, ranking) {
+                  mem.push({ rank: rank+1,
+                             players: players_grouped_by_ranking[ranking] });
+                  rank += players_grouped_by_ranking[ranking].length;
+                  return mem;
+                }, [])
+              )(players_grouped_by_ranking);
+            }
           )(coll);
         },
         sort: function(state, is_bracket, coll) {
@@ -414,6 +424,34 @@ angular.module('srApp.services')
           var group_range = playersService.indexRangeForGroup(group_index, coll);
           return R.range(Math.round(group_range[0]/2+1),
                          Math.round(group_range[1]/2+1));
+        },
+        gameSameFactions: function(game, coll) {
+          return R.pipe(
+            gameService.playerNames,
+            R.map(function(name) {
+              return R.isNil(name) ? null : playersService.factionFor(name, coll);
+            }),
+            function(factions) {
+              var is_set = R.isSet(factions);
+              var is_empty = R.isEmpty(R.reject(R.isNil, factions));
+              return ( !is_empty &&
+                       !is_set );
+            }
+          )(game);
+        },
+        gameSameOrigins: function(game, coll) {
+          return R.pipe(
+            gameService.playerNames,
+            R.map(function(name) {
+              return R.isNil(name) ? null : playersService.originFor(name, coll);
+            }),
+            function(origins) {
+              var is_set = R.isSet(origins);
+              var is_empty = R.isEmpty(R.reject(R.isNil, origins));
+              return ( !is_empty &&
+                       !is_set );
+            }
+          )(game);
         }
       };
       R.curryService(playersService);

@@ -328,6 +328,82 @@ describe('service', function() {
         });
       });
     });
+
+    describe('tableGroup', function() {
+      using([
+        [ 'group_size', 'table', 'group' ],
+        [ 1           , 42     , 42      ],
+        [ 3           , 1      , 1       ],
+        [ 3           , 3      , 1       ],
+        [ 3           , 4      , 2       ],
+        [ 3           , 6      , 2       ],
+      ], function(e, d) {
+        it('should compute the <group> for <table>, '+d, function() {
+          expect(rounds.tableGroup(e.group_size, e.table)).toBe(e.group);
+        });
+      });
+    });
+
+    describe('tablesGroups', function() {
+      using([
+        [ 'group_size', 'tables'        , 'groups'       ],
+        [ 1           , [ 34, 42, 71 ]  , [ 34, 42, 71 ] ],
+        [ 3           , [ 1, 4, 7, 10 ] , [ 1, 2, 3, 4 ] ],
+        // uniq
+        [ 3           , [ 1, 3, 5, 6 ]  , [ 1, 2 ]       ],
+      ], function(e, d) {
+        it('should compute the <group> for <table>, '+d, function() {
+          expect(rounds.tablesGroups(e.group_size, e.tables)).toEqual(e.groups);
+        });
+      });
+    });
+
+    describe('tableAlreadyPlayed', function() {
+      using([
+        [ 'group_size', 'game_p1', 'game_p2', 'game_table' , 'p1_tables', 'p2_tables', 'already' ],
+        // empty rounds
+        [ 1           , 'p1'     , 'p2'     , 34           , [ ]        , [ ]        , false     ],
+        // no tables groups
+        [ 1           , 'p1'     , 'p2'     , 3            , [ 1, 2 ]   , [ 1, 4 ]   , false     ],
+        // player1 already
+        [ 1           , 'p1'     , 'p2'     , 3            , [ 1, 3 ]   , [ 1, 4 ]   , true      ],
+        // player2 already
+        [ 1           , 'p1'     , 'p2'     , 3            , [ 1, 2 ]   , [ 3, 4 ]   , true      ],
+        // with tables groups
+        [ 3           , 'p1'     , 'p2'     , 5            , [ 1, 7 ]   , [ 2, 3 ]   , false     ],
+        // player1 already
+        [ 3           , 'p1'     , 'p2'     , 5            , [ 1, 6 ]   , [ 2, 3 ]   , true      ],
+        // player2 already
+        [ 3           , 'p1'     , 'p2'     , 5            , [ 1, 7 ]   , [ 4, 3 ]   , true      ],
+
+        // with some undefined players
+        [ 1           , null     , 'p2'     , 3            , [ 1, 2 ]   , [ 1, 4 ]   , false     ],
+        [ 1           , 'p1'     , 'p4'     , 3            , [ 1, 3 ]   , [ 1, 4 ]   , true      ],
+        [ 1           , 'p3'     , 'p2'     , 3            , [ 1, 2 ]   , [ 3, 4 ]   , true      ],
+        [ 3           , 'p1'     , null     , 5            , [ 1, 7 ]   , [ 2, 3 ]   , false     ],
+        [ 3           , 'p1'     , 'p4'     , 5            , [ 1, 6 ]   , [ 2, 3 ]   , true      ],
+        [ 3           , 'p3'     , 'p2'     , 5            , [ 1, 7 ]   , [ 4, 3 ]   , true      ],
+      ], function(e, d) {
+        it('should check whether one of the player as played on the game\'s table (group), '+d, function() {
+          var game = { table: e.game_table, p1: { name: e.game_p1 }, p2: { name: e.game_p2 } };
+          spyOn(rounds, 'tablesForPlayer').and.callFake(function(name) {
+            return e[name+'_tables'] || [];
+          });
+
+          expect(rounds.tableAlreadyPlayed(game, e.group_size, ['rounds']))
+            .toEqual(e.already);
+
+          if(!R.isNil(e.game_p1)) {
+            expect(rounds.tablesForPlayer)
+              .toHaveBeenCalledWith(e.game_p1, ['rounds']);
+          }
+          if(!R.isNil(e.game_p2)) {
+            expect(rounds.tablesForPlayer)
+              .toHaveBeenCalledWith(e.game_p2, ['rounds']);
+          }
+        });
+      });
+    });
   });
 
 });

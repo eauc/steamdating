@@ -247,6 +247,14 @@ angular.module('srApp.services')
             return stateService.isBracketTournament(group_index, null, state);
           }, state.players);
           return playersService.sort(state, is_bracket, state.players);
+        },
+        evaluateRoundFitness: function(round, state) {
+          var games_fitnesses = gamesFitnesses(round, state);
+          var summary = gamesFitnessesSummary(games_fitnesses);
+          return {
+            games: games_fitnesses,
+            summary: summary
+          };
         }
       };
 
@@ -307,6 +315,54 @@ angular.module('srApp.services')
         }, data, migration_range);
       }
 
+      function gamesFitnesses(round, state) {
+        var tables_groups_size = R.defaultTo(1, R.prop('tables_groups_size', state));
+        return R.map(function(group) {
+          return R.map(function(game) {
+            return {
+              pair: roundsService.pairAlreadyExists(game, state.rounds),
+              table: roundsService.tableAlreadyPlayed(game,
+                                                      tables_groups_size,
+                                                      state.rounds),
+              faction: playersService.gameSameFactions(game, state.players),
+              origin: playersService.gameSameOrigins(game, state.players),
+            };
+          }, group);
+        }, round);
+      }
+      function gamesFitnessesSummary(games_fitnesses) {
+        var summary = [];
+
+        var nb_already_pairs = fitnessesSum('pair')(games_fitnesses);
+        if(nb_already_pairs > 0) {
+          summary.push(nb_already_pairs + ' players pair(s) have already been played');
+        }
+
+        var nb_already_tables = fitnessesSum('table')(games_fitnesses);
+        if(nb_already_tables > 0) {
+          summary.push(nb_already_tables + ' players pair(s) have already played on their table (group)');
+        }
+
+        var nb_same_factions = fitnessesSum('faction')(games_fitnesses);
+        if(nb_same_factions > 0) {
+          summary.push(nb_same_factions + ' factions mirror match(s)');
+        }
+
+        var nb_same_origins = fitnessesSum('origin')(games_fitnesses);
+        if(nb_same_origins > 0) {
+          summary.push(nb_same_origins + ' players pair(s) have the same origin');
+        }
+
+        return summary;
+      }
+      function fitnessesSum(prop) {
+        return R.pipe(
+          R.flatten,
+          R.filter(R.propEq(prop, true)),
+          R.length
+        );
+      }
+      
       R.curryService(stateService);
       return stateService;
     }

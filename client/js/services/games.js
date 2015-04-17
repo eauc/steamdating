@@ -26,6 +26,9 @@ angular.module('srApp.services')
             }
           }, data);
         },
+        playerNames: function(game) {
+          return R.ap([ R.path(['p1','name']), R.path(['p2','name']) ])([game]);
+        },
         forPlayer: function(player_name, game) {
           if(player_name === game.p1.name ||
              player_name === game.p2.name) return game;

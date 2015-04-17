@@ -149,17 +149,11 @@ describe('controllers', function() {
       it('should warn about paired already played', function() {
         this.scope.updatePlayersOptions();
 
-        expect(this.roundsService.pairAlreadyExists)
-          .toHaveBeenCalledWith('gr1g1', ['rounds']);
-        expect(this.roundsService.pairAlreadyExists)
-          .toHaveBeenCalledWith('gr1g2', ['rounds']);
-        expect(this.roundsService.pairAlreadyExists)
-          .toHaveBeenCalledWith('gr2g1', ['rounds']);
-        expect(this.scope.pairs_already).toEqual([
-          [ 'rounds.pairAlreadyExists.returnValue(gr1g1)',
-            'rounds.pairAlreadyExists.returnValue(gr1g2)' ],
-          [ 'rounds.pairAlreadyExists.returnValue(gr2g1)' ]
-        ]);
+        expect(this.stateService.evaluateRoundFitness)
+          .toHaveBeenCalledWith(this.scope.next_round,
+                                this.scope.new_state);
+        expect(this.scope.round_fitness)
+          .toEqual('state.evaluateRoundFitness.returnValue');
       });
     });
     

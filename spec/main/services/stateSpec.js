@@ -630,6 +630,56 @@ describe('service', function() {
           .toHaveBeenCalledWith('players.notDropedInRound.returnValue');
       });
     });
+
+    describe('evaluateRoundFitness(<round>)', function() {
+      beforeEach(function() {
+        this.coll = {
+          players: [
+            [ { name: 'p1', faction: 'f1', origin: 'o1' },
+              { name: 'p2', faction: 'f2', origin: 'o1' },
+              { name: 'p3', faction: 'f3', origin: 'o2' },
+              { name: 'p4', faction: 'f1', origin: 'o2' },
+              { name: 'p5', faction: 'f2', origin: 'o3' },
+              { name: 'p6', faction: 'f3', origin: 'o3' },
+            ]
+          ],
+          rounds: [
+            [ [ { table: 1, p1: { name: 'p1' }, p2: { name: 'p2' } },
+                { table: 2, p1: { name: 'p3' }, p2: { name: 'p4' } },
+                { table: 3, p1: { name: 'p5' }, p2: { name: 'p6' } },
+              ] ],
+            [ [ { table: 2, p1: { name: 'p1' }, p2: { name: 'p3' } },
+                { table: 3, p1: { name: 'p2' }, p2: { name: 'p5' } },
+                { table: 1, p1: { name: 'p4' }, p2: { name: 'p6' } },
+              ] ],
+          ]
+        };
+      });
+      
+      it('should compute each game fitness', function() {
+        var round = [
+          [ // same faction
+            { table: 3, p1: { name: 'p1' }, p2: { name: 'p4' } },
+            // table already
+            { table: 2, p1: { name: 'p2' }, p2: { name: 'p3' } },
+            // pair already, same origin
+            { table: 1, p1: { name: 'p5' }, p2: { name: 'p6' } },
+          ]
+        ];
+        var fitness = state.evaluateRoundFitness(round, this.coll);
+        expect(fitness.games).toEqual([
+          [ { pair : false, table : false, faction : true,  origin : false },
+            { pair : false, table : true,  faction : false, origin : false },
+            { pair : true,  table : true,  faction : false, origin : true  } ]
+        ]);
+        expect(fitness.summary).toEqual([
+          '1 players pair(s) have already been played',
+          '2 players pair(s) have already played on their table (group)',
+          '1 factions mirror match(s)',
+          '1 players pair(s) have the same origin'
+        ]);
+      });
+    });
   });
 
 });

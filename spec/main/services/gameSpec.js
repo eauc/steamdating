@@ -30,16 +30,15 @@ describe('service', function() {
       });
     });
 
-    describe('player(<name>)', function() {
+    describe('playerNames()', function() {
       beforeEach(function() {
         this.game = game.create({ table: 4,
                                   p1: { name: 'toto' },
                                   p2: { name: 'titi' } });
       });
 
-      it('should return player\'s info for <name>', function() {
-        expect(game.player('toto', this.game)).toBe(this.game.p1);
-        expect(game.player('titi', this.game)).toBe(this.game.p2);
+      it('should return player\'s names', function() {
+        expect(game.playerNames(this.game)).toEqual(['toto','titi']);
       });
     });
 

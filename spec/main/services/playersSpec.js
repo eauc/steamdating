@@ -158,6 +158,40 @@ describe('service', function() {
       });
     });
 
+    describe('factionFor(<name>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'player1', origin: 'toto1' },
+            { name: 'player2', origin: 'toto2' },
+            { name: 'player3', origin: 'toto1' },
+          ],
+          [
+            { name: 'player4', origin: 'tata1' },
+            { name: 'player5', origin: undefined },
+          ],
+          [
+            { name: 'player6', origin: 'tata1' },
+            { name: 'player7', origin: 'tutu2' },
+          ]
+        ];
+      });
+
+      using([
+        [ 'name'    , 'origin'  ],
+        [ 'player1' , 'toto1'   ],
+        [ 'player4' , 'tata1'   ],
+        [ 'player7' , 'tutu2'   ],
+        [ 'player5' , undefined ],
+        // unknown player
+        [ 'unknown' , null      ],
+      ], function(e, d) {
+        it('should return faction played by <name>, '+d, function() {
+          expect(players.originFor(e.name, this.coll)).toEqual(e.origin);
+        });
+      });
+    });
+
     describe('factions(<base_factions>)', function() {
       beforeEach(function() {
         this.coll = [
@@ -1122,6 +1156,70 @@ describe('service', function() {
             army : [ '4', '3' ],
             assassination: [ '1' ],
             custom_field : [ '5' ]
+          }
+        });
+      });
+    });
+
+    describe('gameSameFactions', function() {
+      using([
+        [ 'game_p1', 'game_p2', 'p1_faction', 'p2_faction', 'same' ],
+        [ 'p1'     , 'p2'     , 'f1'        , 'f2'        , false    ],
+        [ 'p1'     , 'p2'     , 'f1'        , 'f1'        , true     ],
+        [ 'p1'     , 'p2'     , null        , 'f2'        , false    ],
+        [ 'p1'     , 'p2'     , 'f1'        , null        , false    ],
+        [ 'p1'     , null     , 'f1'        , 'f2'        , false    ],
+        [ null     , 'p2'     , 'f1'        , 'f2'        , false    ],
+        [ null     , null     , 'f1'        , 'f2'        , false    ],
+      ], function(e, d) {
+        it('should check whether both players are from the same faction, '+d, function() {
+          var game = { p1: { name: e.game_p1 }, p2: { name: e.game_p2 } };
+          spyOn(players, 'factionFor').and.callFake(function(name) {
+            return e[name+'_faction'] || null;
+          });
+
+          expect(players.gameSameFactions(game, ['players']))
+            .toEqual(e.same);
+
+          if(!R.isNil(e.game_p1)) {
+            expect(players.factionFor)
+              .toHaveBeenCalledWith(e.game_p1, ['players']);
+          }
+          if(!R.isNil(e.game_p2)) {
+            expect(players.factionFor)
+              .toHaveBeenCalledWith(e.game_p2, ['players']);
+          }
+        });
+      });
+    });
+
+    describe('gameSameOrigins', function() {
+      using([
+        [ 'game_p1', 'game_p2', 'p1_origin', 'p2_origin', 'same' ],
+        [ 'p1'     , 'p2'     , 'o1'       , 'o2'       , false    ],
+        [ 'p1'     , 'p2'     , 'o1'       , 'o1'       , true     ],
+        [ 'p1'     , 'p2'     , null       , 'o2'       , false    ],
+        [ 'p1'     , 'p2'     , 'o1'       , null       , false    ],
+        [ 'p1'     , null     , 'o1'       , 'o2'       , false    ],
+        [ null     , 'p2'     , 'o1'       , 'o2'       , false    ],
+        [ null     , null     , 'o1'       , 'o2'       , false    ],
+      ], function(e, d) {
+        it('should check whether both players are from the same origin, '+d, function() {
+          var game = { p1: { name: e.game_p1 }, p2: { name: e.game_p2 } };
+          spyOn(players, 'originFor').and.callFake(function(name) {
+            return e[name+'_origin'] || null;
+          });
+
+          expect(players.gameSameOrigins(game, ['players']))
+            .toEqual(e.same);
+
+          if(!R.isNil(e.game_p1)) {
+            expect(players.originFor)
+              .toHaveBeenCalledWith(e.game_p1, ['players']);
+          }
+          if(!R.isNil(e.game_p2)) {
+            expect(players.originFor)
+              .toHaveBeenCalledWith(e.game_p2, ['players']);
           }
         });
       });

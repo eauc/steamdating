@@ -18,14 +18,13 @@
         style="border-bottom:1px solid black;">
       Group{{::$index+1}}
     </h2>
+    <p class="text-warning"
+       ng-if="::!(gr | players:'groupSizeIsEven':state.rounds.length)">
+      <strong>Odd number of players !</strong>
+    </p>
     <h3 ng-if="new_state | state:'isBracketTournament':gri:null">
       Bracket - {{::new_state | state:'bracketRoundOf':gri:null}}
     </h3>
-    <strong class="text-warning"
-            ng-if="::!(gr | players:'groupSizeIsEven':state.rounds.length)">
-      Odd number of players !<br />
-      (add a phantom player)
-    </strong>
     <table class="table text-center">
       <tr ng-class="{
           'info': (gr | players:'areAllPaired':next_round[gri])
@@ -38,32 +37,41 @@
       </tr>
       <tr ng-repeat="(gai, g) in next_round[gri]"
           ng-class="{
-          'info': (g | game:'isValid'),
-          'warning': pairs_already[gri][gai]
+          'info': (g | game:'isValid')
           }">
-        <td>
+        <td ng-class="{
+            'warning': round_fitness.games[gri][gai].pair
+            }">
           <select ng-model="g.p1.name"
                   ng-change="updatePlayer(gri, gai, 'p1')"
                   ng-options="p[0] as p[1] for p in players_options[gri]"
                   class="form-control">
           </select>
         </td>
-        <td>
+        <td ng-class="{
+            'warning': round_fitness.games[gri][gai].faction
+            }">
           <img ng-src="{{state.players | players:'factionFor':g.p1.name | factions:'iconFor'}}"
                style="height:1.8em;"/>
         </td>
-        <td>
+        <td ng-class="{
+            'warning': round_fitness.games[gri][gai].table
+            }">
           <select ng-model="g.table"
                   ng-change="updateTable(gri, gai)"
                   ng-options="t as t for t in tables_ranges[gri]"
                   class="form-control">
           </select>
         </td>
-        <td>
+        <td ng-class="{
+            'warning': round_fitness.games[gri][gai].faction
+            }">
           <img ng-src="{{state.players | players:'factionFor':g.p2.name | factions:'iconFor'}}"
                style="height:1.8em;"/>
         </td>
-        <td>
+        <td ng-class="{
+            'warning': round_fitness.games[gri][gai].pair
+            }">
           <select ng-model="g.p2.name"
                   ng-change="updatePlayer(gri, gai, 'p2')"
                   ng-options="p[0] as p[1] for p in players_options[gri]"
@@ -85,9 +93,8 @@
     </button>
   </div>
   <p class="text-warning"
-     ng-if="!previous_round_complete">
-    <strong>Previous round is not complete !</strong><br />
-    Pairing suggestions are bound to fail...
+     ng-repeat="(i,line) in round_fitness.summary">
+    <strong>{{line}}</strong>
   </p>
   <button class="btn btn-default"
           style="margin-top: 5px;"
