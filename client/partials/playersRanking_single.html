@@ -10,22 +10,22 @@
          style="table-layout:fixed">
     <tr>
       <th style="width:4em;">Rank</th>
-      <th>
+      <th style="width:20%;">
         Name
       </th>
-      <th>Faction</th>
+      <th style="width:20%;">Faction</th>
       <th ng-if="::state | state:'hasPlayerCustomField'">
         {{::state.custom_fields.player}}
       </th>
-      <th>TP</th>
-      <th>SoS</th>
-      <th>CP</th>
-      <th>AP</th>
-      <th>CK</th>
+      <th style="width:4em;">TP</th>
+      <th style="width:4em;">SoS</th>
+      <th style="width:4em;">CP</th>
+      <th style="width:4em;">AP</th>
+      <th style="width:4em;">CK</th>
       <th ng-if="::state | state:'hasGameCustomField'">
         {{::state.custom_fields.game}}
       </th>
-      <th></th>
+      <th style="width:8em;"></th>
     </tr>
     <tbody ng-repeat="rank in ::gr"
            style="border-width:0px">
@@ -68,7 +68,7 @@
         </td>
         <td>
           <button ng-click="doDropPlayer(true, p, $event)"
-                  class="btn btn-default"
+                  class="btn btn-default no-print"
                   ng-if="!(p | player:'isDroped')">
             <span class="glyphicon glyphicon-ban-circle"></span>
             Drop
@@ -76,7 +76,7 @@
           <p ng-click="doDropPlayer(false, p, $event)"
              ng-if="(p | player:'isDroped')">
             Dropped after Round {{p.droped}}<br />
-            <a>click to undrop</a>
+            <a class="no-print">click to undrop</a>
           </p>
         </td>
       </tr>

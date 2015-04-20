@@ -1,4 +1,5 @@
-<div ng-repeat="f in exports"
+<div class="no-print"
+     ng-repeat="f in exports"
      style="margin:10px 0;">
   <a ng-if="::f.url"
      ng-href="{{::f.url}}"
@@ -54,9 +55,20 @@
           background-color:{{::(p | player:'hasDropedInRound':ri) ? '#CCC' : 'auto'}};
           "
           class="
-          {{::(games_by_players[gri][pi][ri] | game:'winForPlayer':p.name) ? 'success' : 'danger'}}
+          {{::
+          (games_by_players[gri][pi][ri] | game:'winForPlayer':p.name) ? 'success' :
+          (games_by_players[gri][pi][ri] | game:'lossForPlayer':p.name) ? 'danger' :
+          ''
+          }}
           "
           style="cursor:pointer;">
+        <span class="no-screen">
+          {{::
+          (games_by_players[gri][pi][ri] | game:'winForPlayer':p.name) ? 'W' :
+          (games_by_players[gri][pi][ri] | game:'lossForPlayer':p.name) ? 'L' :
+          '??'
+          }} /
+        </span>
         {{ ::games_by_players[gri][pi][ri] | game:'tableForPlayer':p.name }} -
         {{ ::games_by_players[gri][pi][ri] | game:'opponentForPlayer':p.name }}
       </td>

@@ -34,7 +34,19 @@
         display: none;
     }
 }
-
+@media screen {
+    .no-screen {
+        display: none;
+    }
+}
+@media print {
+    .no-print {
+        display: none;
+    }
+    img.icon {
+        max-width: 1.8em !important;
+    }
+}
 /******************************************************/
 /* appCache progress bar
 /******************************************************/

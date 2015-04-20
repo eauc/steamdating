@@ -1,10 +1,11 @@
 <div class="text-center">
-  <button class="btn btn-default"
+  <button class="btn btn-default no-print"
           ng-click="doDeleteRound(round.current)">
     <span class="glyphicon glyphicon-trash"></span>
     Delete Round
   </button>
-  <div ng-repeat="f in exports"
+  <div class="no-print"
+       ng-repeat="f in exports"
        style="margin:10px 0;">
     <a ng-if="f.url"
        ng-href="{{f.url}}"
@@ -23,9 +24,9 @@
     <table class="table text-center">
       <tr>
         <th>CKill</th>
-        <th class="text-center" colspan="5">Player1</th>
+        <th class="text-center" colspan="6">Player1</th>
         <th class="text-center">Table</th>
-        <th class="text-center" colspan="5">Player2</th>
+        <th class="text-center" colspan="6">Player2</th>
         <th>Notes</th>
       </tr>
       <tr>
@@ -35,9 +36,11 @@
         <th class="text-center">List</th>
         <th class="text-center"
             style="width:25%;">Name</th>
-        <th></th>
+        <th style="width:1.8em;"></th>
+        <th class="text-center visible-print"></th>
         <th class="text-center"></th>
-        <th></th>
+        <th class="text-center visible-print"></th>
+        <th style="width:1.8em;"></th>
         <th class="text-center"
             style="width:25%;">Name</th>
         <th class="text-center">List</th>
@@ -57,17 +60,33 @@
         <td>{{::g.p1.list}}</td>
         <td ng-class="{
             'success': (g | game:'winForPlayer':g.p1.name),
-            'danger': (g | game:'winForPlayer':g.p1.name) === false,
+            'danger': (g | game:'lossForPlayer':g.p1.name),
             }">
           {{::g.p1.name}}
         </td>
         <td>
-          <img ng-src="{{::state.players | players:'factionFor':g.p1.name | factions:'iconFor'}}"
+          <img class="icon"
+               ng-src="{{::state.players | players:'factionFor':g.p1.name | factions:'iconFor'}}"
                style="height:1.8em;"/>
         </td>
+        <td class="visible-print">
+          {{
+          (g | game:'winForPlayer':g.p1.name) ? 'W' :
+          (g | game:'lossForPlayer':g.p1.name) ? 'L' :
+          ''
+          }}
+        </td>
         <td>{{::g.table}}</td>
+        <td class="visible-print">
+          {{
+          (g | game:'winForPlayer':g.p2.name) ? 'W' :
+          (g | game:'lossForPlayer':g.p2.name) ? 'L' :
+          ''
+          }}
+        </td>
         <td>
-          <img ng-src="{{::state.players | players:'factionFor':g.p2.name | factions:'iconFor'}}"
+          <img class="icon"
+               ng-src="{{::state.players | players:'factionFor':g.p2.name | factions:'iconFor'}}"
                style="height:1.8em;"/>
         </td>
         <td ng-class="{

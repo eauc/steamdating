@@ -3,7 +3,7 @@
       style="border-bottom:1px solid black;">
     Group{{::gri+1}}
   </h2>
-  <button class="btn btn-default"
+  <button class="btn btn-default no-print"
           ng-click="doAddPlayer($index)">
     <span class="glyphicon glyphicon-plus"></span>
     Add Player
@@ -19,7 +19,7 @@
       <th>Lists</th>
       <th>Notes</th>
       <th></th>
-      <th></th>
+      <th class="no-print"></th>
     </tr>
     <tr ng-repeat="p in ::gr track by p.name"
         style="cursor:pointer;"
@@ -42,7 +42,7 @@
       <td>{{::p.notes}}</td>
       <td>
         <button ng-click="doDropPlayer(true, p, $event)"
-                class="btn btn-default"
+                class="btn btn-default no-print"
                 ng-if="!(p | player:'isDroped')">
           <span class="glyphicon glyphicon-ban-circle"></span>
           Drop
@@ -50,10 +50,10 @@
         <p ng-click="doDropPlayer(false, p, $event)"
            ng-if="(p | player:'isDroped')">
           Dropped after Round {{p.droped}}<br />
-          <a>click to undrop</a>
+          <a class="no-print">click to undrop</a>
         </p>
       </td>
-      <td>
+      <td class="no-print">
         <button ng-click="doDeletePlayer(p, $event)"
                 class="btn btn-default">
           <span class="glyphicon glyphicon-trash"></span>
