@@ -94,15 +94,13 @@ angular.module('srApp.services')
                  );
         },
         loser: function(game) {
-          return R.pipe(
-            gameService.winner,
-            function(winner) {
-              return ( R.exists(winner) ?
-                       gameService.opponentForPlayer(winner, game) :
-                       undefined
-                     );
-            }
-          )(game);
+          return ( R.pathEq(['p1','tournament'], 0, game) ?
+                   game.p1.name :
+                   ( R.pathEq(['p2','tournament'], 0, game) ?
+                     game.p2.name :
+                     undefined
+                   )
+                 );
         },
         toArray: function(with_custom_field, game) {
           var ret = [

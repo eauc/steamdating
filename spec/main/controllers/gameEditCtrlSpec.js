@@ -76,12 +76,31 @@ describe('controllers', function() {
       });
     });
 
-    describe('setWinLoss(<game>, <winner>, <loser>)', function() {
-      it('should update tournament points', function() {
-        var game = { p1: { tournament: null }, p2: { tournament: null } };
-        this.scope.setWinLoss(game, 'p2', 'p1');
-        expect(game.p1.tournament).toBe(0);
-        expect(game.p2.tournament).toBe(1);
+    describe('setWinLoss(<game>, <clicked>, <other>)', function() {
+      when('<clicked> is not the current winner', function() {
+      }, function() {
+        using([
+          [ 'clicked' ],
+          [ null      ],
+          [ 0         ],
+        ], function(e, d) {
+          it('should set <clicked> as winner and <other> as loser, '+d, function() {
+            var game = { p1: { tournament: null }, p2: { tournament: e.clicked } };
+            this.scope.setWinLoss(game, 'p2', 'p1');
+            expect(game.p1.tournament).toBe(0);
+            expect(game.p2.tournament).toBe(1);
+          });
+        });
+      });
+
+      when('<clicked> is the current winner', function() {
+      }, function() {
+        it('should set both as losers', function() {
+          var game = { p1: { tournament: null }, p2: { tournament: 1 } };
+          this.scope.setWinLoss(game, 'p2', 'p1');
+          expect(game.p1.tournament).toBe(0);
+          expect(game.p2.tournament).toBe(0);
+        });
       });
     });
 

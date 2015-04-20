@@ -153,7 +153,11 @@
           }"
           ng-click="setWinLoss(game, 'p1','p2')"
           style="cursor:pointer;">
-        {{game.p1.tournament===1 ? 'Win' : game.p1.tournament===0 ? 'Loss' : 'Click to set Winner'}}
+        {{
+        (game.p1.tournament===1 ? 'Win (click to set Loss)' :
+         game.p1.tournament===0 ? 'Loss (click to set Win)' :
+        'Click to set Win')
+        }}
       </td>
       <td ng-class="{
           'success': game.p2.tournament === 1,
@@ -161,7 +165,11 @@
           }"
           ng-click="setWinLoss(game, 'p2','p1')"
           style="cursor:pointer;">
-        {{game.p2.tournament===1 ? 'Win' : game.p2.tournament===0 ? 'Loss' : 'Click to set Winner'}}
+        {{
+        (game.p2.tournament===1 ? 'Win (click to set Loss)' :
+         game.p2.tournament===0 ? 'Loss (click to set Win)' :
+        'Click to set Win')
+        }}
       </td>
     </tr>
     <tr>

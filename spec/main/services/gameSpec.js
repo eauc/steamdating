@@ -250,6 +250,8 @@ describe('service', function() {
           [ 'p1_tp' , 'p2_tp' , 'loser' ],
           [ 1       , 0       , 'titi'  ],
           [ 0       , 1       , 'toto'  ],
+          // double loss, return first player
+          [ 0       , 0       , 'toto'  ],
         ], function(e, d) {
           it('should return the loser\'s name, '+d, function() {
             this.game.p1.tournament = e.p1_tp;

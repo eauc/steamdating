@@ -12,9 +12,15 @@ angular.module('srApp.controllers')
 
       $scope.game = R.clone($scope.edit.game);
 
-      $scope.setWinLoss = function(game, winner, loser) {
-        game[winner].tournament = 1;
-        game[loser].tournament = 0;
+      $scope.setWinLoss = function(game, clicked, other) {
+        if(game[clicked].tournament === 1) {
+          game[clicked].tournament = 0;
+          game[other].tournament = 0;
+        }
+        else {
+          game[clicked].tournament = 1;
+          game[other].tournament = 0;
+        }
       };
 
       $scope.close = function(save) {
