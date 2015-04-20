@@ -5,9 +5,11 @@ angular.module('srApp.services')
     '$q',
     '$http',
     '$interpolate',
+    'list',
     function($q,
              $http,
-             $interpolate) {
+             $interpolate,
+             listService) {
       var templates = {
         page: null,
         sheet: null,
@@ -96,11 +98,15 @@ angular.module('srApp.services')
       var interpolateRoundRow$ = R.curry(interpolateRoundRow);
       
       function interpolateLists(player) {
+        var lists = player.lists;
+        while(lists.length < 2) {
+          lists = R.append(listService.create(), lists);
+        }
         return templates.lists({
-          headers: interpolateListsHeaders(player.lists),
-          casters: interpolateListsCasters(player.lists),
-          themes: interpolateListsThemes(player.lists),
-          lists: interpolateListsContents(player.lists)
+          headers: interpolateListsHeaders(lists),
+          casters: interpolateListsCasters(lists),
+          themes: interpolateListsThemes(lists),
+          lists: interpolateListsContents(lists)
         });
       }
       

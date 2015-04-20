@@ -121,13 +121,13 @@ describe('service', function() {
                 '(roundRowTemplate 8 )'+
                 ') '+
                 '(listsTemplate '+
-                '(listHeaderTemplate 1) '+
-                '(listCasterTemplate c21) '+
-                '(listThemeTemplate t21) '+
+                '(listHeaderTemplate 1)(listHeaderTemplate 2) '+
+                '(listCasterTemplate c21)(listCasterTemplate ) '+
+                '(listThemeTemplate t21)(listThemeTemplate ) '+
                 '(listContentTemplate '+
                 'line1<br />\r\n'+
                 'line2<br />\r\n'+
-                ')'+
+                ')(listContentTemplate )'+
                 '))'+
                 '(sheetTemplate '+
                 '(playerTemplate p3 f3) '+
@@ -141,10 +141,15 @@ describe('service', function() {
                 '(roundRowTemplate 7 )\r\n'+
                 '(roundRowTemplate 8 )'+
                 ') '+
-                '(listsTemplate    )'+
-                '))');
+                '(listsTemplate '+
+                '(listHeaderTemplate 1)(listHeaderTemplate 2) '+
+                '(listCasterTemplate )(listCasterTemplate ) '+
+                '(listThemeTemplate )(listThemeTemplate ) '+
+                '(listContentTemplate )(listContentTemplate )'+
+                '))'+
+                ')');
       });
     });
-});
+  });
 
 });
