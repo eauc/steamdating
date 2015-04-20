@@ -81,6 +81,7 @@ angular.module('srApp.controllers')
       $scope.previous_round_complete = roundsService.lastRoundIsComplete($scope.new_state.rounds);
       $scope.next_round = stateService.createNextRound($scope.state);
 
+      var player_rank_pairs = stateService.playerRankPairs($scope.new_state);
       $scope.updatePlayersOptions = function() {
         $scope.players_options = R.pipe(
           stateService.playersNotDropedInLastRound,
@@ -88,6 +89,7 @@ angular.module('srApp.controllers')
             return R.map(function(p) {
               var paired = roundService.isPlayerPaired(p, $scope.next_round[gri]);
               var label = paired ? p.name : '> '+p.name;
+              label += ' #'+(player_rank_pairs[gri][p.name] || '??');
               return [ p.name, label ];
             }, gr);
           })

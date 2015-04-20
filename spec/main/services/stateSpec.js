@@ -680,6 +680,37 @@ describe('service', function() {
         ]);
       });
     });
+
+    describe('playerRankPairs', function() {
+      beforeEach(function() {
+        spyOn(state, 'sortPlayersByRank').and.returnValue([
+          // group1
+          [ { rank: 1, players: [  { name: 'p1' }, { name: 'p2' } ] },
+            { rank: 3, players: [  { name: 'p3' }, { name: 'p4' } ] },
+          ],
+          // group2
+          [ { rank: 1, players: [  { name: 'p5' } ] },
+            { rank: 2, players: [  { name: 'p6' } ] },
+          ]
+        ]);
+
+        this.ret = state.playerRankPairs([ 'state' ]);
+      });
+
+      it('should sort players by rank', function() {
+        expect(state.sortPlayersByRank)
+          .toHaveBeenCalledWith(['state']);
+      });
+
+      it('should create an hash of players names -> ranks', function() {
+        expect(this.ret).toEqual([
+          // group1
+          { p1 : 1, p2 : 1, p3 : 3, p4 : 3 },
+          // group2
+          { p5 : 1, p6 : 2 }
+        ]);
+      });
+    });
   });
 
 });

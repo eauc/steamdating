@@ -248,6 +248,18 @@ angular.module('srApp.services')
           }, state.players);
           return playersService.sort(state, is_bracket, state.players);
         },
+        playerRankPairs: function(state) {
+          return R.pipe(
+            stateService.sortPlayersByRank,
+            R.map(function(group) {
+              return R.reduce(function(mem_group, rank) {
+                return R.reduce(function(mem_rank, player) {
+                  return R.assoc(player.name, rank.rank, mem_rank);
+                }, mem_group, rank.players);
+              }, {}, group);
+            })
+          )(state);
+        },
         evaluateRoundFitness: function(round, state) {
           var games_fitnesses = gamesFitnesses(round, state);
           var summary = gamesFitnessesSummary(games_fitnesses);

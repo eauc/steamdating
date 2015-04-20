@@ -9,23 +9,13 @@ describe('controllers', function() {
 
   describe('roundsNextCtrl', function(c) {
 
-    var initCtrlWith;
+    var initCtrl;
 
     beforeEach(inject([
       '$rootScope',
       '$controller',
       function($rootScope,
                $controller) {
-        this.scope = $rootScope.$new();
-        this.scope.goToState = jasmine.createSpy('goToState');
-        this.scope.storeState = jasmine.createSpy('storeState');
-        this.state_players = [ 'players' ];
-        this.state_rounds = [ 'rounds' ];
-        this.scope.state = {
-          players: this.state_players,
-          rounds: this.state_rounds
-        };
-
         this.stateService = spyOnService('state');
         this.stateService.playersNotDropedInLastRound._retVal = [ 'players_not_droped' ];
         this.stateService.createNextRound._retVal = ['state.createNextRound.returnValue'];
@@ -35,9 +25,23 @@ describe('controllers', function() {
         this.roundService = spyOnService('round');
         this.roundsService = spyOnService('rounds');
 
-        $controller('roundsNextCtrl', { 
-          '$scope': this.scope,
-        });
+        var ctxt = this;
+        initCtrl = function() {
+          ctxt.scope = $rootScope.$new();
+          ctxt.scope.goToState = jasmine.createSpy('goToState');
+          ctxt.scope.storeState = jasmine.createSpy('storeState');
+          ctxt.state_players = [ 'players' ];
+          ctxt.state_rounds = [ 'rounds' ];
+          ctxt.scope.state = {
+            players: ctxt.state_players,
+            rounds: ctxt.state_rounds
+          };
+
+          $controller('roundsNextCtrl', { 
+            '$scope': ctxt.scope,
+          });
+        };
+        initCtrl();
       }
     ]));
 
@@ -57,6 +61,11 @@ describe('controllers', function() {
       expect(this.scope.next_round)
         .toEqual([ 'state.createNextRound.returnValue' ]);
       expect(this.stateService.createNextRound)
+        .toHaveBeenCalledWith(this.scope.state);
+    });
+    
+    it('should players->rank hash', function() {
+      expect(this.stateService.playerRankPairs)
         .toHaveBeenCalledWith(this.scope.state);
     });
     
@@ -107,6 +116,13 @@ describe('controllers', function() {
 
     describe('updatePlayersOptions()', function() {
       beforeEach(function() {
+        this.stateService.playerRankPairs._retVal = [
+          { paired11: 1, /* missing not_paired12: 1,*/ not_paired13: 3 },
+          { not_paired21: 1, paired22: 2 },
+        ];
+        initCtrl();
+
+        
         this.scope.players_options = null;
         this.stateService.playersNotDropedInLastRound._retVal = [
           [ { name: 'paired11' }, { name: 'not_paired12' }, { name: 'not_paired13' } ],
@@ -138,11 +154,13 @@ describe('controllers', function() {
         this.scope.updatePlayersOptions();
 
         expect(this.scope.players_options).toEqual([
-          [ ['paired11', 'paired11'],
-            ['not_paired12', '> not_paired12'],
-            ['not_paired13', '> not_paired13'] ],
-          [ ['not_paired21', '> not_paired21'],
-            ['paired22', 'paired22'] ]
+          [ [ 'paired11', 'paired11 #1' ],
+            [ 'not_paired12', '> not_paired12 #??' ],
+            [ 'not_paired13', '> not_paired13 #3' ]
+          ],
+          [ [ 'not_paired21', '> not_paired21 #1' ],
+            [ 'paired22', 'paired22 #2' ]
+          ]
         ]);
       });
 
