@@ -191,6 +191,16 @@ angular.module('srApp.services')
         },
         tableGroup: function(groups_size, table_number) {
           return Math.floor((table_number-1) / groups_size)+1;
+        },
+        nbRoundsNeededForNPlayers: function(n_players) {
+          var n_rounds = 1;
+          var max_players = 2;
+          while(n_rounds < 10 &&
+                max_players < n_players) {
+            n_rounds++;
+            max_players *= 2;
+          }
+          return n_rounds;
         }
       };
       R.curryService(roundsService);

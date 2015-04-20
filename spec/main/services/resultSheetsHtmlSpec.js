@@ -91,10 +91,7 @@ describe('service', function() {
                 '(roundRowTemplate 2 1)\r\n'+
                 '(roundRowTemplate 3 1)\r\n'+
                 '(roundRowTemplate 4 1)\r\n'+
-                '(roundRowTemplate 5 1)\r\n'+
-                '(roundRowTemplate 6 1)\r\n'+
-                '(roundRowTemplate 7 1)\r\n'+
-                '(roundRowTemplate 8 1)) '+
+                '(roundRowTemplate 5 1)) '+
                 '(listsTemplate '+
                 '(listHeaderTemplate 1)(listHeaderTemplate 2) '+
                 '(listCasterTemplate c11)(listCasterTemplate c12) '+
@@ -115,10 +112,7 @@ describe('service', function() {
                 '(roundRowTemplate 2 )\r\n'+
                 '(roundRowTemplate 3 )\r\n'+
                 '(roundRowTemplate 4 )\r\n'+
-                '(roundRowTemplate 5 )\r\n'+
-                '(roundRowTemplate 6 )\r\n'+
-                '(roundRowTemplate 7 )\r\n'+
-                '(roundRowTemplate 8 )'+
+                '(roundRowTemplate 5 )'+
                 ') '+
                 '(listsTemplate '+
                 '(listHeaderTemplate 1)(listHeaderTemplate 2) '+
@@ -136,16 +130,13 @@ describe('service', function() {
                 '(roundRowTemplate 2 )\r\n'+
                 '(roundRowTemplate 3 )\r\n'+
                 '(roundRowTemplate 4 )\r\n'+
-                '(roundRowTemplate 5 )\r\n'+
-                '(roundRowTemplate 6 )\r\n'+
-                '(roundRowTemplate 7 )\r\n'+
-                '(roundRowTemplate 8 )'+
-                ') '+
+                '(roundRowTemplate 5 )) '+
                 '(listsTemplate '+
                 '(listHeaderTemplate 1)(listHeaderTemplate 2) '+
                 '(listCasterTemplate )(listCasterTemplate ) '+
                 '(listThemeTemplate )(listThemeTemplate ) '+
-                '(listContentTemplate )(listContentTemplate )'+
+                '(listContentTemplate )'+
+                '(listContentTemplate )'+
                 '))'+
                 ')');
       });

@@ -5,10 +5,14 @@ angular.module('srApp.services')
     '$q',
     '$http',
     '$interpolate',
+    'players',
+    'rounds',
     'list',
     function($q,
              $http,
              $interpolate,
+             playersService,
+             roundsService,
              listService) {
       var templates = {
         page: null,
@@ -66,24 +70,29 @@ angular.module('srApp.services')
       }
       
       function interpolateSheets(players) {
+        var nb_players = playersService.size(players);
+        var nb_rounds = roundsService.nbRoundsNeededForNPlayers(nb_players);
+        
         return R.join('', R.map(function(group) {
           return R.join('', R.map(function(player) {
             return templates.sheet({
               players: templates.player(player),
-              rounds: interpolateRounds(player),
+              rounds: interpolateRounds(nb_rounds, player),
               lists: interpolateLists(player)
             });
           }, group));
         }, players));
       }
 
-      function interpolateRounds(player) {
+      function interpolateRounds(nb_rounds, player) {
         return templates.rounds({
           rounds: R.pipe(
+            R.max,
+            R.inc,
             R.range(1),
             R.map(interpolateRoundRow$(player)),
             R.join('\r\n')
-          )(9)
+          )([5, nb_rounds])
         });
       }
 

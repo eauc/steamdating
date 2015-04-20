@@ -404,6 +404,28 @@ describe('service', function() {
         });
       });
     });
+
+    describe('nbRoundsNeededForNPlayers(<n_players>)', function() {
+      using([
+        [ 'n_players' , 'n_rounds' ],
+        // min 5 rounds
+        [ 2           , 1          ],
+        [ 3           , 2          ],
+        [ 4           , 2          ],
+        [ 5           , 3          ],
+        [ 8           , 3          ],
+        [ 9           , 4          ],
+        [ 16          , 4          ],
+        [ 17          , 5          ],
+        [ 1024        , 10         ],
+        // max 10
+        [ 1025        , 10         ],
+      ], function(e, d) {
+        it('should calculate the number of rounds needed for <n_players>, '+d, function() {
+          expect(rounds.nbRoundsNeededForNPlayers(e.n_players)).toBe(e.n_rounds);
+        });
+      });
+    });
   });
 
 });
