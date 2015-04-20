@@ -51,8 +51,11 @@ angular.module('srApp.services')
                    R.type(game.p2.tournament) === 'Number' );
         },
         winForPlayer: function(player_name, game) {
-          var tournament_point = R.prop('tournament',
-                                        R.defaultTo({}, gameService.player(player_name, game)));
+          var tournament_point = R.pipe(
+            gameService.player$(player_name),
+            R.defaultTo({}),
+            R.prop('tournament')
+          )(game);
           return ( tournament_point === 1 ?
                    true :
                    ( tournament_point === 0 ?
@@ -62,8 +65,11 @@ angular.module('srApp.services')
                  );
         },
         lossForPlayer: function(player_name, game) {
-          var tournament_point = R.prop('tournament',
-                                        gameService.player(player_name, game));
+          var tournament_point = R.pipe(
+            gameService.player$(player_name),
+            R.defaultTo({}),
+            R.prop('tournament')
+          )(game);
           return ( tournament_point === 0 ?
                    true :
                    ( tournament_point === 1 ?
