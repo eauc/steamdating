@@ -213,10 +213,15 @@ angular.module('srApp.services')
             row.push('-');
             return;
           }
-            
-          row.push( (gameService.winForPlayer(player.name, game) ? 'W' : 'L') +
+
+          var is_win = gameService.winForPlayer(player.name, game);
+          row.push({
+            value: ((is_win ? 'W' : 'L') +
                     ' - ' +
-                    gameService.opponentForPlayer(player.name, game) );
+                    gameService.opponentForPlayer(player.name, game)
+                   ),
+            color: is_win ? 'limegreen':'red'
+          });
         }, state.rounds);
         return row;
       }

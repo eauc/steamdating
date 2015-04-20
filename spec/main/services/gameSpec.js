@@ -263,8 +263,21 @@ describe('service', function() {
     describe('toArray()', function() {
       using([
         [ 'withCustom', 'ck'  , 'array' ],
-        [ false       , true  , [ 21, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5, 1 ] ],
-        [ true        , false , [ 21, 'toto', 'titi', 'list1', 'list2', 1, 0, 2, 4, 3, 5, 0, 42, 24 ] ],
+        [ false       , true  , [ 21,
+                                  { value: 'toto',
+                                    color: 'limegreen'
+                                  },
+                                  { value: 'titi',
+                                    color: 'red'
+                                  }, 'list1', 'list2', 1, 0, 2, 4, 3, 5, 1 ] ],
+        [ true        , false , [ 21,
+                                  
+                                  { value: 'toto',
+                                    color: 'limegreen'
+                                  },
+                                  { value: 'titi',
+                                    color: 'red'
+                                  }, 'list1', 'list2', 1, 0, 2, 4, 3, 5, 0, 42, 24 ] ],
       ], function(e, d) {
         it('should convert game to array, '+d, function() {
           expect(game.toArray(e.withCustom, {

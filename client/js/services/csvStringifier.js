@@ -4,7 +4,7 @@ angular.module('srApp.services')
   .factory('csvStringifier', [
     function() {
       var EOL = '\r\n';
-      function stringifyCell(cell) {
+      function stringifyCellValue(cell_value) {
         return R.pipe(
           function(cell) {
             return ( R.type(cell) === 'Array' ?
@@ -22,7 +22,13 @@ angular.module('srApp.services')
           function(cell) {
             return '"'+cell+'"';
           }
-        )(cell);
+        )(cell_value);
+      }
+      function stringifyCell(cell) {
+        if(R.type(cell) === 'Object') {
+          return stringifyCellValue(cell.value);
+        }          
+        return stringifyCellValue(cell);
       }
       function stringifyRow(row, row_index) {
         return R.pipe(

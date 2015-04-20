@@ -107,7 +107,12 @@ angular.module('srApp.services')
         toArray: function(with_custom_field, game) {
           var ret = [
             game.table,
-            game.p1.name, game.p2.name,
+            { value: game.p1.name,
+              color: game.p1.tournament === 1 ? 'limegreen':'red'
+            },
+            { value: game.p2.name,
+              color: game.p2.tournament === 1 ? 'limegreen':'red'
+            },
             game.p1.list, game.p2.list,
             game.p1.tournament, game.p2.tournament,
             game.p1.control, game.p2.control,

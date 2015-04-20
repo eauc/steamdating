@@ -87,20 +87,20 @@ describe('service', function() {
                 victory: 'assassination',
                 p1: { name: 'p1', list: 'list1', tournament: 1,
                       control: 2, army: 3, custom_field: 21 },
-                p2: { name: 'p2', list: 'list2', tournament: 2,
+                p2: { name: 'p2', list: 'list2', tournament: 0,
                       control: 4, army: 6, custom_field: 12 } }
             ],
             [ { table:2,
                 victory: null,
-                p1: { name: 'p3', list: 'list3', tournament: 3,
+                p1: { name: 'p3', list: 'list3', tournament: 0,
                       control: 6, army: 9, custom_field: 24 },
-                p2: { name: 'p4', list: 'list4', tournament: 4,
+                p2: { name: 'p4', list: 'list4', tournament: 1,
                       control: 8, army: 12, custom_field: 42 } },
               { table:3,
                 victory: 'assassination',
-                p1: { name: 'p5', list: 'list5', tournament: 5,
+                p1: { name: 'p5', list: 'list5', tournament: 1,
                       control: 10, army: 15, custom_field: 27 },
-                p2: { name: 'p6', list: 'list6', tournament: 6,
+                p2: { name: 'p6', list: 'list6', tournament: 0,
                       control: 12, army: 18, custom_field: 72 } }
               ],
           ]
@@ -114,14 +114,32 @@ describe('service', function() {
             [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
               'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp',
               'Player1.ap', 'Player2.ap', 'CasterKill', 'Player1.gCustom', 'Player2.gCustom' ],
-            [ 1, 'p1', 'p2', 'list1', 'list2', 1, 2, 2, 4, 3, 6, 1, 21, 12 ]
+            [ 1, {
+              value: 'p1',
+              color: 'limegreen'
+            }, {
+              value: 'p2',
+              color: 'red'
+            }, 'list1', 'list2', 1, 0, 2, 4, 3, 6, 1, 21, 12 ]
           ],
           [ ['Group2'],
             [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
               'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp',
               'Player1.ap', 'Player2.ap', 'CasterKill', 'Player1.gCustom', 'Player2.gCustom' ],
-            [ 2, 'p3', 'p4', 'list3', 'list4', 3, 4, 6, 8, 9, 12, 0, 24, 42 ],
-            [ 3, 'p5', 'p6', 'list5', 'list6', 5, 6, 10, 12, 15, 18, 1, 27, 72 ]
+            [ 2, {
+              value: 'p3',
+              color: 'red'
+            }, {
+              value: 'p4',
+              color: 'limegreen'
+            }, 'list3', 'list4', 0, 1, 6, 8, 9, 12, 0, 24, 42 ],
+            [ 3, {
+              value: 'p5',
+              color: 'limegreen'
+            }, {
+              value: 'p6',
+              color: 'red'
+            }, 'list5', 'list6', 1, 0, 10, 12, 15, 18, 1, 27, 72 ]
           ]
         ]);
       });
@@ -184,14 +202,26 @@ describe('service', function() {
           [ [ 'Group1' ],
             [ 'Player', 'Lists Played', 'Round1', 'Round2' ],
             [ 'p1', '2/2', 'DROPPED', 'DROPPED' ],
-            [ 'p2', '1/2', 'L - p1', 'DROPPED' ]
+            [ 'p2', '1/2', { value: 'L - p1', color: 'red' }, 'DROPPED' ]
           ],
           [ [ 'Group2' ],
             [ 'Player', 'Lists Played', 'Round1', 'Final' ],
-            [ 'p3', '2/2', 'W - p6', 'W - p4' ],
-            [ 'p4', '1/2', 'W - p5', 'L - p3' ],
-            [ 'p5', '2/2', 'L - p4', 'W - p6' ],
-            [ 'p6', '1/2', 'L - p3', 'L - p5' ]
+            [ 'p3', '2/2',
+              { value: 'W - p6', color: 'limegreen' },
+              { value: 'W - p4', color: 'limegreen' }
+            ],
+            [ 'p4', '1/2',
+              { value: 'W - p5', color: 'limegreen' },
+              { value: 'L - p3', color: 'red' }
+            ],
+            [ 'p5', '2/2',
+              { value: 'L - p4', color: 'red' },
+              { value: 'W - p6', color: 'limegreen' }
+            ],
+            [ 'p6', '1/2',
+              { value: 'L - p3', color: 'red' },
+              { value: 'L - p5', color: 'red' }
+            ]
           ]
         ]);
       });

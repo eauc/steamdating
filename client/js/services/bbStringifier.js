@@ -8,11 +8,24 @@ angular.module('srApp.services')
         return '['+tag+']'+string+'[/'+tag+']';
       }
       var inTag$ = R.curry(inTag);
-      function stringifyCell(cell) {
-        return ( R.type(cell) === 'Array' ?
-                 cell.join(EOL) :
-                 cell
+      function inColor(color, string) {
+        return '[color='+color+']'+string+'[/color]';
+      }
+      function stringifyCellValue(cell_value) {
+        return ( R.type(cell_value) === 'Array' ?
+                 cell_value.join(EOL) :
+                 cell_value
                );
+      }
+      function stringifyCell(cell) {
+        if(R.type(cell) === 'Object') {
+          var value = stringifyCellValue(cell.value);
+          if(cell.color) {
+            value = inColor(cell.color, value);
+          }
+          return value;
+        }
+        return stringifyCellValue(cell);
       }
       function stringifyRow(row, row_index) {
         return R.pipe(

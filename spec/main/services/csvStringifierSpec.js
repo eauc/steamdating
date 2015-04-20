@@ -30,7 +30,16 @@ describe('service', function() {
             [ 'field4', 'field5' ],
             // null replaced by ''
             [ null, 'a,b' ],
-            [ '2', 'qu"ote' ] ]
+            // cell attributes
+            [ // color gets ignored
+              { value: '2',
+                color: 'blue'
+              },
+              // no attributes
+              { value: 'qu"ote',
+              }
+            ]
+          ]
         ])).toBe('"Group 1"\r\n'+
                  '"field1","field2","field3"\r\n'+
                  '"11","12 121","3"\r\n'+
