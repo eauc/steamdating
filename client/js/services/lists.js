@@ -16,7 +16,8 @@ angular.module('srApp.services')
           return R.pipe(
             R.prop('fk'),
             s.lines,
-            R.filter(R.not(s.isBlank)),
+            R.reject(s.isBlank),
+            R.reject(function(s) { return s.match(/^\s*Tiers?/); }),
             R.map(function(s) { return s.replace(/\(.*\)/,''); }),
             R.map(function(s) { return s.replace(/\[.*\]/,''); }),
             R.map(function(s) { return s.replace(/- (PC|WJ|WB).*$/,''); }),

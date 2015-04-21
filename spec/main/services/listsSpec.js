@@ -41,7 +41,10 @@ describe('service', function() {
           'Specialists:\r\n'+
           '* Raek (4pts)\r\n'+
           'Hex Hunters (Leader and 5 Grunts) (5pts)\r\n'+
-          '* Bayal, Hound of Everblight (3pts)\r\n' ],
+          '* Bayal, Hound of Everblight (3pts)\r\n'+
+          'Tiers : +2" deployement\r\n'+
+          'Tiers Bonus : +1 starting roll\r\n'+
+          'Tiers 4 : spell martyrs gain AD\r\n' ],
         // WHAC
         [ 'Saeryn, Omen of Everblight(*6points)\r\n'+
           '* Angelius(9points)\r\n'+
