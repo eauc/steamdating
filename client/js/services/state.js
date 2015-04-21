@@ -304,7 +304,10 @@ angular.module('srApp.services')
         // v1->2
         function(data) {
           return R.assoc('rounds', R.map(function(round) {
-            return { games: round };
+            return {
+              scenario: null,
+              games: round
+            };
           }, data.rounds), data);
         },
       ];
@@ -312,7 +315,6 @@ angular.module('srApp.services')
       function migrate(data) {
         data = R.deepExtend({
           bracket: [],
-          scenario: [],
           players: [[]],
           rounds: [],
           ranking: {

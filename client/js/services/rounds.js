@@ -10,6 +10,7 @@ angular.module('srApp.services')
         create: function(players) {
           var table = 1;
           return {
+            scenario: null,
             games: R.map(function(group) {
               return R.pipe(
                 R.range(0),

@@ -18,7 +18,7 @@
       <label>Scenario :</label>
       <select class="form-control"
               ng-options="s[1] as s[1] group by s[0] for s in scenarios"
-              ng-model="state.scenario[round.current]"
+              ng-model="state.rounds[round.current].scenario"
               ng-change="storeState()">
         <option value=""></option>
       </select>

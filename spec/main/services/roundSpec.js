@@ -26,11 +26,14 @@ describe('service', function() {
           [ ],
           [ 'player5', 'player6' ],
         ]);
-        expect(ret).toEqual({ games: [
-          [ 'table1', 'table2' ],
-          [ ],
-          [ 'table3' ],
-        ] });
+        expect(ret).toEqual({
+          scenario: null,
+          games: [
+            [ 'table1', 'table2' ],
+            [ ],
+            [ 'table3' ],
+          ]
+        });
         expect(this.game.create).toHaveBeenCalled();
         expect(this.game.create.calls.count()).toBe(3);
       });

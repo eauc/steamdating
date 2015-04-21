@@ -68,7 +68,6 @@ angular.module('srApp.controllers')
     'players',
     'srPairing',
     'bracketPairing',
-    'scenario',
     'games',
     function($scope,
              stateService,
@@ -78,15 +77,11 @@ angular.module('srApp.controllers')
              playersService,
              srPairingService,
              bracketPairingService,
-             scenarioService,
              gamesService) {
       $scope.new_state = R.clone($scope.state);
       $scope.previous_round_complete = roundsService.lastRoundIsComplete($scope.new_state.rounds);
       $scope.next_round = stateService.createNextRound($scope.state);
       console.log('init roundsNextCtrl', $scope.new_state, $scope.next_round);
-      $scope.scenario = {
-        next: null
-      };
       
       var player_rank_pairs = stateService.playerRankPairs($scope.new_state);
       $scope.updatePlayersOptions = function() {
@@ -134,9 +129,6 @@ angular.module('srApp.controllers')
 
       $scope.registerNextRound = function() {
         $scope.state.bracket = $scope.new_state.bracket;
-        $scope.state.scenario = scenarioService.set($scope.new_state.rounds.length,
-                                                    $scope.scenario.next,
-                                                    $scope.new_state.scenario);
         $scope.state.rounds = roundsService.registerNextRound($scope.next_round,
                                                               $scope.new_state.rounds);
         $scope.storeState();

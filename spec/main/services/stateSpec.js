@@ -56,7 +56,6 @@ describe('service', function() {
           players: [ [], 'updated' ],
           rounds: [],
           bracket: [],
-          scenario: [],
           ranking: {
             player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
             team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
@@ -78,9 +77,9 @@ describe('service', function() {
           version: 2,
           test: 'value',
           players: [ [ { name: 'toto' } ] ],
-          rounds: [ { games: [ [ { table: 1 } ] ] } ],
+          rounds: [ { scenario: 'scenar',
+                      games: [ [ { table: 1 } ] ] } ],
           bracket: [ 'bracket' ],
-          scenario: [ null, null, 'scenar1' ],
           ranking: {
             player: 'player',
             team: 'team'
@@ -97,14 +96,14 @@ describe('service', function() {
           expect(this.result).toEqual({
             version: 2,
             bracket: [ 'bracket' ],
-            scenario: [ null, null, 'scenar1' ],
             players: [ [ { name : 'toto', droped: null, faction : null, origin : null, team : null,
                            custom_field : 0, notes : null, lists : [  ], lists_played : [  ],
                            points : { tournament : 0, sos : 0, control : 0,
                                       army : 0, custom_field : 0 }
                          }
                        ], 'updated' ],
-            rounds: [ { games: [
+            rounds: [ { scenario: 'scenar',
+                        games: [
               [ { table: 1,
                   victory: null,
                   p1 : { name : null, list : null, tournament : null,
@@ -137,21 +136,24 @@ describe('service', function() {
           var result = state.create(data);
 
           expect(result.version).toEqual(2);
-          expect(result.rounds).toEqual([ { games: [
-            [ { table : 1, victory : null,
-                p1 : { name : null, list : null, tournament : null,
-                       control : null, army : null, custom_field : null },
-                p2 : { name : null, list : null, tournament : null,
-                       control : null, army : null, custom_field : null }
-              },
-              { table : 2, victory : null,
-                p1 : { name : null, list : null, tournament : null,
-                       control : null, army : null, custom_field : null },
-                p2 : { name : null, list : null, tournament : null,
-                       control : null, army : null, custom_field : null }
-              }
+          expect(result.rounds).toEqual([ {
+            scenario: null,
+            games: [
+              [ { table : 1, victory : null,
+                  p1 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null },
+                  p2 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null }
+                },
+                { table : 2, victory : null,
+                  p1 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null },
+                  p2 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null }
+                }
+              ]
             ]
-          ] } ]);
+          } ]);
         });
       });
       
@@ -164,21 +166,24 @@ describe('service', function() {
           var result = state.create(data);
 
           expect(result.version).toEqual(2);
-          expect(result.rounds).toEqual([ { games: [
-            [ { table : 1, victory : null,
-                p1 : { name : null, list : null, tournament : null,
-                       control : null, army : null, custom_field : null },
-                p2 : { name : null, list : null, tournament : null,
-                       control : null, army : null, custom_field : null }
-              },
-              { table : 2, victory : null,
-                p1 : { name : null, list : null, tournament : null,
-                       control : null, army : null, custom_field : null },
-                p2 : { name : null, list : null, tournament : null,
-                       control : null, army : null, custom_field : null }
-              }
+          expect(result.rounds).toEqual([ {
+            scenario: null,
+            games: [
+              [ { table : 1, victory : null,
+                  p1 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null },
+                  p2 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null }
+                },
+                { table : 2, victory : null,
+                  p1 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null },
+                  p2 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null }
+                }
+              ]
             ]
-          ] } ]);
+          } ]);
         });
       });
     });
