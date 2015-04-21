@@ -97,8 +97,8 @@ angular.module('srApp.services')
       }
 
       function interpolateRoundRow(player, index) {
-        var nb_lists = R.defaultTo(1, player.lists.length);
-        var lists = R.range(1, nb_lists).join(' / ');
+        var nb_lists = R.max([2, player.lists.length]);
+        var lists = R.range(1, nb_lists+1).join(' / ');
         return templates.round_row({
           index: index,
           lists: lists

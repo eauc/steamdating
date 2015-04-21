@@ -87,11 +87,11 @@ describe('service', function() {
                 '(sheetTemplate '+
                 '(playerTemplate p1 f1) '+
                 '(roundsTemplate '+
-                '(roundRowTemplate 1 1)\r\n'+
-                '(roundRowTemplate 2 1)\r\n'+
-                '(roundRowTemplate 3 1)\r\n'+
-                '(roundRowTemplate 4 1)\r\n'+
-                '(roundRowTemplate 5 1)) '+
+                '(roundRowTemplate 1 1 / 2)\r\n'+
+                '(roundRowTemplate 2 1 / 2)\r\n'+
+                '(roundRowTemplate 3 1 / 2)\r\n'+
+                '(roundRowTemplate 4 1 / 2)\r\n'+
+                '(roundRowTemplate 5 1 / 2)) '+
                 '(listsTemplate '+
                 '(listHeaderTemplate 1)(listHeaderTemplate 2) '+
                 '(listCasterTemplate c11)(listCasterTemplate c12) '+
@@ -108,11 +108,11 @@ describe('service', function() {
                 '(sheetTemplate '+
                 '(playerTemplate p2 f2) '+
                 '(roundsTemplate '+
-                '(roundRowTemplate 1 )\r\n'+
-                '(roundRowTemplate 2 )\r\n'+
-                '(roundRowTemplate 3 )\r\n'+
-                '(roundRowTemplate 4 )\r\n'+
-                '(roundRowTemplate 5 )'+
+                '(roundRowTemplate 1 1 / 2)\r\n'+
+                '(roundRowTemplate 2 1 / 2)\r\n'+
+                '(roundRowTemplate 3 1 / 2)\r\n'+
+                '(roundRowTemplate 4 1 / 2)\r\n'+
+                '(roundRowTemplate 5 1 / 2)'+
                 ') '+
                 '(listsTemplate '+
                 '(listHeaderTemplate 1)(listHeaderTemplate 2) '+
@@ -126,11 +126,11 @@ describe('service', function() {
                 '(sheetTemplate '+
                 '(playerTemplate p3 f3) '+
                 '(roundsTemplate '+
-                '(roundRowTemplate 1 )\r\n'+
-                '(roundRowTemplate 2 )\r\n'+
-                '(roundRowTemplate 3 )\r\n'+
-                '(roundRowTemplate 4 )\r\n'+
-                '(roundRowTemplate 5 )) '+
+                '(roundRowTemplate 1 1 / 2)\r\n'+
+                '(roundRowTemplate 2 1 / 2)\r\n'+
+                '(roundRowTemplate 3 1 / 2)\r\n'+
+                '(roundRowTemplate 4 1 / 2)\r\n'+
+                '(roundRowTemplate 5 1 / 2)) '+
                 '(listsTemplate '+
                 '(listHeaderTemplate 1)(listHeaderTemplate 2) '+
                 '(listCasterTemplate )(listCasterTemplate ) '+
