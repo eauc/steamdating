@@ -51,7 +51,7 @@ describe('service', function() {
 
       it('should create default state', function() {
         expect(this.result).toEqual({
-          version: 1,
+          version: 2,
           test: 'value',
           players: [ [], 'updated' ],
           rounds: [],
@@ -75,10 +75,10 @@ describe('service', function() {
 
       when('expected fields exist in data', function() {
         this.data = {
-          version: 1,
+          version: 2,
           test: 'value',
           players: [ [ { name: 'toto' } ] ],
-          rounds: [ [ [ { table: 1 } ] ] ],
+          rounds: [ { games: [ [ { table: 1 } ] ] } ],
           bracket: [ 'bracket' ],
           scenario: [ null, null, 'scenar1' ],
           ranking: {
@@ -95,7 +95,7 @@ describe('service', function() {
       }, function() {
         it('should not modify them', function() {
           expect(this.result).toEqual({
-            version: 1,
+            version: 2,
             bracket: [ 'bracket' ],
             scenario: [ null, null, 'scenar1' ],
             players: [ [ { name : 'toto', droped: null, faction : null, origin : null, team : null,
@@ -104,13 +104,16 @@ describe('service', function() {
                                       army : 0, custom_field : 0 }
                          }
                        ], 'updated' ],
-            rounds: [ [ [ { table: 1,
-                            victory: null,
-                            p1 : { name : null, list : null, tournament : null,
-                                   control : null, army : null, custom_field : null },
-                            p2 : { name : null, list : null, tournament : null,
-                                   control : null, army : null, custom_field : null }
-                          } ] ] ],
+            rounds: [ { games: [
+              [ { table: 1,
+                  victory: null,
+                  p1 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null },
+                  p2 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null }
+                }
+              ]
+            ] } ],
             ranking: {
               player : 'player',
               team : 'team'
@@ -133,8 +136,8 @@ describe('service', function() {
           };
           var result = state.create(data);
 
-          expect(result.version).toEqual(1);
-          expect(result.rounds).toEqual([ [
+          expect(result.version).toEqual(2);
+          expect(result.rounds).toEqual([ { games: [
             [ { table : 1, victory : null,
                 p1 : { name : null, list : null, tournament : null,
                        control : null, army : null, custom_field : null },
@@ -148,7 +151,34 @@ describe('service', function() {
                        control : null, army : null, custom_field : null }
               }
             ]
-          ] ]);
+          ] } ]);
+        });
+      });
+      
+      describe('version 2 migration', function() {
+        it('should wrap rounds games into groups', function() {
+          var data = {
+            version: 1,
+            rounds: [ [ [ { table: 1 }, { table: 2 } ] ] ],
+          };
+          var result = state.create(data);
+
+          expect(result.version).toEqual(2);
+          expect(result.rounds).toEqual([ { games: [
+            [ { table : 1, victory : null,
+                p1 : { name : null, list : null, tournament : null,
+                       control : null, army : null, custom_field : null },
+                p2 : { name : null, list : null, tournament : null,
+                       control : null, army : null, custom_field : null }
+              },
+              { table : 2, victory : null,
+                p1 : { name : null, list : null, tournament : null,
+                       control : null, army : null, custom_field : null },
+                p2 : { name : null, list : null, tournament : null,
+                       control : null, army : null, custom_field : null }
+              }
+            ]
+          ] } ]);
         });
       });
     });
@@ -610,7 +640,7 @@ describe('service', function() {
     describe('createNextRound()', function() {
       beforeEach(function() {
         this.playersService = spyOnService('players');
-        this.roundsService = spyOnService('rounds');
+        this.roundService = spyOnService('round');
       });
 
       it('should request list of not droped players', function() {
@@ -628,8 +658,8 @@ describe('service', function() {
           players: ['players'],
           rounds: [ [], [], [] ]
         }))
-          .toBe('rounds.createNextRound.returnValue');
-        expect(this.roundsService.createNextRound)
+          .toBe('round.create.returnValue');
+        expect(this.roundService.create)
           .toHaveBeenCalledWith('players.notDropedInRound.returnValue');
       });
     });
@@ -647,14 +677,16 @@ describe('service', function() {
             ]
           ],
           rounds: [
-            [ [ { table: 1, p1: { name: 'p1' }, p2: { name: 'p2' } },
-                { table: 2, p1: { name: 'p3' }, p2: { name: 'p4' } },
-                { table: 3, p1: { name: 'p5' }, p2: { name: 'p6' } },
-              ] ],
-            [ [ { table: 2, p1: { name: 'p1' }, p2: { name: 'p3' } },
-                { table: 3, p1: { name: 'p2' }, p2: { name: 'p5' } },
-                { table: 1, p1: { name: 'p4' }, p2: { name: 'p6' } },
-              ] ],
+            { games: [ [ { table: 1, p1: { name: 'p1' }, p2: { name: 'p2' } },
+                         { table: 2, p1: { name: 'p3' }, p2: { name: 'p4' } },
+                         { table: 3, p1: { name: 'p5' }, p2: { name: 'p6' } },
+                       ] ]
+            },
+            { games: [ [ { table: 2, p1: { name: 'p1' }, p2: { name: 'p3' } },
+                         { table: 3, p1: { name: 'p2' }, p2: { name: 'p5' } },
+                         { table: 1, p1: { name: 'p4' }, p2: { name: 'p6' } },
+                       ] ]
+            },
           ]
         };
       });

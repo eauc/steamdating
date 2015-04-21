@@ -1,15 +1,29 @@
 'use strict';
 
 angular.module('srApp.services')
- .factory('round', [
+  .factory('round', [
     'game',
-    function(gameService) {
+    'games',
+    function(gameService,
+             gamesService) {
       var roundService = {
+        create: function(players) {
+          var table = 1;
+          return {
+            games: R.map(function(group) {
+              return R.pipe(
+                R.range(0),
+                R.map(function() {
+                  return gameService.create({ table: table++ });
+                })
+              )(group.length/2);
+            }, players)
+          };
+        },
         gameForPlayer: function(player_name, coll) {
-          if(R.type(coll) !== 'Array' ||
-             R.isEmpty(coll)) return;
-
           return R.pipe(
+            R.prop('games'),
+            R.defaultTo([]),
             R.flatten,
             R.map(gameService.forPlayer$(player_name)),
             R.reject(R.isNil),
@@ -17,72 +31,24 @@ angular.module('srApp.services')
           )(coll);
         },
         hasGamesGroups: function(coll) {
-          return coll.length > 1;
+          return coll.games.length > 1;
         },
-        gamesForGroup: function(players, group_index, coll) {
-          return R.nth(group_index, coll);
+        gamesForGroup: function(group_index, coll) {
+          return R.nth(group_index, coll.games);
         },
         pairedPlayers: function(coll) {
-          return R.pipe(
-            R.flatten,
-            R.chain(function(game) {
-              return [ game.p1.name, game.p2.name ];
-            }),
-            R.reject(R.isNil),
-            R.uniq()
-          )(coll);
+          return gamesService.pairedPlayers(coll.games);
         },
         isPlayerPaired: function(player, coll) {
-          return (0 <= R.indexOf(player.name, roundService.pairedPlayers(coll)));
-        },
-        updatePlayer: function(index, key, coll) {
-          var name = coll[index][key].name;
-          return R.pipe(
-            R.mapIndexed(function(game, game_index) {
-              if(game_index === index && key === 'p1') return game;
-              if(game.p1.name === name) {
-                return R.assocPath(['p1','name'], null, game);
-              }
-              return game;
-            }),
-            R.mapIndexed(function(game, game_index) {
-              if(game_index === index && key === 'p2') return game;
-              if(game.p2.name === name) {
-                return R.assocPath(['p2','name'], null, game);
-              }
-              return game;
-            })
-          )(coll);
-        },
-        updateTable: function(index, min_table, coll) {
-          var table = coll[index].table;
-          var other_index = table - min_table;
-          
-          coll[other_index] = R.assoc('table',
-                                      min_table + index,
-                                      coll[other_index]);
-          
-          return R.sortBy(R.prop('table'), coll);
+          return gamesService.isPlayerPaired(player, coll.games);
         },
         allGamesHaveResult: function(coll) {
           return R.pipe(
+            R.prop('games'),
             R.flatten,
-            R.map(gameService.hasResult),
-            R.all(R.identity)
+            R.all(gameService.hasResult)
           )(coll);
         },
-        winners: function(coll) {
-          return R.pipe(
-            R.flatten,
-            R.map(gameService.winner)
-          )(coll);
-        },
-        losers: function(coll) {
-          return R.pipe(
-            R.flatten,
-            R.map(gameService.loser)
-          )(coll);
-        }
       };
       R.curryService(roundService);
       return roundService;
@@ -100,17 +66,6 @@ angular.module('srApp.services')
           return ( R.isEmpty(coll) ||
                    roundService.allGamesHaveResult(R.last(coll))
                  );
-        },
-        createNextRound: function(players) {
-          var table = 1;
-          return R.map(function(group) {
-            return R.pipe(
-              R.range(0),
-              R.map(function() {
-                return gameService.create({ table: table++ });
-              })
-            )(group.length/2);
-          }, players);
         },
         registerNextRound: function(next, coll) {
           return R.append(next, coll);

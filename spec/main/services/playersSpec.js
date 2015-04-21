@@ -303,18 +303,22 @@ describe('service', function() {
 
       it('should update lists played in <rounds>', function() {
         var rounds = [
-          [ {p1: {name:'toto1'}, p2: {name:'toto2'}},
-            {p1: {name:'toto3'}, p2: {name:'toto4'}},
-            {p1: {name:'tata1'}, p2: {name:'tata2'}},
-            {p1: {name:'tata3'}, p2: {name:'tata4'}},
-          ],
-          [ {p1: {name:'toto4'}, p2: {name:'toto2'}},
-            {p1: {name:'toto3'}, p2: {name:'toto1'}},
-            {p1: {name:'tata2'}, p2: {name:'tata4'}},
-            {p1: {name:'tata1'}, p2: {name:'tata3'}},
-          ]
+          { games: [ [ {p1: {name:'toto1'}, p2: {name:'toto2'}},
+                       {p1: {name:'toto3'}, p2: {name:'toto4'}},
+                       {p1: {name:'tata1'}, p2: {name:'tata2'}},
+                       {p1: {name:'tata3'}, p2: {name:'tata4'}},
+                     ]
+                   ]
+          },
+          { games: [ [ {p1: {name:'toto4'}, p2: {name:'toto2'}},
+                       {p1: {name:'toto3'}, p2: {name:'toto1'}},
+                       {p1: {name:'tata2'}, p2: {name:'tata4'}},
+                       {p1: {name:'tata1'}, p2: {name:'tata3'}},
+                     ]
+                   ]
+          }
         ];
-
+      
         var res = players.gamesForRounds(rounds, this.coll);
 
         expect(res).toEqual([

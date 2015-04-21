@@ -209,6 +209,58 @@ angular.module('srApp.services')
                                     gameService.listForPlayer$(player_name)),
                           coll);
         },
+        updatePlayer: function(index, key, games) {
+          var name = games[index][key].name;
+          return R.pipe(
+            R.mapIndexed(function(game, game_index) {
+              if(game_index === index && key === 'p1') return game;
+              if(game.p1.name === name) {
+                return R.assocPath(['p1','name'], null, game);
+              }
+              return game;
+            }),
+            R.mapIndexed(function(game, game_index) {
+              if(game_index === index && key === 'p2') return game;
+              if(game.p2.name === name) {
+                return R.assocPath(['p2','name'], null, game);
+              }
+              return game;
+            })
+          )(games);
+        },
+        updateTable: function(index, min_table, games) {
+          var table = games[index].table;
+          var other_index = table - min_table;
+          
+          games[other_index] = R.assoc('table',
+                                      min_table + index,
+                                      games[other_index]);
+          
+          return R.sortBy(R.prop('table'), games);
+        },
+        winners: function(coll) {
+          return R.pipe(
+            R.map(gameService.winner)
+          )(coll);
+        },
+        losers: function(coll) {
+          return R.pipe(
+            R.map(gameService.loser)
+          )(coll);
+        },
+        pairedPlayers: function(coll) {
+          return R.pipe(
+            R.flatten,
+            R.chain(function(game) {
+              return [ game.p1.name, game.p2.name ];
+            }),
+            R.reject(R.isNil),
+            R.uniq()
+          )(coll);
+        },
+        isPlayerPaired: function(player, coll) {
+          return (0 <= R.indexOf(player.name, gamesService.pairedPlayers(coll)));
+        },
       };
       function calculateBracketPoints(current_bracket_points,
                                       result, result_index,

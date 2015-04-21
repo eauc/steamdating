@@ -126,9 +126,9 @@ angular.module('srApp.services')
             return R.map(playerService.create, group);
           }, state.players);
           state.rounds = R.map(function(round) {
-            return R.map(function(games_group) {
-              return R.map(gameService.create, games_group);
-            }, round);
+            return R.assoc('games', R.map(function(games_group) {
+                return R.map(gameService.create, games_group);
+            }, round.games), round);
           }, state.rounds);
           state = stateService.updatePlayersPoints(state);
           state.version = LAST_VERSION_NUMBER;
@@ -174,7 +174,7 @@ angular.module('srApp.services')
         createNextRound: function(state) {
           return R.pipe(
             stateService.playersNotDropedInLastRound,
-            roundsService.createNextRound
+            roundService.create
           )(state);
         },
         clearBracket: function(state) {
@@ -292,13 +292,21 @@ angular.module('srApp.services')
       }
       
       var MIGRATIONS = [
+        // v0
         function(data) {
         },
+        // v0->1
         function(data) {
           return R.assoc('rounds', R.map(function(round) {
             return [round];
           }, data.rounds), data);
-        }
+        },
+        // v1->2
+        function(data) {
+          return R.assoc('rounds', R.map(function(round) {
+            return { games: round };
+          }, data.rounds), data);
+        },
       ];
       var LAST_VERSION_NUMBER = MIGRATIONS.length-1;
       function migrate(data) {

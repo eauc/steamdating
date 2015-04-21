@@ -264,6 +264,115 @@ describe('service', function() {
         });
       });
     });
+
+    describe('winners()', function() {
+      it('should extract list of winners', function() {
+        this.coll = [
+          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+          { p1: { name: 'p3', tournament: 0 }, p2: { name: null, tournament: 1 } },
+          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+        ];
+
+        expect(games.winners(this.coll)).toEqual(['p1', null, 'p5']);
+      });
+    });
+
+    describe('losers()', function() {
+      it('should extract list of losers', function() {
+        this.coll = [
+          { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+          { p1: { name: null, tournament: 0 }, p2: { name: 'p4', tournament: 1 } },
+          { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } }
+        ];
+
+        expect(games.losers(this.coll)).toEqual(['p2', null, 'p6']);
+      });
+    });
+
+    describe('updatePlayer(<game_index>, <player_key>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          { p1: { name: 'p1' }, p2: { name: 'p2' } },
+          { p1: { name: 'p2' }, p2: { name: null } },
+          { p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ];
+      });
+
+      it('should remove game[<game_index>][<player_key>] player from all other games', function() {
+        expect(games.updatePlayer(1, 'p1', this.coll)).toEqual([
+          { p1: { name: 'p1' }, p2: { name: null } },
+          { p1: { name: 'p2' }, p2: { name: null } },
+          { p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ]);
+
+        expect(games.updatePlayer(0, 'p2', this.coll)).toEqual([
+          { p1: { name: 'p1' }, p2: { name: 'p2' } },
+          { p1: { name: null }, p2: { name: null } },
+          { p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ]);
+      });
+    });
+
+    describe('updateTable(<game_index>, <min_table>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          { table:4, p1: { name: 'p1' }, p2: { name: 'p2' } },
+          { table:5, p1: { name: 'p2' }, p2: { name: null } },
+          { table:4, p1: { name: 'p5' }, p2: { name: 'p1' } }
+        ];
+      });
+
+      it('should reorder tables', function() {
+        expect(games.updateTable(2, 4, this.coll)).toEqual([
+          { table : 4, p1 : { name : 'p5' }, p2 : { name : 'p1' } },
+          { table : 5, p1 : { name : 'p2' }, p2 : { name : null } },
+          { table : 6, p1 : { name : 'p1' }, p2 : { name : 'p2' } }
+        ]);
+      });
+    });
+
+    describe('pairedPlayers()', function() {
+      it('should return list of paired players', function() {
+        expect(games.pairedPlayers([
+          [ { p1: { name: 'p1' }, p2: { name: 'p2' } },
+            { p1: { name: 'p3' }, p2: { name: 'p4' } } ],
+          [ { p1: { name: 'p5' }, p2: { name: 'p6' } } ]
+        ])).toEqual([ 'p1', 'p2', 'p3', 'p4', 'p5', 'p6' ]);
+        // uniq
+        expect(games.pairedPlayers([
+          [ { p1: { name: 'p1' }, p2: { name: 'p2' } },
+            { p1: { name: 'p2' }, p2: { name: 'p4' } } ],
+          [ { p1: { name: 'p5' }, p2: { name: 'p1' } } ]
+        ])).toEqual([ 'p1', 'p2', 'p4', 'p5' ]);
+        // without null/undefined
+        expect(games.pairedPlayers([
+          [ { p1: { name: 'p1' }, p2: { name: 'p2' } },
+            { p1: { name: null }, p2: { name: 'p4' } } ],
+          [ { p1: { name: 'p5' }, p2: { name: undefined } } ]
+        ])).toEqual([ 'p1', 'p2', 'p4', 'p5' ]);
+      });
+    });
+
+    describe('isPlayerPaired(<player>)', function() {
+      using([
+        [ 'name' , 'isPaired' ],
+        [ 'p2'   , true       ],
+        [ 'p5'   , true       ],
+        [ 'p3'   , false      ],
+        [ null   , false      ],
+      ], function(e, d) {
+        it('should check whether <player> is paired, '+d, function() {
+          this.coll = [
+            [ { p1: { name: 'p1' }, p2: { name: 'p2' } },
+              { p1: { name: 'p2' }, p2: { name: null } } ],
+            [ { p1: { name: 'p5' }, p2: { name: 'p1' } } ]
+          ];
+
+          expect(games.isPlayerPaired({ name: e.name }, this.coll))
+            .toBe(e.isPaired);
+        });
+      });
+    });
   });
 
 });

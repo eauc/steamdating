@@ -41,16 +41,16 @@ describe('service', function() {
     describe('gamesForPlayer(<name>)', function() {
       beforeEach(function() {
         this.coll = [
-          [
+          { games: [
             { p1: { name: 'toto', list: 'caster1' }, p2: {name: 'tata' } },
             { p1: { name: 'tutu'}, p2: {name: 'titi', list: 'caster5'  } },
             { p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
-          [
+          ] },
+          { games: [
             { p1: { name: 'toto', list: 'caster1' }, p2: {name: 'tata' } },
             { p1: { name: 'tutu'}, p2: {name: 'titi', list: null  } },
             { p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
+          ] },
         ];
       });
 
@@ -80,16 +80,16 @@ describe('service', function() {
     describe('listForPlayer(<name>)', function() {
       beforeEach(function() {
         this.coll = [
-          [
+          { games: [
             { p1: { name: 'toto', list: 'caster1' }, p2: {name: 'tata' } },
             { p1: { name: 'tutu'}, p2: {name: 'titi', list: 'caster5'  } },
             { p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
-          [
+          ] },
+          { games: [
             { p1: { name: 'toto', list: 'caster1' }, p2: {name: 'tata' } },
             { p1: { name: 'tutu'}, p2: {name: 'titi', list: null  } },
             { p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
+          ] },
         ];
       });
 
@@ -117,29 +117,29 @@ describe('service', function() {
     describe('pointsForPlayer(<name>)', function() {
       beforeEach(function() {
         this.coll = [
-          [
+          { games: [
             { victory: 'assassination',
               p1: { name: 'toto', tournament: 1,
                     control: 2, army: 3, custom_field: 6 } }
-          ],
-          [
+          ] },
+          { games: [
             { victory: 'assassination',
               p1: { name: 'other' },
               p2: { name: 'toto', tournament: 10,
                     control: 20, army: 30, custom_field: 60 } }
-          ],
-          [
+          ] },
+          { games: [
             /* round without a game for this player */
             { victory: 'assassination',
               p1: { name: 'other' },
               p2: { name: 'another' }, games: [] }
-          ],
-          [ /* empty round */ ],
-          [
+          ] },
+          { games: [ /* empty round */ ] },
+          { games: [
             { victory: 'assassination',
               p1: { name: 'toto', tournament: 100,
                     control: 200, army: 300, custom_field: 600 } }
-          ],
+          ] },
         ];
       });
 
@@ -202,16 +202,16 @@ describe('service', function() {
     describe('opponentsForPlayer(<name>)', function() {
       beforeEach(function() {
         this.coll = [
-          [
+          { games: [
             { p1: { name: 'toto' }, p2: { name: 'tata' } },
             { p1: { name: 'tutu' }, p2: { name: 'titi' } },
             { p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
-          [
+          ] },
+          { games: [
             { p1: { name: 'toto' }, p2: { name: 'tutu' } },
             { p1: { name: 'tata' }, p2: { name: undefined } },
             { p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
+          ] },
         ];
       });
 
@@ -235,16 +235,16 @@ describe('service', function() {
     describe('pairAlreadyExist(<game>)', function() {
       beforeEach(function() {
         this.coll = [
-          [
+          { games: [
             { p1: { name: 'toto' }, p2: { name: 'tata' } },
             { p1: { name: 'tutu' }, p2: { name: 'titi' } },
             { p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
-          [
+          ] },
+          { games: [
             { p1: { name: 'toto' }, p2: { name: 'tutu' } },
             { p1: { name: 'tata' }, p2: { name: undefined } },
             { p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
+          ] },
         ];
       });
 
@@ -262,28 +262,6 @@ describe('service', function() {
       });
     });
     
-    describe('createNextRound(<players>)', function() {
-      beforeEach(inject(function(game) {
-        spyOn(game, 'create').and.callFake(function(g) { return 'table'+g.table ; });
-        this.game = game;
-      }));
-
-      it('should create new games for each player groups', function() {
-        var round = rounds.createNextRound([
-          [ 'player1', 'player2', 'player3', 'player4' ],
-          [ ],
-          [ 'player5', 'player6' ],
-        ]);
-        expect(round).toEqual([
-          [ 'table1', 'table2' ],
-          [ ],
-          [ 'table3' ],
-        ]);
-        expect(this.game.create).toHaveBeenCalled();
-        expect(this.game.create.calls.count()).toBe(3);
-      });
-    });
-
     describe('registerNextRound(<next_round>)', function() {
       it('should append flattened <next_round> to <coll>', function() {
         expect(rounds.registerNextRound([ ['group1'], ['group2'] ],
@@ -299,16 +277,16 @@ describe('service', function() {
     describe('tablesForPlayer(<name>)', function() {
       beforeEach(function() {
         this.coll = [
-          [
+          { games: [
             { table: 1, p1: { name: 'toto' }, p2: { name: 'tata' } },
             { table: 2, p1: { name: 'tutu' }, p2: { name: 'titi' } },
             { table: 3, p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
-          [
+          ] },
+          { games: [
             { table: 3, p1: { name: 'toto' }, p2: { name: 'tutu' } },
             { table: 2, p1: { name: 'tata' }, p2: { name: undefined } },
             { table: 1, p1: { name: 't1' }, p2: { name: 't2' } }
-          ],
+          ] },
         ];
       });
 

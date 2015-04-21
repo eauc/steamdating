@@ -36,6 +36,7 @@ angular.module('srApp.services')
           var has_game_custom_field = stateService.hasGameCustomField(state);
           return R.pipe(
             R.nth(round_index),
+            R.prop('games'),
             R.map(R.map(gameService.toArray$(has_game_custom_field))),
             R.mapIndexed(function(group, group_index) {
               var headers = [ 'Table',

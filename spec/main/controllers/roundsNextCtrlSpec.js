@@ -23,6 +23,7 @@ describe('controllers', function() {
         this.scenarioService = spyOnService('scenario');
         this.srPairingService = spyOnService('srPairing');
         this.bracketPairingService = spyOnService('bracketPairing');
+        this.gamesService = spyOnService('games');
         this.roundService = spyOnService('round');
         this.roundsService = spyOnService('rounds');
 
@@ -80,16 +81,16 @@ describe('controllers', function() {
 
     describe('updatePlayer(<gr_index>,<ga_index>,<key>)', function() {
       beforeEach(function() {
-        this.scope.next_round = [ 'group1', 'group2', 'group3' ];
+        this.scope.next_round = { games: [ 'group1', 'group2', 'group3' ] };
         spyOn(this.scope, 'updatePlayersOptions');
 
         this.scope.updatePlayer(2,3,'key');
       });
 
       it('should update player names in next round for <gr_index> group', function() {
-        expect(this.scope.next_round[2])
-          .toBe('round.updatePlayer.returnValue');
-        expect(this.roundService.updatePlayer)
+        expect(this.scope.next_round.games[2])
+          .toBe('games.updatePlayer.returnValue');
+        expect(this.gamesService.updatePlayer)
           .toHaveBeenCalledWith(3, 'key', 'group3');
       });
 
@@ -100,7 +101,7 @@ describe('controllers', function() {
 
     describe('updateTable(<gr_index>,<ga_index>,<key>)', function() {
       beforeEach(function() {
-        this.scope.next_round = [ 'group1', 'group2', 'group3' ];
+        this.scope.next_round = { games: [ 'group1', 'group2', 'group3' ] };
         this.scope.tables_ranges = [[],[],[6,4,5]];
         spyOn(this.scope, 'updatePlayersOptions');
 
@@ -108,9 +109,9 @@ describe('controllers', function() {
       });
 
       it('should update tables in next round for <gr_index> group', function() {
-        expect(this.scope.next_round[2])
-          .toBe('round.updateTable.returnValue');
-        expect(this.roundService.updateTable)
+        expect(this.scope.next_round.games[2])
+          .toBe('games.updateTable.returnValue');
+        expect(this.gamesService.updateTable)
           .toHaveBeenCalledWith(3, 4, 'group3');
       });
 
@@ -134,8 +135,8 @@ describe('controllers', function() {
           [ { name: 'not_paired21' }, { name: 'paired22' } ],
         ];
         this.scope.new_state.rounds = ['rounds'];
-        this.scope.next_round = [ [ 'gr1g1', 'gr1g2' ], [ 'gr2g1' ] ];
-        this.roundService.isPlayerPaired.and.callFake(function(p, r) {
+        this.scope.next_round = { games: [ [ 'gr1g1', 'gr1g2' ], [ 'gr2g1' ] ] };
+        this.gamesService.isPlayerPaired.and.callFake(function(p, r) {
           return s.startsWith(p.name, 'paired');
         });
         this.roundsService.pairAlreadyExists.calls.reset();
@@ -225,6 +226,7 @@ describe('controllers', function() {
         spyOn(this.scope, 'updatePlayersOptions');
         this.scope.new_state.bracket = [ 'bracket' ];
 
+        this.scope.next_round = { games: [ [], [] ] };
         this.scope.suggestNextRound(1, this.type);
       }, function() {
         it('should reset bracket for this group', function() {
@@ -237,7 +239,7 @@ describe('controllers', function() {
         it('should suggest SR pairing for <group_index>', function() {
           expect(this.srPairingService.suggestNextRound)
             .toHaveBeenCalledWith(this.scope.new_state, 1);
-          expect(this.scope.next_round[1])
+          expect(this.scope.next_round.games[1])
             .toBe('srPairing.suggestNextRound.returnValue');
         });
 
@@ -251,6 +253,7 @@ describe('controllers', function() {
         spyOn(this.scope, 'updatePlayersOptions');
         this.scope.new_state.bracket = [ 'bracket' ];
 
+        this.scope.next_round = { games: [ [], [] ] };
         this.scope.suggestNextRound(1, this.type);
       }, function() {
         it('should reset bracket for this group', function() {
@@ -263,7 +266,7 @@ describe('controllers', function() {
         it('should suggest SR pairing for <group_index>', function() {
           expect(this.bracketPairingService.suggestRound)
             .toHaveBeenCalledWith(this.scope.new_state, 1);
-          expect(this.scope.next_round[1])
+          expect(this.scope.next_round.games[1])
             .toBe('bracketPairing.suggestRound.returnValue');
         });
 

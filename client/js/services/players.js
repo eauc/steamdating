@@ -331,9 +331,9 @@ angular.module('srApp.services')
                         }, 0)
                        )(names);
         },
-        areAllPaired: function(rounds, coll) {
+        areAllPaired: function(round, coll) {
           return R.pipe(playersService.names,
-                        R.flip(R.difference)(roundService.pairedPlayers(rounds)),
+                        R.flip(R.difference)(roundService.pairedPlayers(round)),
                         R.isEmpty
                        )(coll);
         },

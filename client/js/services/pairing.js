@@ -45,11 +45,13 @@ angular.module('srApp.services')
     'basePairing',
     'players',
     'game',
+    'games',
     'round',
     'state',
     function(basePairingService,
              playersService,
              gameService,
+             gamesService,
              roundService,
              stateService) {
       var bracketPairingService = {
@@ -100,11 +102,11 @@ angular.module('srApp.services')
           return R.pipe(
             R.prop('rounds'),
             R.last,
-            roundService.gamesForGroup$(players_not_droped, group_index),
+            roundService.gamesForGroup$(group_index),
             R.chunkAll(games_groups_bracket_size, null),
             R.reduce(function(mem, round) {
-              var winners = roundService.winners(round);
-              var losers = roundService.losers(round);
+              var winners = gamesService.winners(round);
+              var losers = gamesService.losers(round);
               var pairs = R.chunkAll(2, null, R.concat(winners, losers));
 
               var new_pairings = R.map(function(p) {

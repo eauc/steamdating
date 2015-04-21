@@ -24,7 +24,7 @@
       </select>
     </div>
   </form>
-  <div ng-repeat="(gri,gr) in ::r">
+  <div ng-repeat="(gri,gr) in ::r.games">
     <h2 ng-if="::r | round:'hasGamesGroups'"
         style="border-bottom:1px solid black;">
       Group{{::gri+1}}

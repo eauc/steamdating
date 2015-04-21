@@ -115,8 +115,9 @@ describe('service', function() {
           return ctxt.nb_rounds;
         });
         this.roundService = spyOnService('round');
-        this.roundService.winners.and.callThrough();
-        this.roundService.losers.and.callThrough();
+        this.gamesService = spyOnService('games');
+        this.gamesService.winners.and.callThrough();
+        this.gamesService.losers.and.callThrough();
 
         this.tables = [42,43,44,45];
         this.playersService.tableRangeForGroup._retVal = this.tables;
@@ -161,7 +162,7 @@ describe('service', function() {
         this.res = bracketPairing.suggestNextSingleRound(this.st, this.gri);
 
         expect(this.roundService.gamesForGroup)
-          .toHaveBeenCalledWith(this.not_droped_players, this.gri,
+          .toHaveBeenCalledWith(this.gri,
                                 ['last_round']);
       });
 

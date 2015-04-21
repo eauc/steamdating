@@ -36,16 +36,14 @@
       Bracket - {{::new_state | state:'bracketRoundOf':gri:null}}
     </h3>
     <table class="table text-center">
-      <tr ng-class="{
-          'info': (gr | players:'areAllPaired':next_round[gri])
-          }">
+      <tr>
         <th class="text-center"
             colspan="2">Player1</th>
         <th class="text-center">Table</th>
         <th class="text-center"
             colspan="2">Player2</th>
       </tr>
-      <tr ng-repeat="(gai, g) in next_round[gri]"
+      <tr ng-repeat="(gai, g) in next_round.games[gri]"
           ng-class="{
           'info': (g | game:'isValid')
           }">
