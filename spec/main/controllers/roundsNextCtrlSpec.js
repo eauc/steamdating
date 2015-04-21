@@ -20,6 +20,7 @@ describe('controllers', function() {
         this.stateService.playersNotDropedInLastRound._retVal = [ 'players_not_droped' ];
         this.stateService.createNextRound._retVal = ['state.createNextRound.returnValue'];
         this.bracketService = spyOnService('bracket');
+        this.scenarioService = spyOnService('scenario');
         this.srPairingService = spyOnService('srPairing');
         this.bracketPairingService = spyOnService('bracketPairing');
         this.roundService = spyOnService('round');
@@ -62,6 +63,10 @@ describe('controllers', function() {
         .toEqual([ 'state.createNextRound.returnValue' ]);
       expect(this.stateService.createNextRound)
         .toHaveBeenCalledWith(this.scope.state);
+    });
+
+    it('should init next scenario', function() {
+      expect(this.scope.scenario).toEqual({ next: null });
     });
     
     it('should players->rank hash', function() {
@@ -180,6 +185,8 @@ describe('controllers', function() {
         this.scope.new_state.rounds = [ 'round1', 'round2' ];
         this.scope.new_state.bracket = [ 'new_bracket' ];
         this.new_rounds = [ 'round1', 'round2', 'round3' ];
+        this.scope.new_state.scenario = ['scenarios'];
+        this.scope.scenario.next = 'new_scenar';
         this.roundsService.registerNextRound.and.returnValue(this.new_rounds);
 
         this.scope.registerNextRound();
@@ -187,6 +194,13 @@ describe('controllers', function() {
 
       it('should update bracket', function() {
         expect(this.scope.state.bracket).toEqual([ 'new_bracket' ]);
+      });
+
+      it('should update scenario', function() {
+        expect(this.scenarioService.set)
+          .toHaveBeenCalledWith(2, 'new_scenar', ['scenarios']);
+        expect(this.scope.state.scenario)
+          .toBe('scenario.set.returnValue');
       });
 
       it('should register next round', function() {

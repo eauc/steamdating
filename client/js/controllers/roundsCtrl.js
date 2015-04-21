@@ -68,6 +68,7 @@ angular.module('srApp.controllers')
     'players',
     'srPairing',
     'bracketPairing',
+    'scenario',
     function($scope,
              stateService,
              bracketService,
@@ -75,12 +76,16 @@ angular.module('srApp.controllers')
              roundsService,
              playersService,
              srPairingService,
-             bracketPairingService) {
+             bracketPairingService,
+             scenarioService) {
       $scope.new_state = R.clone($scope.state);
       console.log('init roundsNextCtrl', $scope.new_state);
       $scope.previous_round_complete = roundsService.lastRoundIsComplete($scope.new_state.rounds);
       $scope.next_round = stateService.createNextRound($scope.state);
-
+      $scope.scenario = {
+        next: null
+      };
+      
       var player_rank_pairs = stateService.playerRankPairs($scope.new_state);
       $scope.updatePlayersOptions = function() {
         $scope.players_options = R.pipe(
@@ -124,6 +129,9 @@ angular.module('srApp.controllers')
 
       $scope.registerNextRound = function() {
         $scope.state.bracket = $scope.new_state.bracket;
+        $scope.state.scenario = scenarioService.set($scope.new_state.rounds.length,
+                                                    $scope.scenario.next,
+                                                    $scope.new_state.scenario);
         $scope.state.rounds = roundsService.registerNextRound($scope.next_round,
                                                               $scope.new_state.rounds);
         $scope.storeState();
@@ -158,7 +166,7 @@ angular.module('srApp.controllers')
              fileExportService,
              stateService,
              stateTablesService) {
-      console.log('init roundsNthCtrl', $stateParams.pane);
+      console.log('init roundsNthCtrl', $stateParams.pane, $scope.state);
       $scope.round.current = parseFloat($stateParams.pane);
       $scope.r = $scope.state.rounds[$scope.round.current];
       if(R.isNil($scope.r)) {

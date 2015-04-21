@@ -304,6 +304,7 @@ angular.module('srApp.services')
       function migrate(data) {
         data = R.deepExtend({
           bracket: [],
+          scenario: [],
           players: [[]],
           rounds: [],
           ranking: {

@@ -56,6 +56,7 @@ describe('service', function() {
           players: [ [], 'updated' ],
           rounds: [],
           bracket: [],
+          scenario: [],
           ranking: {
             player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
             team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
@@ -79,6 +80,7 @@ describe('service', function() {
           players: [ [ { name: 'toto' } ] ],
           rounds: [ [ [ { table: 1 } ] ] ],
           bracket: [ 'bracket' ],
+          scenario: [ null, null, 'scenar1' ],
           ranking: {
             player: 'player',
             team: 'team'
@@ -95,6 +97,7 @@ describe('service', function() {
           expect(this.result).toEqual({
             version: 1,
             bracket: [ 'bracket' ],
+            scenario: [ null, null, 'scenar1' ],
             players: [ [ { name : 'toto', droped: null, faction : null, origin : null, team : null,
                            custom_field : 0, notes : null, lists : [  ], lists_played : [  ],
                            points : { tournament : 0, sos : 0, control : 0,

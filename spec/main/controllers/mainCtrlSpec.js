@@ -24,7 +24,9 @@ describe('controllers', function() {
         this.stateService = spyOnService('state');
         this.factionsService = spyOnService('factions');
         this.resultSheetsHtmlService = spyOnService('resultSheetsHtml');
-
+        this.scenarioService = spyOnService('scenario');
+        mockReturnPromise(this.scenarioService.init);
+        
         $controller('mainCtrl', { 
           '$scope': this.scope,
           '$state': this.router_state,
@@ -38,6 +40,13 @@ describe('controllers', function() {
 
     it('should init resultSheetsHtml', function() {
       expect(this.resultSheetsHtmlService.init).toHaveBeenCalled();
+    });
+
+    it('should init scenarios', function() {
+      expect(this.scenarioService.init).toHaveBeenCalled();
+
+      this.scenarioService.init.resolve('scenarios');
+      expect(this.scope.scenarios).toBe('scenarios');
     });
 
     it('should init state', function() {

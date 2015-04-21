@@ -8,6 +8,16 @@
           ng-click="registerNextRound()">
     Register Round
   </button>
+  <form class="form-inline">
+    <div class="form-group">
+      <label>Scenario :</label>
+      <select class="form-control"
+              ng-options="s[1] as s[1] group by s[0] for s in scenarios"
+              ng-model="scenario.next">
+        <option value=""></option>
+      </select>
+    </div>
+  </form>
   <p class="text-warning"
      ng-if="!previous_round_complete">
     <strong>Previous round is not complete !</strong><br />

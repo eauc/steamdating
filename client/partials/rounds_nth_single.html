@@ -13,6 +13,17 @@
       Download {{f.label}} File
     </a>
   </div>
+  <form class="form-inline">
+    <div class="form-group">
+      <label>Scenario :</label>
+      <select class="form-control"
+              ng-options="s[1] as s[1] group by s[0] for s in scenarios"
+              ng-model="state.scenario[round.current]"
+              ng-change="storeState()">
+        <option value=""></option>
+      </select>
+    </div>
+  </form>
   <div ng-repeat="(gri,gr) in ::r">
     <h2 ng-if="::r | round:'hasGamesGroups'"
         style="border-bottom:1px solid black;">

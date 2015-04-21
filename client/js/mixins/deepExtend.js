@@ -43,7 +43,9 @@ R.deepExtend =(function() {
             throw new Error('Trying to combine an array with a non-array (' + prop + ')');
           }
           else {
-            obj[prop] = R.reject(R.isNil, R.deepExtend(obj[prop], source[prop]));
+            // DO NOT remove nil entries from arrays
+            // obj[prop] = R.reject(R.isNil, R.deepExtend(obj[prop], source[prop]));
+            obj[prop] = R.deepExtend(obj[prop], source[prop]);
           }
         }
         else if( R.type(obj[prop]) === 'Object' ||
