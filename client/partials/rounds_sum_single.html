@@ -19,8 +19,8 @@
       <th>Lists Played</th>
       <th ng-repeat="(ri,r) in ::state.rounds">
         {{
-        ::(state | state:'isBracketTournament':gri:$index) ?
-        (state | state:'bracketRoundOf':gri:$index) :
+        ::(r | round:'groupIsInBracket':gri) ?
+        (r | round:'groupBracketRoundOf':gri) :
         'Round'+(ri+1)
         }}
       </th>

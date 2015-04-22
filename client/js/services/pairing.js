@@ -66,7 +66,7 @@ angular.module('srApp.services')
             }, [])
           )(bracketPairingService.indices(size/2));
         },
-        suggestFirstSingleRound: function(state, group_index) {
+        suggestFirstSingleRound: function(state, group_index, round) {
           var players_not_droped = stateService.playersNotDropedInLastRound(state);
           var tables = playersService.tableRangeForGroup(group_index, players_not_droped);
 
@@ -76,7 +76,7 @@ angular.module('srApp.services')
             R.chain(R.prop('players'))
           )(players_not_droped);
 
-          return R.pipe(
+          var games_for_group = R.pipe(
             R.length,
             bracketPairingService.indices,
             R.map(function(index) {
@@ -91,15 +91,18 @@ angular.module('srApp.services')
                                         });
             })
           )(players);
+          var games = R.clone(round.games);
+          games[group_index] = games_for_group;
+          return R.assoc('games', games, round);
         },
-        suggestNextSingleRound: function(state, group_index) {
+        suggestNextSingleRound: function(state, group_index, round) {
           var players_not_droped = stateService.playersNotDropedInLastRound(state);
           var tables = playersService.tableRangeForGroup(group_index, players_not_droped);
-          var nb_bracket_rounds = stateService.bracketNbRounds(group_index, state);
-          var games_groups_bracket_size = players_not_droped[group_index].length /
-              (1 << nb_bracket_rounds);
-          
-          return R.pipe(
+          var nb_bracket_rounds = roundService.bracketForGroup(group_index, round);
+          var games_groups_bracket_size = players_not_droped[group_index].length >>
+              (nb_bracket_rounds - 1);
+
+          var games_for_group = R.pipe(
             R.prop('rounds'),
             R.last,
             roundService.gamesForGroup$(group_index),
@@ -123,19 +126,22 @@ angular.module('srApp.services')
               return R.concat(mem, new_pairings);
             }, [])
           )(state);
+          var games = R.clone(round.games);
+          games[group_index] = games_for_group;
+          return R.assoc('games', games, round);
         },
-        suggestFirstRound: function(state, group_index) {
-          return bracketPairingService.suggestFirstSingleRound(state, group_index);
+        suggestFirstRound: function(state, group_index, round) {
+          return bracketPairingService.suggestFirstSingleRound(state, group_index, round);
         },
-        suggestNextRound: function(state, group_index) {
-          return bracketPairingService.suggestNextSingleRound(state, group_index);
+        suggestNextRound: function(state, group_index, round) {
+          return bracketPairingService.suggestNextSingleRound(state, group_index, round);
         },
-        suggestRound: function(state, group_index) {
-          if(0 === stateService.bracketNbRounds(group_index, state)) {
-            return bracketPairingService.suggestFirstRound(state, group_index);
+        suggestRound: function(state, group_index, round) {
+          if(1 === roundService.bracketForGroup(group_index, round)) {
+            return bracketPairingService.suggestFirstRound(state, group_index, round);
           }
           else {
-            return bracketPairingService.suggestNextRound(state, group_index);
+            return bracketPairingService.suggestNextRound(state, group_index, round);
           }
         }
       };
@@ -212,14 +218,16 @@ angular.module('srApp.services')
                    tables
                  ];
         },
-        suggestNextSingleRound: function(state, group_index) {
+        suggestNextSingleRound: function(state, group_index, round) {
           var players_not_droped = stateService.playersNotDropedInLastRound(state);
           var tables = playersService.tableRangeForGroup(group_index, players_not_droped);
           var sorted_players = srPairingService.sortPlayers(players_not_droped[group_index]);
 
-          if(1 === (sorted_players.length & 0x1)) sorted_players.push({ name: '_phantom_' });
+          if(1 === (sorted_players.length & 0x1)) {
+            sorted_players.push({ name: '_phantom_' });
+          }
           
-          return R.pipe(
+          var games_for_group = R.pipe(
             R.nth(group_index),
             R.length,
             R.flip(R.divide)(2),
@@ -235,9 +243,12 @@ angular.module('srApp.services')
             }),
             R.sortBy(R.prop('table'))
           )(players_not_droped);
+          var games = R.clone(round.games);
+          games[group_index] = games_for_group;
+          return R.assoc('games', games, round);
         },
-        suggestNextRound: function(state, group_index) {
-          return srPairingService.suggestNextSingleRound(state, group_index);
+        suggestNextRound: function(state, group_index, round) {
+          return srPairingService.suggestNextSingleRound(state, group_index, round);
         }
       };
       R.curryService(srPairingService);

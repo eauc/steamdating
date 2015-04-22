@@ -137,10 +137,10 @@ angular.module('srApp.services')
     'game',
     function(gameService) {
       var gamesService = {
-        pointsForPlayer: function(player_name, bracket_start, base_weight, games) {
+        pointsForPlayer: function(player_name, brackets, bracket_weight, games) {
           var ret = R.pipe(
             R.map(gameService.player$(player_name)),
-            gamesService.reducePoints$(bracket_start, base_weight)
+            gamesService.reducePoints$(brackets, bracket_weight)
           )(games);
           ret.assassination = R.pipe(
             R.filter(gameService.winForPlayer$(player_name)),
@@ -149,13 +149,13 @@ angular.module('srApp.services')
           )(games);
           return ret;
         },
-        pointsAgainstPlayer: function(player_name, bracket_start, base_weight, games) {
+        pointsAgainstPlayer: function(player_name, brackets, bracket_weight, games) {
           var ret = R.pipe(
             R.map(function(game) {
               var opponent_name = gameService.opponentForPlayer(player_name, game);
               return gameService.player(opponent_name, game);
             }),
-            gamesService.reducePoints$(bracket_start, base_weight)
+            gamesService.reducePoints$(brackets, bracket_weight)
           )(games);
           ret.assassination = R.pipe(
             R.filter(gameService.lossForPlayer$(player_name)),
@@ -164,12 +164,15 @@ angular.module('srApp.services')
           )(games);
           return ret;
         },
-        reducePoints: function(bracket_start, base_weight, results) {
+        reducePoints: function(brackets, base_weight, results) {
           return R.reduceIndexed(function(mem, result, result_index) {
             return {
-              bracket: calculateBracketPoints(mem.bracket,
-                                              result, result_index,
-                                              bracket_start, base_weight),
+              bracket: ( R.exists(brackets) &&
+                         R.exists(brackets[result_index]) ?
+                         calculateBracketPoints(mem.bracket, result,
+                                                brackets[result_index], base_weight) :
+                         mem.bracket
+                       ),
               tournament: mem.tournament + (result.tournament || 0),
               control: mem.control + (result.control || 0),
               army: mem.army + (result.army || 0),
@@ -263,12 +266,9 @@ angular.module('srApp.services')
         },
       };
       function calculateBracketPoints(current_bracket_points,
-                                      result, result_index,
-                                      bracket_start,  base_weight) {
-        var bracket_weight = base_weight >> (result_index - bracket_start);
-        return ( isInBracket(result_index, bracket_start) ?
-                 current_bracket_points + bracket_weight * result.tournament :
-                 current_bracket_points );
+                                      result, bracket,  bracket_weight) {
+        bracket_weight = bracket_weight >> (bracket - 1);
+        return current_bracket_points + bracket_weight * result.tournament;
       }
       function isInBracket(result_index, bracket_start) {
         return (!R.isNil(bracket_start) &&

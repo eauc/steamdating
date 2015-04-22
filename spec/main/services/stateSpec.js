@@ -55,7 +55,6 @@ describe('service', function() {
           test: 'value',
           players: [ [], 'updated' ],
           rounds: [],
-          bracket: [],
           ranking: {
             player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
             team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
@@ -79,7 +78,6 @@ describe('service', function() {
           players: [ [ { name: 'toto' } ] ],
           rounds: [ { scenario: 'scenar',
                       games: [ [ { table: 1 } ] ] } ],
-          bracket: [ 'bracket' ],
           ranking: {
             player: 'player',
             team: 'team'
@@ -95,7 +93,6 @@ describe('service', function() {
         it('should not modify them', function() {
           expect(this.result).toEqual({
             version: 2,
-            bracket: [ 'bracket' ],
             players: [ [ { name : 'toto', droped: null, faction : null, origin : null, team : null,
                            custom_field : 0, notes : null, lists : [  ], lists_played : [  ],
                            points : { tournament : 0, sos : 0, control : 0,
@@ -131,13 +128,18 @@ describe('service', function() {
         it('should wrap rounds games into groups', function() {
           var data = {
             version: 0,
-            rounds: [ [ { table: 1 }, { table: 2 } ] ],
+            players: [
+              [ {}, {}, {}, {} ],
+              [ {}, {} ]
+            ],
+            rounds: [ [ { table: 1 }, { table: 2 }, { table: 3 } ] ],
           };
           var result = state.create(data);
 
           expect(result.version).toEqual(2);
           expect(result.rounds).toEqual([ {
             scenario: null,
+            bracket: [],
             games: [
               [ { table : 1, victory : null,
                   p1 : { name : null, list : null, tournament : null,
@@ -146,6 +148,13 @@ describe('service', function() {
                          control : null, army : null, custom_field : null }
                 },
                 { table : 2, victory : null,
+                  p1 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null },
+                  p2 : { name : null, list : null, tournament : null,
+                         control : null, army : null, custom_field : null }
+                },
+              ], [
+                { table : 3, victory : null,
                   p1 : { name : null, list : null, tournament : null,
                          control : null, army : null, custom_field : null },
                   p2 : { name : null, list : null, tournament : null,
@@ -161,13 +170,20 @@ describe('service', function() {
         it('should wrap rounds games into groups', function() {
           var data = {
             version: 1,
-            rounds: [ [ [ { table: 1 }, { table: 2 } ] ] ],
+            bracket: [ null, 1, 3, 5],
+            rounds: [
+              [ [ { table: 1 }, { table: 2 } ] ],
+              [],
+              [],
+              []
+            ],
           };
           var result = state.create(data);
 
           expect(result.version).toEqual(2);
-          expect(result.rounds).toEqual([ {
+          expect(result.rounds[0]).toEqual({
             scenario: null,
+            bracket: [null, null, null, null],
             games: [
               [ { table : 1, victory : null,
                   p1 : { name : null, list : null, tournament : null,
@@ -183,7 +199,22 @@ describe('service', function() {
                 }
               ]
             ]
-          } ]);
+          });
+          expect(result.rounds[1]).toEqual({
+            scenario: null,
+            bracket: [null, 1, null, null],
+            games: []
+          });
+          expect(result.rounds[2]).toEqual({
+            scenario: null,
+            bracket: [null, 2, null, null],
+            games: []
+          });
+          expect(result.rounds[3]).toEqual({
+            scenario: null,
+            bracket: [null, 3, 1, null],
+            games: []
+          });
         });
       });
     });
@@ -288,16 +319,6 @@ describe('service', function() {
       });
     });
 
-    describe('clearBracket()', function() {
-      it('should clear all brackets', function() {
-        expect(state.clearBracket({ players: R.repeat({}, 3) }))
-          .toEqual({
-            players: R.repeat({}, 3),
-            bracket: [undefined, undefined, undefined]
-          });
-      });
-    });
-
     describe('canBeBracketTournament(<group_index>)', function() {
       beforeEach(function() {
         spyOn(state, 'playersNotDropedInLastRound');
@@ -334,60 +355,50 @@ describe('service', function() {
       });
     });
 
-    describe('bracketNbRounds(<group_index>)', function() {
-      when('bracket is set', function() {
+    describe('groupIsInBracket(<group_index>)', function() {
+      when('rounds is empty', function() {
       }, function() {
-        using([
-          [ 'rounds'               , 'nb' ],
-          [ [ [], [] ]             , 0    ],
-          [ [ [], [], [] ]         , 1    ],
-          [ [ [], [], [], [], [] ] , 3    ],
-        ], function(e, d) {
-          it('should return number of rounds since bracket start, '+d, function() {
-            expect(state.bracketNbRounds(0, { bracket: [ 2 ], rounds: e.rounds }))
-              .toBe(e.nb);
-          });
+        it('should return false', function() {
+          expect(state.groupIsInBracket(0, {
+            rounds: [],
+          })).toBe(false);
         });
       });
 
-      when('bracket is not set', function() {
+      when('rounds is not empty', function() {
+        this.roundService = spyOnService('round');
       }, function() {
-        it('should return 0', function() {
-          expect(state.bracketNbRounds(0, { bracket: [ undefined ], rounds: [ [], [] ] }))
-            .toBe(0);
+        it('should return a description of the bracket round', function() {
+          expect(state.groupIsInBracket(42, {
+            rounds: [ 'first', 'last' ]
+          })).toBe('round.groupIsInBracket.returnValue');
+
+          expect(this.roundService.groupIsInBracket)
+            .toHaveBeenCalledWith(42, 'last');
         });
       });
     });
 
-    describe('bracketRoundof(, <group_index>, <round_index>)', function() {
-      when('bracket is not set', function() {
+    describe('groupBracketRoundof(<group_index>)', function() {
+      when('rounds is empty', function() {
       }, function() {
         it('should return "Not in bracket"', function() {
-          expect(state.bracketRoundOf(0, 0, {
-            bracket: [],
+          expect(state.groupBracketRoundOf(0, {
             rounds: [],
-            players: [[]]
           })).toMatch(/not in bracket/i);
         });
       });
 
-      when('bracket is set', function() {
+      when('rounds is not empty', function() {
+        this.roundService = spyOnService('round');
       }, function() {
-        using([
-          [ 'round_index' , 'desc'            ],
-          [ 0             , /round of 8/i     ],
-          [ 1             , /quarter-finals/i ],
-          [ 2             , /semi-finals/i    ],
-          [ 3             , /final/i          ],
-          [ 4             , /ended/i          ],
-        ], function(e, d) {
-          it('should return a description of the bracket round, '+d, function() {
-            expect(state.bracketRoundOf(0, e.round_index, {
-              bracket: [0],
-              players: [ R.repeat({}, 16) ],
-              rounds: []
-            })).toMatch(e.desc);
-          });
+        it('should return a description of the bracket round', function() {
+          expect(state.groupBracketRoundOf(42, {
+            rounds: [ 'first', 'last' ]
+          })).toBe('round.groupBracketRoundOf.returnValue');
+
+          expect(this.roundService.groupBracketRoundOf)
+            .toHaveBeenCalledWith(42, 'last');
         });
       });
     });
@@ -399,20 +410,16 @@ describe('service', function() {
 
       it('should call players.updatePoints with bracket information', function() {
         var dummy_players = [ R.repeat({}, 4), R.repeat({}, 2), R.repeat({}, 5) ];
-        var dummy_bracket = [ 4, undefined, 2 ];
         
         expect(state.updatePlayersPoints({
-          bracket: dummy_bracket,
           players: dummy_players,
           rounds: ['rounds']
         })).toEqual({
-          bracket: dummy_bracket,
           players: 'players.updatePoints.returnValue',
           rounds: ['rounds']
         });
         expect(this.playersService.updatePoints)
-          .toHaveBeenCalledWith(dummy_bracket, [ 2, 1, 2.5 ],
-                                [ 'rounds' ],
+          .toHaveBeenCalledWith([ 'rounds' ],
                                 dummy_players);
       });
     });
@@ -535,17 +542,18 @@ describe('service', function() {
 
       it('should call players.sort with bracket information', function() {
         var dummy_players = [ R.repeat({}, 4), R.repeat({}, 2), R.repeat({}, 5) ];
-        var dummy_bracket = [ 4, undefined, 2 ];
         var st = {
-          bracket: dummy_bracket,
           players: dummy_players,
-          rounds: R.repeat({}, 3)
+          rounds: [
+            {},
+            { bracket: [ null, 1, 4 ] }
+          ]
         };
 
         expect(state.sortPlayersByRank(st))
           .toBe('players.sort.returnValue');
         expect(this.playersService.sort)
-          .toHaveBeenCalledWith(st, [ false, false, true ], dummy_players);
+          .toHaveBeenCalledWith(st, [ false, true, true ], dummy_players);
       });
     });
 
@@ -697,7 +705,7 @@ describe('service', function() {
       });
       
       it('should compute each game fitness', function() {
-        var round = [
+        var round = { games: [
           [ // same faction
             { table: 3, p1: { name: 'p1' }, p2: { name: 'p4' } },
             // table already
@@ -705,7 +713,7 @@ describe('service', function() {
             // pair already, same origin
             { table: 1, p1: { name: 'p5' }, p2: { name: 'p6' } },
           ]
-        ];
+        ] };
         var fitness = state.evaluateRoundFitness(round, this.coll);
         expect(fitness.games).toEqual([
           [ { pair : false, table : false, faction : true,  origin : false },

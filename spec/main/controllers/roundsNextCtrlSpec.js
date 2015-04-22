@@ -19,7 +19,6 @@ describe('controllers', function() {
         this.stateService = spyOnService('state');
         this.stateService.playersNotDropedInLastRound._retVal = [ 'players_not_droped' ];
         this.stateService.createNextRound._retVal = ['state.createNextRound.returnValue'];
-        this.bracketService = spyOnService('bracket');
         this.srPairingService = spyOnService('srPairing');
         this.bracketPairingService = spyOnService('bracketPairing');
         this.gamesService = spyOnService('games');
@@ -216,16 +215,16 @@ describe('controllers', function() {
         this.scope.suggestNextRound(1, this.type);
       }, function() {
         it('should reset bracket for this group', function() {
-          expect(this.scope.new_state.bracket)
-            .toBe('bracket.reset.returnValue');
-          expect(this.bracketService.reset)
-            .toHaveBeenCalledWith(1, [ 'bracket' ]);
+          expect(this.roundService.resetBracketForGroup)
+            .toHaveBeenCalledWith(1, { games: [ [], [] ] });
         });
 
         it('should suggest SR pairing for <group_index>', function() {
           expect(this.srPairingService.suggestNextRound)
-            .toHaveBeenCalledWith(this.scope.new_state, 1);
-          expect(this.scope.next_round.games[1])
+            .toHaveBeenCalledWith(this.scope.new_state,
+                                  1,
+                                 'round.resetBracketForGroup.returnValue');
+          expect(this.scope.next_round)
             .toBe('srPairing.suggestNextRound.returnValue');
         });
 
@@ -243,16 +242,20 @@ describe('controllers', function() {
         this.scope.suggestNextRound(1, this.type);
       }, function() {
         it('should reset bracket for this group', function() {
-          expect(this.scope.new_state.bracket)
-            .toBe('bracket.set.returnValue');
-          expect(this.bracketService.set)
-            .toHaveBeenCalledWith(1, 1, [ 'bracket' ]);
+          expect(this.roundService.bracketForGroup)
+            .toHaveBeenCalledWith(1, 'rounds');
+          expect(this.roundService.setBracketForGroup)
+            .toHaveBeenCalledWith(1,
+                                  'round.bracketForGroup.returnValue',
+                                  { games: [ [], [] ] });
         });
 
         it('should suggest SR pairing for <group_index>', function() {
           expect(this.bracketPairingService.suggestRound)
-            .toHaveBeenCalledWith(this.scope.new_state, 1);
-          expect(this.scope.next_round.games[1])
+            .toHaveBeenCalledWith(this.scope.new_state,
+                                  1,
+                                  'round.setBracketForGroup.returnValue');
+          expect(this.scope.next_round)
             .toBe('bracketPairing.suggestRound.returnValue');
         });
 

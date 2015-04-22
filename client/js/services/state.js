@@ -12,7 +12,6 @@ angular.module('srApp.services')
     'ranking',
     'round',
     'rounds',
-    'bracket',
     function($window,
              jsonStringifierService,
              playerService,
@@ -22,8 +21,7 @@ angular.module('srApp.services')
              listsService,
              rankingService,
              roundService,
-             roundsService,
-             bracketService) {
+             roundsService) {
       var STORAGE_KEY = 'sdApp.state';
       
       var stateService = {
@@ -111,7 +109,6 @@ angular.module('srApp.services')
               });
             }, _st.players);
           });
-          _st.bracket = [undefined, 1];
           _st.custom_fields.player = 'PCustom';
           _st.custom_fields.game = 'GCustom';
           _st = stateService.updatePlayersPoints(_st);
@@ -177,11 +174,6 @@ angular.module('srApp.services')
             roundService.create
           )(state);
         },
-        clearBracket: function(state) {
-          return R.assoc('bracket',
-                         bracketService.clear(state.players.length, state.bracket),
-                         state);
-        },
         canBeBracketTournament: function(group_index, state) {
           var group_size = R.pipe(
             stateService.playersNotDropedInLastRound,
@@ -192,31 +184,22 @@ angular.module('srApp.services')
           while(0 === (group_size & 0x1)) group_size = group_size >> 1;
           return (group_size === 1);
         },
-        isBracketTournament: function(group_index, round_index, state) {
-          round_index = R.defaultTo(state.rounds.length, round_index);
-          return bracketService.isBracketTournament(group_index, round_index, state.bracket);
+        groupIsInBracket: function(group_index, state) {
+          return ( !R.isEmpty(state.rounds) &&
+                   roundService.groupIsInBracket(group_index, R.last(state.rounds))
+                 );
         },
-        bracketNbRounds: function(group_index, state) {
-          return bracketService.nbRounds(group_index, state.rounds.length, state.bracket);
-        },
-        bracketRoundOf: function(group_index, round_index, state) {
-          round_index = R.defaultTo(state.rounds.length, round_index);
-          var players_not_droped = stateService.playersNotDroped(state);
-          var group_size = players_not_droped[group_index].length;
-          return bracketService.roundOf(group_index, group_size, round_index, state.bracket);
+        groupBracketRoundOf: function(group_index, state) {
+          return ( R.isEmpty(state.rounds) ?
+                   'Not in bracket' :
+                   roundService.groupBracketRoundOf(group_index, R.last(state.rounds))
+                 );
         },
         updatePlayersPoints: function(state) {
-          var _state = R.assoc('bracket',
-                               bracketService.setLength(state.players.length, state.bracket),
-                               state);
-          var bracket_weights = R.map(function(group) {
-            return group.length/2;
-          }, _state.players);
-          _state = R.assoc('players',
-                           playersService.updatePoints(_state.bracket, bracket_weights,
-                                                       _state.rounds, _state.players),
-                           _state);
-          return _state;
+          return R.assoc('players',
+                         playersService.updatePoints(state.rounds,
+                                                     state.players),
+                         state);
         },
         updateBestsPlayers: function(state) {
           var _state = R.assoc('bests',
@@ -243,10 +226,13 @@ angular.module('srApp.services')
           }, state.players);
         },
         sortPlayersByRank: function(state) {
-          var is_bracket = R.mapIndexed(function(group, group_index) {
-            return stateService.isBracketTournament(group_index, null, state);
+          var is_in_bracket = R.mapIndexed(function(group, group_index) {
+            return ( R.isEmpty(state.rounds) ?
+                     false :
+                     roundService.groupIsInBracket(group_index, R.last(state.rounds))
+                   );
           }, state.players);
-          return playersService.sort(state, is_bracket, state.players);
+          return playersService.sort(state, is_in_bracket, state.players);
         },
         playerRankPairs: function(state) {
           return R.pipe(
@@ -261,7 +247,7 @@ angular.module('srApp.services')
           )(state);
         },
         evaluateRoundFitness: function(round, state) {
-          var games_fitnesses = gamesFitnesses(round, state);
+          var games_fitnesses = gamesFitnesses(round.games, state);
           var summary = gamesFitnessesSummary(games_fitnesses);
           return {
             games: games_fitnesses,
@@ -297,24 +283,45 @@ angular.module('srApp.services')
         },
         // v0->1
         function(data) {
+          var current_index = 0;
+          var games_ranges = R.map(function(group) {
+            var next_index = current_index + Math.ceil(group.length/2);
+            var range = [ current_index,
+                          next_index ];
+            current_index = next_index;
+            return range;
+          }, R.defaultTo([[]], data.players));
           return R.assoc('rounds', R.map(function(round) {
-            return [round];
+            return R.map(function(range) {
+              return R.slice(range[0], range[1], round);
+            }, games_ranges);
           }, data.rounds), data);
         },
         // v1->2
         function(data) {
-          return R.assoc('rounds', R.map(function(round) {
+          var state = R.assoc('rounds', R.map(function(round) {
             return {
               scenario: null,
               games: round
             };
           }, data.rounds), data);
+          R.forEachIndexed(function(round, index) {
+            round.bracket = R.map(function(group_bracket) {
+              return ( R.isNil(group_bracket) ?
+                       null :
+                       ( group_bracket <= index ?
+                         1 + index - group_bracket :
+                         null
+                       )
+                     );
+            }, R.defaultTo([], data.bracket));
+          }, state.rounds);
+          return state;
         },
       ];
       var LAST_VERSION_NUMBER = MIGRATIONS.length-1;
       function migrate(data) {
         data = R.deepExtend({
-          bracket: [],
           players: [[]],
           rounds: [],
           ranking: {

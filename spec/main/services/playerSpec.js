@@ -18,7 +18,7 @@ describe('service', function() {
       using([
         [ 'player' , 'name'  , 'is'  ],
         [ 'tata'   , 'other' , false ],
-        [ 'same'   , 'same'  , true ],
+        [ 'same'   , 'same'  , true  ],
         [ 'tata'   , null    , false ],
       ], function(e, d) {
         it('should test if player is <name>, '+d, function() {
@@ -110,10 +110,10 @@ describe('service', function() {
       it('should update points gained in <rounds>', function() {
         var p = player.create({ name: 'toto' });
         var dummy_rounds = [ 'tata' ];
-        var bracket_start = 8;
+        var group_index = 8;
         var bracket_weight = 42;
 
-        expect(player.updatePoints(bracket_start, bracket_weight, dummy_rounds, p).points)
+        expect(player.updatePoints(group_index, bracket_weight, dummy_rounds, p).points)
           .toBe('rounds.pointsForPlayer.returnValue');
         expect(this.roundsService.pointsForPlayer)
           .toHaveBeenCalledWith('toto', 8, 42, dummy_rounds);

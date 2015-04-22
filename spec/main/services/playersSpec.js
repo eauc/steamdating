@@ -473,6 +473,11 @@ describe('service', function() {
           ]
         ];
 
+        this.playerService = spyOnService('player');
+        this.playerService.updatePoints.and.callFake(function(gri,bw,rs,p) {
+          return R.assoc('points', { updatePoints: 'returnValue' }, p);
+        });
+
         this.roundsService = spyOnService('rounds');
         this.roundsService.pointsForPlayer._retVal =
           [ 'rounds.pointsForPlayer.returnValue' ];
@@ -482,37 +487,30 @@ describe('service', function() {
 
       it('should update points gained in <rounds>', function() {
         var dummy_rounds = [ 'tata' ];
-        var bracket_start = [ 3, 4 ];
-        var bracket_weight = [ 32, 42 ];
-        var res = players.updatePoints(bracket_start, bracket_weight,
-                                       dummy_rounds,
+        var res = players.updatePoints(dummy_rounds,
                                        this.coll);
 
-        expect(this.roundsService.pointsForPlayer.calls.count()).toBe(5);
-        expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith('toto1', 3, 32, dummy_rounds);
-        expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith('toto2', 3, 32, dummy_rounds);
-        expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith('toto3', 3, 32, dummy_rounds);
-        expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith('tata1', 4, 42, dummy_rounds);
-        expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith('tata2', 4, 42, dummy_rounds);
+        expect(this.playerService.updatePoints.calls.count()).toBe(5);
+        expect(this.playerService.updatePoints)
+          .toHaveBeenCalledWith(0, 1.5, dummy_rounds, { name: 'toto1' });
+        expect(this.playerService.updatePoints)
+          .toHaveBeenCalledWith(0, 1.5, dummy_rounds, { name: 'toto2' });
+        expect(this.playerService.updatePoints)
+          .toHaveBeenCalledWith(0, 1.5, dummy_rounds, { name: 'toto3' });
+        expect(this.playerService.updatePoints)
+          .toHaveBeenCalledWith(1, 1, dummy_rounds, { name: 'tata1' });
+        expect(this.playerService.updatePoints)
+          .toHaveBeenCalledWith(1, 1, dummy_rounds, { name: 'tata2' });
 
-        expect(res[0][2].points)
-          .toEqual([ 'rounds.pointsForPlayer.returnValue' ]);
-        expect(res[1][1].points)
-          .toEqual([ 'rounds.pointsForPlayer.returnValue' ]);
+        expect(res[0][2].points.updatePoints)
+          .toBe('returnValue');
+        expect(res[1][1].points.updatePoints)
+          .toEqual('returnValue');
       });
 
       it('should update SoS gained in <rounds>', function() {
         var dummy_rounds = [ 'tata' ];
-        var bracket_start = [ 3, 4 ];
-        var bracket_weight = [ 32, 42 ];
-
-        var res = players.updatePoints(bracket_start, bracket_weight,
-                                       dummy_rounds,
+        var res = players.updatePoints(dummy_rounds,
                                        this.coll);
 
         expect(this.roundsService.opponentsForPlayer)

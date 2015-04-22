@@ -39,7 +39,6 @@ angular.module('srApp.controllers')
             
             $scope.new_state.players = playersService.chunkGroups(parseFloat(size),
                                                                   $scope.new_state.players);
-            $scope.new_state = stateService.clearBracket($scope.new_state);
           });
       };
       $scope.splitSelection = function() {
@@ -51,7 +50,6 @@ angular.module('srApp.controllers')
         }, [], R.keys($scope.selection));
         
         $scope.new_state.players = playersService.splitNewGroup(ps, $scope.new_state.players);
-        $scope.new_state = stateService.clearBracket($scope.new_state);
       };
       $scope.moveSelectionFront = function() {
         var ps = R.reduce(function(mem, name) {
@@ -64,8 +62,6 @@ angular.module('srApp.controllers')
         R.forEach(function(p) {
           $scope.new_state.players = playersService.movePlayerGroupFront(p, $scope.new_state.players);
         }, ps);
-        
-        $scope.new_state = stateService.clearBracket($scope.new_state);
       };
       $scope.moveSelectionBack = function() {
         var ps = R.reduce(function(mem, name) {
@@ -78,21 +74,17 @@ angular.module('srApp.controllers')
         R.forEach(function(p) {
           $scope.new_state.players = playersService.movePlayerGroupBack(p, $scope.new_state.players);
         }, ps);
-        $scope.new_state = stateService.clearBracket($scope.new_state);
       };
       $scope.moveGroupFront = function(gr) {
         $scope.new_state.players = playersService.moveGroupFront(gr, $scope.new_state.players);
-        $scope.new_state = stateService.clearBracket($scope.new_state);
       };
       $scope.moveGroupBack = function(gr) {
         $scope.new_state.players = playersService.moveGroupBack(gr, $scope.new_state.players);
-        $scope.new_state = stateService.clearBracket($scope.new_state);
       };
 
       $scope.doClose = function(validate) {
         if(validate) {
           $scope.state.players = $scope.new_state.players;
-          $scope.state.bracket = $scope.new_state.bracket;
           $scope.updatePoints();
           $scope.storeState();
         }

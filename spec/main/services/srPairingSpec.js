@@ -159,7 +159,7 @@ describe('service', function() {
       });
     });
 
-    describe('suggestNextSingleRound(<state>, <group_index>)', function() {
+    describe('suggestNextSingleRound(<state>, <group_index>, <round>)', function() {
       beforeEach(function() {
         this.games = [{table: 3},{table: 1},{table: 2}];
         this.tables = [['tables1'],['tables2'],['tables3'],[]];
@@ -189,8 +189,11 @@ describe('service', function() {
           players: [ 'players' ],
           tables_groups_size: 4
         };
+        this.round = {
+          games: [ [],[] ]
+        };
 
-        this.suggest = srPairing.suggestNextRound(this.state, 1);
+        this.suggest = srPairing.suggestNextRound(this.state, 1, this.round);
       });
 
       it('should request list of not droped players', function() {
@@ -234,7 +237,7 @@ describe('service', function() {
         srPairing.sortPlayers.and.returnValue(['player11']);
         this.i = 0;
 
-        this.suggest = srPairing.suggestNextRound(this.state, 1);
+        this.suggest = srPairing.suggestNextRound(this.state, 1, this.round);
       }, function() {
         it('should insert phantom player', function() {
           expect(srPairing.findNextPairing)
@@ -246,7 +249,12 @@ describe('service', function() {
       });
 
       it('should return sorted game list', function() {
-        expect(this.suggest).toEqual([{table: 1},{table: 2},{table: 3}]);
+        expect(this.suggest).toEqual({
+          games: [
+            [],
+            [{table: 1},{table: 2},{table: 3}]
+          ]
+        });
       });
     });
   });

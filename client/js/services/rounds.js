@@ -10,6 +10,7 @@ angular.module('srApp.services')
         create: function(players) {
           var table = 1;
           return {
+            bracket: R.map(R.always(undefined), players),
             scenario: null,
             games: R.map(function(group) {
               return R.pipe(
@@ -50,6 +51,69 @@ angular.module('srApp.services')
             R.all(gameService.hasResult)
           )(coll);
         },
+        groupIsInBracket: function(group_index, coll) {
+          return R.exists(coll.bracket[group_index]);
+        },
+        bracketForGroup: function(group_index, coll) {
+          return R.nth(group_index, coll.bracket);
+        },
+        setBracketForGroup: function(group_index, previous_bracket, coll) {
+          var new_bracket = R.clone(coll.bracket);
+          new_bracket[group_index] = ( R.isNil(previous_bracket) ?
+                                       1 :
+                                       previous_bracket+1
+                                     );
+          return R.assoc('bracket', new_bracket, coll);
+        },
+        resetBracketForGroup: function(group_index, coll) {
+          var new_bracket = R.clone(coll.bracket);
+          new_bracket[group_index] = undefined;
+          return R.assoc('bracket', new_bracket, coll);
+        },
+        groupBracketRoundOf: function(group_index, coll) {
+          if(!roundService.groupIsInBracket(group_index, coll)) {
+            return 'Not in bracket';
+          }
+          var group_size = coll.games[group_index].length * 2;
+          var bracket_size = group_size >> coll.bracket[group_index];
+          switch(bracket_size) {
+          case 0:
+            {
+              return 'Ended';
+            }
+          case 1:
+            {
+              return 'Final';
+            }
+          case 2:
+            {
+              return 'Semi-finals';
+            }
+          case 4:
+            {
+              return 'Quarter-finals';
+            }
+          default:
+            {
+              return 'Round of '+bracket_size;
+            }
+          }
+        },
+        random: function(coll) {
+          R.forEach(function(games_group) {
+            R.forEach(function(game) {
+              game.victory = R.head(R.shuffle(['assassination', null]));
+              var winner_loser = R.shuffle(['p1', 'p2']);
+              game[winner_loser[0]].tournament = 1;
+              game[winner_loser[1]].tournament = 0;
+              game.p1.control = Math.floor(Math.random() * 6);
+              game.p2.control = Math.floor(Math.random() * 6);
+              game.p1.army = Math.floor(Math.random() * 51);
+              game.p2.army = Math.floor(Math.random() * 51);
+            }, games_group);
+          }, coll.games);
+          return coll;
+        }
       };
       R.curryService(roundService);
       return roundService;
@@ -74,7 +138,10 @@ angular.module('srApp.services')
         drop: function(round_index, coll) {
           return R.remove(round_index, 1, coll);
         },
-        pointsForPlayer: function(player_name, bracket_start, base_weight, coll) {
+        pointsForPlayer: function(player_name, group_index, bracket_weight, coll) {
+          var brackets = R.pipe(
+            R.map(roundService.bracketForGroup$(group_index))
+          )(coll);
           return R.pipe(
             R.map(roundService.gameForPlayer$(player_name)),
             R.map(function(game) {
@@ -88,7 +155,7 @@ angular.module('srApp.services')
               }
               return game;
             }),
-            gamesService.pointsForPlayer$(player_name, bracket_start, base_weight)
+            gamesService.pointsForPlayer$(player_name, brackets, bracket_weight)
           )(coll);
         },
         gamesForPlayer: function(player_name, coll) {

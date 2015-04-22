@@ -114,7 +114,7 @@ describe('service', function() {
       });
     });
 
-    describe('pointsForPlayer(<name>)', function() {
+    describe('pointsForPlayer(<name>, <group_index>, <bracket_weight>)', function() {
       beforeEach(function() {
         this.coll = [
           { games: [
@@ -144,10 +144,13 @@ describe('service', function() {
       });
 
       when('bracket is not defined', function() {
+        R.forEach(function(round) {
+          round.bracket = [undefined];
+        }, this.coll);
       }, function(){
         it('should sum points for <name>', function() {
           // uniq
-          expect(rounds.pointsForPlayer('toto',undefined, 32,
+          expect(rounds.pointsForPlayer('toto', 0, 32,
                                         this.coll))
             .toEqual({
               bracket: 0,
@@ -164,34 +167,38 @@ describe('service', function() {
       when('bracket is defined', function() {
       }, function(){
         using([
-          [ 'bracket_start' , 'points' ],
+          [ 'brackets'                 , 'points' ],
           // bracket from start
-          [ 0               , { bracket: 392,
-                                tournament : 111,
-                                control: 222,
-                                army: 333,
-                                custom_field: 666,
-                                sos: 0,
-                                assassination: 1 } ],
+          [ [1,2,3,4,5]                , { bracket: 392,
+                                           tournament : 111,
+                                           control: 222,
+                                           army: 333,
+                                           custom_field: 666,
+                                           sos: 0,
+                                           assassination: 1 } ],
           // started after a few rounds
-          [ 2               , { bracket: 800,
-                                tournament : 111,
-                                control: 222,
-                                army: 333,
-                                custom_field: 666,
-                                sos: 0,
-                                assassination: 1 } ],
+          [ [null,null,1,2,3]          , { bracket: 800,
+                                           tournament : 111,
+                                           control: 222,
+                                           army: 333,
+                                           custom_field: 666,
+                                           sos: 0,
+                                           assassination: 1 } ],
           // not yet started
-          [ 6               , { bracket: 0,
-                                tournament : 111,
-                                control: 222,
-                                army: 333,
-                                custom_field: 666,
-                                sos: 0,
-                                assassination: 1 } ],
+          [ [null,null,null,null,null] , { bracket: 0,
+                                           tournament : 111,
+                                           control: 222,
+                                           army: 333,
+                                           custom_field: 666,
+                                           sos: 0,
+                                           assassination: 1 } ],
         ], function(e, d) {
           it('should sum points for <name>, '+d, function() {
-            expect(rounds.pointsForPlayer('toto', e.bracket_start, 32,
+            R.forEachIndexed(function(round, index) {
+              round.bracket = [e.brackets[index]];
+            }, this.coll);
+            
+            expect(rounds.pointsForPlayer('toto', 0, 32,
                                           this.coll))
               .toEqual(e.points);
           });

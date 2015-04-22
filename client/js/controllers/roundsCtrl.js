@@ -62,7 +62,6 @@ angular.module('srApp.controllers')
   .controller('roundsNextCtrl', [
     '$scope',
     'state',
-    'bracket',
     'round',
     'rounds',
     'players',
@@ -71,7 +70,6 @@ angular.module('srApp.controllers')
     'games',
     function($scope,
              stateService,
-             bracketService,
              roundService,
              roundsService,
              playersService,
@@ -81,7 +79,7 @@ angular.module('srApp.controllers')
       $scope.new_state = R.clone($scope.state);
       $scope.previous_round_complete = roundsService.lastRoundIsComplete($scope.new_state.rounds);
       $scope.next_round = stateService.createNextRound($scope.state);
-      console.log('init roundsNextCtrl', $scope.new_state, $scope.next_round);
+      console.log('init roundsNextCtrl', $scope.new_state);
       
       var player_rank_pairs = stateService.playerRankPairs($scope.new_state);
       $scope.updatePlayersOptions = function() {
@@ -110,19 +108,25 @@ angular.module('srApp.controllers')
             )($scope.new_state);
           })
         )($scope.new_state);
+        console.log('next_round', $scope.next_round);
       };
       $scope.updatePlayersOptions();
 
       $scope.suggestNextRound = function(i, type) {
         if('bracket' === type) {
-          $scope.new_state.bracket = bracketService.set(i,
-                                                        $scope.new_state.rounds.length,
-                                                        $scope.new_state.bracket);
-          $scope.next_round.games[i] = bracketPairingService.suggestRound($scope.new_state, i);
+          var previous_bracket = roundService.bracketForGroup(i, R.last($scope.new_state.rounds));
+          $scope.next_round = roundService.setBracketForGroup(i,
+                                                              previous_bracket,
+                                                              $scope.next_round);
+          $scope.next_round = bracketPairingService.suggestRound($scope.new_state,
+                                                                 i,
+                                                                 $scope.next_round);
         }
         if('sr' === type) {
-          $scope.new_state.bracket = bracketService.reset(i, $scope.new_state.bracket);
-          $scope.next_round.games[i] = srPairingService.suggestNextRound($scope.new_state, i);
+          $scope.next_round = roundService.resetBracketForGroup(i, $scope.next_round);
+          $scope.next_round = srPairingService.suggestNextRound($scope.new_state,
+                                                                i,
+                                                                $scope.next_round);
         }
         $scope.updatePlayersOptions();
       };
@@ -151,14 +155,18 @@ angular.module('srApp.controllers')
   .controller('roundsNthCtrl', [
     '$scope',
     '$stateParams',
+    '$location',
     'prompt',
+    'round',
     'rounds',
     'fileExport',
     'state',
     'stateTables',
     function($scope,
              $stateParams,
+             $location,
              promptService,
+             roundService,
              roundsService,
              fileExportService,
              stateService,
@@ -199,6 +207,13 @@ angular.module('srApp.controllers')
             $scope.storeState();
             $scope.goToState('rounds.sum');
           });
+      };
+
+      $scope.doRandomRound = function() {
+        $scope.state.rounds[$scope.round.current] =
+          roundService.random($scope.state.rounds[$scope.round.current]);
+        $scope.storeState();
+        $location.reload();
       };
     }
   ]);

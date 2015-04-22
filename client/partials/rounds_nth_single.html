@@ -4,6 +4,10 @@
     <span class="glyphicon glyphicon-trash"></span>
     Delete Round
   </button>
+  <!-- <button class="btn btn-default no-print"
+  ng-click="doRandomRound()">
+  Random
+  </button> -->
   <div class="no-print"
        ng-repeat="f in exports"
        style="margin:10px 0;">
@@ -29,15 +33,17 @@
         style="border-bottom:1px solid black;">
       Group{{::gri+1}}
     </h2>
-    <h3 ng-if="::state | state:'isBracketTournament':gri:round.current">
-      Bracket - {{::state | state:'bracketRoundOf':gri:round.current}}
+    <h3 ng-if="::r | round:'groupIsInBracket':gri">
+      Bracket - {{::r | round:'groupBracketRoundOf':gri}}
     </h3>
     <table class="table text-center">
       <tr>
         <th>CKill</th>
-        <th class="text-center" colspan="6">Player1</th>
+        <th class="text-center" colspan="5">Player1</th>
+        <th class="visible-print"></th>
         <th class="text-center">Table</th>
-        <th class="text-center" colspan="6">Player2</th>
+        <th class="visible-print"></th>
+        <th class="text-center" colspan="5">Player2</th>
         <th>Notes</th>
       </tr>
       <tr>

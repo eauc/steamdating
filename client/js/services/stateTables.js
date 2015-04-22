@@ -189,8 +189,8 @@ angular.module('srApp.services')
 
       function roundsSummaryHeadersForGroup(state, group_index) {
         var headers = R.mapIndexed(function(round, round_index) {
-          return ( stateService.isBracketTournament(group_index, round_index, state) ?
-                   stateService.bracketRoundOf(group_index, round_index, state) :
+          return ( roundService.groupIsInBracket(group_index, round) ?
+                   roundService.groupBracketRoundOf(group_index, round) :
                    'Round'+(round_index+1)
                  );
         }, state.rounds);

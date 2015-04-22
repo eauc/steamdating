@@ -32,8 +32,8 @@
        ng-if="::!(gr | players:'groupSizeIsEven':state.rounds.length)">
       <strong>Odd number of players !</strong>
     </p>
-    <h3 ng-if="new_state | state:'isBracketTournament':gri:null">
-      Bracket - {{::new_state | state:'bracketRoundOf':gri:null}}
+    <h3 ng-if="next_round | round:'groupIsInBracket':gri">
+      Bracket - {{next_round | round:'groupBracketRoundOf':gri}}
     </h3>
     <table class="table text-center">
       <tr>
@@ -89,8 +89,7 @@
       </tr>
     </table>
     <button class="btn btn-default"
-            ng-click="suggestNextRound(gri, 'sr')"
-            ng-if="::!(state | state:'isBracketTournament':gri:state.rounds.length-1)">
+            ng-click="suggestNextRound(gri, 'sr')">
       Make SR Suggestion
     </button>
     <button class="btn btn-default"

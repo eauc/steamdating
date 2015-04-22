@@ -27,6 +27,7 @@ describe('service', function() {
           [ 'player5', 'player6' ],
         ]);
         expect(ret).toEqual({
+          bracket: [undefined, undefined, undefined],
           scenario: null,
           games: [
             [ 'table1', 'table2' ],
@@ -167,6 +168,124 @@ describe('service', function() {
         ] };
 
         expect(round.allGamesHaveResult(this.coll)).toBe(false);
+      });
+    });
+
+    describe('bracketForGroup(<group_index>)', function() {
+      beforeEach(function() {
+        this.coll = { bracket: [null, 1, null, 5] };
+      });
+
+      using([
+        [ 'group_index', 'bracket' ],
+        [ 0            , null      ],
+        [ 1            , 1         ],
+        [ 2            , null      ],
+        [ 3            , 5         ],
+        [ 4            , undefined ],
+      ], function(e, d) {
+        it('should find bracket number for group, '+d, function() {
+          expect(round.bracketForGroup(e.group_index, this.coll))
+            .toBe(e.bracket);
+        });
+      });
+    });
+
+    describe('groupIsInBracket(<group_index>)', function() {
+      beforeEach(function() {
+        this.coll = { bracket: [null, 1, null, 5] };
+      });
+
+      using([
+        [ 'group_index', 'in_bracket' ],
+        [ 0            , false        ],
+        [ 1            , true         ],
+        [ 2            , false        ],
+        [ 3            , true         ],
+        [ 4            , false        ],
+      ], function(e, d) {
+        it('should check whether group is in bracket, '+d, function() {
+          expect(round.groupIsInBracket(e.group_index, this.coll))
+            .toBe(e.in_bracket);
+        });
+      });
+    });
+
+    describe('setBracketForGroup(<group_index>, <previous_bracket>)', function() {
+      beforeEach(function() {
+        this.coll = { bracket: [null, 1, null, 5] };
+      });
+
+      using([
+        [ 'group_index', 'previous_bracket', 'result'            ],
+        [ 0            , null              , [ 1, 1, null, 5]    ],
+        [ 0            , 3                 , [ 4, 1, null, 5]    ],
+        [ 1            , null              , [ null, 1, null, 5] ],
+        [ 1            , 1                 , [ null, 2, null, 5] ],
+        [ 2            , null              , [ null, 1, 1, 5]    ],
+        [ 2            , 0                 , [ null, 1, 1, 5]    ],
+        [ 3            , undefined         , [ null, 1, null, 1] ],
+        [ 3            , 5                 , [ null, 1, null, 6] ],
+      ], function(e, d) {
+        it('should set bracket for group depending on previous bracket, '+d, function() {
+          expect(round.setBracketForGroup(e.group_index,
+                                          e.previous_bracket,
+                                          this.coll))
+            .toEqual({ bracket: e.result });
+        });
+      });
+    });
+
+    describe('resetBracketForGroup(<group_index>)', function() {
+      beforeEach(function() {
+        this.coll = { bracket: [null, 1, null, 5] };
+      });
+
+      using([
+        [ 'group_index', 'result'                    ],
+        [ 0            , [ undefined, 1, null, 5]    ],
+        [ 1            , [ null, undefined, null, 5] ],
+        [ 2            , [ null, 1, undefined, 5]    ],
+        [ 3            , [ null, 1, null, undefined] ],
+      ], function(e, d) {
+        it('should reset bracket for group, '+d, function() {
+          expect(round.resetBracketForGroup(e.group_index,
+                                            this.coll))
+            .toEqual({ bracket: e.result });
+        });
+      });
+    });
+
+    describe('groupBracketRoundOf(<group_index>)', function() {
+      beforeEach(function() {
+        this.coll = {
+          bracket: [null, 1, 2, 3, 4, 5],
+          // uses games groups size to determine bracket width
+          games: [
+            [ {}, {}, {}, {}, {}, {}, {}, {} ],
+            [ {}, {}, {}, {}, {}, {}, {}, {} ],
+            [ {}, {}, {}, {}, {}, {}, {}, {} ],
+            [ {}, {}, {}, {}, {}, {}, {}, {} ],
+            [ {}, {}, {}, {}, {}, {}, {}, {} ],
+            [ {}, {}, {}, {}, {}, {}, {}, {} ],
+          ]
+        };
+      });
+
+      using([
+        [ 'group_index', 'roundOf'        ],
+        [ 0            , 'Not in bracket' ],
+        [ 1            , 'Round of 8'     ],
+        [ 2            , 'Quarter-finals' ],
+        [ 3            , 'Semi-finals'    ],
+        [ 4            , 'Final'          ],
+        [ 5            , 'Ended'          ],
+      ], function(e, d) {
+        it('should stringify bracket for group, '+d, function() {
+          expect(round.groupBracketRoundOf(e.group_index,
+                                           this.coll))
+            .toBe(e.roundOf);
+        });
       });
     });
   });

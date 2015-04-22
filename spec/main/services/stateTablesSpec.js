@@ -148,82 +148,99 @@ describe('service', function() {
     
     describe('roundsSummaryTables(<round_index>)', function() {
       it('should build a result table for round <round_index>', function() {
-        var st = { players: [
-          [ { name: 'p1', droped: 0, lists: ['list11','list12'], lists_played: ['list11','list12'] },
-            { name: 'p2', droped: 1, lists: ['list21','list22'], lists_played: ['list21'] } ],
-          [ { name: 'p3', droped: null, lists: ['list31','list32'], lists_played: ['list31','list32'] },
-            { name: 'p4', droped: null, lists: ['list41','list42'], lists_played: ['list41'] },
-            { name: 'p5', droped: null, lists: ['list51','list52'], lists_played: ['list51','list52'] },
-            { name: 'p6', droped: 6, lists: ['list61','list62'], lists_played: ['list62'] } ]
-        ], bracket: [null, 1], rounds: [
-          { games: [ { table:1, games: [],
-                       victory: null,
-                       p1: { name: 'p1', list: 'list11',
-                             tournament: 1, control: 111, army: 112, custom_field: 113 },
-                       p2: { name: 'p2', list: 'list21',
-                             tournament: 0, control: 121, army: 122, custom_field: 123 } },
-                     { table:2, games: [],
-                       victory: null,
-                       p1: { name: 'p3', list: 'list31',
-                             tournament: 1, control: 131, army: 132, custom_field: 133 },
-                       p2: { name: 'p6', list: 'list61',
-                             tournament: 0, control: 161, army: 162, custom_field: 163 } },
-                     { table:3, games: [],
-                       victory: 'assassination',
-                       p1: { name: 'p4', list: 'list41',
-                             tournament: 1, control: 141, army: 142, custom_field: 143 },
-                       p2: { name: 'p5', list: 'list51',
-                             tournament: 0, control: 151, army: 152, custom_field: 153 } },
-                   ]
-          },
-          { games: [ { table:1, games: [],
-                       victory: 'assassination',
-                       p1: { name: 'p1', list: 'list12',
-                             tournament: 1, control: 211, army: 212, custom_field: 213 },
-                       p2: { name: 'p2', list: 'list21',
-                             tournament: 0, control: 221, army: 222, custom_field: 223 } },
-                     { table:2, games: [],
-                       victory: null,
-                       p1: { name: 'p3', list: 'list32',
-                             tournament: 1, control: 231, army: 232, custom_field: 233 },
-                       p2: { name: 'p4', list: 'list42',
-                             tournament: 0, control: 241, army: 242, custom_field: 243 } },
-                     { table:3, games: [],
-                       victory: 'assassination',
-                       p1: { name: 'p5', list: 'list51',
-                             tournament: 1, control: 251, army: 252, custom_field: 253 },
-                       p2: { name: 'p6', list: 'list61',
-                             tournament: 0, control: 261, army: 262, custom_field: 263 } },
-                   ]
+        var st = {
+          players: [
+            [ { name: 'p1', droped: null, lists: ['list11','list12'], lists_played: ['list11','list12'] },
+              { name: 'p2', droped: null, lists: ['list21','list22'], lists_played: ['list21'] },
+              { name: 'p3', droped: null, lists: ['list31','list32'], lists_played: ['list31','list32'] },
+              { name: 'p4', droped: null, lists: ['list41','list42'], lists_played: ['list41'] }
+            ],
+            [ { name: 'p5', droped: 1, lists: ['list51','list52'], lists_played: ['list51','list52'] },
+              { name: 'p6', droped: 6, lists: ['list61','list62'], lists_played: ['list62'] }
+            ]
+          ],
+          rounds: [
+            { bracket: [null, null],
+              games: [
+                [ { table:1, games: [],
+                    victory: null,
+                    p1: { name: 'p1', list: 'list11',
+                          tournament: 1, control: 111, army: 112, custom_field: 113 },
+                    p2: { name: 'p2', list: 'list21',
+                          tournament: 0, control: 121, army: 122, custom_field: 123 } },
+                  { table:2, games: [],
+                    victory: null,
+                    p1: { name: 'p3', list: 'list31',
+                          tournament: 1, control: 131, army: 132, custom_field: 133 },
+                    p2: { name: 'p6', list: 'list61',
+                          tournament: 0, control: 161, army: 162, custom_field: 163 } }
+                ],
+                [ { table:3, games: [],
+                    victory: 'assassination',
+                    p1: { name: 'p4', list: 'list41',
+                          tournament: 1, control: 141, army: 142, custom_field: 143 },
+                    p2: { name: 'p5', list: 'list51',
+                          tournament: 0, control: 151, army: 152, custom_field: 153 } },
+                ]
+              ]
+            },
+            { bracket: [1, null],
+              games: [
+                [ { table:1, games: [],
+                    victory: 'assassination',
+                    p1: { name: 'p1', list: 'list12',
+                          tournament: 1, control: 211, army: 212, custom_field: 213 },
+                    p2: { name: 'p2', list: 'list21',
+                          tournament: 0, control: 221, army: 222, custom_field: 223 } },
+                  { table:2, games: [],
+                    victory: null,
+                    p1: { name: 'p3', list: 'list32',
+                          tournament: 1, control: 231, army: 232, custom_field: 233 },
+                    p2: { name: 'p4', list: 'list42',
+                          tournament: 0, control: 241, army: 242, custom_field: 243 } }
+                ],
+                [ { table:3, games: [],
+                    victory: 'assassination',
+                    p1: { name: 'p5', list: 'list51',
+                          tournament: 1, control: 251, army: 252, custom_field: 253 },
+                    p2: { name: 'p6', list: 'list61',
+                          tournament: 0, control: 261, army: 262, custom_field: 263 } },
+                ]
+              ]
+            }
+          ],
+          custom_fields: {
+            player: 'pCustom',
+            game: 'gCustom'
           }
-        ], custom_fields: {
-          player: 'pCustom',
-          game: 'gCustom'
-        } };
+        };
         var res = stateTables.roundsSummaryTables(st);
         expect(res).toEqual([
           [ [ 'Group1' ],
-            [ 'Player', 'Lists Played', 'Round1', 'Round2' ],
-            [ 'p1', '2/2', 'DROPPED', 'DROPPED' ],
-            [ 'p2', '1/2', { value: 'L - p1', color: 'red' }, 'DROPPED' ]
-          ],
-          [ [ 'Group2' ],
-            [ 'Player', 'Lists Played', 'Round1', 'Final' ],
+            [ 'Player', 'Lists Played', 'Round1', 'Semi-finals' ],
+            [ 'p1', '2/2',
+              { value : 'W - p2', color : 'limegreen' },
+              { value : 'W - p2', color : 'limegreen' }
+            ],
+            [ 'p2', '1/2',
+              { value : 'L - p1', color : 'red' },
+              { value : 'L - p1', color : 'red' }
+            ],
             [ 'p3', '2/2',
-              { value: 'W - p6', color: 'limegreen' },
-              { value: 'W - p4', color: 'limegreen' }
+              { value : 'W - p6', color : 'limegreen' },
+              { value : 'W - p4', color : 'limegreen' }
             ],
             [ 'p4', '1/2',
-              { value: 'W - p5', color: 'limegreen' },
-              { value: 'L - p3', color: 'red' }
-            ],
-            [ 'p5', '2/2',
-              { value: 'L - p4', color: 'red' },
-              { value: 'W - p6', color: 'limegreen' }
-            ],
+              { value : 'W - p5', color : 'limegreen' },
+              { value : 'L - p3', color : 'red' }
+            ]
+          ],
+          [ [ 'Group2' ],
+            [ 'Player', 'Lists Played', 'Round1', 'Round2' ],
+            [ 'p5', '2/2', { value : 'L - p4', color : 'red' }, 'DROPPED' ],
             [ 'p6', '1/2',
-              { value: 'L - p3', color: 'red' },
-              { value: 'L - p5', color: 'red' }
+              { value : 'L - p3', color : 'red' },
+              { value : 'L - p5', color : 'red' }
             ]
           ]
         ]);

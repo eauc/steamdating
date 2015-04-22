@@ -61,10 +61,11 @@ angular.module('srApp.services')
                         R.flip(R.difference)(player.lists_played),
                         R.isEmpty)(player);
         },
-        updatePoints: function(bracket_start, bracket_weight, rounds, player) {
+        updatePoints: function(group_index, bracket_weight, rounds, player) {
           return R.assoc('points',
                          roundsService.pointsForPlayer(player.name,
-                                                       bracket_start, bracket_weight,
+                                                       group_index,
+                                                       bracket_weight,
                                                        rounds),
                          player);
         },
@@ -277,12 +278,13 @@ angular.module('srApp.services')
         updateListsPlayed: function(rounds, coll) {
           return R.map(R.map(playerService.updateListsPlayed$(rounds)))(coll);
         },
-        updatePoints: function(bracket_start, bracket_weight, rounds, coll) {
+        updatePoints: function(rounds, coll) {
           return R.pipe(
             R.mapIndexed(function(group, group_index) {
-              return R.map(playerService.updatePoints$(bracket_start[group_index],
-                                                       bracket_weight[group_index],
-                                                       rounds), group);
+              return R.map(playerService.updatePoints$(group_index,
+                                                       group.length/2,
+                                                       rounds),
+                           group);
             }),
             R.mapIndexed(function(group, group_index, updated_players_without_sos) {
               return R.map(function(player) {
