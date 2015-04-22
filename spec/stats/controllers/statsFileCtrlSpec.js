@@ -27,6 +27,8 @@ describe('controllers', function() {
         this.promptService = spyOnService('prompt');
         mockReturnPromise(this.promptService.prompt);
 
+        this.stateService = spyOnService('state');
+
         $controller('fileCtrl', { 
           '$scope': this.scope,
         });
@@ -91,10 +93,15 @@ describe('controllers', function() {
           expect(this.scope.open_result).toEqual(['errors']);
         });
 
+        it('should migrate state data', function() {
+          expect(this.stateService.create)
+            .toHaveBeenCalledWith(['state']);
+        });
+
         it('should push data into state', function() {
           expect(this.scope.pushState).toHaveBeenCalledWith({
             name: 'file2',
-            state: ['state']
+            state: 'state.create.returnValue'
           });
         });
       });

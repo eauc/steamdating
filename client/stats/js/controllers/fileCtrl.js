@@ -6,10 +6,12 @@ angular.module('srAppStats.controllers')
     '$q',
     'prompt',
     'fileImport',
+    'state',
     function($scope,
              $q,
              promptService,
-             fileImportService) {
+             fileImportService,
+             stateService) {
       console.log('init fileCtrl');
 
       $scope.doReset = function() {
@@ -24,7 +26,7 @@ angular.module('srAppStats.controllers')
         R.forEach(function(file) {
           fileImportService.read('json', file)
             .then(function(data) {
-              var state = data[0];
+              var state = stateService.create(data[0]);
               var error = data[1];
               $scope.pushState({
                 name: file.name,
