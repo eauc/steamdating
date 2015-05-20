@@ -135,12 +135,29 @@
   class="table text-center"> -->
   <table class="table text-center">
     <tr>
-      <th style="width:200px;"></th>
-      <th>
-        {{::game.p1.name}}
+      <th style="width:200px;">
+        <label>Table :</label>
+        <input type="number"
+               class="form-control"
+               style="
+               display: inline-block;
+               width: 5em;
+               "
+               ng-model="game.table" />
       </th>
       <th>
-        {{::game.p2.name}}
+        <select ng-model="game.p1.name"
+                ng-change="updatePlayersOptions()"
+                ng-options="p as p for p in players_options"
+                class="form-control">
+        </select>
+      </th>
+      <th>
+        <select ng-model="game.p2.name"
+                ng-change="updatePlayersOptions()"
+                ng-options="p as p for p in players_options"
+                class="form-control">
+        </select>
       </th>
     </tr>
     <tr>

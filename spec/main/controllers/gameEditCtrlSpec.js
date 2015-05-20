@@ -18,13 +18,18 @@ describe('controllers', function() {
       function($rootScope,
                $controller,
                game) {
+        this.stateService = spyOnService('state');
+
         initCtrlWith = function(ctxt, game) {
           ctxt.scope = $rootScope.$new();
           ctxt.scope.edit = { game: game };
           ctxt.scope.state = {
             players: [ { name: 'toto', lists: [ { caster: 'caster1' }, { caster: 'caster2' } ] },
-                       { name: 'titi', lists: [ { caster: 'caster3' }, { caster: 'caster4' } ] } ]
+                       { name: 'titi', lists: [ { caster: 'caster3' }, { caster: 'caster4' } ] },
+                       { name: 'tata', lists: [ { caster: 'caster5' }, { caster: 'caster6' } ] } ]
           };
+          ctxt.stateService.playersNotDropedInLastRound._retVal = ctxt.scope.state.players;
+
           ctxt.scope.goToState = jasmine.createSpy('goToState');
           ctxt.scope.updatePoints = jasmine.createSpy('updatePoints');
           ctxt.scope.storeState = jasmine.createSpy('storeState');
@@ -43,6 +48,10 @@ describe('controllers', function() {
     it('should copy the game to edit', function() {
       expect(this.scope.game).not.toBe(this.scope.edit.game);
       expect(this.scope.game).toEqual(this.scope.edit.game);
+    });
+
+    it('should init players options', function() {
+      expect(this.scope.players_options).toEqual([ 'tata', 'titi', 'toto' ]);
     });
 
     it('should init casters lists', function() {
@@ -72,6 +81,23 @@ describe('controllers', function() {
         expect(this.scope.casters).toEqual({
           'toto': [ 'caster1', 'caster2' ],
           'unknown': [ ],
+        });
+      });
+    });
+
+    describe('updatePlayersOptions()', function() {
+      when('a new player has been set', function() {
+        this.scope.game.p1.name = 'tata';
+      }, function() {
+        it('should init casters lists', function() {
+          this.scope.updatePlayersOptions();
+
+          expect(this.scope.casters).toEqual({
+            'toto': [ 'caster1', 'caster2' ],
+            'titi': [ 'caster3', 'caster4' ],
+            // new player's list added to casters
+            'tata': [ 'caster5', 'caster6' ]
+          });
         });
       });
     });

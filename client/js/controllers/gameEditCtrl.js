@@ -5,12 +5,36 @@ angular.module('srApp.controllers')
     '$scope',
     'players',
     'lists',
+    'state',
     function($scope,
              playersService,
-             listsService) {
+             listsService,
+             stateService) {
       console.log('init gameEditCtrl');
 
       $scope.game = R.clone($scope.edit.game);
+
+      $scope.casters = {};
+      $scope.updatePlayersOptions = function() {
+        $scope.players_options = R.pipe(
+          stateService.playersNotDropedInLastRound,
+          playersService.names
+        )($scope.state);
+
+        $scope.casters[$scope.game.p1.name] = $scope.casters[$scope.game.p1.name] || R.pipe(
+          playersService.player$($scope.game.p1.name),
+          R.defaultTo({ lists: [] }),
+          R.prop('lists'),
+          listsService.casters
+        )($scope.state.players);
+        $scope.casters[$scope.game.p2.name] = $scope.casters[$scope.game.p2.name] || R.pipe(
+          playersService.player$($scope.game.p2.name),
+          R.defaultTo({ lists: [] }),
+          R.prop('lists'),
+          listsService.casters
+        )($scope.state.players);
+      };
+      $scope.updatePlayersOptions();
 
       $scope.setWinLoss = function(game, clicked, other) {
         if(game[clicked].tournament === 1) {
@@ -33,19 +57,5 @@ angular.module('srApp.controllers')
         $scope.goToState($scope.edit.back,
                          { pane: $scope.edit.pane });
       };
-
-      $scope.casters = {};
-      $scope.casters[$scope.game.p1.name] = R.pipe(
-        playersService.player$($scope.game.p1.name),
-        R.defaultTo({ lists: [] }),
-        R.prop('lists'),
-        listsService.casters
-      )($scope.state.players);
-      $scope.casters[$scope.game.p2.name] = R.pipe(
-        playersService.player$($scope.game.p2.name),
-        R.defaultTo({ lists: [] }),
-        R.prop('lists'),
-        listsService.casters
-      )($scope.state.players);
     }
   ]);
