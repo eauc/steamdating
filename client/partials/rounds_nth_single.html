@@ -67,7 +67,8 @@
       </tr>
       <tr ng-repeat="g in ::gr"
           ng-click="doGameEdit(r, g.p1.name, round.current)"
-          style="cursor:pointer;">
+          style="cursor:pointer;"
+          title="edit game">
         <td>
           <span class="glyphicon glyphicon-{{::(g | game:'isAssassination$') ? 'ok' : ''}}">
           </span>

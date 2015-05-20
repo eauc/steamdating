@@ -30,7 +30,8 @@
           cursor:pointer;
           background-color:{{::(p | player:'isDroped') ? '#CCC' : 'auto'}};
           "
-          ng-click="doEditPlayer(p)">
+          ng-click="doEditPlayer(p)"
+          title="edit player">
         <img ng-src="{{::p.faction | factions:'iconFor'}}"
              style="height:1.8em;"/>
         {{::p.name}}
@@ -53,6 +54,7 @@
           ng-click="doGameEdit(r, p.name)"
           style="
           background-color:{{::(p | player:'hasDropedInRound':ri) ? '#CCC' : 'auto'}};
+          cursor: pointer;
           "
           class="
           {{::
@@ -61,7 +63,7 @@
           ''
           }}
           "
-          style="cursor:pointer;">
+          title="edit game">
         <span class="no-screen">
           {{::
           (games_by_players[gri][pi][ri] | game:'winForPlayer':p.name) ? 'W' :
