@@ -1,0 +1,20 @@
+[
+   { "name": "2015 APAV",
+     "url": "/data/results/2015_apav.json"
+   },
+   { "name": "2015 DDRU",
+     "url": "/data/results/2015_ddru.json"
+   },
+   { "name": "2015 IMD",
+     "url": "/data/results/2015_imd.json"
+   },
+   { "name": "2015 SBTC Alpes",
+     "url": "/data/results/2015_SBTC_alpes.json"
+   },
+   { "name": "2015 SBTC Grand Est",
+     "url": "/data/results/2015_SBTC_est.json"
+   },
+   { "name": "2015 SBTC Paris",
+     "url": "/data/results/2015_SBTC_paris.json"
+   }
+]

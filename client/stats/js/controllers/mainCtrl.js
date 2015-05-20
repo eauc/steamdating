@@ -30,7 +30,7 @@ angular.module('srAppStats.controllers')
         console.log('state', $scope.state);
       };
       $scope.pushState = function(st) {
-        $scope.setState(R.append(st, $scope.state));
+        $scope.setState(R.sortBy(R.prop('name'), R.append(st, $scope.state)));
       };
       $scope.dropState = function(index) {
         var new_state = R.remove(index, 1, $scope.state);

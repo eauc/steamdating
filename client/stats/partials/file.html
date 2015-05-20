@@ -1,9 +1,32 @@
 <div class="container">
-  <form class="form-inline">
+  <form class="form">
+    <fieldset style="margin-top:10px">
+      <legend>Currently Loaded Files</legend>
+      <button class="btn btn-default"
+              ng-click="doReset()">
+        Clear List
+      </button>
+      <table class="table">
+        <tr>
+          <th>Name</th>
+          <td></td>
+        </tr>
+        <tr ng-repeat="(fi,f) in state">
+          <td>{{::f.name}}</td>
+          <td>
+            <button class="btn btn-default"
+                    ng-click="doDropFile(fi)">
+              <span class="glyphicon glyphicon-trash"></span>
+              Drop
+            </button>
+          </td>
+        </tr>
+      </table>
+    </fieldset>
     <fieldset style="margin-top:10px">
       <legend>  
         <span class="glyphicon glyphicon-open"></span>
-        Open
+        Load
       </legend>
       <div class="form-group">
         <label class="control-label"
@@ -15,6 +38,27 @@
                multiple="multiple"
                ea-file="doOpenFile(file)" />
       </div>
+      <div class="form-group">
+        <label>or Load file from server :</label>
+      <table class="table">
+        <tr>
+          <th>Name</th>
+          <td></td>
+        </tr>
+        <tr ng-repeat="(fi,f) in server_results">
+          <td>{{::f.name}}</td>
+          <td>
+            <button class="btn btn-default"
+                    ng-click="doLoadFromServer(fi)"
+                    ng-hide="f.loaded">
+              <span class="glyphicon glyphicon-open"></span>
+              Load
+            </button>
+            <span ng-show="f.loaded">Loaded</span>
+          </td>
+        </tr>
+      </table>
+      </div>
       <div style="
            max-height: 300px;
            overflow-y: auto;
@@ -24,27 +68,5 @@
         </div>
       </div>
     </fieldset>
-    <br />
-    <legend>Currently Open Files</legend>
-    <button class="btn btn-default"
-            ng-click="doReset()">
-      Clear List
-    </button>
-    <table class="table">
-      <tr>
-        <th>Name</th>
-        <td></td>
-      </tr>
-      <tr ng-repeat="(fi,f) in state">
-        <td>{{::f.name}}</td>
-        <td>
-          <button class="btn btn-default"
-                  ng-click="doDropFile(fi)">
-            <span class="glyphicon glyphicon-trash"></span>
-            Drop
-          </button>
-        </td>
-      </tr>
-    </table>
   </form>
 </div>

@@ -14,8 +14,22 @@ describe('controllers', function() {
     beforeEach(inject([
       '$rootScope',
       '$controller',
+      '$httpBackend',
       function($rootScope,
-               $controller) {
+               $controller,
+               $httpBackend) {
+        this.server_results = [
+          { name: 'result1',
+            url: 'url1'
+          },
+          { name: 'result2',
+            url: 'url2'
+          }
+        ];
+        this.$httpBackend = $httpBackend;
+        this.$httpBackend.expectGET('/data/results.json')
+          .respond(this.server_results);
+
         this.scope = $rootScope.$new();
         this.scope.resetState = jasmine.createSpy('resetState');
         this.scope.pushState = jasmine.createSpy('pushState');
@@ -33,8 +47,14 @@ describe('controllers', function() {
           '$scope': this.scope,
         });
         $rootScope.$digest();
+        this.$httpBackend.flush();
       }
     ]));
+
+    it('should read server results list', function() {
+      expect(this.scope.server_results)
+        .toEqual(this.server_results);
+    });
 
     describe('doReset()', function() {
       it('should ask user for confirmation', function() {
@@ -56,9 +76,54 @@ describe('controllers', function() {
     });
 
     describe('doDropFile(<index>)', function() {
+      beforeEach(function() {
+        this.scope.state = [
+          {},
+          { to: 'drop' }
+        ];
+        this.index = 1;
+      });
+
+      when('droped file was loaded from server', function() {
+        this.server_index = 2;
+        this.scope.server_results = [ {}, {}, { loaded: true } ];
+
+        this.scope.state[this.index].from_server = this.server_index;
+      }, function() {
+        it('should clear "loaded" flag from server_results', function() {
+          this.scope.doDropFile(this.index);
+
+          expect(this.scope.server_results[this.server_index].loaded)
+            .toBe(false);
+        });
+      });
+
       it('should drop <index> from state', function() {
-        this.scope.doDropFile('index');
-        expect(this.scope.dropState).toHaveBeenCalledWith('index');
+        this.scope.doDropFile(this.index);
+        expect(this.scope.dropState).toHaveBeenCalledWith(this.index);
+      });
+    });
+
+    describe('doLoadFromServer(<index>)', function() {
+      beforeEach(function() {
+        this.index = 1;
+        this.$httpBackend.expectGET('url2')
+          .respond({ result: 2 });
+        this.scope.doLoadFromServer(this.index);
+        this.$httpBackend.flush();
+      });
+
+      it('should migrate state data', function() {
+        expect(this.stateService.create)
+          .toHaveBeenCalledWith({ result: 2 });
+      });
+
+      it('should push data into state', function() {
+        expect(this.scope.pushState).toHaveBeenCalledWith({
+          name: 'result2',
+          state: 'state.create.returnValue',
+          from_server: this.index
+        });
       });
     });
 

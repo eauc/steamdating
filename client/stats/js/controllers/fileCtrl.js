@@ -4,11 +4,13 @@ angular.module('srAppStats.controllers')
   .controller('fileCtrl', [
     '$scope',
     '$q',
+    '$http',
     'prompt',
     'fileImport',
     'state',
     function($scope,
              $q,
+             $http,
              promptService,
              fileImportService,
              stateService) {
@@ -18,6 +20,25 @@ angular.module('srAppStats.controllers')
         promptService.prompt('confirm', 'You sure ?')
           .then(function() {
             $scope.resetState();
+          });
+      };
+
+      $http.get('/data/results.json')
+        .then(function(response) {
+          $scope.server_results = response.data;
+        });
+
+      $scope.doLoadFromServer = function doLoadFromServer(index) {
+        var desc = R.nth(index, $scope.server_results);
+        if(R.isNil(desc)) return;
+        $http.get(desc.url)
+          .then(function(response) {
+            $scope.server_results[index].loaded = true;
+            $scope.pushState({
+              name: desc.name,
+              state: stateService.create(response.data),
+              from_server: index
+            });
           });
       };
 
@@ -39,6 +60,9 @@ angular.module('srAppStats.controllers')
         }, files);
       };
       $scope.doDropFile = function(index) {
+        if(R.exists($scope.state[index].from_server)) {
+          $scope.server_results[$scope.state[index].from_server].loaded = false;
+        }
         $scope.dropState(index);
       };
     }
