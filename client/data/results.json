@@ -5,6 +5,9 @@
    { "name": "2015 DDRU",
      "url": "/data/results/2015_ddru.json"
    },
+   { "name": "2015 French Master",
+     "url": "/data/results/2015_french_master.json"
+   },
    { "name": "2015 IMD",
      "url": "/data/results/2015_imd.json"
    },
