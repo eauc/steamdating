@@ -45,6 +45,11 @@ describe('controllers', function() {
       }
     ]));
 
+    it('should setup panel', function() {
+      expect(this.scope.panel)
+        .toBe('general');
+    });
+
     it('should factions, players & casters list', function() {
       expect(this.scope.factions).toEqual(['cryx', 'khador', 'menoth', 'scyrah']);
       expect(this.scope.players).toEqual(['s1p1','s1p2','s1p3','s2p1','s2p2']);
@@ -55,6 +60,13 @@ describe('controllers', function() {
         { faction : 'menoth', name : 'feora1' },
         { faction : 'scyrah', name : 'rahn1' }
       ]);
+    });
+
+    it('should build general stats', function() {
+      expect(this.scope.general)
+        .toBe('stats.getGeneral.returnValue');
+      expect(this.statsService.getGeneral)
+        .toHaveBeenCalledWith(this.scope.state);
     });
 
     it('should init selection', function() {

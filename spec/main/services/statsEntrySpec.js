@@ -6,6 +6,52 @@ describe('service', function() {
     module('srApp.services');
   });
 
+  describe('statsPlayersPerFactionEntry', function() {
+
+    var statsPlayersPerFactionEntry;
+
+    beforeEach(inject([ 'statsPlayersPerFactionEntry', function(_statsPlayersPerFactionEntry) {
+      statsPlayersPerFactionEntry = _statsPlayersPerFactionEntry;
+      this.factionsService = spyOnService('factions');
+      this.factionsService.hueFor.and.callFake(function(f) {
+        return f+'.hue';
+      });
+    }]));
+
+    describe('count(<players_per_faction>)', function() {
+      it('should convert <players_per_faction> to pieChart values', function() {
+        expect(statsPlayersPerFactionEntry.count({
+          f1: 10,
+          f2: 15,
+          f3: 5,
+        })).toEqual({
+          legends: [ 'f2', 'f1', 'f3' ],
+          values: [ 15, 10, 5 ],
+          colors : [ 'f2.hue', 'f1.hue', 'f3.hue' ]
+        });
+      });
+    });
+
+    describe('sum(<base>, <other>)', function() {
+      it('should add tournament points & mean control/army points', function() {
+        expect(statsPlayersPerFactionEntry.sum({
+          f1: 10,
+          f2: 15,
+          f3: 5,
+        }, {
+          f1: 10,
+          f3: 15,
+          f4: 5,
+        })).toEqual({
+          f1: 20,
+          f2: 15,
+          f3: 20,
+          f4: 5
+        });
+      });
+    });
+  });
+
   describe('statsPointsEntry', function() {
 
     var statsPointsEntry;

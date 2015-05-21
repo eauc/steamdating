@@ -1,6 +1,48 @@
 'use strict';
 
 angular.module('srApp.services')
+  .factory('statsPlayersPerFactionEntry', [
+    'factions',
+    function(factionsService) {
+      var statsPlayersPerFactionEntryService = {
+        count: function(players_per_faction) {
+          return R.pipe(
+            R.keys,
+            R.map(function(key) {
+              return {
+                legend: key,
+                value: players_per_faction[key],
+                color: factionsService.hueFor(key),
+              };
+            }),
+            R.sortBy(R.prop('value')),
+            R.reverse,
+            function(array) {
+              return {
+                legends: R.map(R.prop('legend'), array),
+                values: R.map(R.prop('value'), array),
+                colors: R.map(R.prop('color'), array),
+              };
+            }
+          )(players_per_faction);
+        },
+        sum: function(base, other) {
+          return R.pipe(
+            R.keys,
+            R.reduce(function(mem, key) {
+              var new_value = ( R.isNil(mem[key]) ?
+                                other[key] :
+                                mem[key] + other[key]
+                              );
+              return R.assoc(key, new_value, mem);
+            }, base)
+          )(other);
+        }
+      };
+      R.curryService(statsPlayersPerFactionEntryService);
+      return statsPlayersPerFactionEntryService;
+    }
+  ])
   .factory('statsPointsEntry', [
     'games',
     function(gamesService) {

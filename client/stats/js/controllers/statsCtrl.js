@@ -14,6 +14,8 @@ angular.module('srAppStats.controllers')
              statsService) {
       console.log('init statsCtrl');
 
+      $scope.panel = 'general';
+
       $scope.factions = R.pipe(
         R.chain(function(s) {
           return playersService.factions(null, s.state.players);
@@ -32,9 +34,7 @@ angular.module('srAppStats.controllers')
         R.chain(function(s) {
           return playersService.casters(s.state.players);
         }),
-        R.spy('toto'),
         R.uniqWith(R.useWith(R.eq, R.prop('name'), R.prop('name'))),
-        R.spy('toto'),
         function(cs) {
           return cs.sort(function(a, b) {
             if(a.faction !== b.faction) return a.faction.localeCompare(b.faction);
@@ -43,6 +43,7 @@ angular.module('srAppStats.controllers')
         }
       )($scope.state);
 
+      $scope.general = statsService.getGeneral($scope.state);
       $scope.stats = {};
       var group;
       $scope.getStats = function() {
@@ -52,6 +53,7 @@ angular.module('srAppStats.controllers')
                                    $scope.selection.group_by,
                                    $scope.stats);
         if(0 > R.indexOf($scope.group, R.map(R.head, ret)) &&
+           R.exists(ret[0]) &&
            !R.isEmpty(ret[0])) {
           $scope.group = ret[0][0];
         }

@@ -20,6 +20,24 @@ describe('service', function() {
       this.statsReferencesEntryService = spyOnService('statsReferencesEntry');
     }]));
 
+    describe('getGeneral(<state>)', function() {
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+        this.statsPlayersPerFactionEntryService = spyOnService('statsPlayersPerFactionEntry');
+      });
+
+      it('should build players per faction stats', function() {
+        var ret = stats.getGeneral({ players: 'players' });
+
+        expect(this.playersService.countByFaction)
+          .toHaveBeenCalledWith('players');
+        expect(this.statsPlayersPerFactionEntryService.count)
+          .toHaveBeenCalledWith('players.countByFaction.returnValue');
+        expect(ret.factions)
+          .toBe('statsPlayersPerFactionEntry.count.returnValue');
+      });
+    });
+
     describe('get(<state>, <selector>, <selValue>, <groupBy>)', function() {
       beforeEach(function() {
         this.statsPlayerSelectorService = spyOnService('statsPlayerSelector');

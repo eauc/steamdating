@@ -36,6 +36,39 @@ describe('service', function() {
       });
     }]));
 
+    describe('getGeneral(<state>)', function() {
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+        this.playersService.countByFaction.and.callFake(function(p) {
+          return p+'PerFaction';
+        });
+        this.statsPlayersPerFactionEntryService = spyOnService('statsPlayersPerFactionEntry');
+      });
+
+      it('should build players per faction stats', function() {
+        var ret = stats.getGeneral([
+          { state: { players: 'players1' } },
+          { state: { players: 'players2' } },
+        ]);
+
+        expect(this.playersService.countByFaction)
+          .toHaveBeenCalledWith('players1');
+        expect(this.playersService.countByFaction)
+          .toHaveBeenCalledWith('players2');
+
+        expect(this.statsPlayersPerFactionEntryService.sum)
+          .toHaveBeenCalledWith({}, 'players1PerFaction');
+        expect(this.statsPlayersPerFactionEntryService.sum)
+          .toHaveBeenCalledWith('statsPlayersPerFactionEntry.sum.returnValue', 'players2PerFaction');
+
+        expect(this.statsPlayersPerFactionEntryService.count)
+          .toHaveBeenCalledWith('statsPlayersPerFactionEntry.sum.returnValue');
+
+        expect(ret.factions)
+          .toBe('statsPlayersPerFactionEntry.count.returnValue');
+      });
+    });
+
     describe('get(<states>, <selector>, <selValue>, <groupBy>)', function() {
       beforeEach(function() {
         this.statsPlayerSelectorService = spyOnService('statsPlayerSelector');

@@ -1,0 +1,42 @@
+<div>
+  <div class="col-xs-4 text-right pie-legend"
+       style="padding: 0;">
+    <ul style="list-style-type: none;">
+      <li ng-repeat="(i,l) in ::legends">
+        {{::l.label}} {{::l.count}}
+        <svg width="10px" height="10px">
+          <rect x="0" y="0" width="10" height="10"
+                style="
+                stroke-width:1;
+                stroke:#000;
+                fill: hsl({{::l.color[0]}},{{::l.color[1]}}%, 52%)
+                " />
+        </svg>
+      <li>
+        <b>Total #{{::total}}</b>
+        <svg width="10px" height="10px">
+          <rect x="0" y="0" width="10" height="10"
+                style="
+                fill: white
+                " />
+        </svg>
+      </li>
+    </ul>
+  </div>
+  <div class="col-xs-5 pie-container">
+    <svg ng-attr-width="{{::width}}" ng-attr-height="{{::height}}">
+      <path ng-repeat="(i,p) in ::paths"
+            d="
+            M{{::center.x}},{{::center.y}}
+            L{{::p.start.x}},{{::p.start.y}}
+            A{{::radius}},{{::radius}} 0 {{::p.large}},1 {{::p.end.x}},{{::p.end.y}}
+            L{{::center.x}},{{::center.y}}
+            "
+            style="
+            stroke:#000;
+            stroke-width:0.5;
+            fill: hsl({{::p.color[0]}},{{::p.color[1]}}%, 52%);
+            " />
+    </svg>
+  </div>
+</div>

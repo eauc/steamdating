@@ -1,111 +1,134 @@
 <div class="container">
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label for="type" class="col-sm-2 control-label">Type</label>
-      <div class="col-sm-10">
-        <select if="type"
-                class="form-control"
-                ng-model="selection.type">
-          <option value="player">Players</option>
-          <option value="faction">Factions</option>
-          <option value="caster">Casters</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group"
-         ng-show="selection.type === 'faction'">
-      <label for="faction" class="col-sm-2 control-label">Faction</label>
-      <div class="col-sm-10">
-        <select if="faction"
-                class="form-control"
-                ng-model="selection.faction"
-                ng-options="f as f for f in factions">
-        </select>
-      </div>
-    </div>
-    <div class="form-group"
-         ng-show="selection.type === 'player'">
-      <label for="player" class="col-sm-2 control-label">Player</label>
-      <div class="col-sm-10">
-        <select if="palyer"
-                class="form-control"
-                ng-model="selection.player"
-                ng-options="p as p for p in players">
-        </select>
-      </div>
-    </div>
-    <div class="form-group"
-         ng-show="selection.type === 'caster'">
-      <label for="caster" class="col-sm-2 control-label">Caster</label>
-      <div class="col-sm-10">
-        <select if="caster"
-                class="form-control"
-                ng-model="selection.caster"
-                ng-options="
-                c.name as c.name
-                group by c.faction
-                for c in casters
-                ">
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="group" class="col-sm-2 control-label">Group By</label>
-      <div class="col-sm-10">
-        <select if="group"
-                class="form-control"
-                ng-model="selection.group_by">
-          <option value="total">Total</option>
-          <option value="opp_faction">Opp. Factions</option>
-          <option value="opp_caster">Opp. Casters</option>
-        </select>
-      </div>
-    </div>
-  </form>
   <ul class="nav nav-tabs">
-    <li ng-repeat="s in getStats()"
-        ng-class="{
-        'active': group === s[0]
-        }">
-      <a ng-click="setGroup(s[0])">{{s[0]}}</a>
+    <li ng-class="{
+        'active': panel === 'general'
+        }"
+        style="cursor:pointer;">
+      <a ng-click="panel = 'general'">General</a>
+    </li>
+    <li ng-class="{
+        'active': panel === 'breakdown'
+        }"
+        style="cursor:pointer;">
+      <a ng-click="panel = 'breakdown'">Breakdown</a>
     </li>
   </ul>
-  <div ng-repeat="s in getStats()"
-       ng-show="group === s[0]">
-    <div class="section">Points :</div>
+  <div ng-if="panel === 'general'">
+    <div class="section">Players per Faction :</div>
     <div>
-      <stacks style="display:flex;"
-              stacks-values="s[1].points"></stacks>
+      <pie-chart pie-values="general.factions"></pie-chart>
     </div>
-    <div class="section">Casters :</div>
-    <div ng-repeat="c in s[1].casters">
-      <div class="text-center">
-        <strong>{{c[0]}}</strong>
+  </div>
+  <div ng-if="panel === 'breakdown'">
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="type" class="col-sm-2 control-label">Type</label>
+        <div class="col-sm-10">
+          <select if="type"
+                  class="form-control"
+                  ng-model="selection.type">
+            <option value="player">Players</option>
+            <option value="faction">Factions</option>
+            <option value="caster">Casters</option>
+          </select>
+        </div>
       </div>
-      <bars style="display:flex;"
-            bars-values="c[1]"
-            bars-hue="{{c[2][0]}}"
-            bars-saturation="{{c[2][1]}}"></bars>
-    </div>
-    <div class="section">Opp. Casters :</div>
-    <div ng-repeat="oc in s[1].opp_casters">
-      <div class="text-center">
-        <strong>{{oc[0]}}</strong>
+      <div class="form-group"
+           ng-show="selection.type === 'faction'">
+        <label for="faction" class="col-sm-2 control-label">Faction</label>
+        <div class="col-sm-10">
+          <select if="faction"
+                  class="form-control"
+                  ng-model="selection.faction"
+                  ng-options="f as f for f in factions">
+          </select>
+        </div>
       </div>
-      <bars style="display:flex;"
-            bars-values="oc[1]"
-            bars-hue="{{oc[2][0]}}"
-            bars-saturation="{{oc[2][1]}}"></bars>
-    </div>
-    <div class="section">Tiers :</div>
-    <div>
-      <bars style="display:flex;"
-            bars-values="s[1].tiers"></bars>
-    </div>
-    <div class="section">References :</div>
-    <div>
-      <bars style="display:flex;"
-            bars-values="s[1].references"></bars>
+      <div class="form-group"
+           ng-show="selection.type === 'player'">
+        <label for="player" class="col-sm-2 control-label">Player</label>
+        <div class="col-sm-10">
+          <select if="palyer"
+                  class="form-control"
+                  ng-model="selection.player"
+                  ng-options="p as p for p in players">
+          </select>
+        </div>
+      </div>
+      <div class="form-group"
+           ng-show="selection.type === 'caster'">
+        <label for="caster" class="col-sm-2 control-label">Caster</label>
+        <div class="col-sm-10">
+          <select if="caster"
+                  class="form-control"
+                  ng-model="selection.caster"
+                  ng-options="
+                  c.name as c.name
+                  group by c.faction
+                  for c in casters
+                  ">
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="group" class="col-sm-2 control-label">Group By</label>
+        <div class="col-sm-10">
+          <select if="group"
+                  class="form-control"
+                  ng-model="selection.group_by">
+            <option value="total">Total</option>
+            <option value="opp_faction">Opp. Factions</option>
+            <option value="opp_caster">Opp. Casters</option>
+          </select>
+        </div>
+      </div>
+    </form>
+    <ul class="nav nav-tabs">
+      <li ng-repeat="s in getStats()"
+          ng-class="{
+          'active': group === s[0]
+          }"
+          style="cursor:pointer;">
+        <a ng-click="setGroup(s[0])">{{s[0]}}</a>
+      </li>
+    </ul>
+    <div ng-repeat="s in getStats()"
+         ng-show="group === s[0]">
+      <div class="section">Points :</div>
+      <div>
+        <stacks style="display:flex;"
+                stacks-values="s[1].points"></stacks>
+      </div>
+      <div class="section">Casters :</div>
+      <div ng-repeat="c in s[1].casters">
+        <div class="text-center">
+          <strong>{{c[0]}}</strong>
+        </div>
+        <bars style="display:flex;"
+              bars-values="c[1]"
+              bars-hue="{{c[2][0]}}"
+              bars-saturation="{{c[2][1]}}"></bars>
+      </div>
+      <div class="section">Opp. Casters :</div>
+      <div ng-repeat="oc in s[1].opp_casters">
+        <div class="text-center">
+          <strong>{{oc[0]}}</strong>
+        </div>
+        <bars style="display:flex;"
+              bars-values="oc[1]"
+              bars-hue="{{oc[2][0]}}"
+              bars-saturation="{{oc[2][1]}}"></bars>
+      </div>
+      <div class="section">Tiers :</div>
+      <div>
+        <bars style="display:flex;"
+              bars-values="s[1].tiers"></bars>
+      </div>
+      <div class="section">References :</div>
+      <div>
+        <bars style="display:flex;"
+              bars-values="s[1].references"></bars>
+      </div>
     </div>
   </div>
 </div>

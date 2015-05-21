@@ -158,7 +158,7 @@ describe('service', function() {
       });
     });
 
-    describe('factionFor(<name>)', function() {
+    describe('originFor(<name>)', function() {
       beforeEach(function() {
         this.coll = [
           [
@@ -285,6 +285,37 @@ describe('service', function() {
         it('should return faction played by <name>, '+d, function() {
           expect(players.factionFor(e.name, this.coll)).toEqual(e.faction);
         });
+      });
+    });
+
+    describe('countByFaction()', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { faction: 'toto1' },
+            { faction: 'toto2' },
+            { faction: 'toto1' },
+          ],
+          [
+            { faction: 'tata1' },
+            { faction: undefined },
+          ],
+          [
+            { faction: 'tata1' },
+            { faction: 'tutu2' },
+          ]
+        ];
+      });
+
+      it('should count number of players per faction', function() {
+        expect(players.countByFaction(this.coll))
+          .toEqual({
+            toto1 : 2,
+            toto2 : 1,
+            tata1 : 2,
+            undefined : 1,
+            tutu2 : 1
+          });
       });
     });
 

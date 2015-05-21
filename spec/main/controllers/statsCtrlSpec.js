@@ -31,6 +31,11 @@ describe('controllers', function() {
       }
     ]));
 
+    it('should setup panel', function() {
+      expect(this.scope.panel)
+        .toBe('general');
+    });
+
     it('should setup select lists', function() {
       expect(this.playersService.factions)
         .toHaveBeenCalledWith([], this.scope.state.players);
@@ -46,6 +51,13 @@ describe('controllers', function() {
         .toHaveBeenCalledWith(this.scope.state.players);
       expect(this.scope.casters)
         .toEqual([{name:'players.casters.returnValue'}]);
+    });
+
+    it('should build general stats', function() {
+      expect(this.scope.general)
+        .toBe('stats.getGeneral.returnValue');
+      expect(this.statsService.getGeneral)
+        .toHaveBeenCalledWith(this.scope.state);
     });
 
     it('should init selection', function() {

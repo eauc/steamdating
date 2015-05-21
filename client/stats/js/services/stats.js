@@ -2,23 +2,27 @@
 
 angular.module('srAppStats.services')
   .factory('stats', [
+    'players',
     'statsFactionSelector',
     'statsPlayerSelector',
     'statsCasterSelector',
     'statsGroupByTotal',
     'statsGroupByOppFaction',
     'statsGroupByOppCaster',
+    'statsPlayersPerFactionEntry',
     'statsPointsEntry',
     'statsCastersEntry',
     'statsOppCastersEntry',
     'statsTiersEntry',
     'statsReferencesEntry',
-    function(statsFactionSelectorService,
+    function(playersService,
+             statsFactionSelectorService,
              statsPlayerSelectorService,
              statsCasterSelectorService,
              statsGroupByTotalService,
              statsGroupByOppFactionService,
              statsGroupByOppCasterService,
+             statsPlayersPerFactionEntryService,
              statsPointsEntryService,
              statsCastersEntryService,
              statsOppCastersEntryService,
@@ -35,6 +39,16 @@ angular.module('srAppStats.services')
         'opp_caster': statsGroupByOppCasterService,
       };
       var stats = {
+        getGeneral: function(states_list) {
+          return {
+            factions: R.pipe(
+              R.map(R.path(['state', 'players'])),
+              R.map(playersService.countByFaction),
+              R.reduce(statsPlayersPerFactionEntryService.sum, {}),
+              statsPlayersPerFactionEntryService.count
+            )(states_list)
+          };
+        },
         get: function(states_list, selector, sel_value, group_by, cache) {
           cache[selector] = R.defaultTo({}, cache[selector]);
           cache[selector][sel_value] = R.defaultTo({}, cache[selector][sel_value]);

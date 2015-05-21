@@ -14,10 +14,13 @@ angular.module('srApp.controllers')
              statsService) {
       console.log('init statsCtrl');
 
+      $scope.panel = 'general';
+
       $scope.factions = playersService.factions([], $scope.state.players);
       $scope.players = playersService.names($scope.state.players);
       $scope.casters = playersService.casters($scope.state.players);
 
+      $scope.general = statsService.getGeneral($scope.state);
       $scope.stats = {};
       var group;
       $scope.getStats = function() {

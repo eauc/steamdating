@@ -172,6 +172,12 @@ angular.module('srApp.services')
             R.prop('faction')
           )(coll);
         },
+        countByFaction: function(players) {
+          return R.pipe(
+            R.flatten,
+            R.countBy(R.prop('faction'))
+          )(players);
+        },
         casters: function(coll) {
           return R.pipe(R.flatten,
                         R.chain(R.prop('lists')),
