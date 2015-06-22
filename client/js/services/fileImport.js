@@ -31,6 +31,7 @@ angular.module('srApp.services')
             }
             catch (event) {
               defer.reject(['invalid file : '+event.message]);
+              console.log('error importing file', event);
             }
           };
           reader.onerror = function(e) {

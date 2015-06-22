@@ -12,7 +12,6 @@ angular.module('srApp.services')
         create: function(data) {
           var ret = R.merge({
             name: null,
-            members: [],
             droped: null,
             faction: null,
             origin: null,
@@ -29,6 +28,10 @@ angular.module('srApp.services')
               custom_field: 0
             }
           }, data);
+          ret.members = R.pipe(
+            R.defaultTo([]),
+            R.map(playerService.create)
+          )(ret.members);
           ret.lists = R.map(listService.create, ret.lists);
           return ret;
         },

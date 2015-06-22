@@ -50,7 +50,7 @@ angular.module('srApp.services')
 
       var BASE_STATE = {
         onParam: function(ctxt, key, value) {
-          pushError(ctxt, ' parameter "'+key+'"="'+s.truncate(value, 8)+
+          pushError(ctxt, 'parameter "'+key+'"="'+s.truncate(value, 8)+
                     '" ignored');
         },
         onSeparator: function(ctxt) {
@@ -66,6 +66,11 @@ angular.module('srApp.services')
       var DEFAULT_STATE = R.merge(BASE_STATE, {
         onParam: function(ctxt, key, value) {
           switch(key) {
+          case 'Team':
+            {
+              newTeam(ctxt, value);
+              return;
+            }
           case 'Player':
             {
               newPlayer(ctxt, value);
@@ -83,6 +88,24 @@ angular.module('srApp.services')
           }
         }
       });
+      function newTeam(ctxt, name) {
+        if(s.isBlank(name)) {
+          pushError(ctxt, 'empty team name');
+          ctxt.team = null;
+          ctxt.state = ERROR_STATE;
+          return;
+        }
+        name = s.capitalize(name);
+        if(0 <= R.indexOf(name, ctxt.players)) {
+          pushError(ctxt, 'team name "'+name+'" already exists');
+          ctxt.player = null;
+          ctxt.state = ERROR_STATE;
+          return;
+        }
+        ctxt.players.push(name);
+        ctxt.team = { name: name, members: [] };
+        ctxt.state = TEAM_STATE;
+      }
       function newPlayer(ctxt, name) {
         if(s.isBlank(name)) {
           pushError(ctxt, 'empty player name');
@@ -111,6 +134,33 @@ angular.module('srApp.services')
         ctxt.state = LIST_STATE;
       }
 
+      var TEAM_STATE = R.merge(BASE_STATE, {
+        onParam: function(ctxt, key, value) {
+          switch(key) {
+          case 'Origin':
+            {
+              teamOrigin(ctxt, value);
+              return;
+            }
+          default:
+            {
+              BASE_STATE.onParam(ctxt, key, value);
+            }
+          }
+        },
+        onSeparator: addTeam
+      });
+      function teamOrigin(ctxt, origin) {
+        ctxt.team.origin = origin;
+      }
+      function addTeam(ctxt) {
+        ctxt.team = playerService.create(R.pick(['name', 'origin', 'members'],
+                                                ctxt.team)
+                                        );
+        ctxt.result.push(ctxt.team);
+        ctxt.state = DEFAULT_STATE;
+      }
+
       var PLAYER_STATE = R.merge(BASE_STATE, {
         onParam: function(ctxt, key, value) {
           switch(key) {
@@ -133,27 +183,21 @@ angular.module('srApp.services')
         onSeparator: addPlayer
       });
       function playerFaction(ctxt, faction) {
-        var faction_key = R.pipe(
-          R.keys,
-          R.filter(function(key) {
-            return ctxt.factions[key].name === faction;
-          }),
-          R.head
-        )(ctxt.factions);
-        if(R.isNil(faction_key)) {
+        var faction_keys = R.keys(ctxt.factions);
+        if(!R.find(R.eq(faction), faction_keys)) {
           pushError(ctxt, 'unknown faction "'+faction+'"');
-          ctxt.player.faction = faction;
-          return;
         }
-        ctxt.player.faction = faction_key;
+        ctxt.player.faction = faction;
       }
       function playerOrigin(ctxt, origin) {
         ctxt.player.origin = origin;
       }
       function addPlayer(ctxt) {
-        ctxt.result.push(playerService.create({ name: ctxt.player.name,
-                                                faction: ctxt.player.faction,
-                                                origin: ctxt.player.origin }));
+        var players = R.exists(ctxt.team) ? ctxt.team.members : ctxt.result;
+        ctxt.player = playerService.create(R.pick(['name', 'faction', 'origin'],
+                                                  ctxt.player)
+                                          );
+        players.push(ctxt.player);
         ctxt.state = DEFAULT_STATE;
       }
       
@@ -186,7 +230,7 @@ angular.module('srApp.services')
                                         caster: ctxt.list.caster,
                                         theme: ctxt.list.theme,
                                         fk: ctxt.list.content.join('\n') });
-        var player = R.last(ctxt.result);
+        var player = ctxt.player;
         player.lists = listsService.add(list, player.lists);
         ctxt.state = DEFAULT_STATE;
       }

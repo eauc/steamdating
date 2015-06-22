@@ -31,12 +31,63 @@ describe('service', function() {
         };
       });
 
+      it('should extract team names, origin', function() {
+        var string = [
+          'Team: Team1',
+          'Origin: Chambery',
+          '',
+          'Player: Toto',
+          'Faction: Legion of Everblight',
+          '',
+          'Player: titi',
+          'Faction: Cryx',
+          '',
+          'Team: team2',
+          'Origin: Lyon',
+          '',
+          'Player: tatA',
+          'Origin: Grenoble',
+          'Faction: Protectorate of Menoth',
+          ''
+        ].join('\n');
+        var res = fkParser.parse(this.factions, string);
+
+        expect(res[0].length).toBe(2);
+        expect(res[1].length).toBe(0);
+
+        expect(res[0][0].name).toBe('Team1');
+        expect(res[0][0].origin).toBe('Chambery');
+
+        expect(res[0][0].members[0].name).toBe('Toto');
+        expect(res[0][0].members[0].faction).toBe('Legion of Everblight');
+        expect(res[0][0].members[1].name).toBe('Titi');
+        expect(res[0][0].members[1].faction).toBe('Cryx');
+
+        // capitalize
+        expect(res[0][1].name).toBe('Team2');
+        expect(res[0][1].origin).toBe('Lyon');
+
+        expect(res[0][1].members[0].name).toBe('TatA');
+        expect(res[0][1].members[0].faction).toBe('Protectorate of Menoth');
+      });
+
+
       it('should extract players names, origin and faction', function() {
-        var string =
-            "Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n\n"+
-            "Player: titi\nOrigin: Lyon\nFaction: Cryx\n\n"+
-            // parse faction name
-            "Player: tatA\nOrigin: Grenoble\nFaction: The Protectorate of Menoth\n\n";
+        var string = [
+          'Player: Toto',
+          'Origin: Chambery',
+          'Faction: Legion of Everblight',
+          '',
+          'Player: titi',
+          'Origin: Lyon',
+          'Faction: Cryx',
+          '',
+          // parse faction
+          'Player: tatA',
+          'Origin: Grenoble',
+          'Faction: Protectorate of Menoth',
+          ''
+        ].join('\n');
         var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(3);
@@ -59,8 +110,12 @@ describe('service', function() {
       });
 
       it('should log error when player name is invalid', function() {
-        var string =
-"Player: \nOrigin: Chambery\nFaction: Cryx\n\n";
+        var string = [
+          'Player: ',
+          'Origin: Chambery',
+          'Faction: Cryx',
+          ''
+        ].join('\n');
         var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(0);
@@ -70,9 +125,16 @@ describe('service', function() {
       });
 
       it('should log error when player name already exists', function() {
-        var string =
-"Player: Toto\nOrigin: Chambery\nFaction: Cryx\n\n"+
-"Player: Toto\nOrigin: Chambery\nFaction: Cryx\n\n";
+        var string = [
+          'Player: Toto',
+          'Origin: Chambery',
+          'Faction: Cryx',
+          '',
+          'Player: Toto',
+          'Origin: Chambery',
+          'Faction: Cryx',
+          ''
+        ].join('\n');
         var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(1);
@@ -82,8 +144,12 @@ describe('service', function() {
       });
 
       it('should warn about unknown player factions', function() {
-        var string =
-"Player: Toto\nOrigin: Chambery\nFaction: Unknown\n\n";
+        var string = [
+          'Player: Toto',
+          'Origin: Chambery',
+          'Faction: Unknown',
+          ''
+        ].join('\n');
         var res = fkParser.parse(this.factions, string);
 
         expect(res[0].length).toBe(1);
@@ -99,29 +165,29 @@ describe('service', function() {
       using([
         [ 'list1', 'list2' ],
         // FK
-        [ 'Thagrosh, the Messiah (*3pts)\n'+
-          '* Carnivean (11pts)\n'+
-          'Objective: Fuel Cache\n'+
-          'Specialists:\n'+
-          '* Raek (4pts)',
-          'Saeryn, Omen of Everblight (*5pts)\n'+
-          '* Shredder (2pts)' ],
+        [ ['Thagrosh, the Messiah (*3pts)',
+           '* Carnivean (11pts)',
+           'Objective: Fuel Cache',
+           'Specialists:',
+           '* Raek (4pts)'].join('\n'),
+          ['Saeryn, Omen of Everblight (*5pts)',
+           '* Shredder (2pts)'].join('\n') ],
         // WHAC
-        [ 'Thagrosh, the Messiah(*3points)\n'+
-          '* Carnivean(11points)\n'+
-          'Objective: Fuel Cache\n'+
-          'Specialists:\n'+
-          '* Raek(4points)',
-          'Saeryn, Omen of Everblight(*5points)\n'+
-          '* Shredder(2points)' ],
+        [ ['Thagrosh, the Messiah(*3points)',
+           '* Carnivean(11points)',
+           'Objective: Fuel Cache',
+           'Specialists:',
+           '* Raek(4points)'].join('\n'),
+          ['Saeryn, Omen of Everblight(*5points)',
+           '* Shredder(2points)'].join('\n') ],
         // Warroom
-        [ 'Thagrosh, the Messiah - WB: 3\n'+
-          '* Carnivean - PC: 11\n'+
-          'Objective: Fuel Cache\n'+
-          'Specialists:\n'+
-          '* Raek - PC: 4',
-          'Saeryn, Omen of Everblight - WB: 5\n'+
-          '* Shredder - PC: 2' ],
+        [ ['Thagrosh, the Messiah - WB: 3',
+           '* Carnivean - PC: 11',
+           'Objective: Fuel Cache',
+           'Specialists:',
+           '* Raek - PC: 4'].join('\n'),
+          ['Saeryn, Omen of Everblight - WB: 5',
+           '* Shredder - PC: 2'].join('\n') ],
       ], function(e, d) {
         it('should extract players lists, '+d, function() {
           var string = 'Player: Toto\nOrigin: Chambery\nFaction: Legion of Everblight\n'+
