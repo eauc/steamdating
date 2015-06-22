@@ -27,6 +27,69 @@ describe('service', function() {
       });
     });
 
+    describe('hasMembers()', function() {
+      using([
+        [ 'player'                , 'has' ],
+        [ { name: 'tata' }        , false ],
+        [ { members: [] }         , false ],
+        [ { members: [ {}, {} ] } , true  ],
+      ], function(e, d) {
+        it('should test if player has members, '+d, function() {
+          expect(player.hasMembers(e.player))
+            .toBe(e.has);
+        });
+      });
+    });
+
+    describe('members()', function() {
+      using([
+        [ 'player'                , 'members' ],
+        [ { name: 'tata' }        , []        ],
+        [ { members: [] }         , []        ],
+        [ { members: [ {}, {} ] } , [ {}, {} ] ],
+      ], function(e, d) {
+        it('should return player\'s members, '+d, function() {
+          expect(player.members(e.player))
+            .toEqual(e.members);
+        });
+      });
+    });
+
+    describe('addMember(<member>)', function() {
+      using([
+        [ 'player'                , 'members' ],
+        [ { name: 'tata' }        , [ { name: 'member' } ]         ],
+        [ { members: [] }         , [ { name: 'member' } ]         ],
+        [ { members: [ {}, {} ] } , [ {}, {}, { name: 'member' } ] ],
+      ], function(e, d) {
+        it('should add <member> to player\'s members, '+d, function() {
+          this.ret = player.addMember({ name: 'member' }, e.player);
+          
+          expect(player.members(this.ret))
+            .toEqual(e.members);
+        });
+      });
+    });
+
+    describe('dropMember(<member>)', function() {
+      using([
+        [ 'player'                , 'members' ],
+        [ { name: 'tata' }        , []         ],
+        [ { members: [] }         , []         ],
+        [ { members: [ { name: 'member' } ] } , [] ],
+        [ { members: [ { name: 'member' },
+                       { name: 'other' } ] } , [ { name: 'other' } ] ],
+        [ { members: [ { name: 'other' } ] } , [ { name: 'other' } ] ],
+      ], function(e, d) {
+        it('should add <member> to player\'s members, '+d, function() {
+          this.ret = player.dropMember({ name: 'member' }, e.player);
+          
+          expect(player.members(this.ret))
+            .toEqual(e.members);
+        });
+      });
+    });
+
     describe('updateListsPlayed(<rounds>)', function() {
       beforeEach(function() {
         this.roundsService = spyOnService('rounds');

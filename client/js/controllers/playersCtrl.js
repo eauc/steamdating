@@ -24,7 +24,15 @@ angular.module('srApp.controllers')
              fileExportService) {
       console.log('init playersListCtrl', $scope);
       $scope.updatePoints();
-
+      $scope.player_team = $scope.isTeamTournament() ? 'Team' : 'Player';
+      $scope.show_members = R.pipe(
+        playersService.names,
+        R.reduce(function(mem, p) {
+          return R.assoc(p, false, mem);
+        }, {}),
+        R.assoc('__all__', false)
+      )($scope.state.players);
+      
       function sortPlayers() {
         $scope.sorted_players =
           stateService['sortPlayersBy'+$state.current.data.sort]($scope.state);
@@ -104,6 +112,20 @@ angular.module('srApp.controllers')
           });
         event.stopPropagation();
       };
+
+      $scope.doShowMembers = function doShowMembers(p, event) {
+        $scope.show_members[p.name] = !$scope.show_members[p.name];
+        event.stopPropagation();
+      };
+      $scope.doShowAllMembers = function doShowAllMembers() {
+        var value = !$scope.show_members.__all__;
+        R.pipe(
+          R.keys,
+          R.forEach(function(key) {
+            $scope.show_members[key] = value;
+          })
+        )($scope.show_members);
+      };
     }
   ])
   .controller('playerEditCtrl', [
@@ -122,7 +144,14 @@ angular.module('srApp.controllers')
              listService,
              listsService) {
       $scope.player = R.clone($scope.edit.player);
-      console.log('init playerEditCtrl', $scope.player);
+      var original_team = R.path(['team','name'], $scope.edit);
+      $scope.player_team = original_team;
+      $scope.teams = R.pipe(
+        playersService.names,
+        R.reject(R.eq($scope.edit.player.name)),
+        R.append(undefined)
+      )($scope.state.players);
+      console.log('init playerEditCtrl', $scope.player, $scope.teams);
 
       $q.when(factionsService.baseFactions())
         .then(function(base_factions) {
@@ -136,24 +165,50 @@ angular.module('srApp.controllers')
           if( R.type($scope.player.name) !== 'String' ||
               s.isBlank($scope.player.name)
             ) {
-            promptService.prompt('alert', 'invalid player name');
+            promptService.prompt('alert', 'invalid player/team name');
             return;
           }
-          var existing_players = playersService.names($scope.state.players);
+          var existing_players = playersService.namesFull($scope.state.players);
           if(R.exists($scope.edit.player.name)) {
             existing_players = R.reject(R.eq($scope.edit.player.name), existing_players);
           }
           if(0 <= R.indexOf($scope.player.name, existing_players)) {
-            promptService.prompt('alert', 'a player with the same name already exists');
+            promptService.prompt('alert', 'a player/team with the same name already exists');
             return;
           }
           if(R.isNil($scope.edit.player.name)) {
-            $scope.state.players = playersService.add($scope.edit.group,
-                                                      $scope.player,
-                                                      $scope.state.players);
+            if(R.exists($scope.player_team)) {
+              $scope.state.players = playersService.addToTeam($scope.player_team,
+                                                              $scope.player,
+                                                              $scope.state.players);
+            }
+            else {
+              $scope.state.players = playersService.add($scope.edit.group,
+                                                        $scope.player,
+                                                        $scope.state.players);
+            }
           }
           else {
             R.extend($scope.edit.player, $scope.player);
+            if(original_team !== $scope.player_team) {
+              if(R.isNil(original_team)) {
+                $scope.state.players = playersService.switchPlayerToTeamMember($scope.player_team,
+                                                                               $scope.player,
+                                                                               $scope.state.players);
+              }
+              else if(R.isNil($scope.player_team)) {
+                $scope.state.players = playersService.switchTeamMemberToPlayer(original_team,
+                                                                               $scope.edit.group,
+                                                                               $scope.player,
+                                                                               $scope.state.players);
+              }
+              else {
+                $scope.state.players = playersService.switchMemberBetweenTeams(original_team,
+                                                                               $scope.player_team,
+                                                                               $scope.player,
+                                                                               $scope.state.players);
+              }
+            }
           }
           $scope.storeState();
         }

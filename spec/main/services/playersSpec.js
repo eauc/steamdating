@@ -34,6 +34,113 @@ describe('service', function() {
       });
     });
 
+    describe('hasTeam()', function() {
+      using([
+        [ 'players', 'has' ],
+        [ [[]] , false ],
+        [ [[ { name: 'player' } ]] , false ],
+        [ [[ { name: 'player' },
+             { name: 'team', members: [] } ]] , false ],
+        [ [[ { name: 'player' },
+             { name: 'team', members: [{}] } ]] , true ],
+        [ [[], [ { name: 'team', members: [{}] } ]] , true ],
+      ], function(e, d) {
+        it('should check whether <players> contains a team', function() {
+          expect(players.hasTeam(e.players))
+            .toBe(e.has);
+        });
+      });
+    });
+
+    describe('addToTeam(<team>, <member>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [],
+          [ { name: 'team1' },
+            { name: 'team2', members: [ { name: 'member1' } ] },
+          ],
+        ];
+      });
+
+      using([
+        [ 'team', 'result' ],
+        [ 'team1', [ [], [ { name : 'team1', members : [ { name : 'member' } ] },
+                             { name : 'team2', members : [ { name : 'member1' } ] } ] ] ],
+        [ 'team2', [ [], [ { name : 'team1' },
+                           { name : 'team2', members : [ { name : 'member1' },
+                                                         { name : 'member' } ] } ] ] ]
+      ], function(e, d) {
+        it('should add <member> to <team>', function() {
+          this.result = players.addToTeam(e.team, { name: 'member' }, this.coll);
+          expect(this.result).toEqual(e.result);
+        });
+      });
+    });
+
+    describe('switchPlayerToTeamMember(<team>, <player>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [],
+          [ { name: 'team1' },
+            { name: 'team2', members: [ { name: 'member1' } ] },
+          ],
+        ];
+      });
+
+      it('should convert <player> to a member of <team>', function() {
+        this.result = players.switchPlayerToTeamMember('team2',
+                                                       { name: 'team1' },
+                                                       this.coll);
+        expect(this.result).toEqual([
+          [ { name : 'team2', members : [ { name : 'member1' },
+                                          { name : 'team1' } ] } ]
+        ]);
+      });
+    });
+
+    describe('switchTeamMemberToPlayer(<team>, <gri>, <member>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [ {} ],
+          [ { name: 'team2', members: [ { name: 'member1' },
+                                        { name: 'member2' } ] },
+          ],
+        ];
+      });
+
+      it('should convert <member> to a player in <gri>', function() {
+        this.result = players.switchTeamMemberToPlayer('team2', 0,
+                                                       { name: 'member1' },
+                                                       this.coll);
+        expect(this.result).toEqual([
+          [ {  }, { name : 'member1' } ],
+          [ { name : 'team2', members : [ { name : 'member2' } ] } ]
+        ]);
+      });
+    });
+
+    describe('switchMemberBetweenTeams(<old_team>, <new_team>, <member>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [ { name: 'team1' },
+          ],
+          [ { name: 'team2', members: [ { name: 'member1' },
+                                        { name: 'member2' } ] },
+          ],
+        ];
+      });
+
+      it('should switch <member> between teams', function() {
+        this.result = players.switchMemberBetweenTeams('team2', 'team1',
+                                                       { name: 'member1' },
+                                                       this.coll);
+        expect(this.result).toEqual([
+          [ { name : 'team1', members : [ { name : 'member1' } ] } ],
+          [ { name : 'team2', members : [ { name : 'member2' } ] } ]
+        ]);
+      });
+    });
+
     describe('drop(<player>)', function() {
       beforeEach(function() {
         this.coll = [
@@ -114,13 +221,13 @@ describe('service', function() {
       beforeEach(function() {
         this.coll = [
           [
-            { name: 'toto3' },
+            { name: 'toto3', members: [ { name: 'member1' }, { name: 'member2' } ] },
             { name: 'toto1' },
-            { name: 'toto2' },
+            { name: 'toto2', members: [ { name: 'member3' }, { name: 'member6' } ] },
           ],
           [
             { name: 'tata2' },
-            { name: 'tata1' },
+            { name: 'tata1', members: [ { name: 'member5' }, { name: 'member4' } ] },
           ]
         ];
       });
@@ -128,6 +235,51 @@ describe('service', function() {
       it('should return sorted player names list', function() {
         expect(players.names(this.coll)).toEqual([
           'tata1', 'tata2', 'toto1', 'toto2', 'toto3'
+        ]);
+      });
+    });
+
+    describe('namesMembers()', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'toto3', members: [ { name: 'member1' }, { name: 'member2' } ] },
+            { name: 'toto1' },
+            { name: 'toto2', members: [ { name: 'member3' }, { name: 'member6' } ] },
+          ],
+          [
+            { name: 'tata2' },
+            { name: 'tata1', members: [ { name: 'member5' }, { name: 'member4' } ] },
+          ]
+        ];
+      });
+
+      it('should return sorted members names list', function() {
+        expect(players.namesMembers(this.coll)).toEqual([
+          'member1', 'member2', 'member3', 'member4', 'member5', 'member6'
+        ]);
+      });
+    });
+
+    describe('namesFull()', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'toto3', members: [ { name: 'member1' }, { name: 'member2' } ] },
+            { name: 'toto1' },
+            { name: 'toto2', members: [ { name: 'member3' }, { name: 'member6' } ] },
+          ],
+          [
+            { name: 'tata2' },
+            { name: 'tata1', members: [ { name: 'member5' }, { name: 'member4' } ] },
+          ]
+        ];
+      });
+
+      it('should return sorted players + members names list', function() {
+        expect(players.namesFull(this.coll)).toEqual([
+          'tata1', 'tata2', 'toto1', 'toto2', 'toto3',
+          'member1', 'member2', 'member3', 'member4', 'member5', 'member6'
         ]);
       });
     });

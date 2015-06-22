@@ -36,11 +36,13 @@ describe('controllers', function() {
           ctxt.scope.state = { players: ctxt.state_players };
           ctxt.scope.goToState = jasmine.createSpy('goToState');
           ctxt.scope.updatePoints = jasmine.createSpy('updatePoints');
+          ctxt.scope.isTeamTournament = jasmine.createSpy('isTeamTournament');
           
           ctxt.state = { current: { name: 'current_state',
                                     data: { sort: sort_by || 'Rank',
                                             exports: exports || [] } } };
-        
+          ctxt.playersService.names._retVal = ['player1', 'player2'];
+          
           $controller('playersListCtrl', {
             '$scope': ctxt.scope,
             '$state': ctxt.state,
@@ -53,6 +55,15 @@ describe('controllers', function() {
 
     it('should update points', function() {
       expect(this.scope.updatePoints).toHaveBeenCalled();
+    });
+
+    it('should init show_members flags', function() {
+      expect(this.scope.show_members)
+        .toEqual({
+          player1: false,
+          player2: false,
+          __all__: false
+        });
     });
     
     using([
@@ -211,6 +222,43 @@ describe('controllers', function() {
           expect(this.scope.sorted_players)
             .toBe('state.sortPlayersByRank.returnValue');
         });
+      });
+    });
+
+    describe('doShowMembers(<p>, <event>)', function () {
+      beforeEach(function() {
+        this.player = { name: 'player' };
+        this.scope.show_members.player = true;
+        this.event = jasmine.createSpyObj('event', [
+          'stopPropagation',
+        ]);
+      });
+      
+      it('should toggle show_members flag for <p>', function() {
+        this.scope.doShowMembers(this.player, this.event);
+
+        expect(this.scope.show_members.player)
+          .toBe(false);
+      });
+
+      it('should stop event propagation', function() {
+        this.scope.doShowMembers(this.player, this.event);
+
+        expect(this.event.stopPropagation)
+          .toHaveBeenCalled();
+      });
+    });
+
+    describe('doShowAllMembers()', function () {
+      it('should toggle all show_members flags', function() {
+        this.scope.doShowAllMembers();
+
+        expect(this.scope.show_members)
+          .toEqual({
+            player1: true,
+            player2: true,
+            __all__: true
+          });
       });
     });
   });

@@ -64,6 +64,21 @@ describe('controllers', function() {
       expect(this.router_state.is).toHaveBeenCalledWith('state?');
     });
 
+    describe('isTeamTournament()', function() {
+      beforeEach(function() {
+        this.scope.state = { players: 'players' };
+        this.playersService = spyOnService('players');
+      });
+      
+      it('should check whether state.players has teams', function() {
+        expect(this.scope.isTeamTournament())
+          .toEqual('players.hasTeam.returnValue');
+
+        expect(this.playersService.hasTeam)
+          .toHaveBeenCalledWith('players');
+      });
+    });
+
     describe('resetState(<data>)', function() {
       it('should create a new state from <data>', function() {
         this.scope.state = undefined;
@@ -79,6 +94,21 @@ describe('controllers', function() {
         this.scope.doEditPlayer({ name: 'player' });
 
         expect(this.scope.edit).toEqual({
+          team: null,
+          player: { name: 'player' },
+          back: 'current_state'
+        });
+        expect(this.router_state.go).toHaveBeenCalledWith('player_edit');
+      });
+    });
+
+    describe('doEditTeamMemberPlayer(<gri>, <t>, <p>)', function() {
+      it('should enter "player_edit" state', function() {
+        this.scope.doEditTeamMember(42, { name: 'team' }, { name: 'player' });
+
+        expect(this.scope.edit).toEqual({
+          group: 42,
+          team: { name: 'team' },
           player: { name: 'player' },
           back: 'current_state'
         });

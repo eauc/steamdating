@@ -1,5 +1,4 @@
 =================================================================================
-- import des infos joueurs a partir d'un fichier texte avec un format bien precis
-- import des listes au format FK
-- module de statistiques
-- gestion d'un compendium de tournois
+stats factions ratios
+tablet UI ?
+export stats csv/bbCode

@@ -1,25 +1,128 @@
-<div>
+<div id="players-list">
   <button class="btn btn-default no-print"
           ng-click="doEditGroups()">
     Edit Groups
   </button>
-  <h4 style="display:inline;">
+  <h4 class="inline">
     {{state | state:'playersNotDroped' | players:'size'}}<span ng-if="state | state:'hasDropedPlayers'">+{{state | state:'playersDroped' | players:'size'}}</span>
-    Players / {{state.players | players:'nbGroups'}} Groups
+    {{::player_team}}s / {{state.players | players:'nbGroups'}} Groups
   </h4>
-  <div class="no-print"
-       ng-repeat="f in exports"
-       style="margin:10px 0;">
+  <div class="download-link no-print"
+       ng-repeat="f in exports">
     <a ng-if="f.url"
        ng-href="{{f.url}}"
        download="{{f.name}}">
       Download {{f.label}} File
     </a>
   </div>
-  <!-- <div ng-if="isTeamTournament()"
-  ng-include="'partials/players_team.html'">
-  </div> -->
-  <div ng-if="!isTeamTournament()"
-       ng-include="'partials/playersList_single.html'">
+  <div ng-repeat="(gri,gr) in sorted_players">
+    <h2 ng-if="::state | state:'hasPlayerGroups'"
+        class="group-header">
+      Group{{::gri+1}}
+    </h2>
+    <button class="btn btn-default no-print"
+            ng-click="doAddPlayer($index)">
+      <span class="glyphicon glyphicon-plus"></span>
+      Add Player/Team
+    </button>
+    <table class="table table-hover group-list">
+      <tr>
+        <th>
+          <span class="
+                glyphicon
+                glyphicon-chevron-{{show_members.__all__ ? 'down' : 'right'}}
+                clickable
+                "
+                ng-if="::isTeamTournament()"
+                ng-click="doShowAllMembers()">
+          </span>
+          Name
+        </th>
+        <th>Origin</th>
+        <th>Faction</th>
+        <th>Lists</th>
+        <th>Notes</th>
+        <th></th>
+        <th class="no-print"></th>
+      </tr>
+      <tr ng-repeat-start="p in ::gr track by p.name"
+          class="
+          clickable
+          {{(p | player:'isDroped') ? 'dropped' : ''}}
+          "
+          ng-click="doEditPlayer(p)">
+        <td class="break-words">
+          <span class="
+                clickable
+                glyphicon
+                glyphicon-chevron-{{show_members[p.name] ? 'down' : 'right'}}
+                "
+                ng-if="::p | player:'hasMembers'"
+                ng-click="doShowMembers(p, $event)">
+          </span>
+          {{::p.name}}
+        </td>
+        <td class="break-words">{{::p.origin}}</td>
+        <td class="break-words">
+          <img ng-src="{{::p.faction | factions:'iconFor'}}"
+               class="faction-icon"/>
+          {{::p.faction}}
+        </td>
+        <td class="casters-list">
+          <span ng-repeat="l in ::p.lists">
+            {{::l.caster}}
+          </span>
+        </td>
+        <td>{{::p.notes}}</td>
+        <td>
+          <button ng-click="doDropPlayer(true, p, $event)"
+                  class="btn btn-default no-print"
+                  ng-if="!(p | player:'isDroped')">
+            <span class="glyphicon glyphicon-ban-circle"></span>
+            Drop
+          </button>
+          <p ng-click="doDropPlayer(false, p, $event)"
+             ng-if="(p | player:'isDroped')">
+            Dropped after Round {{p.droped}}<br />
+            <a class="no-print">click to undrop</a>
+          </p>
+        </td>
+        <td class="no-print">
+          <button ng-click="doDeletePlayer(p, $event)"
+                  class="btn btn-default">
+            <span class="glyphicon glyphicon-trash"></span>
+            Delete
+          </button>
+        </td>
+      </tr>
+      <tr ng-repeat-end
+          ng-show="show_members[p.name]"
+          ng-repeat="m in p|player:'members' track by m.name"
+          class="clickable team-member no-print"
+          ng-click="doEditTeamMember(gri,p,m)">
+        <td class="break-words">{{::m.name}}</td>
+        <td class="break-words">{{::m.origin}}</td>
+        <td class="break-words">
+          <img ng-src="{{::m.faction | factions:'iconFor'}}"
+               class="faction-icon"/>
+          {{::m.faction}}
+        </td>
+        <td class="casters-list">
+          <span ng-repeat="l in ::m.lists">
+            {{::l.caster}}
+          </span>
+        </td>
+        <td>{{::m.notes}}</td>
+        <td>
+        </td>
+        <td class="no-print">
+          <button ng-click="doDeletePlayer(m, $event)"
+                  class="btn btn-default">
+            <span class="glyphicon glyphicon-trash"></span>
+            Delete
+          </button>
+        </td>
+      </tr>
+    </table>
   </div>
 </div>

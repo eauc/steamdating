@@ -12,6 +12,7 @@ angular.module('srApp.services')
         create: function(data) {
           var ret = R.merge({
             name: null,
+            members: [],
             droped: null,
             faction: null,
             origin: null,
@@ -33,6 +34,30 @@ angular.module('srApp.services')
         },
         is: function(name, player) {
           return R.propEq('name', name, player);
+        },
+        hasMembers: function(player) {
+          return !R.pipe(
+            R.prop('members'),
+            R.defaultTo([]),
+            R.isEmpty
+          )(player);
+        },
+        members: function(player) {
+          return R.defaultTo([], player.members);
+        },
+        addMember: function(member, player) {
+          player.members = R.pipe(
+            R.defaultTo([]),
+            R.append(member)
+          )(player.members);
+          return player;
+        },
+        dropMember: function(member, player) {
+          player.members = R.pipe(
+            R.defaultTo([]),
+            R.reject(playerService.is$(member.name))
+          )(player.members);
+          return player;
         },
         rank: function(critFn, player) {
           var rank;
@@ -126,6 +151,48 @@ angular.module('srApp.services')
           var ret = R.remove(group_index, 1, coll);
           return R.insert(group_index, new_group, ret);
         },
+        hasTeam: function playersHasTeam(coll) {
+          return !!R.pipe(
+            R.flatten,
+            R.find(playerService.hasMembers)
+          )(coll);
+        },
+        addToTeam: function playersAddToTeam(team, member, coll) {
+          R.pipe(
+            playersService.player$(team),
+            playerService.addMember$(member)
+          )(coll);
+          return coll;
+        },
+        switchPlayerToTeamMember: function playersSwitchPlayerToTeamMember(team_name, player,
+                                                                           coll) {
+          R.pipe(
+            playersService.player$(team_name),
+            playerService.addMember$(player)
+          )(coll);
+          return playersService.drop(player, coll);
+        },
+        switchTeamMemberToPlayer: function playersSwitchTeamMemberToPlayer(team_name, group_index,
+                                                                           member, coll) {
+          R.pipe(
+            playersService.player$(team_name),
+            playerService.dropMember$(member)
+          )(coll);
+          return playersService.add(group_index, member, coll);
+        },
+        switchMemberBetweenTeams: function playersSwitchMemberBetweenTeams(old_team_name,
+                                                                           new_team_name,
+                                                                           member, coll) {
+          R.pipe(
+            playersService.player$(old_team_name),
+            playerService.dropMember$(member)
+          )(coll);
+          R.pipe(
+            playersService.player$(new_team_name),
+            playerService.addMember$(member)
+          )(coll);
+          return coll;
+        },
         drop: function(player, coll) {
           return R.pipe(R.map(R.reject(playerService.is$(player.name))),
                         R.reject(R.isEmpty),
@@ -146,11 +213,22 @@ angular.module('srApp.services')
         notDropedInRound: function(round_index, coll) {
           return R.map(R.reject(playerService.hasDropedInRound$(round_index)))(coll);
         },
-        names: function(coll) {
+        names: function playersNames(coll) {
           return R.pipe(R.flatten,
                         R.pluck('name'),
                         R.sortBy(R.identity)
                        )(coll);
+        },
+        namesMembers: function playersNamesMembers(coll) {
+          return R.pipe(R.flatten,
+                        R.chain(playerService.members),
+                        R.pluck('name'),
+                        R.sortBy(R.identity)
+                       )(coll);
+        },
+        namesFull: function playersNamesFull(coll) {
+          return R.concat(playersService.names(coll),
+                          playersService.namesMembers(coll));
         },
         factions: function(base_factions, coll) {
           return R.pipe(R.flatten,

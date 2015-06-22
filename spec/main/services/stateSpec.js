@@ -93,7 +93,8 @@ describe('service', function() {
         it('should not modify them', function() {
           expect(this.result).toEqual({
             version: 2,
-            players: [ [ { name : 'toto', droped: null, faction : null, origin : null, team : null,
+            players: [ [ { name : 'toto', members: [],
+                           droped: null, faction : null, origin : null, team : null,
                            custom_field : 0, notes : null, lists : [  ], lists_played : [  ],
                            points : { tournament : 0, sos : 0, control : 0,
                                       army : 0, custom_field : 0 }
