@@ -31,13 +31,15 @@
           <span class="
                 glyphicon
                 glyphicon-chevron-{{show_members.__all__ ? 'down' : 'right'}}
-                clickable
+                clickable no-print
                 "
                 ng-if="::isTeamTournament()"
                 ng-click="doShowAllMembers()">
           </span>
           Name
         </th>
+        <th class="no-print"
+            ng-if="::isTeamTournament()">Size</th>
         <th>Origin</th>
         <th>Faction</th>
         <th>Lists</th>
@@ -53,15 +55,17 @@
           ng-click="doEditPlayer(p)">
         <td class="break-words">
           <span class="
-                clickable
                 glyphicon
                 glyphicon-chevron-{{show_members[p.name] ? 'down' : 'right'}}
+                clickable no-print
                 "
                 ng-if="::p | player:'hasMembers'"
                 ng-click="doShowMembers(p, $event)">
           </span>
           {{::p.name}}
         </td>
+        <td class="no-print"
+            ng-if="::isTeamTournament()">{{::p.members.length}}</td>
         <td class="break-words">{{::p.origin}}</td>
         <td class="break-words">
           <img ng-src="{{::p.faction | factions:'iconFor'}}"
@@ -101,6 +105,7 @@
           class="clickable team-member no-print"
           ng-click="doEditTeamMember(gri,p,m)">
         <td class="break-words">{{::m.name}}</td>
+        <td ng-if="::isTeamTournament()"></td>
         <td class="break-words">{{::m.origin}}</td>
         <td class="break-words">
           <img ng-src="{{::m.faction | factions:'iconFor'}}"
@@ -113,8 +118,7 @@
           </span>
         </td>
         <td>{{::m.notes}}</td>
-        <td>
-        </td>
+        <td></td>
         <td class="no-print">
           <button ng-click="doDeletePlayer(m, $event)"
                   class="btn btn-default">
