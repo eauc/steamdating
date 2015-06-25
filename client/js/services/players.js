@@ -206,9 +206,22 @@ angular.module('srApp.services')
                         })(coll);
         },
         player: function(name, coll) {
-          return R.pipe(R.flatten,
-                        R.find(playerService.is$(name))
-                       )(coll);
+          return R.pipe(
+            R.flatten,
+            R.find(playerService.is$(name))
+          )(coll);
+        },
+        member: function(name, coll) {
+          return R.pipe(
+            R.flatten,
+            R.chain(playerService.members),
+            R.find(playerService.is$(name))
+          )(coll);
+        },
+        playerFull: function(name, coll) {
+          return ( playersService.player(name, coll) ||
+                   playersService.member(name, coll)
+                 );
         },
         dropedInRound: function(round_index, coll) {
           return R.map(R.filter(playerService.hasDropedInRound$(round_index)))(coll);

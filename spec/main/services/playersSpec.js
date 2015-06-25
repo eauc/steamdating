@@ -206,14 +206,83 @@ describe('service', function() {
             { name: 'toto3' },
           ],
           [
-            { name: 'tata1' },
+            { name: 'tata1', members: [ { name: 'tata1a' },
+                                        { name: 'tata1b' } ] },
             { name: 'tata2' },
           ]
         ];
       });
 
-      it('should return player', function() {
-        expect(players.player('tata2', this.coll)).toBe(this.coll[1][1]);
+      using([
+        [ 'name', 'result' ],
+        [ 'tata2', { name: 'tata2' } ],
+        [ 'toto1', { name: 'toto1' } ],
+        // does not find members
+        [ 'tata1a', undefined ],
+      ], function(e, d) {
+        it('should return player, '+d, function() {
+          expect(players.player(e.name, this.coll)).toEqual(e.result);
+        });
+      });
+    });
+
+    describe('member(<name>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'toto1' },
+            { name: 'toto2' },
+            { name: 'toto3' },
+          ],
+          [
+            { name: 'tata1', members: [ { name: 'tata1a' },
+                                        { name: 'tata1b' } ] },
+            { name: 'tata2' },
+          ]
+        ];
+      });
+
+      using([
+        [ 'name', 'result' ],
+        // does not find primary players
+        [ 'tata2', undefined ],
+        [ 'toto1', undefined ],
+        [ 'tata1a', { name: 'tata1a' } ],
+        [ 'tata1b', { name: 'tata1b' } ],
+      ], function(e, d) {
+        it('should return member, '+d, function() {
+          expect(players.member(e.name, this.coll)).toEqual(e.result);
+        });
+      });
+    });
+
+    describe('playerFull(<name>)', function() {
+      beforeEach(function() {
+        this.coll = [
+          [
+            { name: 'toto1' },
+            { name: 'toto2' },
+            { name: 'toto3' },
+          ],
+          [
+            { name: 'tata1', members: [ { name: 'tata1a' },
+                                        { name: 'tata1b' } ] },
+            { name: 'tata2' },
+          ]
+        ];
+      });
+
+      using([
+        [ 'name', 'result' ],
+        // does not find primary players
+        [ 'tata2', { name: 'tata2' } ],
+        [ 'toto1', { name: 'toto1' } ],
+        [ 'tata1a', { name: 'tata1a' } ],
+        [ 'tata1b', { name: 'tata1b' } ],
+      ], function(e, d) {
+        it('should return player or member, '+d, function() {
+          expect(players.playerFull(e.name, this.coll)).toEqual(e.result);
+        });
       });
     });
 

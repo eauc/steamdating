@@ -11,6 +11,7 @@ angular.module('srApp.services')
             p1: {
               name: null,
               list: null,
+              team_tournament: null,
               tournament: null,
               control: null,
               army: null,
@@ -19,12 +20,58 @@ angular.module('srApp.services')
             p2: {
               name: null,
               list: null,
+              team_tournament: null,
               tournament: null,
               control: null,
               army: null,
               custom_field: null
-            }
+            },
+            games: []
           }, data);
+        },
+        updatePointsFromSubGames: function gameUpdatePointsFromSubGame(game) {
+          var ret = R.pipe(
+            R.assoc('p1', reducePlayerPointsFromSubGames('p1', game)),
+            R.assoc('p2', reducePlayerPointsFromSubGames('p2', game))
+          )(game);
+          var all_sub_games_have_result = R.all(gameService.hasResult, game.games);
+          ret.p1.team_tournament = null;
+          ret.p2.team_tournament = null;
+          if(all_sub_games_have_result) {
+            if(ret.p1.tournament > ret.p2.tournament) {
+              ret.p1.team_tournament = 1;
+              ret.p2.team_tournament = 0;
+            }
+            else if(ret.p1.tournament < ret.p2.tournament) {
+              ret.p1.team_tournament = 0;
+              ret.p2.team_tournament = 1;
+            }
+            else {
+              ret.p1.team_tournament = 0;
+              ret.p2.team_tournament = 0;
+            }
+          }
+          // console.log('ret', ret, all_sub_games_have_result);
+          return ret;
+        },
+        updatePoints: function(game) {
+          if(gameService.hasSubGames(game)) {
+            var ret = R.assoc('games', R.map(gameService.updatePoints, game.games), game);
+            return gameService.updatePointsFromSubGames(ret);
+          }
+          return R.pipe(
+            R.assoc('p1',
+                    R.assoc('assassination', ( gameService.isAssassination$(game) ?
+                                               game.p1.tournament : 0),
+                            game.p1)
+                   ),
+            R.assoc('p2',
+                    R.assoc('assassination', ( gameService.isAssassination$(game) ?
+                                               game.p2.tournament : 0),
+                            game.p2
+                           )
+                   )
+          )(game);
         },
         playerNames: function(game) {
           return R.ap([ R.path(['p1','name']), R.path(['p2','name']) ])([game]);
@@ -127,8 +174,56 @@ angular.module('srApp.services')
             ret = R.concat(ret, [game.p1.custom_field, game.p2.custom_field]);
           }
           return ret;
+        },
+        random: function gameRandom(m1_options, m2_options, lists_options, game) {
+          m1_options = R.defaultTo([], m1_options);
+          m2_options = R.defaultTo([], m2_options);
+          lists_options = R.defaultTo([], lists_options);
+          if(gameService.hasSubGames(game)) {
+            R.forEach(function(game) {
+              var p1 = R.head(R.shuffle(m1_options));
+              m1_options = R.reject(R.eq(p1), m1_options);
+              var p2 = R.head(R.shuffle(m2_options));
+              m2_options = R.reject(R.eq(p2), m2_options);
+
+              game.p1.name = p1;
+              game.p2.name = p2;
+              gameService.random$([], [], lists_options, game);
+            }, game.games);
+            R.extend(game, gameService.updatePointsFromSubGames(game));
+            return;
+          }
+          game.victory = R.head(R.shuffle(['assassination', null]));
+          game.p1.list = R.pipe(
+            R.defaultTo([]),
+            R.shuffle,
+            R.head
+          )(lists_options[game.p1.name]);
+          game.p2.list = R.pipe(
+            R.defaultTo([]),
+            R.shuffle,
+            R.head
+          )(lists_options[game.p2.name]);
+          var winner_loser = R.shuffle(['p1', 'p2']);
+          game[winner_loser[0]].tournament = 1;
+          game[winner_loser[1]].tournament = 0;
+          game.p1.control = Math.floor(Math.random() * 6);
+          game.p2.control = Math.floor(Math.random() * 6);
+          game.p1.army = Math.floor(Math.random() * 51);
+          game.p2.army = Math.floor(Math.random() * 51);
         }
       };
+      function reducePlayerPointsFromSubGames(player, game) {
+        return R.reduce(function(mem, sg) {
+          return R.pipe(
+            R.assoc('tournament', (mem.tournament || 0) + (sg[player].tournament || 0)),
+            R.assoc('control', (mem.control || 0) + (sg[player].control || 0)),
+            R.assoc('army', (mem.army || 0) + (sg[player].army || 0)),
+            R.assoc('custom_field', (mem.custom_field || 0) + (sg[player].custom_field || 0)),
+            R.assoc('assassination', (mem.assassination || 0) + (sg[player].assassination || 0))
+          )(mem);
+        }, R.pick(['name','list'], game[player]), game.games);
+      }
       R.curryService(gameService);
       return gameService;
     }

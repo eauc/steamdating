@@ -23,9 +23,12 @@ describe('service', function() {
             table: 4,
             victory: null,
             p1: { name: 'toto', list: null,
-                  tournament: null, control: null, army: null, custom_field: null },
+                  team_tournament: null, tournament: null,
+                  control: null, army: null, custom_field: null },
             p2: { name: 'titi', list: null,
-                  tournament: null, control: null, army: null, custom_field: null },
+                  team_tournament: null, tournament: null,
+                  control: null, army: null, custom_field: null },
+            games: []
           });
       });
     });
@@ -262,6 +265,166 @@ describe('service', function() {
       });
     });
 
+    when('updatePointsFromSubGames()', function() {
+      this.ret = game.updatePointsFromSubGames(this.game);
+    }, function() {
+      beforeEach(function() {
+        this.game = game.create();
+        this.game.games = R.times(game.create, 5);
+        R.times(R.bind(function(i) {
+          R.extend(this.game.games[i].p1, {
+            tournament: i%2,
+            control: i,
+            army: i*10,
+            custom_field: i+5
+          });
+          R.extend(this.game.games[i].p2, {
+            tournament: (i+1)%2,
+            control: 5-i,
+            army: 50-i*10,
+            custom_field: 20-i,
+          });
+        }, this), 5);
+      });
+
+      it('should update tournament/control/army/custom_field/assassination points', function() {
+        expect(this.ret.p1)
+          .toEqual({ name : null, list : null,
+                     team_tournament : 0, tournament : 2,
+                     control : 10, army : 100, custom_field : 35, assassination : 0 });
+        expect(this.ret.p2)
+          .toEqual({ name : null, list : null,
+                     team_tournament : 1, tournament : 3,
+                     control : 15, army : 150, custom_field : 90, assassination : 0 });
+      });
+
+      when('p2 team wins', function() {
+      }, function() {
+        it('should update team_tournament points', function() {
+          expect(this.ret.p1.team_tournament)
+            .toBe(0);
+          expect(this.ret.p2.team_tournament)
+            .toBe(1);
+        });
+      });
+
+      when('p1 team wins', function() {
+        this.game.games[0].p1.tournament = 1;
+        this.game.games[0].p2.tournament = 0;
+      }, function() {
+        it('should update team_tournament points', function() {
+          expect(this.ret.p1.team_tournament)
+            .toBe(1);
+          expect(this.ret.p2.team_tournament)
+            .toBe(0);
+        });
+      });
+
+      when('teams are ex-aequo', function() {
+        this.game.games[0].p1.tournament = 0;
+        this.game.games[0].p2.tournament = 0;
+      }, function() {
+        it('should update team_tournament points', function() {
+          expect(this.ret.p1.team_tournament)
+            .toBe(0);
+          expect(this.ret.p2.team_tournament)
+            .toBe(0);
+        });
+      });
+      
+      when('some sub games results are missing', function() {
+        this.game.games[1].p1.tournament = null;
+      }, function() {
+        it('should not update team_tournament points', function() {
+          expect(this.ret.p1.team_tournament)
+            .toBe(null);
+          expect(this.ret.p2.team_tournament)
+            .toBe(null);
+        });
+      });
+    });
+
+    when('updatePoints()', function() {
+      this.ret = game.updatePoints(this.game);
+    }, function() {
+      beforeEach(function() {
+        this.game = game.create();
+      });
+
+      using([
+        ['assassination', 'p1_tp', 'p2_tp', 'p1_assa', 'p2_assa' ],
+        [ false, 1, 0, 0, 0 ],
+        [ false, 0, 1, 0, 0 ],
+        [ true, 1, 0, 1, 0 ],
+        [ true, 0, 1, 0, 1 ],
+        [ true, 0, 0, 0, 0 ],
+      ], function(e, d) {
+        when('game does not have subGames', function() {
+          this.game.victory = e.assassination ? 'assassination' : null;
+          this.game.p1.tournament = e.p1_tp;
+          this.game.p2.tournament = e.p2_tp;
+        }, function() {
+          it('should update assassination points, '+d, function() {
+            expect(this.ret.p1.assassination)
+              .toBe(e.p1_assa);
+            expect(this.ret.p2.assassination)
+              .toBe(e.p2_assa);
+          });
+        });
+
+        when('game has subGames', function() {
+          this.game.games = R.times(game.create, 5);
+          R.times(R.bind(function(i) {
+            this.game.games[i].victory = i%2 ? 'assassination' : null;
+            R.extend(this.game.games[i].p1, {
+              tournament: i%2,
+              control: i,
+              army: i*10,
+              custom_field: i+5
+            });
+            R.extend(this.game.games[i].p2, {
+              tournament: (i+1)%2,
+              control: 5-i,
+              army: 50-i*10,
+              custom_field: 20-i,
+            });
+          }, this), 5);
+        }, function() {
+          it('should update game & subgames points', function() {
+            expect(this.ret.p1)
+              .toEqual({ name : null, list : null,
+                         tournament : 2, control : 10,
+                         army : 100, custom_field : 35, assassination : 2, team_tournament : 0 });
+            expect(this.ret.p2)
+              .toEqual({ name : null, list : null,
+                         tournament : 3, control : 15,
+                         army : 150, custom_field : 90, assassination : 0, team_tournament : 1 });
+            
+            expect(this.ret.games[0].p1.assassination)
+              .toBe(0);
+            expect(this.ret.games[0].p2.assassination)
+              .toBe(0);
+            expect(this.ret.games[1].p1.assassination)
+              .toBe(1);
+            expect(this.ret.games[1].p2.assassination)
+              .toBe(0);
+            expect(this.ret.games[2].p1.assassination)
+              .toBe(0);
+            expect(this.ret.games[2].p2.assassination)
+              .toBe(0);
+            expect(this.ret.games[3].p1.assassination)
+              .toBe(1);
+            expect(this.ret.games[3].p2.assassination)
+              .toBe(0);
+            expect(this.ret.games[4].p1.assassination)
+              .toBe(0);
+            expect(this.ret.games[4].p2.assassination)
+              .toBe(0);
+          });
+        });
+      });
+    });
+
     describe('toArray()', function() {
       using([
         [ 'withCustom', 'ck'  , 'array' ],
@@ -282,7 +445,7 @@ describe('service', function() {
                                   }, 'list1', 'list2', 1, 0, 2, 4, 3, 5, 0, 42, 24 ] ],
       ], function(e, d) {
         it('should convert game to array, '+d, function() {
-          expect(game.toArray(e.withCustom, {
+          expect(game.toArray(false, e.withCustom, {
             table: 21,
             victory: e.ck ? 'assassination' : null,
             p1: { name: 'toto', list: 'list1', tournament: 1,

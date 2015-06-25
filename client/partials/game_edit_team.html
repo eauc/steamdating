@@ -1,0 +1,210 @@
+<table class="table text-center">
+  <tr>
+    <th style="width:200px;">
+      <label>Table :</label>
+      <input type="number"
+             class="form-control"
+             style="
+             display: inline-block;
+             width: 5em;
+             "
+             ng-model="game.table" />
+    </th>
+    <th>
+      <select ng-model="game.p1.name"
+              ng-change="updatePlayersOptions()"
+              ng-options="p as p for p in players_options"
+              class="form-control">
+      </select>
+    </th>
+    <th>
+      <select ng-model="game.p2.name"
+              ng-change="updatePlayersOptions()"
+              ng-options="p as p for p in players_options"
+              class="form-control">
+      </select>
+    </th>
+  </tr>
+  <tr>
+    <th class="text-right">
+    </th>
+    <td class="clickable"
+        ng-class="{
+        'success': game.p1.team_tournament === 1,
+        'danger': game.p1.team_tournament === 0,
+        }">
+      {{
+      (game.p1.team_tournament===1 ? 'Win' :
+      game.p1.team_tournament===0 ? 'Loss' :
+      '(ongoing)')
+      }}
+    </td>
+    <td class="clickable"
+        ng-class="{
+        'success': game.p2.team_tournament === 1,
+        'danger': game.p2.team_tournament === 0,
+        }">
+      {{
+      (game.p2.team_tournament===1 ? 'Win' :
+      game.p2.team_tournament===0 ? 'Loss' :
+      '(ongoing)')
+      }}
+    </td>
+  </tr>
+  <tr>
+    <th class="text-right">
+      Notes
+    </th>
+    <td colspan="2">
+      <textarea class="form-control"
+                ng-model="game.notes"
+                tabindex="9">
+      </textarea>
+    </td>
+  </tr>
+  <tr ng-repeat-start="(sgi,sg) in game.games">
+    <th>
+    </th>
+    <th>
+      <select ng-model="sg.p1.name"
+              ng-change="updatePlayersOptions()"
+              ng-options="m as m for m in p1_members_options"
+              class="form-control">
+      </select>
+    </th>
+    <th>
+      <select ng-model="sg.p2.name"
+              ng-change="updatePlayersOptions()"
+              ng-options="m as m for m in p2_members_options"
+              class="form-control">
+      </select>
+    </th>
+  </tr>
+  <tr>
+    <th class="text-right">
+    </th>
+    <td class="clickable"
+        ng-class="{
+        'success': sg.p1.tournament === 1,
+        'danger': sg.p1.tournament === 0,
+        }"
+        ng-click="setWinLoss(sg, 'p1','p2')">
+      {{
+      (sg.p1.tournament===1 ? 'Win (click to set Loss)' :
+      sg.p1.tournament===0 ? 'Loss (click to set Win)' :
+      'Click to set Win')
+      }}
+    </td>
+    <td class="clickable"
+        ng-class="{
+        'success': sg.p2.tournament === 1,
+        'danger': sg.p2.tournament === 0,
+        }"
+        ng-click="setWinLoss(sg, 'p2','p1')">
+      {{
+      (sg.p2.tournament===1 ? 'Win (click to set Loss)' :
+      sg.p2.tournament===0 ? 'Loss (click to set Win)' :
+      'Click to set Win')
+      }}
+    </td>
+  </tr>
+  <tr>
+    <th class="text-right">
+      Victory
+    </th>
+    <td colspan="2">
+      <input id="victory"
+             type="checkbox"
+             ng-model="sg.victory"
+             ng-true-value="'assassination'"
+             ng-false-value="null" />
+      <label for="victory"
+             style="font-weight:400;">Assassination</label>
+    </td>
+  </tr>
+  <tr>
+    <th class="text-right">
+      List
+    </th>
+    <td>
+      <select class="form-control"
+              ng-model="sg.p1.list"
+              ng-options="
+              c as c for c in casters[sg.p1.name]
+              "
+              tabindex="1">
+      </select>
+    </td>
+    <td>
+      <select class="form-control"
+              ng-model="sg.p2.list"
+              ng-options="
+              c as c for c in casters[sg.p2.name]
+              "
+              tabindex="5">
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th class="text-right">
+      Control
+    </th>
+    <td>
+      <input class="form-control"
+             type="number"
+             ng-model="sg.p1.control"
+             tabindex="2" />
+    </td>
+    <td>
+      <input class="form-control"
+             type="number"
+             ng-model="sg.p2.control"
+             tabindex="6" />
+    </td>
+  </tr>
+  <tr>
+    <th class="text-right">
+      Army
+    </th>
+    <td>
+      <input class="form-control"
+             type="number"
+             ng-model="sg.p1.army"
+             tabindex="3" />
+    </td>
+    <td>
+      <input class="form-control"
+             type="number"
+             ng-model="sg.p2.army"
+             tabindex="7" />
+    </td>
+  </tr>
+  <tr ng-if="::state | state:'hasGameCustomField'">
+    <th class="text-right">
+      {{::state.custom_fields.game}}
+    </th>
+    <td>
+      <input class="form-control"
+             type="number"
+             ng-model="sg.p1.custom_field"
+             tabindex="4" />
+    </td>
+    <td>
+      <input class="form-control"
+             type="number"
+             ng-model="sg.p2.custom_field"
+             tabindex="8" />
+    </td>
+  </tr>
+  <tr ng-repeat-end>
+    <th class="text-right">
+      Notes
+    </th>
+    <td colspan="2">
+      <textarea class="form-control"
+                ng-model="sg.notes"
+                tabindex="9">
+      </textarea>
+    </td>
+  </tr>
+</table>

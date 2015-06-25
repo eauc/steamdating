@@ -109,35 +109,39 @@
 }
 
 /******************************************************/
-/* playersList
+/* commons
 /******************************************************/
 
-#players-list .inline {
+.inline {
     display: inline;
 }
 
-#players-list .download-link {
+.download-link {
     margin: 10px 0;
 }
 
-#players-list .group-header {
+.group-header {
     border-bottom: 1px solid black;
 }
 
-#players-list .group-list {
+.group-list {
     table-layout: fixed;
 }
 
-#players-list .dropped {
+.group-list .dropped {
     background-color: #CCC;
 }
 
-#players-list .break-words {
-    word-wrap:break-word;
+.faction-icon {
+    height: 1.8em;
 }
 
-#players-list .faction-icon {
-    height: 1.8em;
+/******************************************************/
+/* playersList
+/******************************************************/
+
+#players-list .break-words {
+    word-wrap:break-word;
 }
 
 #players-list .casters-list {
@@ -146,4 +150,16 @@
 
 #players-list .team-member {
     background-color: #C9DDE7;
+}
+
+#players-list .ranking-group {
+    border-width:0px;
+}
+
+/******************************************************/
+/* roundsList
+/******************************************************/
+
+#rounds-list .register-btn {
+    margin-bottom: 5px;
 }
