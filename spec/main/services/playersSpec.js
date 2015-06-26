@@ -45,9 +45,28 @@ describe('service', function() {
              { name: 'team', members: [{}] } ]] , true ],
         [ [[], [ { name: 'team', members: [{}] } ]] , true ],
       ], function(e, d) {
-        it('should check whether <players> contains a team', function() {
+        it('should check whether <players> contains a team, '+d, function() {
           expect(players.hasTeam(e.players))
             .toBe(e.has);
+        });
+      });
+    });
+
+    describe('maxTeamSize()', function() {
+      using([
+        [ 'players', 'max' ],
+        [ [[]] , 0 ],
+        [ [[ { name: 'player' } ]] , 0 ],
+        [ [[ { name: 'player' },
+             { name: 'team', members: [] } ]] , 0 ],
+        [ [[ { name: 'player' },
+             { name: 'team', members: [{}] } ]] , 1 ],
+        [ [[ { name: 'team', members: [{}] } ],
+           [ { name: 'team', members: [{}, {}] } ]] , 2 ],
+      ], function(e, d) {
+        it('should find max team size in <players>, '+d, function() {
+          expect(players.maxTeamSize(e.players))
+            .toBe(e.max);
         });
       });
     });

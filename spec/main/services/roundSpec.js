@@ -40,6 +40,24 @@ describe('service', function() {
       });
     });
 
+    describe('createSubGames(<team_size>)', function() {
+      beforeEach(function() {
+        this.gameService = spyOnService('game');
+        this.gameService.createSubGames.and.callFake(function(ts) {
+          return 'createSubGames('+ts+').returnValue';
+        });
+      });
+      
+      it('should init sub games for all games', function() {
+        expect(round.createSubGames(2, {
+          games: [ [ {}, {} ] ]
+        })).toEqual({ games : [
+          [ 'createSubGames(2).returnValue',
+            'createSubGames(2).returnValue' ]
+        ] });
+      });
+    });
+
     describe('hasGamesGroups()', function() {
       using([
         [ 'round' , 'hasGamesGroups' ],

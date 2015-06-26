@@ -177,6 +177,8 @@ describe('controllers', function() {
     
     describe('registerNextRound()', function() {
       beforeEach(function() {
+        this.playersService = spyOnService('players');
+        
         this.scope.new_state.rounds = [ 'round1', 'round2' ];
         this.scope.new_state.bracket = [ 'new_bracket' ];
         this.new_rounds = [ 'round1', 'round2', 'round3' ];
@@ -189,9 +191,17 @@ describe('controllers', function() {
         expect(this.scope.state.bracket).toEqual([ 'new_bracket' ]);
       });
 
+      it('should create subGames', function() {
+        expect(this.playersService.maxTeamSize)
+          .toHaveBeenCalledWith(['players']);
+        expect(this.roundService.createSubGames)
+          .toHaveBeenCalledWith('players.maxTeamSize.returnValue',
+                                [ 'state.createNextRound.returnValue' ]);
+      });
+
       it('should register next round', function() {
         expect(this.roundsService.registerNextRound)
-          .toHaveBeenCalledWith(this.scope.next_round,
+          .toHaveBeenCalledWith('round.createSubGames.returnValue',
                                 this.scope.new_state.rounds);
         expect(this.scope.state.rounds).toBe(this.new_rounds);
       });

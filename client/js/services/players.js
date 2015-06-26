@@ -164,6 +164,18 @@ angular.module('srApp.services')
             R.find(playerService.hasMembers)
           )(coll);
         },
+        maxTeamSize: function playersMaxTeamSize(coll) {
+          return R.pipe(
+            R.flatten,
+            R.map(playerService.members),
+            R.map(R.length),
+            R.max,
+            // R.max returns -Infinity if list is empty
+            function(max) {
+              return Math.max(max, 0);
+            }
+          )(coll);
+        },
         addToTeam: function playersAddToTeam(team, member, coll) {
           R.pipe(
             playersService.player$(team),

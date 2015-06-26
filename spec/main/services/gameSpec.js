@@ -132,18 +132,43 @@ describe('service', function() {
     });
 
     describe('hasResult()', function() {
-      using([
-        [ 'p1' , 'p2' , 'hasResult' ],
-        [ null , null , false       ],
-        [ 1    , null , false       ],
-        [ null , 1    , false       ],
-        [ 1    , 0    , true        ],
-      ], function(e, d) {
-        it('should check whether the game result is defined, '+d, function() {
-          var g = game.create();
-          g.p1.tournament = e.p1;
-          g.p2.tournament = e.p2;
-          expect(game.hasResult(g)).toBe(e.hasResult);
+      when('game does not have subGames', function() {
+      }, function() {
+        using([
+          [ 'p1' , 'p2' , 'hasResult' ],
+          [ null , null , false       ],
+          [ 1    , null , false       ],
+          [ null , 1    , false       ],
+          [ 1    , 0    , true        ],
+        ], function(e, d) {
+          it('should check whether the game result is defined, '+d, function() {
+            var g = game.create();
+            g.p1.tournament = e.p1;
+            g.p2.tournament = e.p2;
+            expect(game.hasResult(g)).toBe(e.hasResult);
+          });
+        });
+      });
+
+      when('game has subGames', function() {
+      }, function() {
+        using([
+          [ 'm1' , 'm2' , 'm3' , 'm4' , 'hasResult' ],
+          [ null , null , null , null , false       ],
+          [ 1    , null , 1    , 0    , false       ],
+          [ 0    , 1    , null , 1    , false       ],
+          [ 1    , 0    , 0    , 1    , true        ],
+        ], function(e, d) {
+          it('should check whether the game result is defined, '+d, function() {
+            var g = game.create();
+            g = game.createSubGames(2, game);
+            g.games[0].p1.tournament = e.m1;
+            g.games[0].p2.tournament = e.m2;
+            g.games[1].p1.tournament = e.m3;
+            g.games[1].p2.tournament = e.m4;
+
+            expect(game.hasResult(g)).toBe(e.hasResult);
+          });
         });
       });
     });

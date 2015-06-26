@@ -5,10 +5,15 @@ angular.module('srApp.controllers')
     '$scope',
     '$state',
     'round',
+    'players',
+    'game',
     function($scope,
              $state,
-             roundService) {
+             roundService,
+             playersService,
+             gameService) {
       console.log('init roundsCtrl');
+      $scope.player_team = $scope.isTeamTournament() ? 'Team' : 'Player';
 
       $scope.round = {};
       $scope.doGameEdit = function(r, p, pane) {
@@ -155,6 +160,10 @@ angular.module('srApp.controllers')
 
       $scope.registerNextRound = function() {
         $scope.state.bracket = $scope.new_state.bracket;
+        var team_size = playersService.maxTeamSize($scope.state.players);
+        $scope.next_round = roundService.createSubGames(team_size,
+                                                        $scope.next_round);
+        // console.log('next_round', team_sizes, $scope.next_round);
         $scope.state.rounds = roundsService.registerNextRound($scope.next_round,
                                                               $scope.new_state.rounds);
         $scope.storeState();

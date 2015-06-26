@@ -114,8 +114,11 @@ angular.module('srApp.services')
                    p1_name );
         },
         hasResult: function(game) {
-          return ( R.type(game.p1.tournament) === 'Number' &&
-                   R.type(game.p2.tournament) === 'Number' );
+          return ( !gameService.hasSubGames(game) &&
+                   R.type(game.p1.tournament) === 'Number' &&
+                   R.type(game.p2.tournament) === 'Number' ) ||
+            (gameService.hasSubGames(game) &&
+             R.all(gameService.hasResult, gameService.subGames(game)));
         },
         winForPlayer: function(player_name, game) {
           game = R.defaultTo({}, game);

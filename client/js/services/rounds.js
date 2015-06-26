@@ -16,11 +16,18 @@ angular.module('srApp.services')
               return R.pipe(
                 R.range(0),
                 R.map(function() {
-                  return gameService.create({ table: table++ });
+                  return gameService.create({
+                    table: table++
+                  });
                 })
               )(group.length/2);
             }, players)
           };
+        },
+        createSubGames: function roundCreateSubGames(team_size, round) {
+          return R.assoc('games', R.map(R.map(gameService.createSubGames$(team_size)),
+                                        round.games),
+                         round);
         },
         gameForPlayer: function(player_name, coll) {
           return R.pipe(
