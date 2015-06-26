@@ -64,13 +64,43 @@ describe('service', function() {
       when('<game> involves player', function() {
         this.game = game.create({ table: 4,
                                   p1: { name: 'toto' },
-                                  p2: { name: 'titi' } });
+                                  p2: { name: 'titi' },
+                                  games: [
+                                    { p1: { name: 'member1' },
+                                      p2: { name: 'member2' },
+                                    },
+                                    { p1: { name: 'member3' },
+                                      p2: { name: 'member4' },
+                                    },
+                                  ]
+                                });
       }, function() {
-        it('should return <game>', function() {
-          expect(game.forPlayer('toto', this.game)).toBe(this.game);
-          expect(game.forPlayer('titi', this.game)).toBe(this.game);
-
-          expect(game.forPlayer('tata', this.game)).toBe(undefined);
+        using([
+          [ 'name', 'game' ],
+          [ 'toto', { table : 4, victory : null,
+                      p1 : { name : 'toto', list : null, team_tournament : null, tournament : null,
+                             control : null, army : null, custom_field : null},
+                      p2 : { name : 'titi', list : null, team_tournament : null, tournament : null,
+                             control : null, army : null, custom_field : null },
+                      games : [ { p1 : { name : 'member1' }, p2 : { name : 'member2' } },
+                                { p1 : { name : 'member3' }, p2 : { name : 'member4' } } ]
+                    } ],
+          [ 'titi', { table : 4, victory : null,
+                      p1 : { name : 'toto', list : null, team_tournament : null, tournament : null,
+                             control : null, army : null, custom_field : null},
+                      p2 : { name : 'titi', list : null, team_tournament : null, tournament : null,
+                             control : null, army : null, custom_field : null },
+                      games : [ { p1 : { name : 'member1' }, p2 : { name : 'member2' } },
+                                { p1 : { name : 'member3' }, p2 : { name : 'member4' } } ]
+                    } ],
+          [ 'tata', undefined ],
+          [ 'member2', { p1 : { name : 'member1' }, p2 : { name : 'member2' } } ],
+          [ 'member3', { p1 : { name : 'member3' }, p2 : { name : 'member4' } } ],
+        ], function(e, d) {
+          it('should return game result for player or member <name>, '+d, function() {
+            expect(game.forPlayer(e.name, this.game))
+              .toEqual(e.game);
+          });
         });
       });
     });

@@ -7,6 +7,7 @@
     "$": false,
     "angular": false,
     "console": false,
+    "self": false,
     "document": false,
     "EventSource": false
   },

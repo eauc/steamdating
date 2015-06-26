@@ -33,6 +33,28 @@ angular.module('srApp.controllers')
              stateTablesService,
              fileExportService) {
       console.log('init roundsSumCtrl', $scope);
+      $scope.show_members = R.pipe(
+        playersService.names,
+        R.reduce(function(mem, p) {
+          return R.assoc(p, false, mem);
+        }, {}),
+        R.assoc('__all__', false)
+      )($scope.state.players);
+
+      $scope.doShowMembers = function doShowMembers(p, event) {
+        $scope.show_members[p.name] = !$scope.show_members[p.name];
+        event.stopPropagation();
+      };
+      $scope.doShowAllMembers = function doShowAllMembers() {
+        var value = !$scope.show_members.__all__;
+        R.pipe(
+          R.keys,
+          R.forEach(function(key) {
+            $scope.show_members[key] = value;
+          })
+        )($scope.show_members);
+      };
+
       $scope.state.players = playersService.updateListsPlayed($scope.state.rounds,
                                                               $scope.state.players);
       $scope.sorted_players = stateService.sortPlayersByName($scope.state);

@@ -36,9 +36,16 @@ angular.module('srApp.services')
         },
         hasSubGames: function gameHasSubGames(game) {
           return !R.pipe(
+            R.prop('games'),
             R.defaultTo([]),
             R.isEmpty
-          )(game.games);
+          )(game);
+        },
+        subGames: function gameSubGames(game) {
+          return R.pipe(
+            R.prop('games'),
+            R.defaultTo([])
+          )(game);
         },
         updatePointsFromSubGames: function gameUpdatePointsFromSubGame(game) {
           var ret = R.pipe(
@@ -90,6 +97,8 @@ angular.module('srApp.services')
         forPlayer: function(player_name, game) {
           if(player_name === game.p1.name ||
              player_name === game.p2.name) return game;
+          return R.find(gameService.forPlayer$(player_name),
+                        R.defaultTo([], game.games));
         },
         player: function(player_name, game) {
           game = R.defaultTo({}, game);

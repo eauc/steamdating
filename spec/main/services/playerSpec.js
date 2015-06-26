@@ -96,16 +96,28 @@ describe('service', function() {
       });
 
       it('should update lists played in <rounds>', function() {
-        var p = player.create({ name: 'toto' });
+        var p = player.create({ name: 'toto', members: [ { name: 'member1' },
+                                                         { name: 'member2' } ] });
         var dummy_rounds = [ 'tata' ];
 
-        expect(player.updateListsPlayed(dummy_rounds, p).lists_played)
+        var ret = player.updateListsPlayed(dummy_rounds, p);
+
+        expect(ret.lists_played)
           .toBe('rounds.listsForPlayer.returnValue');
         expect(this.roundsService.listsForPlayer)
           .toHaveBeenCalledWith('toto', dummy_rounds);
+
+        expect(ret.members[0].lists_played)
+          .toBe('rounds.listsForPlayer.returnValue');
+        expect(this.roundsService.listsForPlayer)
+          .toHaveBeenCalledWith('member1', dummy_rounds);
+        expect(ret.members[1].lists_played)
+          .toBe('rounds.listsForPlayer.returnValue');
+        expect(this.roundsService.listsForPlayer)
+          .toHaveBeenCalledWith('member2', dummy_rounds);
       });
     });
-
+    
     describe('allListsHaveBeenPlayed()', function() {
       using([
         [ 'lists' , 'played' , 'all' ],

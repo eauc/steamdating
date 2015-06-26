@@ -101,7 +101,7 @@ describe('controllers', function() {
       });
     });
 
-    describe('doEditTeamMemberPlayer(<gri>, <t>, <p>)', function() {
+    describe('doEditTeamMember(<gri>, <t>, <p>)', function() {
       it('should enter "player_edit" state', function() {
         this.scope.doEditTeamMember(42, { name: 'team' }, { name: 'player' });
 

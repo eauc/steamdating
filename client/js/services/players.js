@@ -79,9 +79,13 @@ angular.module('srApp.services')
           return rank;
         },
         updateListsPlayed: function(rounds, player) {
-          return R.assoc('lists_played',
-                         roundsService.listsForPlayer(player.name, rounds),
-                         player);
+          return R.pipe(
+            R.assoc('lists_played',
+                    roundsService.listsForPlayer(player.name, rounds)),
+            R.assoc('members',
+                    R.map(playerService.updateListsPlayed$(rounds),
+                          playerService.members(player)))
+          )(player);
         },
         allListsHaveBeenPlayed: function(player) {
           return R.pipe(R.prop('lists'),

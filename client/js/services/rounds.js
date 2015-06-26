@@ -28,8 +28,7 @@ angular.module('srApp.services')
             R.defaultTo([]),
             R.flatten,
             R.map(gameService.forPlayer$(player_name)),
-            R.reject(R.isNil),
-            R.head
+            R.find(R.exists)
           )(coll);
         },
         hasGamesGroups: function(coll) {
@@ -99,22 +98,46 @@ angular.module('srApp.services')
             }
           }
         },
-        random: function(coll) {
+        random: function(getPlayer, getMembers, players, coll) {
           R.forEach(function(games_group) {
             R.forEach(function(game) {
-              game.victory = R.head(R.shuffle(['assassination', null]));
-              var winner_loser = R.shuffle(['p1', 'p2']);
-              game[winner_loser[0]].tournament = 1;
-              game[winner_loser[1]].tournament = 0;
-              game.p1.control = Math.floor(Math.random() * 6);
-              game.p2.control = Math.floor(Math.random() * 6);
-              game.p1.army = Math.floor(Math.random() * 51);
-              game.p2.army = Math.floor(Math.random() * 51);
+              var m1_options = R.pipe(
+                getMembers(game.p1.name),
+                // playersService.player$(game.p1.name),
+                // playerService.members,
+                R.pluck('name')
+              )(players);
+              var m2_options = R.pipe(
+                getMembers(game.p2.name),
+                // playersService.player$(game.p2.name),
+                // playerService.members,
+                R.pluck('name')
+              )(players);
+
+              var lists_options = {};
+              getCastersForPlayerName(getPlayer, players, lists_options, game.p1.name);
+              getCastersForPlayerName(getPlayer, players, lists_options, game.p2.name);
+              R.forEach(getCastersForPlayerName(getPlayer, players, lists_options),
+                        R.concat(m1_options,
+                                 m2_options));
+              return gameService.random(m1_options, m2_options, lists_options, game);
             }, games_group);
           }, coll.games);
           return coll;
         }
       };
+      var getCastersForPlayerName = R.curry(function _getCastersForPlayerName(getPlayer,
+                                                                              players,
+                                                                              casters,
+                                                                              player_name) {
+        casters[player_name] = casters[player_name] || R.pipe(
+          getPlayer(player_name),
+          // playersService.playerFull$(player_name),
+          R.defaultTo({ lists: [] }),
+          R.prop('lists'),
+          listsService.casters
+        )(players);
+      });
       R.curryService(roundService);
       return roundService;
     }

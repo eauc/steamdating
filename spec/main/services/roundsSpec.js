@@ -83,12 +83,14 @@ describe('service', function() {
           { games: [
             { p1: { name: 'toto', list: 'caster1' }, p2: {name: 'tata' } },
             { p1: { name: 'tutu'}, p2: {name: 'titi', list: 'caster5'  } },
-            { p1: { name: 't1' }, p2: { name: 't2' } }
+            { p1: { name: 't1' }, p2: { name: 't2' },
+              games: [ { p1: { name: 'member1', list: 'caster11' }, p2: {name: 'member' } } ] }
           ] },
           { games: [
             { p1: { name: 'toto', list: 'caster1' }, p2: {name: 'tata' } },
             { p1: { name: 'tutu'}, p2: {name: 'titi', list: null  } },
-            { p1: { name: 't1' }, p2: { name: 't2' } }
+            { p1: { name: 't1' }, p2: { name: 't2' },
+              games: [ { p1: {name: 'member' }, p2: { name: 'member1', list: 'caster12' } } ] }
           ] },
         ];
       });
@@ -101,8 +103,10 @@ describe('service', function() {
         [ 'titi'   , ['caster5']            ],
         // undefined player
         [ 'unkown' , []                     ],
+        // subgames
+        [ 'member1'   , ['caster11', 'caster12'] ],
       ], function(e, d) {
-        it('should return lists played by <name>, '+d, function() {
+        it('should return lists played by player or member <name>, '+d, function() {
           expect(rounds.listsForPlayer(e.name, this.coll)).toEqual(e.lists);
         });
       });

@@ -175,21 +175,32 @@ angular.module('srApp.services')
       var playerRow$ = R.curry(playerRow);
 
       function roundsSummaryHeadersForGroup(state, group_index) {
-        var headers = R.mapIndexed(function(round, round_index) {
+        var rounds_headers = R.mapIndexed(function(round, round_index) {
           return ( roundService.groupIsInBracket(group_index, round) ?
                    roundService.groupBracketRoundOf(group_index, round) :
                    'Round'+(round_index+1)
                  );
         }, state.rounds);
-        return R.concat([ 'Player', 'Lists Played' ], headers);
+        var player_headers = [ 'Player', 'Lists Played' ];
+        if(stateService.isTeamTournament(state)) {
+          player_headers = R.prepend('Team', player_headers);
+        }
+        return R.concat(player_headers, rounds_headers);
       }
       function roundsSummaryRowsForGroup(state, group) {
-        return R.map(roundsSummaryRowForPlayer$(state), group);
+        return R.chain(roundsSummaryRowForPlayer$(state), group);
       }
       function roundsSummaryRowForPlayer(state, player) {
-        var row = [ player.name,
-                    R.length(player.lists_played)+'/'+R.length(player.lists)
-                  ];
+        var row;
+        if(playerService.hasMembers(player)) {
+          row = [ player.name, '', '' ];
+        }
+        else {
+          row = [ player.name, R.length(player.lists_played)+'/'+R.length(player.lists) ];
+          if(stateService.isTeamTournament(state)) {
+            row = R.prepend('', row);
+          }
+        }
         R.forEachIndexed(function(round, round_index) {
           if(playerService.hasDropedInRound(round_index, player)) {
             row.push('DROPPED');
@@ -211,6 +222,12 @@ angular.module('srApp.services')
             color: is_win ? 'limegreen':'red'
           });
         }, state.rounds);
+        if(playerService.hasMembers(player)) {
+          row = R.concat([row], R.chain(roundsSummaryRowForPlayer$(state), player.members));
+        }
+        else {
+          row = [row];
+        }
         return row;
       }
       var roundsSummaryRowForPlayer$ = R.curry(roundsSummaryRowForPlayer);
