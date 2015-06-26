@@ -145,7 +145,7 @@ angular.module('srApp.services')
           return state.players.length > 1;
         },
         isTeamTournament: function(state) {
-          return !R.isEmpty(R.flatten(state.teams));
+          return playersService.hasTeam(state.players);
         },
         hasPlayerCustomField: function(state) {
           return !s.isBlank(state.custom_fields.player);

@@ -1,3 +1,242 @@
 <div class="container">
-  <div ng-include="'partials/rounds_nth_single.html'"></div>
+  <div class="text-center">
+    <button class="btn btn-default no-print"
+            ng-click="doDeleteRound(round.current)">
+      <span class="glyphicon glyphicon-trash"></span>
+      Delete Round
+    </button>
+    <!-- <button class="btn btn-default no-print"
+    ng-click="doRandomRound()">
+    Random
+    </button> -->
+    <div class="download-link no-print"
+         ng-repeat="f in exports">
+      <a ng-if="f.url"
+         ng-href="{{f.url}}"
+         download="{{f.name}}">
+        Download {{f.label}} File
+      </a>
+    </div>
+    <form class="form-inline">
+      <div class="form-group">
+        <label>Scenario :</label>
+        <select class="form-control"
+                ng-options="s[1] as s[1] group by s[0] for s in scenarios"
+                ng-model="state.rounds[round.current].scenario"
+                ng-change="storeState()">
+          <option value=""></option>
+        </select>
+      </div>
+    </form>
+    <div ng-repeat="(gri,gr) in ::r.games">
+      <h2 ng-if="::r | round:'hasGamesGroups'"
+          class="group-header">
+        Group{{::gri+1}}
+      </h2>
+      <h3 ng-if="::r | round:'groupIsInBracket':gri">
+        Bracket - {{::r | round:'groupBracketRoundOf':gri}}
+      </h3>
+      <table class="table text-center">
+        <tr>
+          <th ng-if="::isTeamTournament()"
+              class="clickable"
+              style="width: 2em;"
+              ng-click="doShowAllMembers()">
+            <span class="
+                  no-print glyphicon
+                  glyphicon-chevron-{{show_all_members ? 'down' : 'right'}}
+                  ">
+            </span>
+          </th>
+          <th>CKill</th>
+          <th class="text-center"
+              colspan="{{::5 + ( isTeamTournament() ? 1 : 0)
+                             + ( (state | state:'hasGameCustomField') ? 1 : 0)}}">
+            {{::player_team}}1
+          </th>
+          <th class="visible-print"></th>
+          <th class="text-center">Table</th>
+          <th class="visible-print"></th>
+          <th class="text-center"
+              colspan="{{::5 + ( isTeamTournament() ? 1 : 0)
+                             + ( (state | state:'hasGameCustomField') ? 1 : 0)}}">
+            {{::player_team}}2
+          </th>
+          <th>Notes</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th></th>
+          <th ng-if="::state | state:'hasGameCustomField'">
+            {{::state.custom_fields.game}}
+          </th>
+          <th class="text-center">AP</th>
+          <th class="text-center">CP</th>
+          <th class="text-center">List</th>
+          <th ng-if="::isTeamTournament()">TP</th>
+          <th class="text-center"
+              style="width:25%;">Name</th>
+          <th style="width:1.8em;"></th>
+          <th class="text-center visible-print"></th>
+          <th class="text-center"></th>
+          <th class="text-center visible-print"></th>
+          <th style="width:1.8em;"></th>
+          <th class="text-center"
+              style="width:25%;">Name</th>
+          <th ng-if="::isTeamTournament()">TP</th>
+          <th class="text-center">List</th>
+          <th class="text-center">CP</th>
+          <th class="text-center">AP</th>
+          <th ng-if="::state | state:'hasGameCustomField'">
+            {{::state.custom_fields.game}}
+          </th>
+          <th></th>
+        </tr>
+        <tr ng-repeat-start="(gi,g) in ::gr"
+            ng-click="doGameEdit(r, g.p1.name, round.current)"
+            style="cursor:pointer;"
+            title="edit game">
+          <td ng-if="::isTeamTournament()"
+              class="clickable"
+              ng-click="doShowMembers(gri, gi, $event)">
+            <span class="
+                  glyphicon no-print
+                  glyphicon-chevron-{{show_members[gri][gi] ? 'down' : 'right'}}
+                  "
+                  ng-if="::g | game:'hasSubGames'">
+            </span>
+            <span class="
+                  glyphicon glyphicon-chevron-right
+                  visible-print
+                  "
+                  ng-if="::g | game:'hasSubGames'">
+            </span>
+          </td>
+          <td>
+            <span class="
+                  glyphicon
+                  glyphicon-{{::(g | game:'isAssassination$') ? 'ok' : ''}}
+                  ">
+            </span>
+          </td>
+          <td ng-if="::state | state:'hasGameCustomField'">
+            {{::g.p1.custom_field}}
+          </td>
+          <td>{{::g.p1.army}}</td>
+          <td>{{::g.p1.control}}</td>
+          <td>{{::g.p1.list}}</td>
+          <td ng-if="::isTeamTournament()">{{::g.p1.tournament}}</td>
+          <td ng-class="{
+              'success': (g | game:'winForPlayer':g.p1.name),
+              'danger': (g | game:'lossForPlayer':g.p1.name),
+              }">
+            {{::g.p1.name}}
+          </td>
+          <td>
+            <img class="icon faction-icon"
+                 ng-src="{{::state.players | players:'factionFor':g.p1.name | factions:'iconFor'}}"
+                 />
+          </td>
+          <td class="visible-print">
+            {{
+            (g | game:'winForPlayer':g.p1.name) ? 'W' :
+            (g | game:'lossForPlayer':g.p1.name) ? 'L' :
+            ''
+            }}
+          </td>
+          <td>{{::g.table}}</td>
+          <td class="visible-print">
+            {{
+            (g | game:'winForPlayer':g.p2.name) ? 'W' :
+            (g | game:'lossForPlayer':g.p2.name) ? 'L' :
+            ''
+            }}
+          </td>
+          <td>
+            <img class="icon faction-icon"
+                 ng-src="{{::state.players | players:'factionFor':g.p2.name | factions:'iconFor'}}"
+                 />
+          </td>
+          <td ng-class="{
+              'success': (g | game:'winForPlayer':g.p2.name),
+              'danger': (g | game:'lossForPlayer':g.p2.name),
+              }">
+            {{::g.p2.name}}
+          </td>
+          <td ng-if="::isTeamTournament()">{{::g.p2.tournament}}</td>
+          <td>{{::g.p2.list}}</td>
+          <td>{{::g.p2.control}}</td>
+          <td>{{::g.p2.army}}</td>
+          <td ng-if="::state | state:'hasGameCustomField'">
+            {{::g.p2.custom_field}}
+          </td>
+          <td class="text-left">{{::g.notes}}</td>
+        </tr>
+        <tr ng-repeat-end
+            ng-show="show_members[gri][gi]"
+            ng-repeat="(sgi,sg) in ::g.games"
+            ng-click="doGameEdit(r, g.p1.name, round.current)"
+            class="clickable"
+            title="edit game">
+          <td></td>
+          <td>
+            <span class="glyphicon glyphicon-{{::(sg | game:'isAssassination$') ? 'ok' : ''}}">
+            </span>
+          </td>
+          <td ng-if="::state | state:'hasGameCustomField'">
+            {{::sg.p1.custom_field}}
+          </td>
+          <td>{{::sg.p1.army}}</td>
+          <td>{{::sg.p1.control}}</td>
+          <td>{{::sg.p1.list}}</td>
+          <td ng-if="::isTeamTournament()"></td>
+          <td ng-class="{
+              'success': (sg | game:'winForPlayer':sg.p1.name),
+              'danger': (sg | game:'lossForPlayer':sg.p1.name),
+              }">
+            {{::sg.p1.name}}
+          </td>
+          <td>
+            <img class="icon faction-icon"
+                 ng-src="{{::state.players | players:'factionForFull':sg.p1.name | factions:'iconFor'}}"
+                 />
+          </td>
+          <td class="visible-print">
+            {{
+            (sg | game:'winForPlayer':sg.p1.name) ? 'W' :
+            (sg | game:'lossForPlayer':sg.p1.name) ? 'L' :
+            ''
+            }}
+          </td>
+          <td>{{::sg.table}}</td>
+          <td class="visible-print">
+            {{
+            (sg | game:'winForPlayer':sg.p2.name) ? 'W' :
+            (sg | game:'lossForPlayer':sg.p2.name) ? 'L' :
+            ''
+            }}
+          </td>
+          <td>
+            <img class="icon faction-icon"
+                 ng-src="{{::state.players | players:'factionForFull':sg.p2.name | factions:'iconFor'}}"
+                 />
+          </td>
+          <td ng-class="{
+              'success': (sg | game:'winForPlayer':sg.p2.name),
+              'danger': (sg | game:'lossForPlayer':sg.p2.name),
+              }">
+            {{::sg.p2.name}}
+          </td>
+          <td ng-if="::isTeamTournament()"></td>
+          <td>{{::sg.p2.list}}</td>
+          <td>{{::sg.p2.control}}</td>
+          <td>{{::sg.p2.army}}</td>
+          <td ng-if="::state | state:'hasGameCustomField'">
+            {{::sg.p2.custom_field}}
+          </td>
+          <td class="text-left">{{::sg.notes}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
 </div>

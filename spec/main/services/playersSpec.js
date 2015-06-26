@@ -475,11 +475,15 @@ describe('service', function() {
       });
     });
 
-    describe('factionFor(<name>)', function() {
+    describe('factionFor<XXX>(<name>)', function() {
       beforeEach(function() {
         this.coll = [
           [
-            { name: 'player1', faction: 'f1' },
+            { name: 'player1', faction: null,
+              members: [
+                { name: 'member11', faction: 'f2' },
+                { name: 'member12', faction: 'f1' },
+              ]},
             { name: 'player2', faction: 'f2' },
             { name: 'player3', faction: 'f1' },
           ],
@@ -494,17 +498,58 @@ describe('service', function() {
         ];
       });
 
-      using([
-        [ 'name'    , 'faction' ],
-        [ 'player1' , 'f1'      ],
-        [ 'player4' , 'f1'      ],
-        [ 'player7' , 'f2'      ],
-        [ 'player5' , undefined ],
-        // unknown player
-        [ 'unknown' , null      ],
-      ], function(e, d) {
-        it('should return faction played by <name>, '+d, function() {
-          expect(players.factionFor(e.name, this.coll)).toEqual(e.faction);
+      describe('factionFor(<name>)', function() {
+        using([
+          [ 'name'    , 'faction' ],
+          [ 'player1' , null      ],
+          [ 'player4' , 'f1'      ],
+          [ 'player7' , 'f2'      ],
+          [ 'player5' , undefined ],
+          // does not find members
+          [ 'member11' , null ],
+          [ 'member12' , null ],
+          // unknown player
+          [ 'unknown' , null      ],
+        ], function(e, d) {
+          it('should return faction played by primary player <name>, '+d, function() {
+            expect(players.factionFor(e.name, this.coll)).toEqual(e.faction);
+          });
+        });
+      });
+      
+      describe('factionForMember(<name>)', function() {
+        using([
+          [ 'name'    , 'faction' ],
+          [ 'member11' , 'f2' ],
+          [ 'member12' , 'f1' ],
+          // does not find primary players
+          [ 'player1' , null      ],
+          [ 'player4' , null      ],
+          [ 'player5' , null      ],
+          // unknown member
+          [ 'unknown' , null      ],
+        ], function(e, d) {
+          it('should return faction played by member <name>, '+d, function() {
+            expect(players.factionForMember(e.name, this.coll)).toEqual(e.faction);
+          });
+        });
+      });
+      
+      describe('factionForFull(<name>)', function() {
+        using([
+          [ 'name'    , 'faction' ],
+          [ 'member11' , 'f2' ],
+          [ 'member12' , 'f1' ],
+          // does not find primary players
+          [ 'player1' , null      ],
+          [ 'player4' , 'f1'      ],
+          [ 'player5' , undefined ],
+          // unknown member
+          [ 'unknown' , null      ],
+        ], function(e, d) {
+          it('should return faction played by player or member <name>, '+d, function() {
+            expect(players.factionForFull(e.name, this.coll)).toEqual(e.faction);
+          });
         });
       });
     });

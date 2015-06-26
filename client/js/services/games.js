@@ -29,6 +29,17 @@ angular.module('srApp.services')
             games: []
           }, data);
         },
+        createSubGames: function gameCreateSubGames(size, game) {
+          return R.assoc('games', R.times(function() {
+            return gameService.create();
+          }, size), game);
+        },
+        hasSubGames: function gameHasSubGames(game) {
+          return !R.pipe(
+            R.defaultTo([]),
+            R.isEmpty
+          )(game.games);
+        },
         updatePointsFromSubGames: function gameUpdatePointsFromSubGame(game) {
           var ret = R.pipe(
             R.assoc('p1', reducePlayerPointsFromSubGames('p1', game)),
@@ -98,10 +109,14 @@ angular.module('srApp.services')
                    R.type(game.p2.tournament) === 'Number' );
         },
         winForPlayer: function(player_name, game) {
+          game = R.defaultTo({}, game);
+          var key = ( gameService.hasSubGames(game) ?
+                      'team_tournament' : 'tournament'
+                    );
           var tournament_point = R.pipe(
             gameService.player$(player_name),
             R.defaultTo({}),
-            R.prop('tournament')
+            R.prop(key)
           )(game);
           return ( tournament_point === 1 ?
                    true :
@@ -112,10 +127,14 @@ angular.module('srApp.services')
                  );
         },
         lossForPlayer: function(player_name, game) {
+          game = R.defaultTo({}, game);
+          var key = ( gameService.hasSubGames(game) ?
+                      'team_tournament' : 'tournament'
+                    );
           var tournament_point = R.pipe(
             gameService.player$(player_name),
             R.defaultTo({}),
-            R.prop('tournament')
+            R.prop(key)
           )(game);
           return ( tournament_point === 0 ?
                    true :
@@ -138,40 +157,97 @@ angular.module('srApp.services')
         },
         isAssassination$: R.propEq('victory', 'assassination'),
         winner: function(game) {
-          return ( R.pathEq(['p1','tournament'], 1, game) ?
+          var key = ( gameService.hasSubGames(game) ?
+                      'team_tournament' : 'tournament'
+                    );
+          return ( R.pathEq(['p1',key], 1, game) ?
                    game.p1.name :
-                   ( R.pathEq(['p2','tournament'], 1, game) ?
+                   ( R.pathEq(['p2',key], 1, game) ?
                      game.p2.name :
                      undefined
                    )
                  );
         },
         loser: function(game) {
-          return ( R.pathEq(['p1','tournament'], 0, game) ?
+          var key = ( gameService.hasSubGames(game) ?
+                      'team_tournament' : 'tournament'
+                    );
+          return ( R.pathEq(['p1',key], 0, game) ?
                    game.p1.name :
-                   ( R.pathEq(['p2','tournament'], 0, game) ?
+                   ( R.pathEq(['p2',key], 0, game) ?
                      game.p2.name :
                      undefined
                    )
                  );
         },
-        toArray: function(with_custom_field, game) {
+        arrayHeaders: function gameArrayHeaders(is_team_tournament, custom_field) {
+          var headers = [ 'Table',
+                          'Player1', 'Player2',
+                          'Lists'
+                        ];
+          if(is_team_tournament) {
+            headers = R.concat(headers, [
+              'TeamPoints',
+            ]);
+          }
+          headers = R.concat(headers, [
+            'Tourn.Points',
+            'ControlPoints',
+            'ArmyPoints',
+            'CasterKill',
+          ]);
+          if(!s.isBlank(custom_field)) {
+            headers = R.concat(headers, [
+              custom_field,
+            ]);
+          }
+          return headers;
+        },
+        toArray: function gameToArray(is_team_tournament, with_custom_field,
+                                      game) {
+          game = gameService.updatePoints(game);
+          var win_key = ( gameService.hasSubGames(game) ?
+                          'team_tournament' : 'tournament'
+                        );
           var ret = [
-            game.table,
+            game.table || '',
             { value: game.p1.name,
-              color: game.p1.tournament === 1 ? 'limegreen':'red'
+              color: game.p1[win_key] === 1 ? 'limegreen':'red'
             },
             { value: game.p2.name,
-              color: game.p2.tournament === 1 ? 'limegreen':'red'
+              color: game.p2[win_key] === 1 ? 'limegreen':'red'
             },
-            game.p1.list, game.p2.list,
-            game.p1.tournament, game.p2.tournament,
-            game.p1.control, game.p2.control,
-            game.p1.army, game.p2.army,
-            gameService.isAssassination$(game) ? 1 : 0
           ];
+          if(gameService.hasSubGames(game)) {
+            ret = R.append('', ret);
+          }
+          else {
+            ret = R.append(game.p1.list+'-'+game.p2.list, ret);
+          }
+          if(is_team_tournament) {
+            if(gameService.hasSubGames(game)) {
+              ret = R.append(game.p1.team_tournament+'-'+game.p2.team_tournament, ret);
+            }
+            else {
+              ret = R.append('', ret);
+            }
+          }
+          ret = R.concat(ret, [
+            game.p1.tournament+'-'+game.p2.tournament,
+            game.p1.control+'-'+game.p2.control,
+            game.p1.army+'-'+game.p2.army,
+            game.p1.assassination+'-'+game.p2.assassination
+          ]);
           if(with_custom_field) {
-            ret = R.concat(ret, [game.p1.custom_field, game.p2.custom_field]);
+            ret = R.append(game.p1.custom_field+'-'+game.p2.custom_field, ret);
+          }
+          if(gameService.hasSubGames(game)) {
+            ret = R.concat([ret], R.chain(gameService.toArray$(is_team_tournament,
+                                                               with_custom_field),
+                                          game.games));
+          }
+          else {
+            ret = [ret];
           }
           return ret;
         },

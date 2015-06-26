@@ -33,25 +33,15 @@ angular.module('srApp.services')
           )(state);
         },
         roundTables: function(round_index, state) {
+          var is_team_tournament = stateService.isTeamTournament(state);
           var has_game_custom_field = stateService.hasGameCustomField(state);
           return R.pipe(
             R.nth(round_index),
             R.prop('games'),
-            R.map(R.map(gameService.toArray$(has_game_custom_field))),
+            R.map(R.chain(gameService.toArray$(is_team_tournament, has_game_custom_field))),
             R.mapIndexed(function(group, group_index) {
-              var headers = [ 'Table',
-                              'Player1', 'Player2',
-                              'Player1.list', 'Player2.list',
-                              'Player1.tp', 'Player2.tp',
-                              'Player1.cp', 'Player2.cp',
-                              'Player1.ap', 'Player2.ap',
-                              'CasterKill'
-                            ];
-              if(has_game_custom_field) {
-                headers = R.concat(headers, [ 'Player1.'+state.custom_fields.game,
-                                              'Player2.'+state.custom_fields.game
-                                            ]);
-              }
+              var headers = gameService.arrayHeaders(is_team_tournament,
+                                                     state.custom_fields.game);
               return R.concat([ ['Group'+(group_index+1)],
                                 headers
                               ], group);
@@ -118,9 +108,6 @@ angular.module('srApp.services')
       }
       
       function playersTables(state) {
-        var has_player_custom_field = stateService.hasPlayerCustomField(state);
-        var has_game_custom_field = stateService.hasGameCustomField(state);
-
         return R.pipe(
           stateService.sortPlayersByRank,
           R.mapIndexed(groupRows$(state)),

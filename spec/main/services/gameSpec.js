@@ -133,13 +133,30 @@ describe('service', function() {
         });
       });
 
-      when('result is defined', function() {
-        this.game.p1.tournament = 1;
-        this.game.p2.tournament = 0;
+      when('game has subGames', function() {
+        this.game.games = [ {} ];
       }, function() {
-        it('should return whether <name> has won', function() {
-          expect(game.winForPlayer('toto', this.game)).toBe(true);
-          expect(game.winForPlayer('titi', this.game)).toBe(false);
+        when('result is defined', function() {
+          this.game.p1.team_tournament = 1;
+          this.game.p2.team_tournament = 0;
+        }, function() {
+          it('should return whether <name> has won', function() {
+            expect(game.winForPlayer('toto', this.game)).toBe(true);
+            expect(game.winForPlayer('titi', this.game)).toBe(false);
+          });
+        });
+      });
+
+      when('game does not have subGames', function() {
+      }, function() {
+        when('result is defined', function() {
+          this.game.p1.tournament = 1;
+          this.game.p2.tournament = 0;
+        }, function() {
+          it('should return whether <name> has won', function() {
+            expect(game.winForPlayer('toto', this.game)).toBe(true);
+            expect(game.winForPlayer('titi', this.game)).toBe(false);
+          });
         });
       });
     });
@@ -159,13 +176,30 @@ describe('service', function() {
         });
       });
 
-      when('result is defined', function() {
-        this.game.p1.tournament = 1;
-        this.game.p2.tournament = 0;
+      when('game has subGames', function() {
+        this.game.games = [ {} ];
       }, function() {
-        it('should return whether <name> has won', function() {
-          expect(game.lossForPlayer('toto', this.game)).toBe(false);
-          expect(game.lossForPlayer('titi', this.game)).toBe(true);
+        when('result is defined', function() {
+          this.game.p1.team_tournament = 1;
+          this.game.p2.team_tournament = 0;
+        }, function() {
+          it('should return whether <name> has won', function() {
+            expect(game.lossForPlayer('toto', this.game)).toBe(false);
+            expect(game.lossForPlayer('titi', this.game)).toBe(true);
+          });
+        });
+      });
+
+      when('game does not have subGames', function() {
+      }, function() {
+        when('result is defined', function() {
+          this.game.p1.tournament = 1;
+          this.game.p2.tournament = 0;
+        }, function() {
+          it('should return whether <name> has won', function() {
+            expect(game.lossForPlayer('toto', this.game)).toBe(false);
+            expect(game.lossForPlayer('titi', this.game)).toBe(true);
+          });
         });
       });
     });
@@ -217,17 +251,39 @@ describe('service', function() {
         });
       });
 
-      when('result is defined', function() {
+      when('game has subGames', function() {
+        this.game.games = [ {} ];
       }, function() {
-        using([
-          [ 'p1_tp' , 'p2_tp' , 'winner' ],
-          [ 1       , 0       , 'toto'   ],
-          [ 0       , 1       , 'titi'   ],
-        ], function(e, d) {
-          it('should return the winner\'s name, '+d, function() {
-            this.game.p1.tournament = e.p1_tp;
-            this.game.p2.tournament = e.p2_tp;
-            expect(game.winner(this.game)).toBe(e.winner);
+        when('result is defined', function() {
+        }, function() {
+          using([
+            [ 'p1_tp' , 'p2_tp' , 'winner' ],
+            [ 1       , 0       , 'toto'   ],
+            [ 0       , 1       , 'titi'   ],
+          ], function(e, d) {
+            it('should return the winner\'s name, '+d, function() {
+              this.game.p1.team_tournament = e.p1_tp;
+              this.game.p2.team_tournament = e.p2_tp;
+              expect(game.winner(this.game)).toBe(e.winner);
+            });
+          });
+        });
+      });
+
+      when('game does not have subGames', function() {
+      }, function() {
+        when('result is defined', function() {
+        }, function() {
+          using([
+            [ 'p1_tp' , 'p2_tp' , 'winner' ],
+            [ 1       , 0       , 'toto'   ],
+            [ 0       , 1       , 'titi'   ],
+          ], function(e, d) {
+            it('should return the winner\'s name, '+d, function() {
+              this.game.p1.tournament = e.p1_tp;
+              this.game.p2.tournament = e.p2_tp;
+              expect(game.winner(this.game)).toBe(e.winner);
+            });
           });
         });
       });
@@ -247,19 +303,43 @@ describe('service', function() {
         });
       });
 
-      when('result is defined', function() {
+      when('game has subGames', function() {
+        this.game.games = [ {} ];
       }, function() {
-        using([
-          [ 'p1_tp' , 'p2_tp' , 'loser' ],
-          [ 1       , 0       , 'titi'  ],
-          [ 0       , 1       , 'toto'  ],
-          // double loss, return first player
-          [ 0       , 0       , 'toto'  ],
-        ], function(e, d) {
-          it('should return the loser\'s name, '+d, function() {
-            this.game.p1.tournament = e.p1_tp;
-            this.game.p2.tournament = e.p2_tp;
-            expect(game.loser(this.game)).toBe(e.loser);
+        when('result is defined', function() {
+        }, function() {
+          using([
+            [ 'p1_tp' , 'p2_tp' , 'loser' ],
+            [ 1       , 0       , 'titi'  ],
+            [ 0       , 1       , 'toto'  ],
+            // double loss, return first player
+            [ 0       , 0       , 'toto'  ],
+          ], function(e, d) {
+            it('should return the loser\'s name, '+d, function() {
+              this.game.p1.team_tournament = e.p1_tp;
+              this.game.p2.team_tournament = e.p2_tp;
+              expect(game.loser(this.game)).toBe(e.loser);
+            });
+          });
+        });
+      });
+
+      when('game does not have subGames', function() {
+      }, function() {
+        when('result is defined', function() {
+        }, function() {
+          using([
+            [ 'p1_tp' , 'p2_tp' , 'loser' ],
+            [ 1       , 0       , 'titi'  ],
+            [ 0       , 1       , 'toto'  ],
+            // double loss, return first player
+            [ 0       , 0       , 'toto'  ],
+          ], function(e, d) {
+            it('should return the loser\'s name, '+d, function() {
+              this.game.p1.tournament = e.p1_tp;
+              this.game.p2.tournament = e.p2_tp;
+              expect(game.loser(this.game)).toBe(e.loser);
+            });
           });
         });
       });
@@ -425,37 +505,139 @@ describe('service', function() {
       });
     });
 
-    describe('toArray()', function() {
+    describe('createSubGames(<n>)', function() {
+      it('should create <n> SubGames for <game>', function() {
+        expect(game.createSubGames(3, {}).games)
+          .toEqual([
+            { table : null, victory : null,
+              p1 : { name : null, list : null, team_tournament : null, tournament : null,
+                     control : null, army : null, custom_field : null },
+              p2 : { name : null, list : null, team_tournament : null, tournament : null,
+                     control : null, army : null, custom_field : null },
+              games : [  ] },
+            { table : null, victory : null,
+              p1 : { name : null, list : null, team_tournament : null, tournament : null,
+                     control : null, army : null, custom_field : null },
+              p2 : { name : null, list : null, team_tournament : null, tournament : null,
+                     control : null, army : null, custom_field : null },
+              games : [  ] },
+            { table : null, victory : null,
+              p1 : { name : null, list : null, team_tournament : null, tournament : null,
+                     control : null, army : null, custom_field : null },
+              p2 : { name : null, list : null, team_tournament : null, tournament : null,
+                     control : null, army : null, custom_field : null },
+              games : [  ] }
+          ]);
+      });
+    });
+
+    describe('hasSubGames()', function() {
       using([
-        [ 'withCustom', 'ck'  , 'array' ],
-        [ false       , true  , [ 21,
-                                  { value: 'toto',
-                                    color: 'limegreen'
-                                  },
-                                  { value: 'titi',
-                                    color: 'red'
-                                  }, 'list1', 'list2', 1, 0, 2, 4, 3, 5, 1 ] ],
-        [ true        , false , [ 21,
-                                  
-                                  { value: 'toto',
-                                    color: 'limegreen'
-                                  },
-                                  { value: 'titi',
-                                    color: 'red'
-                                  }, 'list1', 'list2', 1, 0, 2, 4, 3, 5, 0, 42, 24 ] ],
+        [ 'game'                , 'hasSubGames' ],
+        [ {}                    , false       ],
+        [ { games: null }       , false       ],
+        [ { games: [] }         , false       ],
+        [ { games: [ {} ] }     , true        ],
+        [ { games: [ {}, {} ] } , true        ],
+      ], function(e, d) {
+        it('should check whether the game has SubGames, '+d, function() {
+          expect(game.hasSubGames(e.game)).toBe(e.hasSubGames);
+        });
+      });
+    });
+
+    describe('arrayHeaders(<is_team_tournament>, <with_custom_field>)', function() {
+      using([
+        [ 'team', 'custom' , 'headers' ],
+        [ false , ''       , [ 'Table', 'Player1', 'Player2', 'Lists',
+                               'Tourn.Points',
+                               'ControlPoints', 'ArmyPoints', 'CasterKill' ] ],
+        [ false , 'custom' , [ 'Table', 'Player1', 'Player2', 'Lists',
+                               'Tourn.Points',
+                               'ControlPoints', 'ArmyPoints', 'CasterKill', 'custom' ] ],
+        [ true  , ''       , [ 'Table', 'Player1', 'Player2', 'Lists',
+                               'TeamPoints', 'Tourn.Points',
+                               'ControlPoints', 'ArmyPoints', 'CasterKill' ] ],
+        [ true  , 'custom' , [ 'Table', 'Player1', 'Player2', 'Lists',
+                               'TeamPoints', 'Tourn.Points',
+                               'ControlPoints', 'ArmyPoints', 'CasterKill', 'custom' ] ],
+      ], function(e, d) {
+        it('should generate game description headers, '+d, function() {
+          expect(game.arrayHeaders(e.team, e.custom))
+            .toEqual(e.headers);
+        });
+      });
+    });
+
+    describe('toArray(<is_team_tournament>, <with_custom_field>)', function() {
+      using([
+        [ 'team', 'custom' , 'ck'  , 'array' ],
+        [ false , false    , true  , [ [ 21,
+                                         { value: 'toto', color: 'limegreen' },
+                                         { value: 'titi', color: 'red' },
+                                         'list1-list2', '1-0', '2-4', '3-5', '1-0' ]
+                                     ] ],
+        [ false , true     , false , [ [ 21,
+                                         { value: 'toto', color: 'limegreen' },
+                                         { value: 'titi', color: 'red' },
+                                         'list1-list2', '1-0', '2-4', '3-5', '0-0', '42-24' ]
+                                     ] ],
+        [ true  , false    , false , [ [ 21,
+                                         { value : 'toto', color : 'limegreen' },
+                                         { value : 'titi', color : 'red' },
+                                         '', '1-0', '2-0', '4-8', '6-10', '1-0' ],
+                                       [ '',
+                                         { value : 'toto1', color : 'limegreen' },
+                                         { value : 'titi1', color : 'red' },
+                                         'list11-list21', '', '1-0', '2-4', '3-5', '1-0' ],
+                                       [ '',
+                                         { value : 'toto2', color : 'limegreen' },
+                                         { value : 'titi2', color : 'red' },
+                                         'list12-list22', '', '1-0', '2-4', '3-5', '0-0' ]
+                                     ] ],
+        [ true  , true     , false , [ [ 21,
+                                         { value : 'toto', color : 'limegreen' },
+                                         { value : 'titi', color : 'red' },
+                                         '', '1-0', '2-0', '4-8', '6-10', '1-0', '84-48' ],
+                                       [ '',
+                                         { value : 'toto1', color : 'limegreen' },
+                                         { value : 'titi1', color : 'red' },
+                                         'list11-list21', '', '1-0', '2-4', '3-5', '1-0', '42-24' ],
+                                       [ '',
+                                         { value : 'toto2', color : 'limegreen' },
+                                         { value : 'titi2', color : 'red' },
+                                         'list12-list22', '', '1-0', '2-4', '3-5', '0-0', '42-24' ]
+                                     ] ],
       ], function(e, d) {
         it('should convert game to array, '+d, function() {
-          expect(game.toArray(false, e.withCustom, {
+          this.game = {
             table: 21,
             victory: e.ck ? 'assassination' : null,
-            p1: { name: 'toto', list: 'list1', tournament: 1,
-                  control: 2, army: 3, custom_field: 42 },
-            p2: { name: 'titi', list: 'list2', tournament: 0,
-                  control: 4, army: 5, custom_field: 24 }
-          })).toEqual(e.array);
+            p1: { name: 'toto', list: 'list1', team_tournament: 0, tournament: 1,
+                  control: 2, army: 3, custom_field: 42, assassination: 3 },
+            p2: { name: 'titi', list: 'list2', team_tournament: 1, tournament: 0,
+                  control: 4, army: 5, custom_field: 24, assassination: 1 }
+          };
+          if(e.team) {
+            this.game.games = [
+              { victory: 'assassination', games: [],
+                p1: { name: 'toto1', list: 'list11', tournament: 1,
+                      control: 2, army: 3, custom_field: 42 },
+                p2: { name: 'titi1', list: 'list21', tournament: 0,
+                      control: 4, army: 5, custom_field: 24 }
+              },
+              { victory: null, games: [],
+                p1: { name: 'toto2', list: 'list12', tournament: 1,
+                      control: 2, army: 3, custom_field: 42 },
+                p2: { name: 'titi2', list: 'list22', tournament: 0,
+                      control: 4, army: 5, custom_field: 24 }
+              }
+            ];
+          }
+          expect(game.toArray(e.team, e.custom, this.game))
+            .toEqual(e.array);
         });
       });
     });
   });
-
 });

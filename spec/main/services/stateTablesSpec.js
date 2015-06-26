@@ -77,31 +77,49 @@ describe('service', function() {
     });
 
     describe('roundTables(<round_index>)', function() {
-      it('should build a result table for round <round_index>', function() {
-        var st = { players: [
-          [ {}, {} ],
+      beforeEach(inject(function(game) {
+        this.gameService = game;
+        spyOn(this.gameService, ['updatePoints']);
+        this.gameService.updatePoints.and.callFake(R.identity);
+        
+        this.state = { players: [
+          [ { members: [ {}, {} ] }, {} ],
           [ {}, {}, {}, {} ]
         ], bracket: [], rounds: [
           { games: [] },
           { games: [ [ { table:1,
-                         victory: 'assassination',
-                         p1: { name: 'p1', list: 'list1', tournament: 1,
-                               control: 2, army: 3, custom_field: 21 },
-                         p2: { name: 'p2', list: 'list2', tournament: 0,
-                               control: 4, army: 6, custom_field: 12 } }
+                         p1: { name: 'p1', list: 'list1', team_tournament: 1, tournament: 1,
+                               control: 2, army: 3, custom_field: 21, assassination: 1 },
+                         p2: { name: 'p2', list: 'list2', team_tournament: 0, tournament: 0,
+                               control: 4, army: 6, custom_field: 12, assassination: 2 },
+                         games: [
+                           { victory: 'assassination',
+                             p1: { name: 'p11', list: 'list11', tournament: 1,
+                                   control: 2, army: 3, custom_field: 21, assassination: 1 },
+                             p2: { name: 'p21', list: 'list21', tournament: 0,
+                                   control: 4, army: 6, custom_field: 12, assassination: 0 }
+                           },
+                           { victory: null,
+                             p1: { name: 'p13', list: 'list13', tournament: 0,
+                                   control: 6, army: 9, custom_field: 24, assassination: 0 },
+                             p2: { name: 'p24', list: 'list24', tournament: 1,
+                                   control: 8, army: 12, custom_field: 42, assassination: 0 }
+                           },
+                         ],
+                       }
                      ],
                      [ { table:2,
                          victory: null,
                          p1: { name: 'p3', list: 'list3', tournament: 0,
-                               control: 6, army: 9, custom_field: 24 },
+                               control: 6, army: 9, custom_field: 24, assassination: 0 },
                          p2: { name: 'p4', list: 'list4', tournament: 1,
-                               control: 8, army: 12, custom_field: 42 } },
+                               control: 8, army: 12, custom_field: 42, assassination: 0 } },
                        { table:3,
                          victory: 'assassination',
                          p1: { name: 'p5', list: 'list5', tournament: 1,
-                               control: 10, army: 15, custom_field: 27 },
+                               control: 10, army: 15, custom_field: 27, assassination: 1 },
                          p2: { name: 'p6', list: 'list6', tournament: 0,
-                               control: 12, army: 18, custom_field: 72 } }
+                               control: 12, army: 18, custom_field: 72, assassination: 0 } }
                      ],
                    ]
           }
@@ -109,38 +127,55 @@ describe('service', function() {
           player: 'pCustom',
           game: 'gCustom'
         } };
-        var res = stateTables.roundTables(1, st);
-        expect(res).toEqual([
-          [ ['Group1'],
-            [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
-              'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp',
-              'Player1.ap', 'Player2.ap', 'CasterKill', 'Player1.gCustom', 'Player2.gCustom' ],
-            [ 1, {
-              value: 'p1',
-              color: 'limegreen'
-            }, {
-              value: 'p2',
-              color: 'red'
-            }, 'list1', 'list2', 1, 0, 2, 4, 3, 6, 1, 21, 12 ]
+      }));
+
+      it('should upate games points', function() {
+        var res = stateTables.roundTables(1, this.state);
+
+        expect(this.gameService.updatePoints)
+          .toHaveBeenCalledWith(this.state.rounds[1].games[0][0]);
+      });
+      
+      it('should build a result table for round <round_index>', function() {
+        var res = stateTables.roundTables(1, this.state);
+        
+        expect(res).toEqual( [
+          [ [ 'Group1' ],
+            [ 'Table', 'Player1', 'Player2', 'Lists', 'TeamPoints', 'Tourn.Points',
+              'ControlPoints', 'ArmyPoints', 'CasterKill', 'gCustom' ],
+            [ 1,
+              { value : 'p1', color : 'limegreen' },
+              { value : 'p2', color : 'red' },
+              '', '1-0', '1-0',
+              '2-4', '3-6', '1-2', '21-12' ],
+            [ '',
+              { value : 'p11', color : 'limegreen' },
+              { value : 'p21', color : 'red' },
+              'list11-list21', '', '1-0',
+              '2-4', '3-6', '1-0', '21-12'
+            ],
+            [ '',
+              { value : 'p13', color : 'red' },
+              { value : 'p24', color : 'limegreen' },
+              'list13-list24', '', '0-1',
+              '6-8', '9-12', '0-0', '24-42'
+            ]
           ],
-          [ ['Group2'],
-            [ 'Table', 'Player1', 'Player2', 'Player1.list', 'Player2.list',
-              'Player1.tp', 'Player2.tp', 'Player1.cp', 'Player2.cp',
-              'Player1.ap', 'Player2.ap', 'CasterKill', 'Player1.gCustom', 'Player2.gCustom' ],
-            [ 2, {
-              value: 'p3',
-              color: 'red'
-            }, {
-              value: 'p4',
-              color: 'limegreen'
-            }, 'list3', 'list4', 0, 1, 6, 8, 9, 12, 0, 24, 42 ],
-            [ 3, {
-              value: 'p5',
-              color: 'limegreen'
-            }, {
-              value: 'p6',
-              color: 'red'
-            }, 'list5', 'list6', 1, 0, 10, 12, 15, 18, 1, 27, 72 ]
+          [ [ 'Group2' ],
+            [ 'Table', 'Player1', 'Player2', 'Lists', 'TeamPoints', 'Tourn.Points',
+              'ControlPoints', 'ArmyPoints', 'CasterKill', 'gCustom' ],
+            [ 2,
+              { value : 'p3', color : 'red' },
+              { value : 'p4', color : 'limegreen' },
+              'list3-list4', '', '0-1',
+              '6-8', '9-12', '0-0', '24-42'
+            ],
+            [ 3,
+              { value : 'p5', color : 'limegreen' },
+              { value : 'p6', color : 'red' },
+              'list5-list6', '', '1-0',
+              '10-12', '15-18', '1-0', '27-72'
+            ]
           ]
         ]);
       });

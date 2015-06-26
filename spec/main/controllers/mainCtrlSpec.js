@@ -67,15 +67,14 @@ describe('controllers', function() {
     describe('isTeamTournament()', function() {
       beforeEach(function() {
         this.scope.state = { players: 'players' };
-        this.playersService = spyOnService('players');
       });
       
-      it('should check whether state.players has teams', function() {
+      it('should check whether state is team tournament', function() {
         expect(this.scope.isTeamTournament())
-          .toEqual('players.hasTeam.returnValue');
+          .toEqual('state.isTeamTournament.returnValue');
 
-        expect(this.playersService.hasTeam)
-          .toHaveBeenCalledWith('players');
+        expect(this.stateService.isTeamTournament)
+          .toHaveBeenCalledWith(this.scope.state);
       });
     });
 

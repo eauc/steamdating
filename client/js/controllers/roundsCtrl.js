@@ -162,6 +162,8 @@ angular.module('srApp.controllers')
     'fileExport',
     'state',
     'stateTables',
+    'player',
+    'players',
     function($scope,
              $stateParams,
              $location,
@@ -170,7 +172,9 @@ angular.module('srApp.controllers')
              roundsService,
              fileExportService,
              stateService,
-             stateTablesService) {
+             stateTablesService,
+             playerService,
+             playersService) {
       console.log('init roundsNthCtrl', $stateParams.pane, $scope.state);
       $scope.round.current = parseFloat($stateParams.pane);
       $scope.r = $scope.state.rounds[$scope.round.current];
@@ -178,6 +182,28 @@ angular.module('srApp.controllers')
         $scope.goToState('rounds.sum');
         return;
       }
+
+      $scope.show_all_members = false;
+      $scope.show_members = R.pipe(
+        R.reduceIndexed(function(mem, group, index) {
+          return R.assoc(index, R.map(R.always(false), group), mem);
+        }, {})
+      )($scope.r.games);
+
+      $scope.doShowMembers = function doShowMembers(gri, gi, event) {
+        $scope.show_members[gri][gi] = !$scope.show_members[gri][gi];
+        event.stopPropagation();
+      };
+      $scope.doShowAllMembers = function doShowAllMembers() {
+        var value = !$scope.show_all_members;
+        R.pipe(
+          R.keys,
+          R.forEach(function(key) {
+            $scope.show_members[key] = R.map(R.always(value), $scope.show_members[key]);
+          })
+        )($scope.show_members);
+        $scope.show_all_members = value;
+      };
 
       $scope.updateExports = function() {
         var round_tables = stateTablesService.roundTables($scope.round.current,
@@ -210,8 +236,17 @@ angular.module('srApp.controllers')
       };
 
       $scope.doRandomRound = function() {
+        var getPlayer = playersService.playerFull$;
+        var getMembers = function(name) {
+          return R.pipe(
+            playersService.player$(name),
+            playerService.members
+          );
+        };
+
         $scope.state.rounds[$scope.round.current] =
-          roundService.random($scope.state.rounds[$scope.round.current]);
+          roundService.random(getPlayer, getMembers, $scope.state.players,
+                              $scope.state.rounds[$scope.round.current]);
         $scope.storeState();
         $location.reload();
       };

@@ -9,15 +9,13 @@ angular.module('srApp.controllers')
     'resultSheetsHtml',
     'state',
     'scenario',
-    'players',
     function($scope,
              $state,
              $q,
              factionsService,
              resultSheetsHtmlService,
              stateService,
-             scenarioService,
-             playersService) {
+             scenarioService) {
       console.log('init mainCtrl');
 
       factionsService.init();
@@ -34,7 +32,7 @@ angular.module('srApp.controllers')
       // console.log('test state', $scope.state);
 
       $scope.isTeamTournament = function isTeamTournament() {
-        return playersService.hasTeam($scope.state.players);
+        return stateService.isTeamTournament($scope.state);
       };
       
       $scope.goToState = R.bind($state.go, $state);

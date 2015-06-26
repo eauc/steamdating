@@ -104,9 +104,10 @@ describe('service', function() {
                         games: [
               [ { table: 1,
                   victory: null,
-                  p1 : { name : null, list : null, tournament : null,
+                  games: [],
+                  p1 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null },
-                  p2 : { name : null, list : null, tournament : null,
+                  p2 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null }
                 }
               ]
@@ -142,23 +143,23 @@ describe('service', function() {
             scenario: null,
             bracket: [],
             games: [
-              [ { table : 1, victory : null,
-                  p1 : { name : null, list : null, tournament : null,
+              [ { table : 1, victory : null, games: [],
+                  p1 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null },
-                  p2 : { name : null, list : null, tournament : null,
+                  p2 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null }
                 },
-                { table : 2, victory : null,
-                  p1 : { name : null, list : null, tournament : null,
+                { table : 2, victory : null, games: [],
+                  p1 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null },
-                  p2 : { name : null, list : null, tournament : null,
+                  p2 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null }
                 },
               ], [
-                { table : 3, victory : null,
-                  p1 : { name : null, list : null, tournament : null,
+                { table : 3, victory : null, games: [],
+                  p1 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null },
-                  p2 : { name : null, list : null, tournament : null,
+                  p2 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null }
                 }
               ]
@@ -186,16 +187,16 @@ describe('service', function() {
             scenario: null,
             bracket: [null, null, null, null],
             games: [
-              [ { table : 1, victory : null,
-                  p1 : { name : null, list : null, tournament : null,
+              [ { table : 1, victory : null, games: [],
+                  p1 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null },
-                  p2 : { name : null, list : null, tournament : null,
+                  p2 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null }
                 },
-                { table : 2, victory : null,
-                  p1 : { name : null, list : null, tournament : null,
+                { table : 2, victory : null, games: [],
+                  p1 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null },
-                  p2 : { name : null, list : null, tournament : null,
+                  p2 : { name : null, list : null, team_tournament : null, tournament : null,
                          control : null, army : null, custom_field : null }
                 }
               ]
@@ -282,9 +283,15 @@ describe('service', function() {
     });
 
     describe('isTeamTournament()', function() {
-      it('should test if one or more team are defined', function() {
-        expect(state.isTeamTournament({ teams: [[]] })).toBe(false);
-        expect(state.isTeamTournament({ teams: [[],[{}]] })).toBe(true);
+      beforeEach(function() {
+        this.playersService = spyOnService('players');
+      });
+      
+      it('should test if state.players has teams', function() {
+        expect(state.isTeamTournament({players: 'players'}))
+          .toBe('players.hasTeam.returnValue');
+        expect(this.playersService.hasTeam)
+          .toHaveBeenCalledWith('players');
       });
     });
 

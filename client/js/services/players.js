@@ -266,6 +266,20 @@ angular.module('srApp.services')
             R.prop('faction')
           )(coll);
         },
+        factionForMember: function(player_name, coll) {
+          return R.pipe(
+            playersService.member$(player_name),
+            R.defaultTo({ faction: null }),
+            R.prop('faction')
+          )(coll);
+        },
+        factionForFull: function(player_name, coll) {
+          return R.pipe(
+            playersService.playerFull$(player_name),
+            R.defaultTo({ faction: null }),
+            R.prop('faction')
+          )(coll);
+        },
         countByFaction: function(players) {
           return R.pipe(
             R.flatten,
