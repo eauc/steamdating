@@ -66,6 +66,7 @@ angular.module('srApp.services')
           var rank;
           try {
             rank = critFn(player.custom_field,
+                          player.points.team_tournament,
                           player.points.tournament,
                           player.points.sos,
                           player.points.control,
@@ -74,6 +75,7 @@ angular.module('srApp.services')
                           player.points.custom_field);
           }
           catch(e) {
+            console.log('error ranking player', player, e);
             return "Error : " + e.message;
           }
           return rank;

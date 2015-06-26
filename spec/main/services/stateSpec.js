@@ -57,7 +57,7 @@ describe('service', function() {
           rounds: [],
           ranking: {
             player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
-            team: '(((ttp*team_size*n_rounds+tp)*n_teams*n_teams+sos)*5*n_rounds+cp)*100*n_rounds+ap'
+            team: '(((ttp*team_size*n_rounds+tp)*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap'
           },
           custom_fields: {
             player: null,

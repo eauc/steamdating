@@ -1,0 +1,186 @@
+<form class="form-horizontal text-center">
+  <div class="form-group">
+    <label class="col-sm-3 control-label"
+           for="team">Ranking formula :</label>
+    <div class="col-sm-9">
+      <input class="form-control"
+             type="text"
+             id="team"
+             name="team"
+             ng-model="team_test.ranking"
+             required="required" />
+    </div>
+    <label class="col-sm-3 control-label"
+           for="team_preset">Presets :</label>
+    <div class="col-sm-9">
+      <select class="form-control"
+              id="team_preset"
+              name="team_preset"
+              ng-model="team_test.ranking"
+              ng-options="crit.team as name for (name, crit) in criterions.SR"
+              >
+      </select>
+    </div>
+    <p>
+      Available vars : team_size, n_rounds, n_players, team_custom, tp, sos, cp, ap, ck, game_custom.
+    </p>
+  </div>
+  <table class="table">
+    <tr>
+      <th colspan="3">Test Teams</th>
+    </tr>
+    <tr>
+      <th>teamSize</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team_size" />
+      </td>
+    </tr>
+    <tr>
+      <th>nRounds</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.n_rounds" />
+      </td>
+    </tr>
+    <tr>
+      <th>nPlayers</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.n_players" />
+      </td>
+    </tr>
+    <tr>
+      <th></th>
+      <th>Team1</th>
+      <th>Team2</th>
+    </tr>
+    <tr ng-if="state | state:'hasPlayerCustomField'">
+      <th>{{::state.custom_fields.player}}</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team1.custom_field" />
+      </td>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team2.custom_field" />
+      </td>
+    </tr>
+    <tr>
+      <th>TTP</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team1.points.team_tournament" />
+      </td>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team2.points.team_tournament" />
+      </td>
+    </tr>
+    <tr>
+      <th>TP</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team1.points.tournament" />
+      </td>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team2.points.tournament" />
+      </td>
+    </tr>
+    <tr>
+      <th>SOS</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team1.points.sos" />
+      </td>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team2.points.sos" />
+      </td>
+    </tr>
+    <tr>
+      <th>CP</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team1.points.control" />
+      </td>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team2.points.control" />
+      </td>
+    </tr>
+    <tr>
+      <th>AP</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team1.points.army" />
+      </td>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team2.points.army" />
+      </td>
+    </tr>
+    <tr>
+      <th>CK</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team1.points.assassination" />
+      </td>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team2.points.assassination" />
+      </td>
+    </tr>
+    <tr ng-if="state | state:'hasGameCustomField'">
+      <th>{{::state.custom_fields.game}}</th>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team1.points.custom_field" />
+      </td>
+      <td>
+        <input type="number"
+               class="form-control"
+               ng-model="team_test.team2.points.custom_field" />
+      </td>
+    </tr>
+    <tr>
+      <th>Rank</th>
+      <td ng-class="{
+        'success': team_test.team1.rank > team_test.team2.rank,
+        'danger': team_test.team1.rank < team_test.team2.rank
+        }">{{team_test.team1.rank}}</td>
+      <td ng-class="{
+        'success': team_test.team2.rank > team_test.team1.rank,
+        'danger': team_test.team2.rank < team_test.team1.rank
+        }">{{team_test.team2.rank}}</td>
+  </table>
+  <button class="btn btn-default"
+          ng-click="doClose(true)"
+          type="button">
+    Save
+  </button>
+  <button class="btn btn-default"
+          ng-click="doClose(false)"
+          type="button">
+    Cancel
+  </button>
+</form>

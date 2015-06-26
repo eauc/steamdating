@@ -140,6 +140,7 @@ describe('service', function() {
         this.dummy_player = {
           custom_field: 21,
           points: {
+            team_tournament: 31,
             tournament: 42,
             sos: 71,
             control: 69,
@@ -153,7 +154,7 @@ describe('service', function() {
       it('should call <critFn> with player\'s points', function() {
         player.rank(this.critFn, this.dummy_player);
 
-        expect(this.critFn).toHaveBeenCalledWith(21, 42, 71, 69, 83, 32, 27);
+        expect(this.critFn).toHaveBeenCalledWith(21, 31, 42, 71, 69, 83, 32, 27);
       });
 
       when('critFn return without error', function() {
