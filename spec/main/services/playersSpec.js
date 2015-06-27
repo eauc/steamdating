@@ -791,7 +791,11 @@ describe('service', function() {
 
         this.playerService = spyOnService('player');
         this.playerService.updatePoints.and.callFake(function(gri,bw,rs,p) {
-          return R.assoc('points', { updatePoints: 'returnValue' }, p);
+          return R.assoc('points', { updatePoints: 'player.updatePoints.returnValue' }, p);
+        });
+        this.playerService.updateSoS.and.callFake(function(cbk,rs,ps,p) {
+          p.points = R.assoc('sos', 'player.updateSoS.returnValue', p.points);
+          return p;
         });
 
         this.roundsService = spyOnService('rounds');
@@ -819,9 +823,9 @@ describe('service', function() {
           .toHaveBeenCalledWith(1, 1, dummy_rounds, { name: 'tata2' });
 
         expect(res[0][2].points.updatePoints)
-          .toBe('returnValue');
+          .toBe('player.updatePoints.returnValue');
         expect(res[1][1].points.updatePoints)
-          .toEqual('returnValue');
+          .toBe('player.updatePoints.returnValue');
       });
 
       it('should update SoS gained in <rounds>', function() {
@@ -829,27 +833,62 @@ describe('service', function() {
         var res = players.updatePoints(dummy_rounds,
                                        this.coll);
 
-        expect(this.roundsService.opponentsForPlayer)
-          .toHaveBeenCalledWith(jasmine.any(String), dummy_rounds);
-        expect(this.roundsService.opponentsForPlayer.calls.count()).toBe(5);
+        expect(this.playerService.updateSoS.calls.count()).toBe(5);
+        expect(this.playerService.updateSoS)
+          .toHaveBeenCalledWith(players.sosFromPlayers, dummy_rounds,
+                                jasmine.any(Array),
+                                { name : 'toto1',
+                                  points : { updatePoints : 'player.updatePoints.returnValue',
+                                             sos : 'player.updateSoS.returnValue' }
+                                });
+        expect(this.playerService.updateSoS)
+          .toHaveBeenCalledWith(players.sosFromPlayers, dummy_rounds,
+                                jasmine.any(Array),
+                                { name : 'toto2',
+                                  points : { updatePoints : 'player.updatePoints.returnValue',
+                                             sos : 'player.updateSoS.returnValue' }
+                                });
+        expect(this.playerService.updateSoS)
+          .toHaveBeenCalledWith(players.sosFromPlayers, dummy_rounds,
+                                jasmine.any(Array),
+                                { name : 'toto3',
+                                  points : { updatePoints : 'player.updatePoints.returnValue',
+                                             sos : 'player.updateSoS.returnValue' }
+                                });
+        expect(this.playerService.updateSoS)
+          .toHaveBeenCalledWith(players.sosFromPlayers, dummy_rounds,
+                                jasmine.any(Array),
+                                { name : 'tata1',
+                                  points : { updatePoints : 'player.updatePoints.returnValue',
+                                             sos : 'player.updateSoS.returnValue' }
+                                });
+        expect(this.playerService.updateSoS)
+          .toHaveBeenCalledWith(players.sosFromPlayers, dummy_rounds,
+                                jasmine.any(Array),
+                                { name : 'tata2',
+                                  points : { updatePoints : 'player.updatePoints.returnValue',
+                                             sos : 'player.updateSoS.returnValue' }
+                                });
 
-        expect(players.sosFromPlayers)
-          .toHaveBeenCalledWith('rounds.opponentsForPlayer.returnValue',
-                                jasmine.any(Object));
-        expect(players.sosFromPlayers.calls.count()).toBe(5);
-
-        expect(res[0][2].points.sos).toBe(45);
-        expect(res[1][1].points.sos).toBe(45);
+        expect(res[0][2].points.sos)
+          .toBe('player.updateSoS.returnValue');
+        expect(res[1][1].points.sos)
+          .toBe('player.updateSoS.returnValue');
       });
     });
 
-    describe('sosFromPlayers(<players>)', function() {
+    describe('sosFromPlayers(<names>, <key>)', function() {
       beforeEach(function() {
         this.coll = [
           [
-            { name: 'toto1', points: { tournament: 1 } },
-            { name: 'toto2', points: { tournament: 2 } },
-            { name: 'toto3', points: { tournament: 3 } },
+            { name: 'toto1', points: { team_tournament: 2, tournament: 1 },
+              members: [
+                { name: 'member1', points: { tournament: 1 } },
+                { name: 'member2', points: { tournament: 2 } },
+                { name: 'member3', points: { tournament: 3 } },
+              ] },
+            { name: 'toto2', points: { team_tournament: 1, tournament: 2 } },
+            { name: 'toto3', points: { team_tournament: 4, tournament: 3 } },
           ],
           [
             { name: 'tata1', points: { tournament: 4 } },
@@ -859,12 +898,14 @@ describe('service', function() {
       });
 
       using([
-        [ 'players'                   , 'sos' ],
-        [ ['toto1', 'toto3', 'tata2'] , 9     ],
-        [ ['toto2', 'tata1']          , 6     ],
+        [ 'names'                     , 'key'       , 'sos' ],
+        [ ['toto1', 'toto3', 'tata2'] , 'tournament', 9     ],
+        [ ['toto2', 'tata1']          , 'tournament', 6     ],
+        [ ['member1', 'member3']      , 'tournament', 4     ],
+        [ ['toto1', 'toto2', 'toto3'] , 'team_tournament', 7     ],
       ], function(e, d) {
-        it('should return SoS calculated from <players>, '+d, function() {
-          expect(players.sosFromPlayers(e.players, this.coll))
+        it('should return SoS calculated from players and members <names>, '+d, function() {
+          expect(players.sosFromPlayers(e.names, e.key, this.coll))
             .toEqual(e.sos);
         });
       });
@@ -895,70 +936,139 @@ describe('service', function() {
     });
 
     describe('sortGroup(<state>, <is_bracket>)', function() {
-      var coll = [
-        { name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } },
-        { name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } },
-        { name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } },
-        { name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } },
-        { name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } },
-      ];
-      beforeEach(function() {
-        this.coll = coll;
-        this.state = {
-          rounds: R.repeat({}, 4),
-          ranking: {}
-        };
-      });
-
-      when('<is bracket> is false', function() {
+      when('<state> is not a team tournament', function() {
       }, function() {
-        using([
-          [ 'crit' , 'sorted' ],
-          [ 'sos'  , [ { rank:1, players: [ coll[0] ] },
-                       { rank:2, players: [ coll[1] ] },
-                       { rank:3, players: [ coll[2] ] },
-                       { rank:4, players: [ coll[3] ] },
-                       { rank:5, players: [ coll[4] ] },
-                     ] ],
-          [ 'tp'   , [ { rank:1, players: [ coll[4] ] },
-                       { rank:2, players: [ coll[3] ] },
-                       { rank:3, players: [ coll[2] ] },
-                       { rank:4, players: [ coll[1] ] },
-                       { rank:5, players: [ coll[0] ] },
-                     ] ],
-          [ 'cp'   , [ { rank:1, players: [ coll[1] ] },
-                       { rank:2, players: [ coll[4] ] },
-                       { rank:3, players: [ coll[0] ] },
-                       { rank:4, players: [ coll[2] ] },
-                       { rank:5, players: [ coll[3] ] },
-                     ] ],
-          [ 'ap'   , [ { rank:1, players: [ coll[4] ] },
-                       { rank:2, players: [ coll[2], coll[3] ] },
-                       { rank:4, players: [ coll[1] ] },
-                       { rank:5, players: [ coll[0] ] },
-                     ] ],
-        ], function(e, d) {
-          it('should sort group using <state.ranking.player> criterion, '+d, function() {
-          this.state.ranking.player = e.crit;
+        var coll = [
+          { name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } },
+          { name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } },
+          { name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } },
+          { name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } },
+          { name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } },
+        ];
+        beforeEach(function() {
+          this.coll = coll;
+          this.state = {
+            rounds: R.repeat({}, 4),
+            ranking: {
+              player: 'tp',
+              team: 'ttp'
+            }
+          };
+
+          this.rankingService = spyOnService('ranking');
+          this.rankingService.buildPlayerCritFunction.and.callThrough();
+        }); 
+
+        it('should correctly build ranking function', function() {
           var res = players.sortGroup(this.state, false, coll);
-          expect(res).toEqual(e.sorted);
+
+          expect(this.rankingService.buildPlayerCritFunction)
+            .toHaveBeenCalledWith('tp', 4, 5, 0);
+        });
+       
+        when('<is bracket> is false', function() {
+        }, function() {
+          using([
+            [ 'crit' , 'sorted' ],
+            [ 'sos'  , [ { rank:1, players: [ coll[0] ] },
+                         { rank:2, players: [ coll[1] ] },
+                         { rank:3, players: [ coll[2] ] },
+                         { rank:4, players: [ coll[3] ] },
+                         { rank:5, players: [ coll[4] ] },
+                       ] ],
+            [ 'tp'   , [ { rank:1, players: [ coll[4] ] },
+                         { rank:2, players: [ coll[3] ] },
+                         { rank:3, players: [ coll[2] ] },
+                         { rank:4, players: [ coll[1] ] },
+                         { rank:5, players: [ coll[0] ] },
+                       ] ],
+            [ 'cp'   , [ { rank:1, players: [ coll[1] ] },
+                         { rank:2, players: [ coll[4] ] },
+                         { rank:3, players: [ coll[0] ] },
+                         { rank:4, players: [ coll[2] ] },
+                         { rank:5, players: [ coll[3] ] },
+                       ] ],
+            [ 'ap'   , [ { rank:1, players: [ coll[4] ] },
+                         { rank:2, players: [ coll[2], coll[3] ] },
+                         { rank:4, players: [ coll[1] ] },
+                         { rank:5, players: [ coll[0] ] },
+                       ] ],
+          ], function(e, d) {
+            it('should sort group using <state.ranking.player> criterion, '+d, function() {
+              this.state.ranking.player = e.crit;
+              var res = players.sortGroup(this.state, false, coll);
+              expect(res).toEqual(e.sorted);
+            });
+          });
+        });
+
+        when('<is bracket> is true', function() {
+        }, function() {
+          it('should sort group using <player.points.bracket>', function() {
+            var res = players.sortGroup(this.state, true, this.coll);
+            expect(res).toEqual([
+              { rank: 1, 
+                players: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } },
+                          { name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } } ] },
+              { rank: 3, 
+                players: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } },
+                          { name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } },
+                          { name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }] },
+            ]);
           });
         });
       });
 
-      when('<is bracket> is true', function() {
+      when('<state> is a team tournament', function() {
       }, function() {
-        it('should sort group using <player.points.bracket>', function() {
-          var res = players.sortGroup(this.state, true, this.coll);
-          expect(res).toEqual([
-{ rank: 1, 
-  players: [{ name: '2', points: { bracket: 2, tournament: 2, sos: 4, control: 5, army: 25 } },
-            { name: '4', points: { bracket: 2, tournament: 4, sos: 2, control: 1, army: 35 } } ] },
-{ rank: 3, 
-  players: [{ name: '1', points: { bracket: 1, tournament: 1, sos: 5, control: 3, army: 5 } },
-            { name: '3', points: { bracket: 1, tournament: 3, sos: 3, control: 2, army: 35 } },
-            { name: '5', points: { bracket: 1, tournament: 5, sos: 1, control: 4, army: 150 } }] },
-          ]);
+        var coll = [
+          { name: '1', points: { bracket: 1, team_tournament: 1, },
+            members: [{},{},{}] },
+          { name: '2', points: { bracket: 2, team_tournament: 2, },
+            members: [{},{},{}] },
+          { name: '3', points: { bracket: 1, team_tournament: 3, },
+            members: [{},{}] },
+          { name: '4', points: { bracket: 2, team_tournament: 4, },
+            members: [{},{},{}] },
+          { name: '5', points: { bracket: 1, team_tournament: 5, },
+            members: [] },
+        ];
+
+        beforeEach(function() {
+          this.coll = coll;
+          this.state = {
+            rounds: R.repeat({}, 4),
+            ranking: {
+              player: 'tp',
+              team: 'ttp'
+            }
+          };
+
+          this.rankingService = spyOnService('ranking');
+          this.rankingService.buildPlayerCritFunction.and.callThrough();
+        });
+
+        it('should correctly build ranking function', function() {
+          var res = players.sortGroup(this.state, false, coll);
+
+          expect(this.rankingService.buildPlayerCritFunction)
+            .toHaveBeenCalledWith('ttp', 4, 5, 3);
+        });
+        
+        using([
+          [ 'crit' , 'sorted' ],
+          [ 'ttp'   , [ { rank:1, players: [ coll[4] ] },
+                        { rank:2, players: [ coll[3] ] },
+                        { rank:3, players: [ coll[2] ] },
+                        { rank:4, players: [ coll[1] ] },
+                        { rank:5, players: [ coll[0] ] },
+                      ] ],
+        ], function(e, d) {
+          it('should sort group using <state.ranking.team> criterion, '+d, function() {
+            this.state.ranking.team = e.crit;
+            var res = players.sortGroup(this.state, false, coll);
+            expect(res).toEqual(e.sorted);
+          });
         });
       });
     });

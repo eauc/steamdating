@@ -18,17 +18,25 @@ describe('service', function() {
       beforeEach(function() {
         this.coll = [
           { victory: 'assassination',
-            p1: { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 3 },
-            p2: { name: 'opp', tournament: 0, control: 5, army: 6, custom_field: 9 } },
+            p1: { name: 'toto', team_tournament: 1, tournament: 1,
+                  control: 2, army: 3, custom_field: 3 },
+            p2: { name: 'opp', team_tournament: 0, tournament: 0,
+                  control: 5, army: 6, custom_field: 9 } },
           { victory: 'assassination',
-            p1: {name: 'toto', tournament: 0, control: 20, army: 30, custom_field: 34 },
-            p2: { name: 'opp', tournament: 1, control: 0, army: 0, custom_field: 24 } },
+            p1: {name: 'toto', team_tournament: 1, tournament: 0,
+                 control: 20, army: 30, custom_field: 34 },
+            p2: { name: 'opp', team_tournament: 0, tournament: 1,
+                  control: 0, army: 0, custom_field: 24 } },
           { victory: null,
-            p1: { name: 'toto', tournament: 1, control: 0, army: 0, custom_field: 0 },
-            p2: { name: 'opp', tournament: 0, control: 50, army: 60, custom_field: 13 } },
+            p1: { name: 'toto', team_tournament: 0, tournament: 1,
+                  control: 0, army: 0, custom_field: 0 },
+            p2: { name: 'opp', team_tournament: 1, tournament: 0,
+                  control: 50, army: 60, custom_field: 13 } },
           { victory: null,
-            p1: { name: 'toto', tournament: 0, control: 200, army: 300, custom_field: 45 },
-            p2: { name: 'opp', tournament: 1, control: 500, army: 600, custom_field: 0 } }
+            p1: { name: 'toto', team_tournament: 0, tournament: 0,
+                  control: 200, army: 300, custom_field: 45 },
+            p2: { name: 'opp', team_tournament: 1, tournament: 1,
+                  control: 500, army: 600, custom_field: 0 } }
         ];
       });
 
@@ -39,6 +47,7 @@ describe('service', function() {
           expect(games.pointsForPlayer('toto', [null,null,null,null], 32, this.coll))
             .toEqual({
               bracket: 0,
+              team_tournament : 2,
               tournament : 2,
               control: 222,
               army: 333,
@@ -54,7 +63,8 @@ describe('service', function() {
         it('should sum points for <name>', function() {
           expect(games.pointsForPlayer('toto', [null,1,2,3], 32, this.coll))
             .toEqual({
-              bracket: 16,
+              bracket: 32,
+              team_tournament : 2,
               tournament : 2,
               control: 222,
               army: 333,
@@ -66,21 +76,29 @@ describe('service', function() {
       });
     });
 
-    describe('pointsAgainsPlayer(<player>, <brackets>, <bracket_weight>)', function() {
+    describe('pointsAgainstPlayer(<player>, <brackets>, <bracket_weight>)', function() {
       beforeEach(function() {
         this.coll = [
           { victory: 'assassination',
-            p1: { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 3 },
-            p2: { name: 'opp', tournament: 0, control: 5, army: 6, custom_field: 9 } },
+            p1: { name: 'toto', team_tournament: 1, tournament: 1,
+                  control: 2, army: 3, custom_field: 3 },
+            p2: { name: 'opp', team_tournament: 0, tournament: 0,
+                  control: 5, army: 6, custom_field: 9 } },
           { victory: 'assassination',
-            p1: {name: 'toto', tournament: 0, control: 20, army: 30, custom_field: 34 },
-            p2: { name: 'opp', tournament: 1, control: 0, army: 0, custom_field: 24 } },
+            p1: {name: 'toto', team_tournament: 1, tournament: 0,
+                 control: 20, army: 30, custom_field: 34 },
+            p2: { name: 'opp', team_tournament: 0, tournament: 1,
+                  control: 0, army: 0, custom_field: 24 } },
           { victory: null,
-            p1: { name: 'toto', tournament: 1, control: 0, army: 0, custom_field: 0 },
-            p2: { name: 'opp', tournament: 0, control: 50, army: 60, custom_field: 13 } },
+            p1: { name: 'toto', team_tournament: 0, tournament: 1,
+                  control: 0, army: 0, custom_field: 0 },
+            p2: { name: 'opp', team_tournament: 1, tournament: 0,
+                  control: 50, army: 60, custom_field: 13 } },
           { victory: null,
-            p1: { name: 'toto', tournament: 0, control: 200, army: 300, custom_field: 45 },
-            p2: { name: 'opp', tournament: 1, control: 500, army: 600, custom_field: 0 } }
+            p1: { name: 'toto', team_tournament: 0, tournament: 0,
+                  control: 200, army: 300, custom_field: 45 },
+            p2: { name: 'opp', team_tournament: 1, tournament: 1,
+                  control: 500, army: 600, custom_field: 0 } }
         ];
       });
 
@@ -91,6 +109,7 @@ describe('service', function() {
           expect(games.pointsAgainstPlayer('toto', [null,null,null,null], 32, this.coll))
             .toEqual({
               bracket: 0,
+              team_tournament : 2,
               tournament : 2,
               control: 555,
               army: 666,
@@ -106,7 +125,8 @@ describe('service', function() {
         it('should sum points for <name>', function() {
           expect(games.pointsAgainstPlayer('toto', [null,1,2,3], 32, this.coll))
             .toEqual({
-              bracket: 40,
+              bracket: 24,
+              team_tournament : 2,
               tournament : 2,
               control: 555,
               army: 666,
@@ -135,10 +155,12 @@ describe('service', function() {
           expect(games.reducePoints([undefined], 32, this.coll))
             .toEqual({
               bracket: 0,
+              team_tournament : 0,
               tournament : 111,
               control: 222,
               army: 333,
               custom_field: 666,
+              assassination : 0,
               sos: 0
             });
         });
@@ -150,24 +172,30 @@ describe('service', function() {
           [ 'brackets'             , 'points' ],
           // bracket from start
           [ [1,2,3,4]              , { bracket: 592,
+                                       team_tournament : 0,
                                        tournament : 111,
                                        control: 222,
                                        army: 333,
                                        custom_field: 666,
+                                       assassination : 0,
                                        sos: 0 } ],
           // started after a few rounds
           [ [null,null,1,2]        , { bracket: 1600,
+                                       team_tournament : 0,
                                        tournament : 111,
                                        control: 222,
                                        army: 333,
                                        custom_field: 666,
+                                       assassination : 0,
                                        sos: 0 } ],
           // not yet started
           [ [null,null,null,null]  , { bracket: 0,
+                                       team_tournament : 0,
                                        tournament : 111,
                                        control: 222,
                                        army: 333,
                                        custom_field: 666,
+                                       assassination : 0,
                                        sos: 0 } ],
         ], function(e, d) {
           it('should sum points, '+d, function() {

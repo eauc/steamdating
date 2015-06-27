@@ -27,15 +27,17 @@
     </button>
     <table class="table table-hover group-list">
       <tr>
-        <th>
+        <th ng-if="::isTeamTournament()"
+            class="clickable"
+            style="width: 2em;"
+            ng-click="doShowAllMembers()">
           <span class="
-                glyphicon
+                glyphicon no-print
                 glyphicon-chevron-{{show_members.__all__ ? 'down' : 'right'}}
-                clickable no-print
-                "
-                ng-if="::isTeamTournament()"
-                ng-click="doShowAllMembers()">
+                ">
           </span>
+        </th>
+        <th>
           Name
         </th>
         <th class="no-print"
@@ -53,15 +55,23 @@
           {{(p | player:'isDroped') ? 'dropped' : ''}}
           "
           ng-click="doEditPlayer(p)">
-        <td class="break-words">
+        <td ng-if="::isTeamTournament()"
+            class="clickable"
+            ng-click="doShowMembers(p, $event)">
           <span class="
-                glyphicon
+                glyphicon no-print
                 glyphicon-chevron-{{show_members[p.name] ? 'down' : 'right'}}
-                clickable no-print
                 "
-                ng-if="::p | player:'hasMembers'"
-                ng-click="doShowMembers(p, $event)">
+                ng-if="::p | player:'hasMembers'">
           </span>
+          <span class="
+                no-screen
+                glyphicon glyphicon-chevron-right
+                "
+                ng-if="::p | player:'hasMembers'">
+          </span>
+        </td>
+        <td class="break-words">
           {{::p.name}}
         </td>
         <td class="no-print"
@@ -102,10 +112,10 @@
       <tr ng-repeat-end
           ng-show="show_members[p.name]"
           ng-repeat="m in p|player:'members' track by m.name"
-          class="clickable team-member no-print"
+          class="clickable team-member"
           ng-click="doEditTeamMember(gri,p,m)">
-        <td class="break-words">{{::m.name}}</td>
         <td ng-if="::isTeamTournament()"></td>
+        <td class="break-words">{{::m.name}}</td>
         <td class="break-words">{{::m.origin}}</td>
         <td class="break-words">
           <img ng-src="{{::m.faction | factions:'iconFor'}}"

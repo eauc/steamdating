@@ -96,12 +96,35 @@ angular.module('srApp.services')
                         R.isEmpty)(player);
         },
         updatePoints: function(group_index, bracket_weight, rounds, player) {
+          var ret = player;
+          if(playerService.hasMembers(player)) {
+            ret = R.assoc('members',
+                          R.map(playerService.updatePoints$(group_index, bracket_weight, rounds),
+                                player.members),
+                          ret);
+          }
           return R.assoc('points',
                          roundsService.pointsForPlayer(player.name,
                                                        group_index,
                                                        bracket_weight,
                                                        rounds),
-                         player);
+                         ret);
+        },
+        updateSoS: function playerUpdateSos(sosFromPlayers, rounds, players, player) {
+          if(playerService.hasMembers(player)) {
+            player = R.assoc('members',
+                             R.map(playerService.updateSoS$(sosFromPlayers, rounds, players),
+                                   player.members),
+                             player);
+          }
+          var sos_key = ( playerService.hasMembers(player) ?
+                          'team_tournament' : 'tournament'
+                        );
+          var opponents = roundsService.opponentsForPlayer(player.name, rounds);
+          player.points.sos = sosFromPlayers(opponents,
+                                             sos_key,
+                                             players);
+          return player;
         },
         drop: function(round_index, player) {
           return R.assoc('droped', round_index, player);
@@ -139,21 +162,6 @@ angular.module('srApp.services')
              roundsService,
              rankingService,
              listsService) {
-      function buildRankingFunction(state, is_bracket, coll) {
-        if(is_bracket) {
-          return function(player) { return player.points.bracket; };
-        }
-        else {
-          var critFn = rankingService.buildPlayerCritFunction(state.ranking.player,
-                                                              state.rounds.length,
-                                                              coll.length);
-          if(R.type(critFn) !== 'Function') {
-            console.error('Error create ranking function', critFn);
-            return null;
-          }
-          return playerService.rank$(critFn);
-        }
-      }
       var playersService = {
         add: function playersAdd(group_index, player, coll) {
           var new_group = R.append(player, coll[group_index]);
@@ -420,10 +428,9 @@ angular.module('srApp.services')
             }),
             R.mapIndexed(function(group, group_index, updated_players_without_sos) {
               return R.map(function(player) {
-                var opponents = roundsService.opponentsForPlayer(player.name, rounds);
-                player.points.sos = playersService.sosFromPlayers(opponents,
-                                                                  updated_players_without_sos);
-                return player;
+                return playerService.updateSoS(playersService.sosFromPlayers,
+                                               rounds, updated_players_without_sos,
+                                               player);
               }, group);
             })
           )(coll);
@@ -457,11 +464,11 @@ angular.module('srApp.services')
             return playersService.sortGroup(state, is_bracket[group_index], group);
           }, coll);
         },
-        sosFromPlayers: function(names, coll) {
-          return R.pipe(R.map(R.flip(playersService.player$)(coll)),
+        sosFromPlayers: function(names, key, coll) {
+          return R.pipe(R.map(R.flip(playersService.playerFull$)(coll)),
                         R.reject(R.isNil),
                         R.reduce(function(mem, player) {
-                          return mem + R.path(['points','tournament'], player);
+                          return mem + R.path(['points',key], player);
                         }, 0)
                        )(names);
         },
@@ -586,8 +593,29 @@ angular.module('srApp.services')
                        !is_set );
             }
           )(game);
-        }
+        },
       };
+      function buildRankingFunction(state, is_bracket, coll) {
+        if(is_bracket) {
+          return function(player) { return player.points.bracket; };
+        }
+        else {
+          var crit = ( playersService.hasTeam(coll) ?
+                       state.ranking.team :
+                       state.ranking.player
+                     );
+          var max_team_size = playersService.maxTeamSize(coll);
+          var critFn = rankingService.buildPlayerCritFunction(crit,
+                                                              state.rounds.length,
+                                                              coll.length,
+                                                              max_team_size);
+          if(R.type(critFn) !== 'Function') {
+            console.error('Error create ranking function', critFn);
+            return null;
+          }
+          return playerService.rank$(critFn);
+        }
+      }
       R.curryService(playersService);
       return playersService;
     }

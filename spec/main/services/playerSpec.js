@@ -194,6 +194,73 @@ describe('service', function() {
         expect(this.roundsService.pointsForPlayer)
           .toHaveBeenCalledWith('toto', 8, 42, dummy_rounds);
       });
+
+      when('player has members', function() {
+      }, function() {
+        it('should update points gained in <rounds> by members', function() {
+          var p = player.create({ name: 'toto' });
+          p.members = [
+            player.create({ name: 'member1' }),
+            player.create({ name: 'member2' }),
+          ];
+          var dummy_rounds = [ 'tata' ];
+          var group_index = 8;
+          var bracket_weight = 42;
+
+          player.updatePoints(group_index, bracket_weight, dummy_rounds, p);
+
+          expect(this.roundsService.pointsForPlayer)
+            .toHaveBeenCalledWith('member1', 8, 42, dummy_rounds);
+          expect(this.roundsService.pointsForPlayer)
+            .toHaveBeenCalledWith('member2', 8, 42, dummy_rounds);
+        });
+      });
+    });
+
+    when('updateSoS(<sosFromPlayers>, <rounds>, <players>)', function() {
+      this.ret = player.updateSoS(this.sosFromPlayers, this.rounds,
+                                  this.players, this.player);
+    }, function() {
+      beforeEach(function() {
+        this.roundsService = spyOnService('rounds');
+        this.sosFromPlayers = jasmine.createSpy('sosFromPlayers')
+          .and.returnValue('sosFromPlayers.returnValue');
+        this.rounds = 'rounds';
+        this.players = 'players';
+        this.player = player.create({ name: 'player' });
+      });
+
+      it('should fetch player\'s opponents', function() {
+        expect(this.roundsService.opponentsForPlayer)
+          .toHaveBeenCalledWith('player', 'rounds');
+      });
+
+      it('should set sos from opponents', function() {
+        expect(this.sosFromPlayers)
+          .toHaveBeenCalledWith('rounds.opponentsForPlayer.returnValue',
+                                'tournament', 'players');
+        expect(this.ret.points.sos)
+          .toBe('sosFromPlayers.returnValue');
+      });
+
+      when('player has members', function() {
+        this.player.members = [
+          player.create({ name: 'member1' }),
+          player.create({ name: 'member2' }),
+        ];
+      }, function() {
+        it('should set sos for members', function() {
+          expect(this.roundsService.opponentsForPlayer)
+            .toHaveBeenCalledWith('member1', 'rounds');
+          expect(this.roundsService.opponentsForPlayer)
+            .toHaveBeenCalledWith('member2', 'rounds');
+
+          expect(this.ret.members[0].points.sos)
+            .toBe('sosFromPlayers.returnValue');
+          expect(this.ret.members[1].points.sos)
+            .toBe('sosFromPlayers.returnValue');
+        });
+      });
     });
 
     describe('drop(<player>, <after_round>)', function() {

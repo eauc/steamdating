@@ -1,25 +1,179 @@
-<div>
+<div id="players-list">
   <button class="btn btn-default no-print"
           ng-click="doEditGroups()">
     Edit Groups
   </button>
-  <h4 style="display:inline;">
+  <h4 class="inline">
     {{state | state:'playersNotDroped' | players:'size'}}<span ng-if="state | state:'hasDropedPlayers'">+{{state | state:'playersDroped' | players:'size'}}</span>
-    Players / {{state.players | players:'nbGroups'}} Groups
+    {{player_team}}s / {{state.players | players:'nbGroups'}} Groups
   </h4>
-  <div class="no-print"
-       ng-repeat="f in exports"
-       style="margin:10px 0;">
+  <div class="download-link no-print"
+       ng-repeat="f in exports">
     <a ng-if="f.url"
        ng-href="{{f.url}}"
        download="{{f.name}}">
       Download {{f.label}} File
     </a>
   </div>
-  <!-- <div ng-if="isTeamTournament()"
-  ng-include="'partials/players_team.html'">
-  </div> -->
-  <div ng-if="!isTeamTournament()"
-       ng-include="'partials/playersRanking_single.html'">
+  <div ng-repeat="(gri,gr) in sorted_players">
+    <h2 ng-if="::state | state:'hasPlayerGroups'"
+        class="group-header">
+      Group{{::gri+1}}
+    </h2>
+    <h3 ng-if="::state | state:'groupIsInBracket':gri">
+      Bracket - {{::state | state:'groupBracketRoundOf':gri}}
+    </h3>
+    <table class="table table-hover group-list">
+      <tr>
+        <th ng-if="::isTeamTournament()"
+            style="width:2em;"
+            class="clickable"
+            ng-click="doShowAllMembers()">
+          <span class="
+                glyphicon no-print
+                glyphicon-chevron-{{show_members.__all__ ? 'down' : 'right'}}
+                ">
+          </span>
+        </th>
+        <th style="width:4em;">Rank</th>
+        <th style="width:20%;">
+          Name
+        </th>
+        <th style="width:20%;">Faction</th>
+        <th ng-if="::state | state:'hasPlayerCustomField'">
+          {{::state.custom_fields.player}}
+        </th>
+        <th ng-if="::isTeamTournament()"
+            style="width:4em;">TTP</th>
+        <th style="width:4em;">TP</th>
+        <th style="width:4em;">SoS</th>
+        <th style="width:4em;">CP</th>
+        <th style="width:4em;">AP</th>
+        <th style="width:4em;">CK</th>
+        <th ng-if="::state | state:'hasGameCustomField'">
+          {{::state.custom_fields.game}}
+        </th>
+        <th style="width:8em;"></th>
+      </tr>
+      <tbody ng-repeat="rank in ::gr"
+             class="ranking-group">
+        <tr ng-repeat-start="p in ::rank.players"
+            class="
+            clickable
+            {{ (p | player:'isDroped') ? 'droped' : '' }}
+            "
+            ng-click="doEditPlayer(p)">
+          <td ng-if="::isTeamTournament()"
+              class="clickable"
+              ng-click="doShowMembers(p, $event)">
+            <span class="
+                  glyphicon no-print
+                  glyphicon-chevron-{{show_members[p.name] ? 'down' : 'right'}}
+                  "
+                  ng-if="::p | player:'hasMembers'">
+            </span>
+            <span class="
+                  no-screen
+                  glyphicon glyphicon-chevron-right
+                  "
+                  ng-if="::p | player:'hasMembers'">
+            </span>
+          </td>
+          <td>{{::rank.rank}}</td>
+          <td class="break-words">{{::p.name}}</td>
+          <td class="
+              break-words
+              {{:: (state | state:'isPlayerBestInFaction':p) ? 'info' : ''}}
+              ">
+            <img ng-src="{{::p.faction | factions:'iconFor'}}"
+                 class="faction-icon"/>
+            {{::p.faction}}
+          </td>
+          <td ng-if="::state | state:'hasPlayerCustomField'"
+              class="{{:: (state | state:'isPlayerBest':'custom_field':p) ? 'info' : ''}}">
+            {{::p.custom_field}}
+          </td>
+          <td ng-if="::isTeamTournament()"
+              class="{{:: (state | state:'isPlayerBest':'team_undefeated':p) ? 'info' : ''}}">
+            {{::p.points.team_tournament}}
+          </td>
+          <td class="{{:: (state | state:'isPlayerBest':'undefeated':p) ? 'info' : ''}}">
+            {{::p.points.tournament}}
+          </td>
+          <td>
+            {{::p.points.sos}}
+          </td>
+          <td class="{{:: (state | state:'isPlayerBest':'points.control':p) ? 'info' : ''}}">
+            {{::p.points.control}}
+          </td>
+          <td class="{{:: (state | state:'isPlayerBest':'points.army':p) ? 'info' : ''}}">
+            {{::p.points.army}}
+          </td>
+          <td class="{{:: (state | state:'isPlayerBest':'points.assassination':p) ? 'info' : ''}}">
+            {{::p.points.assassination}}
+          </td>
+          <td ng-if="::state | state:'hasGameCustomField'"
+              class="{{:: (state | state:'isPlayerBest':'points.custom_field':p) ? 'info' : ''}}">
+            {{::p.points.custom_field}}
+          </td>
+          <td>
+            <button ng-click="doDropPlayer(true, p, $event)"
+                    class="btn btn-default no-print"
+                    ng-if="!(p | player:'isDroped')">
+              <span class="glyphicon glyphicon-ban-circle"></span>
+              Drop
+            </button>
+            <p ng-click="doDropPlayer(false, p, $event)"
+               ng-if="(p | player:'isDroped')">
+              Dropped after Round {{p.droped}}<br />
+              <a class="no-print">click to undrop</a>
+            </p>
+          </td>
+        </tr>
+        <tr ng-repeat-end
+            ng-show="show_members[p.name]"
+            ng-repeat="m in ::p | player:'members'"
+            class="clickable team-member"
+            ng-click="doEditTeamMember(gri, p, m)">
+          <td ng-if="::isTeamTournament()"></td>
+          <td></td>
+          <td class="break-words">{{::m.name}}</td>
+          <td class="
+              break-words
+              {{:: (state | state:'isPlayerBestInFaction':m) ? 'info' : ''}}
+              ">
+            <img ng-src="{{::m.faction | factions:'iconFor'}}"
+                 class="faction-icon"/>
+            {{::m.faction}}
+          </td>
+          <td ng-if="::state | state:'hasPlayerCustomField'"
+              class="{{:: (state | state:'isPlayerBest':'custom_field':m) ? 'info' : ''}}">
+            {{::m.custom_field}}
+          </td>
+          <td ng-if="::isTeamTournament()"></td>
+          <td class="{{:: (state | state:'isPlayerBest':'undefeated':m) ? 'info' : ''}}">
+            {{::m.points.tournament}}
+          </td>
+          <td>
+            {{::m.points.sos}}
+          </td>
+          <td class="{{:: (state | state:'isPlayerBest':'points.control':m) ? 'info' : ''}}">
+            {{::m.points.control}}
+          </td>
+          <td class="{{:: (state | state:'isPlayerBest':'points.army':m) ? 'info' : ''}}">
+            {{::m.points.army}}
+          </td>
+          <td class="{{:: (state | state:'isPlayerBest':'points.assassination':m) ? 'info' : ''}}">
+            {{::m.points.assassination}}
+          </td>
+          <td ng-if="::state | state:'hasGameCustomField'"
+              class="{{:: (state | state:'isPlayerBest':'points.custom_field':m) ? 'info' : ''}}">
+            {{::m.points.custom_field}}
+          </td>
+          <td>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

@@ -322,28 +322,20 @@ angular.module('srApp.services')
       var gamesService = {
         pointsForPlayer: function(player_name, brackets, bracket_weight, games) {
           var ret = R.pipe(
+            R.map(gameService.updatePoints),
             R.map(gameService.player$(player_name)),
             gamesService.reducePoints$(brackets, bracket_weight)
-          )(games);
-          ret.assassination = R.pipe(
-            R.filter(gameService.winForPlayer$(player_name)),
-            R.filter(gameService.isAssassination$),
-            R.length
           )(games);
           return ret;
         },
         pointsAgainstPlayer: function(player_name, brackets, bracket_weight, games) {
           var ret = R.pipe(
+            R.map(gameService.updatePoints),
             R.map(function(game) {
               var opponent_name = gameService.opponentForPlayer(player_name, game);
               return gameService.player(opponent_name, game);
             }),
             gamesService.reducePoints$(brackets, bracket_weight)
-          )(games);
-          ret.assassination = R.pipe(
-            R.filter(gameService.lossForPlayer$(player_name)),
-            R.filter(gameService.isAssassination$),
-            R.length
           )(games);
           return ret;
         },
@@ -356,18 +348,22 @@ angular.module('srApp.services')
                                                 brackets[result_index], base_weight) :
                          mem.bracket
                        ),
+              team_tournament: mem.team_tournament + (result.team_tournament || 0),
               tournament: mem.tournament + (result.tournament || 0),
               control: mem.control + (result.control || 0),
               army: mem.army + (result.army || 0),
               custom_field: mem.custom_field + (result.custom_field || 0),
+              assassination: mem.assassination + (result.assassination || 0),
               sos: 0
             };
           }, {
             bracket: 0,
+            team_tournament: 0,
             tournament: 0,
             control: 0,
             army: 0,
             custom_field: 0,
+            assassination: 0,
             sos: 0
           }, results);
         },
@@ -451,7 +447,11 @@ angular.module('srApp.services')
       function calculateBracketPoints(current_bracket_points,
                                       result, bracket,  bracket_weight) {
         bracket_weight = bracket_weight >> (bracket - 1);
-        return current_bracket_points + bracket_weight * result.tournament;
+        var tp = ( R.exists(result.team_tournament) ? 
+                   result.team_tournament : 
+                   result.tournament
+                 );
+        return current_bracket_points + bracket_weight * tp;
       }
       function isInBracket(result_index, bracket_start) {
         return (!R.isNil(bracket_start) &&

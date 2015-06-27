@@ -180,6 +180,7 @@ angular.module('srApp.services')
               // otherwise bracket calculation is not possible
               if(R.isNil(game)) {
                 return { p1: { name: player_name,
+                               team_tournament: 0,
                                tournament: 0, control: 0,
                                army: 0, custom_field: 0 } };
               }
