@@ -8,7 +8,10 @@ angular.module('srApp.services')
              roundsService) {
       var statsFactionSelectorService = {
         select: function(state, faction_name) {
-          var players = playersService.forFaction(faction_name, state.players);
+          var players = R.pipe(
+            playersService.simplePlayers,
+            playersService.forFaction$(faction_name)
+          )(state.players);
           return R.map(function(player) {
             return [ player.name,
                      roundsService.gamesForPlayer(player.name, state.rounds)
@@ -48,7 +51,10 @@ angular.module('srApp.services')
 
       var statsCasterSelectorService = {
         select: function(state, caster_name) {
-          var players = playersService.forCaster(caster_name, state.players);
+          var players = R.pipe(
+            playersService.simplePlayers,
+            playersService.forCaster$(caster_name)
+          )(state.players);
           return R.pipe(
             R.map(function(player) {
               return [ player.name,

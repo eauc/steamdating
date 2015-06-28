@@ -37,18 +37,21 @@ describe('controllers', function() {
     });
 
     it('should setup select lists', function() {
+      expect(this.playersService.simplePlayers)
+        .toHaveBeenCalledWith(['players']);
+
       expect(this.playersService.factions)
-        .toHaveBeenCalledWith([], this.scope.state.players);
+        .toHaveBeenCalledWith([], 'players.simplePlayers.returnValue');
       expect(this.scope.factions)
         .toEqual(['players.factions.returnValue']);
 
       expect(this.playersService.names)
-        .toHaveBeenCalledWith(this.scope.state.players);
+        .toHaveBeenCalledWith('players.simplePlayers.returnValue');
       expect(this.scope.players)
         .toEqual(['players.names.returnValue']);
 
       expect(this.playersService.casters)
-        .toHaveBeenCalledWith(this.scope.state.players);
+        .toHaveBeenCalledWith('players.simplePlayers.returnValue');
       expect(this.scope.casters)
         .toEqual([{name:'players.casters.returnValue'}]);
     });

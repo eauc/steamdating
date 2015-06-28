@@ -29,8 +29,10 @@ describe('service', function() {
       it('should build players per faction stats', function() {
         var ret = stats.getGeneral({ players: 'players' });
 
-        expect(this.playersService.countByFaction)
+        expect(this.playersService.simplePlayers)
           .toHaveBeenCalledWith('players');
+        expect(this.playersService.countByFaction)
+          .toHaveBeenCalledWith('players.simplePlayers.returnValue');
         expect(this.statsPlayersPerFactionEntryService.count)
           .toHaveBeenCalledWith('players.countByFaction.returnValue');
         expect(ret.factions)

@@ -149,8 +149,8 @@ describe('service', function() {
       });
       this.state = {
         players: [[
-          { name: 'p1', faction: 'p1Faction' },
-          { name: 'p2', faction: 'p2Faction' },
+          { name: 't1', members: [ { name: 'p1', faction: 'p1Faction' } ] },
+          { name: 't2', members: [ { name: 'p2', faction: 'p2Faction' } ] },
         ]]
       };
     }]));
@@ -215,8 +215,8 @@ describe('service', function() {
       });
       this.state = {
         players: [[
-          { name: 'p1', faction: 'p1Faction' },
-          { name: 'p2', faction: 'p2Faction' },
+          { name: 't1', members: [ { name: 'p1', faction: 'p1Faction' } ] },
+          { name: 't2', members: [ { name: 'p2', faction: 'p2Faction' } ] },
         ]]
       };
     }]));
@@ -282,10 +282,18 @@ describe('service', function() {
       });
       this.state = {
         players: [[
-          { name: 'p1', lists: [{ caster: 'caster1', theme: 'Theme1' },
-                                { caster: 'caster2', theme: 'Theme2' },
-                                { caster: 'caster3', theme: null }] },
-          { name: 'p2', lists: [{ caster: 'caster1', theme: 'Theme3' }] }
+          { name: 't1', members: [
+            { name: 'p1', lists: [
+              { caster: 'caster1', theme: 'Theme1' },
+              { caster: 'caster2', theme: 'Theme2' },
+              { caster: 'caster3', theme: null }
+            ] }
+          ] },
+          { name: 't2', members: [
+            { name: 'p2', lists: [
+              { caster: 'caster1', theme: 'Theme3' }
+            ] }
+          ] },
         ]]
       };
     }]));
@@ -358,10 +366,18 @@ describe('service', function() {
       });
       this.state = {
         players: [[
-          { name: 'p1', lists: [{ caster: 'caster1', fk: 'Caster1\r\nRefs A\r\n' },
-                                { caster: 'caster2', fk: 'Caster2\r\nRefs B\r\n' },
-                                { caster: 'caster3', fk: null }] },
-          { name: 'p2', lists: [{ caster: 'caster1', fk: 'Caster1\r\nRefs C\r\n' }] }
+          { name: 't1', members: [
+            { name: 'p1', lists: [
+              { caster: 'caster1', fk: 'Caster1\r\nRefs A\r\n' },
+              { caster: 'caster2', fk: 'Caster2\r\nRefs B\r\n' },
+              { caster: 'caster3', fk: null }
+            ] },
+          ] },
+          { name: 't1', members: [
+            { name: 'p2', lists: [
+              { caster: 'caster1', fk: 'Caster1\r\nRefs C\r\n' }
+            ] },
+          ] },
         ]]
       };
     }]));

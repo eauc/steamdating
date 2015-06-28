@@ -165,7 +165,7 @@ angular.module('srApp.services')
                     ),
             R.groupBy(function(list_entry) {
               return R.pipe(
-                playersService.player$(listPlayer(list_entry)),
+                playersService.playerFull$(listPlayer(list_entry)),
                 R.defaultTo({}),
                 R.prop('faction')
               )(state.players);
@@ -219,7 +219,7 @@ angular.module('srApp.services')
                     ),
             R.groupBy(function(list_entry) {
               return R.pipe(
-                playersService.player$(listPlayer(list_entry)),
+                playersService.playerFull$(listPlayer(list_entry)),
                 R.defaultTo({}),
                 R.prop('faction')
               )(state.players);
@@ -263,7 +263,7 @@ angular.module('srApp.services')
         count: function(state, selection) {
           return R.pipe(
             R.map(function(sel_entry) {
-              return [ playersService.player(selPlayer(sel_entry), state.players),
+              return [ playersService.playerFull(selPlayer(sel_entry), state.players),
                        R.pipe(
                          R.map(gameService.listForPlayer$(selPlayer(sel_entry))),
                          R.reject(R.isNil)
@@ -310,7 +310,7 @@ angular.module('srApp.services')
         count: function(state, selection) {
           return R.pipe(
             R.map(function(sel_entry) {
-              return [ playersService.player(selPlayer(sel_entry), state.players),
+              return [ playersService.playerFull(selPlayer(sel_entry), state.players),
                        R.pipe(
                          R.map(gameService.listForPlayer$(selPlayer(sel_entry))),
                          R.reject(R.isNil),

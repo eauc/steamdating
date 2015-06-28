@@ -44,6 +44,7 @@ angular.module('srApp.services')
         getGeneral: function(state) {
           return {
             factions: R.pipe(
+              playersService.simplePlayers,
               playersService.countByFaction,
               statsPlayersPerFactionEntryService.count
             )(state.players),

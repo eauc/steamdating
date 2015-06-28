@@ -16,9 +16,10 @@ angular.module('srApp.controllers')
 
       $scope.panel = 'general';
 
-      $scope.factions = playersService.factions([], $scope.state.players);
-      $scope.players = playersService.names($scope.state.players);
-      $scope.casters = playersService.casters($scope.state.players);
+      var players = playersService.simplePlayers($scope.state.players);
+      $scope.factions = playersService.factions([], players);
+      $scope.players = playersService.names(players);
+      $scope.casters = playersService.casters(players);
 
       $scope.general = statsService.getGeneral($scope.state);
       $scope.stats = {};

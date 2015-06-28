@@ -40,8 +40,10 @@ describe('service', function() {
             [ 'p3', [ 'p3Games' ] ]
           ]);
 
+        expect(this.playersService.simplePlayers)
+          .toHaveBeenCalledWith(['players']);
         expect(this.playersService.forFaction)
-          .toHaveBeenCalledWith('factionVal', ['players']);
+          .toHaveBeenCalledWith('factionVal', 'players.simplePlayers.returnValue');
         expect(this.roundsService.gamesForPlayer)
           .toHaveBeenCalledWith('p1', ['rounds']);
         expect(this.roundsService.gamesForPlayer)
@@ -122,8 +124,10 @@ describe('service', function() {
             [ 'p3', [ 'p3casterValGames' ] ]
           ]);
 
+        expect(this.playersService.simplePlayers)
+          .toHaveBeenCalledWith(['players']);
         expect(this.playersService.forCaster)
-          .toHaveBeenCalledWith('casterVal', ['players']);
+          .toHaveBeenCalledWith('casterVal', 'players.simplePlayers.returnValue');
 
         expect(this.roundsService.gamesForPlayer)
           .toHaveBeenCalledWith('p1', ['rounds']);
