@@ -168,6 +168,17 @@ angular.module('srApp.services')
           var ret = R.remove(group_index, 1, coll);
           return R.insert(group_index, new_group, ret);
         },
+        simplePlayers: function playersSimplePlayers(coll) {
+          return R.pipe(
+            R.flatten,
+            R.chain(function(player) {
+              return ( playerService.hasMembers(player) ?
+                       playerService.members(player) :
+                       [player]
+                     );
+            })
+          )(coll);
+        },
         hasTeam: function playersHasTeam(coll) {
           return !!R.pipe(
             R.flatten,
@@ -383,6 +394,9 @@ angular.module('srApp.services')
             }
           };
           return {
+            team_undefeated: playersService.withPoints('points.team_tournament',
+                                                       nb_rounds,
+                                                       coll),
             undefeated: playersService.withPoints('points.tournament',
                                                   nb_rounds,
                                                   coll),
@@ -407,6 +421,12 @@ angular.module('srApp.services')
                                                       coll),
             }
           };
+        },
+        bestsSimples: function playersBestsSimples(nb_rounds, coll) {
+          return R.pipe(
+            playersService.simplePlayers,
+            playersService.bests$(nb_rounds)
+          )(coll);
         },
         gamesForRounds: function(rounds, coll) {
           return R.map(function(group) {

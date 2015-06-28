@@ -4,8 +4,10 @@ angular.module('srApp.services')
   .factory('round', [
     'game',
     'games',
+    'lists',
     function(gameService,
-             gamesService) {
+             gamesService,
+             listsService) {
       var roundService = {
         create: function(players) {
           var table = 1;

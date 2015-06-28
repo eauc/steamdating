@@ -202,14 +202,28 @@ angular.module('srApp.services')
                          state);
         },
         updateBestsPlayers: function(state) {
-          var _state = R.assoc('bests',
-                               playersService.bests(R.length(state.rounds),
-                                                    state.players),
-                               state);
-          _state = R.assoc('bests_in_faction',
-                           bestsInFaction(_state),
-                           _state);
-          return _state;
+          var is_team_tournament = stateService.isTeamTournament(state);
+          if(is_team_tournament) {
+            state = R.assoc('bests_teams',
+                            playersService.bests(R.length(state.rounds),
+                                                 state.players),
+                            state);
+            state = R.assoc('bests',
+                            playersService.bestsSimples(R.length(state.rounds),
+                                                        state.players),
+                            state);
+          }
+          else {
+            state = R.assoc('bests',
+                            playersService.bests(R.length(state.rounds),
+                                                 state.players),
+                            state);
+          }
+          state = R.assoc('bests_in_faction',
+                          bestsInFaction(state),
+                          state);
+          console.log('bests', state);
+          return state;
         },
         isPlayerBest: function(type, player, state) {
           var path = R.prepend('bests', R.split('.', type));
@@ -259,15 +273,18 @@ angular.module('srApp.services')
       function bestsInFaction(state) {
         return R.pipe(
           stateService.sortPlayersByRank,
-          R.head,
+          R.flatten,
           R.chain(function(rank) {
-            return R.map(function(player) {
-              // player_array
-              return [ player.faction,
-                       player.name,
-                       rank.rank
-                     ];
-            }, rank.players);
+            return R.pipe(
+              playersService.simplePlayers,
+              R.map(function(player) {
+                // player_array
+                return [ player.faction,
+                         player.name,
+                         rank.rank
+                       ];
+              })
+            )(rank.players);
           }),
           R.uniqWith(R.useWith(R.eq, R.head, R.head)),
           R.reduce(function(mem, player_array) {

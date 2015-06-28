@@ -34,6 +34,34 @@ describe('service', function() {
       });
     });
 
+    describe('simplePlayers()', function() {
+      it('should find all simple players', function() {
+        expect(players.simplePlayers([
+          [
+            { name: 'p1' },
+            { name: 't1', members: [
+              { name: 'm11' },
+              { name: 'm12' },
+            ] }
+          ],
+          [
+            { name: 't2', members: [
+              { name: 'm21' },
+              { name: 'm22' },
+            ] },
+            { name: 'p2' },
+          ]
+        ])).toEqual([
+          { name : 'p1' },
+          { name : 'm11' },
+          { name : 'm12' },
+          { name : 'm21' },
+          { name : 'm22' },
+          { name : 'p2' }
+        ]);
+      });
+    });
+
     describe('hasTeam()', function() {
       using([
         [ 'players', 'has' ],
@@ -1555,20 +1583,20 @@ describe('service', function() {
       beforeEach(function() {
         this.players = [
           [ { name: '2', custom_field: 0,
-              points: { tournament: 2, sos: 4, control: 5, army: 25,
+              points: { team_tournament: 1, tournament: 2, sos: 4, control: 5, army: 25,
                         assassination: 4, custom_field: 2 } },
             { name: '4',  custom_field: 2,
-              points: { tournament: 4, sos: 0, control: 1, army: 35,
+              points: { team_tournament: 0, tournament: 4, sos: 0, control: 1, army: 35,
                         assassination: 3, custom_field: 1 } }
           ],
           [ { name: '1',  custom_field: 1,
-              points: { tournament: 1, sos: 1, control: 3, army: 5,
+              points: { team_tournament: 2, tournament: 1, sos: 1, control: 3, army: 5,
                         assassination: 5, custom_field: 1 } },
             { name: '3',  custom_field: 4,
-              points: { tournament: 0, sos: 3, control: 0, army: 35,
+              points: { team_tournament: 4, tournament: 0, sos: 3, control: 0, army: 35,
                         assassination: 2, custom_field: 0 } },
             { name: '5',  custom_field: 2,
-              points: { tournament: 1, sos: 1, control: 4, army: 0,
+              points: { team_tournament: 3, tournament: 1, sos: 1, control: 4, army: 0,
                         assassination: 0, custom_field: 3 } }
           ],
         ];
@@ -1576,6 +1604,7 @@ describe('service', function() {
 
       it('should compute bests players lists', function() {
         expect(players.bests(4, this.players)).toEqual({
+          team_undefeated : [ '3' ],
           undefeated : [ '4' ],
           custom_field : [ '3' ],
           points : {
@@ -1586,6 +1615,45 @@ describe('service', function() {
             custom_field : [ '5' ]
           }
         });
+      });
+    });
+
+    describe('bestsSimples(<nb_rounds>)', function() {
+      beforeEach(function() {
+        this.players = [
+          [
+            { name: 'p1' },
+            { name: 't1', members: [
+              { name: 'm11' },
+              { name: 'm12' },
+            ] }
+          ],
+          [
+            { name: 't2', members: [
+              { name: 'm21' },
+              { name: 'm22' },
+            ] },
+            { name: 'p2' },
+          ]
+        ];
+        spyOn(players, 'bests')
+          .and.returnValue('players.bests.returnValue');
+        players.bests$ = R.curryN(2, players.bests);
+      });
+
+      it('should compute bests simple players lists', function() {
+        expect(players.bestsSimples(4, this.players))
+          .toBe('players.bests.returnValue');
+
+        expect(players.bests)
+          .toHaveBeenCalledWith(4, [
+          { name : 'p1' },
+          { name : 'm11' },
+          { name : 'm12' },
+          { name : 'm21' },
+          { name : 'm22' },
+          { name : 'p2' }
+        ]);
       });
     });
 

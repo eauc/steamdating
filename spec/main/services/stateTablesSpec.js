@@ -15,64 +15,166 @@ describe('service', function() {
     }]));
 
     describe('rankingTables()', function() {
-      it('should build a ranking table', function() {
-        var st = {
-          players: [[ { name: 'p1', droped: null, origin: 'c1', faction: 'f1', custom_field: 21,
-                        points: { tournament: 5, sos: 4, control: 15, army: 32,
-                                  assassination: 3, custom_field: 12 } },
-                      { name: 'p2', droped: 0, origin: 'c2', faction: 'f2', custom_field: 24,
-                        points: { tournament: 3, sos: 4, control: 12, army: 32,
-                                  assassination: 1, custom_field: 42 } },
-                      { name: 'p3', droped: 5, origin: 'c3', faction: 'f3', custom_field: 27,
-                        points: { tournament: 3, sos: 7, control: 12, army: 48,
-                                  assassination: 6, custom_field: 72 } },
-                    ]],
-          bracket: [],
-          rounds: [],
-          ranking: { player: 'tp*10+sos' },
-          custom_fields: {
-            player: 'pCustom',
-            game: 'gCustom'
-          },
-          bests: {
-            undefeated: [ 'p1' ],
-            custom_field: [ 'p1 p3' ],
-            points: {
-              sos: [ 'p1' ],
-              control: [ 'p2 p3' ],
-              army: [ 'p3' ],
-              assassination: [ 'p5' ],
-              custom_field: [ 'p2' ],
+      when('state is not a team tournament', function() {
+      }, function() {
+        it('should build a ranking table', function() {
+          var st = {
+            players: [
+              [ { name: 'p1', droped: null, origin: 'c1', faction: 'f1', custom_field: 21,
+                  points: { tournament: 5, sos: 4, control: 15, army: 32,
+                            assassination: 3, custom_field: 12 } },
+                { name: 'p2', droped: 0, origin: 'c2', faction: 'f2', custom_field: 24,
+                  points: { tournament: 3, sos: 4, control: 12, army: 32,
+                            assassination: 1, custom_field: 42 } },
+                { name: 'p3', droped: 5, origin: 'c3', faction: 'f3', custom_field: 27,
+                  points: { tournament: 3, sos: 7, control: 12, army: 48,
+                            assassination: 6, custom_field: 72 } },
+              ]
+            ],
+            bracket: [],
+            rounds: [],
+            ranking: { player: 'tp*10+sos' },
+            custom_fields: {
+              player: 'pCustom',
+              game: 'gCustom'
+            },
+            bests: {
+              undefeated: [ 'p1' ],
+              custom_field: [ 'p1 p3' ],
+              points: {
+                sos: [ 'p1' ],
+                control: [ 'p2 p3' ],
+                army: [ 'p3' ],
+                assassination: [ 'p5' ],
+                custom_field: [ 'p2' ],
+              }
+            },
+            bests_in_faction: {
+              f1: [ 'p1', 1 ],
+              f2: [ 'p2', 1 ],
+              f3: [ 'p5', 2 ],
+              f4: [ 'p7', 3 ]
             }
-          },
-          bests_in_faction: {
-            f1: [ 'p1', 1 ],
-            f2: [ 'p2', 1 ],
-            f3: [ 'p5', 2 ],
-            f4: [ 'p7', 3 ]
-          }
-        };
-        var res = stateTables.rankingTables(st);
-        expect(res).toEqual([
-          [ [ 'Bests' ],
-            [ 'Undefeated', 'pCustom', 'SoS', 'Scenario', 'Destruction', 'Assassin', 'gCustom' ],
-            [ [ 'p1' ], [ 'p1 p3' ], [ 'p1' ], [ 'p2 p3' ], [ 'p3' ], [ 'p5' ], [ 'p2' ] ]
-          ],
-          [ [ 'Bests In Faction' ],
-            [ 'Faction', 'Player', 'Rank' ],
-            [ 'f1', 'p1', 1 ],
-            [ 'f2', 'p2', 1 ],
-            [ 'f3', 'p5', 2 ],
-            [ 'f4', 'p7', 3 ]
-          ],
-          [ [ 'Group1' ],
-            [ 'Rank', 'Name', 'Origin', 'Faction',
-              'pCustom', 'TP', 'SoS', 'CP', 'AP', 'CK', 'gCustom', 'Drop' ],
-            [ 1, 'p1', 'c1', 'f1', 21, 5, 4, 15, 32, 3, 12, '' ],
-            [ 2, 'p3', 'c3', 'f3', 27, 3, 7, 12, 48, 6, 72, 'After Round 5' ],
-            [ 3, 'p2', 'c2', 'f2', 24, 3, 4, 12, 32, 1, 42, 'After Round 0' ]
-          ]
-        ]);
+          };
+          var res = stateTables.rankingTables(st);
+          expect(res).toEqual([
+            [ [ 'Bests Players' ],
+              [ 'Undefeated', 'pCustom', 'SoS', 'Scenario', 'Destruction', 'Assassin', 'gCustom' ],
+              [ [ 'p1' ], [ 'p1 p3' ], [ 'p1' ], [ 'p2 p3' ], [ 'p3' ], [ 'p5' ], [ 'p2' ] ]
+            ],
+            [ [ 'Bests In Faction' ],
+              [ 'Faction', 'Player', 'Rank' ],
+              [ 'f1', 'p1', 1 ],
+              [ 'f2', 'p2', 1 ],
+              [ 'f3', 'p5', 2 ],
+              [ 'f4', 'p7', 3 ]
+            ],
+            [ [ 'Group1' ],
+              [ 'Rank', 'Name', 'Origin', 'Faction',
+                'pCustom', 'TP', 'SoS', 'CP', 'AP', 'CK', 'gCustom', 'Drop' ],
+              [ 1, 'p1', 'c1', 'f1', 21, 5, 4, 15, 32, 3, 12, '' ],
+              [ 2, 'p3', 'c3', 'f3', 27, 3, 7, 12, 48, 6, 72, 'After Round 5' ],
+              [ 3, 'p2', 'c2', 'f2', 24, 3, 4, 12, 32, 1, 42, 'After Round 0' ]
+            ]
+          ]);
+        });
+      });
+
+      when('state is a team tournament', function() {
+      }, function() {
+        it('should build a ranking table', function() {
+          var st = {
+            players: [
+              [ { name: 't1', droped: null, origin: 'c1', custom_field: 21,
+                  points: { team_tournament: 3, tournament: 5, sos: 4, control: 15, army: 32,
+                            assassination: 3, custom_field: 12 },
+                  members: [ { name: 'p1', faction: 'f1', custom_field: 21,
+                               points: { tournament: 5, sos: 4, control: 15, army: 32,
+                                         assassination: 3, custom_field: 12 } } ] },
+                { name: 't2', droped: 0, origin: 'c2', custom_field: 24,
+                  points: { team_tournament: 2, tournament: 3, sos: 4, control: 12, army: 32,
+                            assassination: 1, custom_field: 42 },
+                  members: [ { name: 'p2', faction: 'f2', custom_field: 24,
+                               points: { tournament: 3, sos: 4, control: 12, army: 32,
+                                         assassination: 1, custom_field: 42 } } ] },
+                { name: 't3', droped: 5, origin: 'c3', custom_field: 27,
+                  points: { team_tournament: 1, tournament: 3, sos: 7, control: 12, army: 48,
+                            assassination: 6, custom_field: 72 },
+                  members: [ { name: 'p3', faction: 'f3', custom_field: 27,
+                               points: { tournament: 3, sos: 7, control: 12, army: 48,
+                                         assassination: 6, custom_field: 72 } } ] },
+              ]
+            ],
+            bracket: [],
+            rounds: [],
+            ranking: {
+              player: 'tp*10+sos',
+              team: 'ttp*10+sos'
+            },
+            custom_fields: {
+              player: 'pCustom',
+              game: 'gCustom'
+            },
+            bests_teams: {
+              team_undefeated: [ 't1' ],
+              undefeated: [ 't2' ],
+              custom_field: [ 't1 t3' ],
+              points: {
+                sos: [ 't1' ],
+                control: [ 't2 t3' ],
+                army: [ 't3' ],
+                assassination: [ 't5' ],
+                custom_field: [ 't2' ],
+              }
+            },
+            bests: {
+              team_undefeated: [ 't1' ],
+              undefeated: [ 'p1' ],
+              custom_field: [ 'p1 p3' ],
+              points: {
+                sos: [ 'p1' ],
+                control: [ 'p2 p3' ],
+                army: [ 'p3' ],
+                assassination: [ 'p5' ],
+                custom_field: [ 'p2' ],
+              }
+            },
+            bests_in_faction: {
+              f1: [ 'p1', 1 ],
+              f2: [ 'p2', 1 ],
+              f3: [ 'p5', 2 ],
+              f4: [ 'p7', 3 ]
+            }
+          };
+          var res = stateTables.rankingTables(st);
+          expect(res).toEqual([
+            [ [ 'Bests Teams' ],
+              [ 'Undefeated', 'pCustom', 'SoS', 'Scenario', 'Destruction', 'Assassin', 'gCustom' ],
+              [ [ 't1' ], [ 't1 t3' ], [ 't1' ], [ 't2 t3' ], [ 't3' ], [ 't5' ], [ 't2' ] ]
+            ],
+            [ [ 'Bests Players' ],
+              [ 'Undefeated', 'pCustom', 'SoS', 'Scenario', 'Destruction', 'Assassin', 'gCustom' ],
+              [ [ 'p1' ], [ 'p1 p3' ], [ 'p1'], [ 'p2 p3' ], [ 'p3' ], [ 'p5' ], [ 'p2' ] ]
+            ],
+            [ [ 'Bests In Faction' ],
+              [ 'Faction', 'Player', 'Rank' ],
+              [ 'f1', 'p1', 1 ],
+              [ 'f2', 'p2', 1 ],
+              [ 'f3', 'p5', 2 ],
+              [ 'f4', 'p7', 3 ]
+            ],
+            [ [ 'Group1' ],
+              [ 'Rank', 'Name', 'Origin', 'Faction', 'pCustom',
+                'TTP', 'TP', 'SoS', 'CP', 'AP', 'CK', 'gCustom', 'Drop' ],
+              [ 1, 't1', 'c1', undefined, 21, 3, 5, 4,  15, 32, 3, 12, '' ],
+              [ '', 'p1', undefined, 'f1', 21, undefined, 5, 4, 15, 32, 3, 12, '' ],
+              [ 2, 't2', 'c2', undefined, 24, 2, 3, 4, 12, 32, 1, 42, 'After Round 0' ],
+              [ '', 'p2', undefined, 'f2', 24, undefined, 3, 4, 12, 32, 1, 42, '' ],
+              [ 3, 't3', 'c3', undefined, 27, 1, 3, 7, 12, 48, 6, 72, 'After Round 5' ],
+              [ '', 'p3', undefined, 'f3', 27, undefined, 3, 7, 12, 48, 6, 72, '' ]
+            ]
+          ]);
+        });
       });
     });
 

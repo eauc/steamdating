@@ -432,9 +432,19 @@ describe('service', function() {
       });
     });
     
-    describe('updateBestsPlayers()', function() {
+    when('updateBestsPlayers()', function() {
+      this.ret = state.updateBestsPlayers({
+        players: this.dummy_players,
+        rounds: ['round1', 'round2', 'round3']
+      });
+    }, function() {
       beforeEach(function() {
         this.playersService = spyOnService('players');
+        this.playersService.simplePlayers.and.callThrough();
+        this.playersService.hasTeam.and.callThrough();
+      });
+
+      when('state is not a team tournament', function() {
         spyOn(state, 'sortPlayersByRank')
           .and.returnValue([[
             { rank: 1,
@@ -452,26 +462,81 @@ describe('service', function() {
                          { name: 'p8', faction: 'f1' } ]
             },
           ]]);
-
-        this.dummy_players = [ R.repeat({}, 4), R.repeat({}, 2), R.repeat({}, 5) ];
-        this.ret = state.updateBestsPlayers({
-          players: this.dummy_players,
-          rounds: ['round1', 'round2', 'round3']
+        
+        this.dummy_players = [
+          [ { name: 'p1', faction: 'f1' } ]
+        ];
+      }, function() {
+        it('should set state.bests from players.bests', function() {
+          expect(this.ret.bests).toBe('players.bests.returnValue');
+          expect(this.playersService.bests)
+            .toHaveBeenCalledWith(3, this.dummy_players);
+        });
+        
+        it('should extract bests players in each faction', function() {
+          expect(this.ret.bests_in_faction).toEqual({
+            f1: [ 'p1', 1 ],
+            f2: [ 'p2', 1 ],
+            f3: [ 'p5', 2 ],
+            f4: [ 'p7', 3 ]
+          });
         });
       });
 
-      it('should call players.bests with nb rounds information', function() {
-        expect(this.ret.bests).toBe('players.bests.returnValue');
-        expect(this.playersService.bests)
-          .toHaveBeenCalledWith(3, this.dummy_players);
-      });
-
-      it('should extract bests players in each faction', function() {
-        expect(this.ret.bests_in_faction).toEqual({
-          f1: [ 'p1', 1 ],
-          f2: [ 'p2', 1 ],
-          f3: [ 'p5', 2 ],
-          f4: [ 'p7', 3 ]
+      when('state is a team tournament', function() {
+        spyOn(state, 'sortPlayersByRank')
+          .and.returnValue([[
+            { rank: 1,
+              players: [ { name: 't1', members: [
+                { name: 'p1', faction: 'f1' },
+                { name: 'p2', faction: 'f2' },
+                { name: 'p3', faction: 'f1' }
+              ] } ]
+            },
+            { rank: 2,
+              players: [ { name: 't2', members: [
+                { name: 'p4', faction: 'f2' },
+                { name: 'p5', faction: 'f3' }
+              ] } ]
+            },
+            { rank: 3,
+              players: [ { name: 't3', members: [
+                { name: 'p6', faction: 'f3' },
+                { name: 'p7', faction: 'f4' },
+                { name: 'p8', faction: 'f1' }
+              ] } ]
+            },
+          ]]);
+        
+        this.dummy_players = [
+          [ 
+            { name: 't1', members: [
+              { name: 'p1', faction: 'f1' },
+              { name: 'p2', faction: 'f2' },
+              { name: 'p3', faction: 'f1' }
+            ] }
+          ]
+        ];
+      }, function() {
+        it('should set state.bests_teams from players.bests', function() {
+          expect(this.ret.bests_teams).toBe('players.bests.returnValue');
+          expect(this.playersService.bests)
+            .toHaveBeenCalledWith(3, this.dummy_players);
+        });
+        
+        it('should set state.bests from players.bestsSimples', function() {
+          expect(this.ret.bests).toBe('players.bestsSimples.returnValue');
+          expect(this.playersService.bestsSimples)
+            .toHaveBeenCalledWith(3, this.dummy_players);
+        });
+        
+        it('should extract bests simple players in each faction', function() {
+          expect(this.ret.bests_in_faction).toEqual({
+            f1: [ 'p1', 1 ],
+            f2: [ 'p2', 1 ],
+            f3: [ 'p5', 2 ],
+            f4: [ 'p7', 3 ]
+          });
         });
       });
     });
