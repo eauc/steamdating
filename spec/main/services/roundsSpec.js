@@ -124,6 +124,8 @@ describe('service', function() {
           { games: [
             { victory: 'assassination',
               p1: { name: 'toto', tournament: 1,
+                    control: 2, army: 3, custom_field: 6 },
+              p2: { name: 'tata', tournament: 1,
                     control: 2, army: 3, custom_field: 6 } }
           ] },
           { games: [
@@ -142,7 +144,9 @@ describe('service', function() {
           { games: [
             { victory: 'assassination',
               p1: { name: 'toto', tournament: 100,
-                    control: 200, army: 300, custom_field: 600 } }
+                    control: 200, army: 300, custom_field: 600 },
+              p2: { name: 'tata', tournament: 1,
+                    control: 2, army: 3, custom_field: 6 } }
           ] },
         ];
       });
@@ -158,12 +162,13 @@ describe('service', function() {
                                         this.coll))
             .toEqual({
               bracket: 0,
+              team_tournament: 0,
               tournament : 111,
               control: 222,
               army: 333,
               custom_field: 666,
               sos: 0,
-              assassination: 1
+              assassination: 111
             });
         });
       });
@@ -174,28 +179,31 @@ describe('service', function() {
           [ 'brackets'                 , 'points' ],
           // bracket from start
           [ [1,2,3,4,5]                , { bracket: 392,
+                                           team_tournament: 0,
                                            tournament : 111,
                                            control: 222,
                                            army: 333,
                                            custom_field: 666,
                                            sos: 0,
-                                           assassination: 1 } ],
+                                           assassination: 111 } ],
           // started after a few rounds
           [ [null,null,1,2,3]          , { bracket: 800,
+                                           team_tournament: 0,
                                            tournament : 111,
                                            control: 222,
                                            army: 333,
                                            custom_field: 666,
                                            sos: 0,
-                                           assassination: 1 } ],
+                                           assassination: 111 } ],
           // not yet started
           [ [null,null,null,null,null] , { bracket: 0,
+                                           team_tournament: 0,
                                            tournament : 111,
                                            control: 222,
                                            army: 333,
                                            custom_field: 666,
                                            sos: 0,
-                                           assassination: 1 } ],
+                                           assassination: 111 } ],
         ], function(e, d) {
           it('should sum points for <name>, '+d, function() {
             R.forEachIndexed(function(round, index) {

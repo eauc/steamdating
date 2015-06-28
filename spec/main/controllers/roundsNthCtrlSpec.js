@@ -27,7 +27,9 @@ describe('controllers', function() {
 
         initCtrlWith = function(ctxt, pane, rounds) {
           ctxt.pane = pane || '0';
-          ctxt.state_rounds = rounds || [ 'round0' ];
+          ctxt.state_rounds = rounds || [{
+            games: [[ 'round0' ]]
+          }];
 
           ctxt.scope = $rootScope.$new();
           ctxt.scope.goToState = jasmine.createSpy('goToState');
@@ -52,13 +54,16 @@ describe('controllers', function() {
 
     using([
       [ 'pane' , 'r'       ],
-      [ '0'    , 'rounds0' ],
-      [ '1'    , 'rounds1' ],
+      [ '0'    , { games: [[ 'round0' ]] } ],
+      [ '1'    , { games: [[ 'round1' ]] } ],
     ], function(e, d) {
       it('should init pane & r from stateParams, '+d, function() {
-        initCtrlWith(this, e.pane, [ 'rounds0', 'rounds1' ]);
+        initCtrlWith(this, e.pane, [
+          { games: [[ 'round0' ]] },
+          { games: [[ 'round1' ]] }
+        ]);
         expect(this.scope.round.current).toBe(parseFloat(e.pane));
-        expect(this.scope.r).toBe(e.r);
+        expect(this.scope.r).toEqual(e.r);
       });
     });
 
@@ -72,7 +77,10 @@ describe('controllers', function() {
     });
 
     it('should init exports', function() {
-      initCtrlWith(this, '1', [ 'rounds0', 'rounds1' ]);
+      initCtrlWith(this, '1', [
+        { games: [[ 'round0' ]] },
+        { games: [[ 'round1' ]] }
+      ]);
 
       expect(this.scope.exports).toBeAn('Object');
 

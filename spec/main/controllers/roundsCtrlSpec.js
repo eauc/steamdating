@@ -17,6 +17,7 @@ describe('controllers', function() {
       function($rootScope,
                $controller) {
         this.scope = $rootScope.$new();
+        this.scope.isTeamTournament = jasmine.createSpy('isTeamTournament');
         this.scope.goToState = jasmine.createSpy('goToState');
         this.scope.edit = {};
 

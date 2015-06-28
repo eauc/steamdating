@@ -135,89 +135,93 @@ describe('controllers', function() {
       });
     });
 
-    describe('doClose(<validate>)', function() {
+    when('doClose(<validate>)', function() {
+      this.scope.doClose(this.validate);
+    }, function() {
       beforeEach(function() {
         this.scope.edit.back = 'previous_state';
       });
       
       when('not validate', function() {
+        this.validate = false;
       },function() {
         it('should return to player state', function() {
-          this.scope.doClose(false);
-          
           expect(this.scope.goToState).toHaveBeenCalledWith('previous_state');
         });
       });
 
       when('validate', function() {
+        this.validate = true;
       }, function() {
         using([
           [ 'name' ],
           [ null   ],
           [ ''     ],
         ], function(e, d) {
-          it('should validate player\'s name, '+d, function() {
-            this.scope.player.name = e.anme;
-
-            this.scope.doClose(true);
-
-            expect(this.promptService.prompt)
-              .toHaveBeenCalledWith('alert', 'invalid player/team name');
+          when('player.name is invalid', function() {
+            this.scope.player.name = e.name;
+          }, function() {
+            it('should alert user, '+d, function() {
+              expect(this.promptService.prompt)
+                .toHaveBeenCalledWith('alert', 'invalid player/team name');
+            });
           });
         });
 
         when('editing an existing player', function() {
+          this.scope.player.faction = 'new_f';
+          this.scope.player.city = 'new_c';
+          this.scope.player.lists = [ 'new_l' ];
         }, function() {
           beforeEach(function() {
             initController(this, { name: 'titi', lists:[] });
             this.playersService.namesFull.and.returnValue([ 'titi', 'toto' ]);
           });
           
-          it('should check that the new name does not already exists', function() {
-            // no change
-            this.promptService.prompt.calls.reset();
+          when('name did not change', function() {
             this.scope.player.name = 'titi';
-            this.scope.doClose(true);
-            expect(this.promptService.prompt).not.toHaveBeenCalled();
-            // new name
             this.promptService.prompt.calls.reset();
-            this.scope.player.name = 'new';
-            this.scope.doClose(true);
-            expect(this.promptService.prompt).not.toHaveBeenCalled();
-            // existing name
-            this.promptService.prompt.calls.reset();
-            this.scope.player.name = 'toto';
-            this.scope.doClose(true);
-            expect(this.promptService.prompt)
-              .toHaveBeenCalledWith('alert', 'a player/team with the same name already exists');
+          }, function() {
+            it('should not check that the new name does not already exists', function() {
+              expect(this.promptService.prompt).not.toHaveBeenCalled();
+            });
           });
 
-          it('should update existing player', function() {
+          when('name changed to a new name', function() {
+            this.scope.player.name = 'new';
+            this.promptService.prompt.calls.reset();
+          }, function() {
+            it('should check that the new name does not already exists', function() {
+              expect(this.promptService.prompt).not.toHaveBeenCalled();
+            });
+          });
+
+          when('name changed to an existing name', function() {
+            this.scope.player.name = 'toto';
+            this.promptService.prompt.calls.reset();
+          }, function() {
+            it('should check that the new name does not already exists', function() {
+              expect(this.promptService.prompt)
+                .toHaveBeenCalledWith('alert',
+                                      'a player/team with the same name already exists');
+            });
+          });
+
+          when('', function() {
             this.scope.player.name = 'new_n';
-            this.scope.player.faction = 'new_f';
-            this.scope.player.city = 'new_c';
-            this.scope.player.team = 'new_t';
-            this.scope.player.lists = [ 'new_l' ];
-            
-            this.scope.doClose(true);
-            
-            expect(this.scope.edit.player.name).toBe('new_n');
-            expect(this.scope.edit.player.faction).toBe('new_f');
-            expect(this.scope.edit.player.city).toBe('new_c');
-            expect(this.scope.edit.player.team).toBe('new_t');
-            expect(this.scope.edit.player.lists).toEqual([ 'new_l' ]);
+          }, function() {
+            it('should update existing player', function() {
+              expect(this.scope.edit.player.name).toBe('new_n');
+              expect(this.scope.edit.player.faction).toBe('new_f');
+              expect(this.scope.edit.player.city).toBe('new_c');
+              expect(this.scope.edit.player.lists).toEqual([ 'new_l' ]);
+            });
           });
 
           when('adding player to a team', function() {
-            initController(this,
-                           { name: 'titi', lists:[] },
-                           null
-                          );
             this.scope.player_team = 'team';
           }, function() {
             it('should switch from player to team member', function() {
-              this.scope.doClose(true);
-              
               expect(this.playersService.switchPlayerToTeamMember)
                 .toHaveBeenCalledWith('team', this.scope.player, this.current_state.players);
               expect(this.scope.state.players)
@@ -233,8 +237,6 @@ describe('controllers', function() {
             this.scope.player_team = undefined;
           }, function() {
             it('should switch from team member to player', function() {
-              this.scope.doClose(true);
-              
               expect(this.playersService.switchTeamMemberToPlayer)
                 .toHaveBeenCalledWith('team', 4,
                                       this.scope.player, this.current_state.players);
@@ -251,8 +253,6 @@ describe('controllers', function() {
             this.scope.player_team = 'new_team';
           }, function() {
             it('should switch from team member to player', function() {
-              this.scope.doClose(true);
-              
               expect(this.playersService.switchMemberBetweenTeams)
                 .toHaveBeenCalledWith('team', 'new_team',
                                       this.scope.player, this.current_state.players);
@@ -263,35 +263,38 @@ describe('controllers', function() {
         });
 
         when('creating a new player', function() {
-          initController(this, { name: undefined, lists:[] });
-          this.playersService.namesFull.and.returnValue([ 'titi', 'toto' ]);
+          this.scope.player.faction = 'new_f';
+          this.scope.player.city = 'new_c';
+          this.scope.player.lists = [ 'new_l' ];
         }, function() {
-          it('should check that the new name does not already exists', function() {
-            // new name
-            this.promptService.prompt.calls.reset();
+          beforeEach(function() {
+            initController(this, { name: undefined, lists:[] });
+            this.playersService.namesFull.and.returnValue([ 'titi', 'toto' ]);
+          });
+
+          when('new name does not exists', function() {
             this.scope.player.name = 'new';
-            this.scope.doClose(true);
-            expect(this.promptService.prompt).not.toHaveBeenCalled();
-            // existing name
-            this.promptService.prompt.calls.reset();
+          }, function() {
+            it('should check that the new name does not already exists', function() {
+              expect(this.promptService.prompt).not.toHaveBeenCalled();
+            });
+          });
+
+          when('new name already exists', function() {
             this.scope.player.name = 'toto';
-            this.scope.doClose(true);
-            expect(this.promptService.prompt)
-              .toHaveBeenCalledWith('alert', 'a player/team with the same name already exists');
+          }, function() {
+            it('should check that the new name does not already exists', function() {
+              expect(this.promptService.prompt)
+                .toHaveBeenCalledWith('alert',
+                                      'a player/team with the same name already exists');
+            });
           });
 
           when('adding a team/solo player', function() {
-            this.scope.player.team = undefined;
+            this.scope.player_team = undefined;
+            this.scope.player.name = 'new_n';
           }, function() {
             it('should add player to state', function() {
-              this.scope.player.name = 'new_n';
-              this.scope.player.faction = 'new_f';
-              this.scope.player.city = 'new_c';
-              this.scope.player.team = 'new_t';
-              this.scope.player.lists = [ 'new_l' ];
-              
-              this.scope.doClose(true);
-              
               expect(this.playersService.add)
                 .toHaveBeenCalledWith(this.scope.edit.group,
                                       this.scope.player,
@@ -301,17 +304,10 @@ describe('controllers', function() {
           });
 
           when('adding a team member', function() {
+            this.scope.player.name = 'new_n';
             this.scope.player_team = 'team';
           }, function() {
-            it('should add player to team', function() {
-              this.scope.player.name = 'new_n';
-              this.scope.player.faction = 'new_f';
-              this.scope.player.city = 'new_c';
-              this.scope.player.team = 'new_t';
-              this.scope.player.lists = [ 'new_l' ];
-              
-              this.scope.doClose(true);
-              
+            it('should add player to team', function() {              
               expect(this.playersService.addToTeam)
                 .toHaveBeenCalledWith('team',
                                       this.scope.player,
