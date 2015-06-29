@@ -14,7 +14,7 @@ describe('service', function() {
       games = _games;
     }]));
 
-    describe('pointsForPlayer(<player>, <brackets>, <bracket_weight>)', function() {
+    describe('pointsForPlayer(<player>)', function() {
       beforeEach(function() {
         this.coll = [
           { victory: 'assassination',
@@ -40,43 +40,22 @@ describe('service', function() {
         ];
       });
 
-      when('bracket is not defined', function() {
-      }, function(){
-        it('should sum points for <name>', function() {
-          // uniq
-          expect(games.pointsForPlayer('toto', [null,null,null,null], 32, this.coll))
-            .toEqual({
-              bracket: 0,
-              team_tournament : 2,
-              tournament : 2,
-              control: 222,
-              army: 333,
-              custom_field: 82,
-              sos: 0,
-              assassination: 1
-            });
-        });
-      });
-
-      when('bracket is defined', function() {
-      }, function(){
-        it('should sum points for <name>', function() {
-          expect(games.pointsForPlayer('toto', [null,1,2,3], 32, this.coll))
-            .toEqual({
-              bracket: 32,
-              team_tournament : 2,
-              tournament : 2,
-              control: 222,
-              army: 333,
-              custom_field : 82,
-              sos: 0,
-              assassination: 1
-            });
-        });
+      it('should sum points for <name>', function() {
+        // uniq
+        expect(games.pointsForPlayer('toto', this.coll))
+          .toEqual({
+            team_tournament : 2,
+            tournament : 2,
+            control: 222,
+            army: 333,
+            custom_field: 82,
+            sos: 0,
+            assassination: 1
+          });
       });
     });
 
-    describe('pointsAgainstPlayer(<player>, <brackets>, <bracket_weight>)', function() {
+    describe('pointsAgainstPlayer(<player>)', function() {
       beforeEach(function() {
         this.coll = [
           { victory: 'assassination',
@@ -102,43 +81,22 @@ describe('service', function() {
         ];
       });
 
-      when('bracket is not defined', function() {
-      }, function(){
-        it('should sum points for <name>', function() {
-          // uniq
-          expect(games.pointsAgainstPlayer('toto', [null,null,null,null], 32, this.coll))
-            .toEqual({
-              bracket: 0,
-              team_tournament : 2,
-              tournament : 2,
-              control: 555,
-              army: 666,
-              custom_field: 46,
-              sos: 0,
-              assassination: 1
-            });
-        });
-      });
-
-      when('bracket is defined', function() {
-      }, function(){
-        it('should sum points for <name>', function() {
-          expect(games.pointsAgainstPlayer('toto', [null,1,2,3], 32, this.coll))
-            .toEqual({
-              bracket: 24,
-              team_tournament : 2,
-              tournament : 2,
-              control: 555,
-              army: 666,
-              custom_field: 46,
-              sos: 0,
-              assassination: 1
-            });
-        });
+      it('should sum points for <name>', function() {
+        // uniq
+        expect(games.pointsAgainstPlayer('toto', this.coll))
+          .toEqual({
+            team_tournament : 2,
+            tournament : 2,
+            control: 555,
+            army: 666,
+            custom_field: 46,
+            sos: 0,
+            assassination: 1
+          });
       });
     });
 
-    describe('reducePoints(<brackets>, <bracket_weight>, <player_games>)', function() {
+    describe('reducePoints(<player_games>)', function() {
       beforeEach(function() {
         this.coll = [
           { name: 'toto', tournament: 1, control: 2, army: 3, custom_field: 6 },
@@ -148,61 +106,18 @@ describe('service', function() {
         ];
       });
 
-      when('bracket is not defined', function() {
-      }, function(){
-        it('should sum points', function() {
-          // uniq
-          expect(games.reducePoints([undefined], 32, this.coll))
-            .toEqual({
-              bracket: 0,
-              team_tournament : 0,
-              tournament : 111,
-              control: 222,
-              army: 333,
-              custom_field: 666,
-              assassination : 0,
-              sos: 0
-            });
-        });
-      });
-
-      when('bracket is defined', function() {
-      }, function(){
-        using([
-          [ 'brackets'             , 'points' ],
-          // bracket from start
-          [ [1,2,3,4]              , { bracket: 592,
-                                       team_tournament : 0,
-                                       tournament : 111,
-                                       control: 222,
-                                       army: 333,
-                                       custom_field: 666,
-                                       assassination : 0,
-                                       sos: 0 } ],
-          // started after a few rounds
-          [ [null,null,1,2]        , { bracket: 1600,
-                                       team_tournament : 0,
-                                       tournament : 111,
-                                       control: 222,
-                                       army: 333,
-                                       custom_field: 666,
-                                       assassination : 0,
-                                       sos: 0 } ],
-          // not yet started
-          [ [null,null,null,null]  , { bracket: 0,
-                                       team_tournament : 0,
-                                       tournament : 111,
-                                       control: 222,
-                                       army: 333,
-                                       custom_field: 666,
-                                       assassination : 0,
-                                       sos: 0 } ],
-        ], function(e, d) {
-          it('should sum points, '+d, function() {
-            expect(games.reducePoints(e.brackets, 32, this.coll))
-              .toEqual(e.points);
+      it('should sum points', function() {
+        // uniq
+        expect(games.reducePoints(this.coll))
+          .toEqual({
+            team_tournament : 0,
+            tournament : 111,
+            control: 222,
+            army: 333,
+            custom_field: 666,
+            assassination : 0,
+            sos: 0
           });
-        });
       });
     });
 

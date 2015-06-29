@@ -178,7 +178,7 @@ describe('service', function() {
       });        
     });
 
-    describe('updatePoints(<rounds>, <bracket_start>, <bracket_weight>)', function() {
+    describe('updatePoints(<rounds>)', function() {
       beforeEach(function() {
         this.roundsService = spyOnService('rounds');
       });
@@ -186,13 +186,11 @@ describe('service', function() {
       it('should update points gained in <rounds>', function() {
         var p = player.create({ name: 'toto' });
         var dummy_rounds = [ 'tata' ];
-        var group_index = 8;
-        var bracket_weight = 42;
 
-        expect(player.updatePoints(group_index, bracket_weight, dummy_rounds, p).points)
+        expect(player.updatePoints(dummy_rounds, p).points)
           .toBe('rounds.pointsForPlayer.returnValue');
         expect(this.roundsService.pointsForPlayer)
-          .toHaveBeenCalledWith('toto', 8, 42, dummy_rounds);
+          .toHaveBeenCalledWith('toto', dummy_rounds);
       });
 
       when('player has members', function() {
@@ -204,15 +202,13 @@ describe('service', function() {
             player.create({ name: 'member2' }),
           ];
           var dummy_rounds = [ 'tata' ];
-          var group_index = 8;
-          var bracket_weight = 42;
 
-          player.updatePoints(group_index, bracket_weight, dummy_rounds, p);
+          player.updatePoints(dummy_rounds, p);
 
           expect(this.roundsService.pointsForPlayer)
-            .toHaveBeenCalledWith('member1', 8, 42, dummy_rounds);
+            .toHaveBeenCalledWith('member1', dummy_rounds);
           expect(this.roundsService.pointsForPlayer)
-            .toHaveBeenCalledWith('member2', 8, 42, dummy_rounds);
+            .toHaveBeenCalledWith('member2', dummy_rounds);
         });
       });
     });

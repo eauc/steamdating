@@ -170,10 +170,7 @@ angular.module('srApp.services')
         drop: function(round_index, coll) {
           return R.remove(round_index, 1, coll);
         },
-        pointsForPlayer: function(player_name, group_index, bracket_weight, coll) {
-          var brackets = R.pipe(
-            R.map(roundService.bracketForGroup$(group_index))
-          )(coll);
+        pointsForPlayer: function(player_name, coll) {
           return R.pipe(
             R.map(roundService.gameForPlayer$(player_name)),
             R.map(function(game) {
@@ -188,7 +185,7 @@ angular.module('srApp.services')
               }
               return game;
             }),
-            gamesService.pointsForPlayer$(player_name, brackets, bracket_weight)
+            gamesService.pointsForPlayer$(player_name)
           )(coll);
         },
         gamesForPlayer: function(player_name, coll) {

@@ -95,19 +95,16 @@ angular.module('srApp.services')
                         R.flip(R.difference)(player.lists_played),
                         R.isEmpty)(player);
         },
-        updatePoints: function(group_index, bracket_weight, rounds, player) {
+        updatePoints: function(rounds, player) {
           var ret = player;
           if(playerService.hasMembers(player)) {
             ret = R.assoc('members',
-                          R.map(playerService.updatePoints$(group_index, bracket_weight, rounds),
+                          R.map(playerService.updatePoints$(rounds),
                                 player.members),
                           ret);
           }
           return R.assoc('points',
-                         roundsService.pointsForPlayer(player.name,
-                                                       group_index,
-                                                       bracket_weight,
-                                                       rounds),
+                         roundsService.pointsForPlayer(player.name, rounds),
                          ret);
         },
         updateSoS: function playerUpdateSos(sosFromPlayers, rounds, players, player) {
@@ -151,6 +148,7 @@ angular.module('srApp.services')
     'player',
     'factions',
     'game',
+    'games',
     'round',
     'rounds',
     'ranking',
@@ -158,6 +156,7 @@ angular.module('srApp.services')
     function(playerService,
              factionsService,
              gameService,
+             gamesService,
              roundService,
              roundsService,
              rankingService,
@@ -440,12 +439,11 @@ angular.module('srApp.services')
         },
         updatePoints: function(rounds, coll) {
           return R.pipe(
-            R.mapIndexed(function(group, group_index) {
-              return R.map(playerService.updatePoints$(group_index,
-                                                       group.length/2,
-                                                       rounds),
+            R.map(function(group) {
+              return R.map(playerService.updatePoints$(rounds),
                            group);
             }),
+            playersService.updateBracketPoints$(rounds),
             R.mapIndexed(function(group, group_index, updated_players_without_sos) {
               return R.map(function(player) {
                 return playerService.updateSoS(playersService.sosFromPlayers,
@@ -454,6 +452,48 @@ angular.module('srApp.services')
               }, group);
             })
           )(coll);
+        },
+        updateBracketPoints: function(rounds, coll) {
+          var players_not_droped = playersService.notDropedInRound(R.length(rounds)-1, coll);
+          return R.mapIndexed(function(group, group_index) {
+            if(R.isEmpty(rounds)) return group;
+            
+            var nb_bracket_rounds = roundService.bracketForGroup(group_index, R.last(rounds));
+            if(R.isNil(nb_bracket_rounds)) return group;
+            
+            var games_groups_bracket_size = players_not_droped[group_index].length >>
+                (nb_bracket_rounds);
+            
+            R.pipe(
+              R.last,
+              roundService.gamesForGroup$(group_index),
+              R.chunkAll(games_groups_bracket_size, null),
+              R.chain(function(chunk) {
+                var winners = R.reject(R.isNil, gamesService.winners(chunk));
+                var losers = R.reject(R.isNil, gamesService.losers(chunk));
+                return [winners, losers];
+              }),
+              R.mapIndexed(function(chunk, index, chunks) {
+                var bracket_point = R.length(chunks) - index;
+                R.forEach(function(name) {
+                  var player = R.find(playerService.is$(name), group);
+                  player.points = R.assoc('bracket', bracket_point,
+                                          player.points);
+                }, chunk);
+                return chunk;
+              }),
+              R.flatten,
+              R.difference(R.pluck('name', group)),
+              function(no_result) {
+                R.forEach(function(name) {
+                  var player = R.find(R.propEq('name', name), group);
+                  player.points = R.assoc('bracket', 0,
+                                          player.points);
+                }, no_result);
+              }
+            )(rounds);
+            return group;
+          }, coll);
         },
         sortGroup: function(state, is_bracket, coll) {
           var rankFn = buildRankingFunction(state, is_bracket, coll);

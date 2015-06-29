@@ -320,34 +320,28 @@ angular.module('srApp.services')
     'game',
     function(gameService) {
       var gamesService = {
-        pointsForPlayer: function(player_name, brackets, bracket_weight, games) {
+        pointsForPlayer: function(player_name, games) {
           var ret = R.pipe(
             R.map(gameService.updatePoints),
             R.map(gameService.player$(player_name)),
-            gamesService.reducePoints$(brackets, bracket_weight)
+            gamesService.reducePoints
           )(games);
           return ret;
         },
-        pointsAgainstPlayer: function(player_name, brackets, bracket_weight, games) {
+        pointsAgainstPlayer: function(player_name, games) {
           var ret = R.pipe(
             R.map(gameService.updatePoints),
             R.map(function(game) {
               var opponent_name = gameService.opponentForPlayer(player_name, game);
               return gameService.player(opponent_name, game);
             }),
-            gamesService.reducePoints$(brackets, bracket_weight)
+            gamesService.reducePoints
           )(games);
           return ret;
         },
-        reducePoints: function(brackets, base_weight, results) {
-          return R.reduceIndexed(function(mem, result, result_index) {
+        reducePoints: function(results) {
+          return R.reduce(function(mem, result) {
             return {
-              bracket: ( R.exists(brackets) &&
-                         R.exists(brackets[result_index]) ?
-                         calculateBracketPoints(mem.bracket, result,
-                                                brackets[result_index], base_weight) :
-                         mem.bracket
-                       ),
               team_tournament: mem.team_tournament + (result.team_tournament || 0),
               tournament: mem.tournament + (result.tournament || 0),
               control: mem.control + (result.control || 0),
@@ -357,7 +351,6 @@ angular.module('srApp.services')
               sos: 0
             };
           }, {
-            bracket: 0,
             team_tournament: 0,
             tournament: 0,
             control: 0,

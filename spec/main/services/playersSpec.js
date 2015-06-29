@@ -818,7 +818,7 @@ describe('service', function() {
         ];
 
         this.playerService = spyOnService('player');
-        this.playerService.updatePoints.and.callFake(function(gri,bw,rs,p) {
+        this.playerService.updatePoints.and.callFake(function(rs,p) {
           return R.assoc('points', { updatePoints: 'player.updatePoints.returnValue' }, p);
         });
         this.playerService.updateSoS.and.callFake(function(cbk,rs,ps,p) {
@@ -831,6 +831,10 @@ describe('service', function() {
           [ 'rounds.pointsForPlayer.returnValue' ];
 
         spyOn(players, 'sosFromPlayers').and.returnValue(45);
+        spyOn(players, 'updateBracketPoints').and.callFake(function(rs, ps) {
+          return ps;
+        });
+        players.updateBracketPoints$ = R.curryN(2, players.updateBracketPoints);
       });
 
       it('should update points gained in <rounds>', function() {
@@ -840,20 +844,42 @@ describe('service', function() {
 
         expect(this.playerService.updatePoints.calls.count()).toBe(5);
         expect(this.playerService.updatePoints)
-          .toHaveBeenCalledWith(0, 1.5, dummy_rounds, { name: 'toto1' });
+          .toHaveBeenCalledWith(dummy_rounds, { name: 'toto1' });
         expect(this.playerService.updatePoints)
-          .toHaveBeenCalledWith(0, 1.5, dummy_rounds, { name: 'toto2' });
+          .toHaveBeenCalledWith(dummy_rounds, { name: 'toto2' });
         expect(this.playerService.updatePoints)
-          .toHaveBeenCalledWith(0, 1.5, dummy_rounds, { name: 'toto3' });
+          .toHaveBeenCalledWith(dummy_rounds, { name: 'toto3' });
         expect(this.playerService.updatePoints)
-          .toHaveBeenCalledWith(1, 1, dummy_rounds, { name: 'tata1' });
+          .toHaveBeenCalledWith(dummy_rounds, { name: 'tata1' });
         expect(this.playerService.updatePoints)
-          .toHaveBeenCalledWith(1, 1, dummy_rounds, { name: 'tata2' });
+          .toHaveBeenCalledWith(dummy_rounds, { name: 'tata2' });
 
         expect(res[0][2].points.updatePoints)
           .toBe('player.updatePoints.returnValue');
         expect(res[1][1].points.updatePoints)
           .toBe('player.updatePoints.returnValue');
+      });
+
+      it('should update bracket points gained in <rounds>', function() {
+        var dummy_rounds = [ 'tata' ];
+        var res = players.updatePoints(dummy_rounds,
+                                       this.coll);
+
+        expect(players.updateBracketPoints)
+          .toHaveBeenCalledWith(dummy_rounds, [
+            [ { name : 'toto1', points : { updatePoints : 'player.updatePoints.returnValue',
+                                           sos : 'player.updateSoS.returnValue' } },
+              { name : 'toto2', points : { updatePoints : 'player.updatePoints.returnValue',
+                                           sos : 'player.updateSoS.returnValue' } },
+              { name : 'toto3', points : { updatePoints : 'player.updatePoints.returnValue',
+                                           sos : 'player.updateSoS.returnValue' } }
+            ],
+            [ { name : 'tata1', points : { updatePoints : 'player.updatePoints.returnValue',
+                                           sos : 'player.updateSoS.returnValue' } },
+              { name : 'tata2', points : { updatePoints : 'player.updatePoints.returnValue',
+                                           sos : 'player.updateSoS.returnValue' } }
+            ]
+          ]);
       });
 
       it('should update SoS gained in <rounds>', function() {
@@ -963,6 +989,58 @@ describe('service', function() {
       });
     });
 
+    describe('updateBracketPoints(<rounds>)', function() {
+      beforeEach(function() {
+        this.rounds = [
+          {},
+          { bracket: [ null, 2 ],
+            games: [
+              [ { p1: { name: 'p1', tournament: 1 }, p2: { name: 'p2', tournament: 0 } },
+                { p1: { name: 'p3', tournament: 1 }, p2: { name: 'p4', tournament: 0 } },
+              ],
+              [ { p1: { name: 'p5', tournament: 1 }, p2: { name: 'p6', tournament: 0 } },
+                { p1: { name: 'p7', tournament: 1 }, p2: { name: 'p8', tournament: 0 } },
+                { p1: { name: 'p9', tournament: 1 }, p2: { name: 'p10', tournament: 0 } },
+                { p1: { name: 'p11', tournament: 1 }, p2: { name: 'p12', tournament: 0 } },
+              ]
+            ]
+          }
+        ];
+
+        this.players = [
+          [ { name: 'p1', points: {} }, { name: 'p2', points: {} },
+            { name: 'p3', points: {} }, { name: 'p4', points: {} },
+          ],
+          [ { name: 'p5', points: {} }, { name: 'p6', points: {} },
+            { name: 'p7', points: {} }, { name: 'p8', points: {} },
+            { name: 'p9', points: {} }, { name: 'p10', points: {} },
+            { name: 'p11', points: {} }, { name: 'p12', points: {} },
+          ],
+        ];
+      });
+
+      it('should update bracket points for players', function() {
+        expect(players.updateBracketPoints(this.rounds, this.players))
+          .toEqual([
+            // no bracket, no change
+            [ { name : 'p1', points : {  } },
+              { name : 'p2', points : {  } },
+              { name : 'p3', points : {  } },
+              { name : 'p4', points : {  } }
+            ],
+            [ { name : 'p5', points : { bracket : 4 } },
+              { name : 'p6', points : { bracket : 3 } },
+              { name : 'p7', points : { bracket : 4 } },
+              { name : 'p8', points : { bracket : 3 } },
+              { name : 'p9', points : { bracket : 2 } },
+              { name : 'p10', points : { bracket : 1 } },
+              { name : 'p11', points : { bracket : 2 } },
+              { name : 'p12', points : { bracket : 1 } }
+            ]
+          ]);
+      });
+    });
+    
     describe('sortGroup(<state>, <is_bracket>)', function() {
       when('<state> is not a team tournament', function() {
       }, function() {

@@ -61,9 +61,9 @@ angular.module('srApp.services')
             values: R.pipe(
               R.map(function(sel_entry) {
                 return [
-                  gamesService.pointsForPlayer(selPlayer(sel_entry), null, null,
+                  gamesService.pointsForPlayer(selPlayer(sel_entry),
                                                selGames(sel_entry)),
-                  gamesService.pointsAgainstPlayer(selPlayer(sel_entry), null, null,
+                  gamesService.pointsAgainstPlayer(selPlayer(sel_entry),
                                                    selGames(sel_entry)),
                   selGames(sel_entry).length
                 ];
