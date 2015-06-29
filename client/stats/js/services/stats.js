@@ -43,6 +43,7 @@ angular.module('srAppStats.services')
           return {
             factions: R.pipe(
               R.map(R.path(['state', 'players'])),
+              R.map(playersService.simplePlayers),
               R.map(playersService.countByFaction),
               R.reduce(statsPlayersPerFactionEntryService.sum, {}),
               statsPlayersPerFactionEntryService.count

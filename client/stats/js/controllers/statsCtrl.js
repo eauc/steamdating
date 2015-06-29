@@ -18,21 +18,24 @@ angular.module('srAppStats.controllers')
 
       $scope.factions = R.pipe(
         R.chain(function(s) {
-          return playersService.factions(null, s.state.players);
+          var players = playersService.simplePlayers(s.state.players);
+          return playersService.factions(null, players);
         }),
         R.uniq,
         R.sortBy(R.identity)
       )($scope.state);
       $scope.players = R.pipe(
         R.chain(function(s) {
-          return playersService.names(s.state.players);
+          var players = playersService.simplePlayers(s.state.players);
+          return playersService.names(players);
         }),
         R.uniq,
         R.sortBy(R.identity)
       )($scope.state);
       $scope.casters = R.pipe(
         R.chain(function(s) {
-          return playersService.casters(s.state.players);
+          var players = playersService.simplePlayers(s.state.players);
+          return playersService.casters(players);
         }),
         R.uniqWith(R.useWith(R.eq, R.prop('name'), R.prop('name'))),
         function(cs) {

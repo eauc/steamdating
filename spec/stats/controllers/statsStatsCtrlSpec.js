@@ -28,15 +28,17 @@ describe('controllers', function() {
                            lists: [{ faction: 'scyrah', caster: 'rahn1' }] } ] ]
           } },
           { state: {
-            players: [ [ { name: 's2p1', faction: 'khador',
-                           lists: [{ faction: 'khador', caster: 'sorscha1' }] },
-                         { name: 's2p2', faction: 'menoth',
-                           lists: [{ faction: 'menoth', caster: 'feora1' }] } ] ]
+            players: [ [ { name: 't1', members: [
+              { name: 's2p1', faction: 'khador',
+                lists: [{ faction: 'khador', caster: 'sorscha1' }] },
+              { name: 's2p2', faction: 'menoth',
+                lists: [{ faction: 'menoth', caster: 'feora1' }] }
+            ] } ] ]
           } },
         ];
 
         this.statsService = spyOnService('stats');
-        
+
         $controller('statsCtrl', {
           '$scope': this.scope,
           '$state': this.router_state,
@@ -50,7 +52,7 @@ describe('controllers', function() {
         .toBe('general');
     });
 
-    it('should factions, players & casters list', function() {
+    it('should init factions, players & casters list', function() {
       expect(this.scope.factions).toEqual(['cryx', 'khador', 'menoth', 'scyrah']);
       expect(this.scope.players).toEqual(['s1p1','s1p2','s1p3','s2p1','s2p2']);
       expect(this.scope.casters).toEqual([

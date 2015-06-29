@@ -42,6 +42,9 @@ describe('service', function() {
         this.playersService.countByFaction.and.callFake(function(p) {
           return p+'PerFaction';
         });
+        this.playersService.simplePlayers.and.callFake(function(p) {
+          return p+'Simples';
+        });
         this.statsPlayersPerFactionEntryService = spyOnService('statsPlayersPerFactionEntry');
       });
 
@@ -52,14 +55,15 @@ describe('service', function() {
         ]);
 
         expect(this.playersService.countByFaction)
-          .toHaveBeenCalledWith('players1');
+          .toHaveBeenCalledWith('players1Simples');
         expect(this.playersService.countByFaction)
-          .toHaveBeenCalledWith('players2');
+          .toHaveBeenCalledWith('players2Simples');
 
         expect(this.statsPlayersPerFactionEntryService.sum)
-          .toHaveBeenCalledWith({}, 'players1PerFaction');
+          .toHaveBeenCalledWith({}, 'players1SimplesPerFaction');
         expect(this.statsPlayersPerFactionEntryService.sum)
-          .toHaveBeenCalledWith('statsPlayersPerFactionEntry.sum.returnValue', 'players2PerFaction');
+          .toHaveBeenCalledWith('statsPlayersPerFactionEntry.sum.returnValue',
+                                'players2SimplesPerFaction');
 
         expect(this.statsPlayersPerFactionEntryService.count)
           .toHaveBeenCalledWith('statsPlayersPerFactionEntry.sum.returnValue');
