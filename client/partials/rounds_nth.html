@@ -65,7 +65,7 @@
           <th>Notes</th>
         </tr>
         <tr>
-          <th></th>
+          <th ng-if="::isTeamTournament()"></th>
           <th></th>
           <th ng-if="::state | state:'hasGameCustomField'">
             {{::state.custom_fields.game}}

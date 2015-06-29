@@ -60,7 +60,7 @@
         <tr ng-repeat-start="p in ::rank.players"
             class="
             clickable
-            {{ (p | player:'isDroped') ? 'droped' : '' }}
+            {{ (p | player:'isDroped') ? 'dropped' : '' }}
             "
             ng-click="doEditPlayer(p)">
           <td ng-if="::isTeamTournament()"

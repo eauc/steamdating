@@ -112,14 +112,10 @@ angular.module('srApp.services')
             R.forEach(function(game) {
               var m1_options = R.pipe(
                 getMembers(game.p1.name),
-                // playersService.player$(game.p1.name),
-                // playerService.members,
                 R.pluck('name')
               )(players);
               var m2_options = R.pipe(
                 getMembers(game.p2.name),
-                // playersService.player$(game.p2.name),
-                // playerService.members,
                 R.pluck('name')
               )(players);
 

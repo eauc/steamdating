@@ -271,6 +271,7 @@ angular.module('srApp.controllers')
         var getMembers = function(name) {
           return R.pipe(
             playersService.player$(name),
+            R.defaultTo({}),
             playerService.members
           );
         };

@@ -81,7 +81,7 @@
             ng-click="doGameEdit(r, p.name)"
             class="
             clickable
-            {{::(p | player:'hasDropedInRound':ri) ? 'droped' : ''}};
+            {{::(p | player:'hasDropedInRound':ri) ? 'dropped' : ''}}
             {{::
             (games_by_players[gri][pi][ri] | game:'winForPlayer':p.name) ? 'success' :
             (games_by_players[gri][pi][ri] | game:'lossForPlayer':p.name) ? 'danger' :
