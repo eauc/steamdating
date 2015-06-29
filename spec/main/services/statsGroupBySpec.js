@@ -34,8 +34,8 @@ describe('service', function() {
       beforeEach(function() {
         this.state = {
           players: [[
-            { name: 'p1', faction: 'p1Faction' },
-            { name: 'p2', faction: 'p2Faction' },
+            { name: 't1', members: [ { name: 'p1', faction: 'p1Faction' },
+                                     { name: 'p2', faction: 'p2Faction' } ] },
             { name: 'p3', faction: 'p3Faction' },
           ]]
         };

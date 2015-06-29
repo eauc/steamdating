@@ -29,7 +29,7 @@ angular.module('srApp.services')
                          selGames,
                          R.groupBy(function(game) {
                            var opp_name = gameService.opponentForPlayer(selPlayer(sel_entry), game);
-                           var opp = R.defaultTo({}, playersService.player(opp_name, state.players));
+                           var opp = R.defaultTo({}, playersService.playerFull(opp_name, state.players));
                            return s.capitalize(R.defaultTo('NULL', R.prop('faction', opp)));
                          }),
                          R.omit(['NULL'])
