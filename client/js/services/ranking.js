@@ -8,7 +8,7 @@ angular.module('srApp.services')
           SR: {
             'Baseline': {
               player: '((tp*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
-              team: '(((ttp*team_size*n_rounds+tp)*n_players*n_players+sos)*5*n_rounds+cp)*100*n_rounds+ap',
+              team: '(((ttp*n_players*n_players+sos)*team_size*n_rounds+tp)*5*n_rounds+cp)*100*n_rounds+ap',
             },
             'Assassin Scoring': {
               player: '(tp*n_rounds+ck)*5*n_rounds+cp',
