@@ -2,24 +2,47 @@
   <form class="form">
     <fieldset style="margin-top:10px">
       <legend>Currently Loaded Files</legend>
-      <button class="btn btn-default"
-              ng-click="doReset()">
-        Clear List
-      </button>
-      <table class="table">
+      <table class="table table-hover"
+             ng-hide="state.length === 0">
         <tr>
-          <th>Name</th>
-          <td></td>
+          <th>
+            Name
+          </th>
         </tr>
-        <tr ng-repeat="(fi,f) in state">
+        <tr ng-repeat="(fi,f) in state"
+            ng-click="doStateSelection(fi)"
+            class="
+            clickable 
+            {{selection.state === fi ? 'selected' : ''}}
+            ">
           <td>{{::f.name}}</td>
+        </tr>
+        <tr>
           <td>
             <button class="btn btn-default"
-                    ng-click="doDropFile(fi)">
+                    ng-hide="state.length === 0"
+                    ng-click="doReset()">
               <span class="glyphicon glyphicon-trash"></span>
-              Drop
+              Drop All
             </button>
-          </td>
+          <span class="hint"
+                ng-hide="hasSelection('state')">Select data...</span>
+          <span ng-show="hasSelection('state')">
+            <button class="btn btn-default"
+                    ng-click="doDropFile(selection.state)">
+              <span class="glyphicon glyphicon-trash"></span>
+              Drop Selection
+            </button>
+            <button class="btn btn-default"
+                    ng-click="doLoadInSteamDating(selection.state)">
+              <span class="glyphicon glyphicon-open"></span>
+              Load in SteamDating
+            </button>
+            <a ng-href="{{state_export.url}}"
+               download="{{state_export.name}}">
+              Download File
+            </a>
+          </span>
         </tr>
       </table>
     </fieldset>
@@ -40,21 +63,33 @@
       </div>
       <div class="form-group">
         <label>or Load file from server :</label>
-      <table class="table">
+      <table class="table table-hover">
         <tr>
-          <th>Name</th>
-          <td></td>
+          <th colspan="2">Name</th>
         </tr>
-        <tr ng-repeat="(fi,f) in server_results">
+        <tr ng-repeat="(fi,f) in server_results"
+            ng-click="doServerSelection(fi)"
+            class="
+            clickable
+            {{selection.server === fi ? 'selected' : ''}}
+            ">
           <td>{{::f.name}}</td>
           <td>
+            <span ng-show="f.loaded">Loaded</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2"
+              class="hint"
+              ng-hide="hasSelection('server')">Select a file...</td>
+          <td colspan="2"
+              ng-show="hasSelection('server')">
             <button class="btn btn-default"
-                    ng-click="doLoadFromServer(fi)"
-                    ng-hide="f.loaded">
+                    ng-click="doLoadFromServer(selection.server)"
+                    ng-disabled="server_results[selection.server].loaded">
               <span class="glyphicon glyphicon-open"></span>
               Load
             </button>
-            <span ng-show="f.loaded">Loaded</span>
           </td>
         </tr>
       </table>

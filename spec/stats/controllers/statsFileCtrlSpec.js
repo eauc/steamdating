@@ -3,6 +3,12 @@
 describe('controllers', function() {
 
   beforeEach(function() {
+    this.windowService = {
+      location: {}
+    };
+    module({
+      '$window': this.windowService,
+    });
     module('srApp.services');
     module('srAppStats.services');
     module('srApp.directives');
@@ -34,7 +40,11 @@ describe('controllers', function() {
         this.scope.resetState = jasmine.createSpy('resetState');
         this.scope.pushState = jasmine.createSpy('pushState');
         this.scope.dropState = jasmine.createSpy('dropState');
-
+        this.scope.state = [
+          { name: 'result1' },
+          { name: 'other' }
+        ];
+        
         this.fileImportService = spyOnService('fileImport');
         mockReturnPromise(this.fileImportService.read);
 
@@ -42,6 +52,7 @@ describe('controllers', function() {
         mockReturnPromise(this.promptService.prompt);
 
         this.stateService = spyOnService('state');
+        this.fileExportService = spyOnService('fileExport');
 
         $controller('fileCtrl', { 
           '$scope': this.scope,
@@ -53,10 +64,22 @@ describe('controllers', function() {
 
     it('should read server results list', function() {
       expect(this.scope.server_results)
-        .toEqual(this.server_results);
+        .toEqual([
+          // detect already loaded server results
+          { name : 'result1', url : 'url1', loaded : true },
+          { name : 'result2', url : 'url2' }
+        ]);
     });
 
     describe('doReset()', function() {
+      beforeEach(function() {
+        this.scope.server_results = [
+          { name: 'result1', loaded: true },
+          { name: 'result2', loaded: false },
+          { name: 'result3' },
+        ];
+      });
+      
       it('should ask user for confirmation', function() {
         this.scope.doReset();
 
@@ -71,6 +94,15 @@ describe('controllers', function() {
       }, function() {
         it('should reset state', function() {
           expect(this.scope.resetState).toHaveBeenCalled();
+        });
+        
+        it('should reset server results loaded flags', function() {
+          expect(this.scope.server_results)
+            .toEqual([
+              { name : 'result1', loaded : false },
+              { name : 'result2', loaded : false },
+              { name : 'result3', loaded : false }
+            ]);
         });
       });
     });
@@ -104,25 +136,145 @@ describe('controllers', function() {
       });
     });
 
-    describe('doLoadFromServer(<index>)', function() {
+    when('doStateSelection(<index>)', function() {
+      this.scope.doStateSelection(this.index);
+    }, function() {
       beforeEach(function() {
         this.index = 1;
+        this.scope.state = [
+          { name: 'result1', state: 'state1' },
+          { name: 'result2', state: 'state2' },
+        ];
+        this.scope.state_export = {
+          url: 'previous'
+        };
+        spyOn(this.scope, 'doDropFile');
+      });
+
+      when('<index> is not already selected', function() {
+        this.scope.selection.state = null;
+      }, function() {
+        it('should select <index>', function() {
+          expect(this.scope.selection.state)
+            .toBe(this.index);
+        });
+
+        it('should clean previous export url', function() {
+          expect(this.fileExportService.cleanup)
+            .toHaveBeenCalledWith('previous');
+        });
+
+        it('should export selected file data', function() {
+          expect(this.fileExportService.generate)
+            .toHaveBeenCalledWith('json', 'state2');
+          expect(this.scope.state_export)
+            .toEqual({
+              name: 'result2.json',
+              url: 'fileExport.generate.returnValue'
+            });
+        });
+      });
+
+      when('<index> is already selected', function() {
+        this.scope.selection.state = this.index;
+      }, function() {
+        it('should drop selected <index>', function() {
+          expect(this.scope.doDropFile)
+            .toHaveBeenCalledWith(this.index);
+        });
+      });
+    });
+
+    when('doLoadInSteamDating(<index>)', function() {
+      this.scope.doLoadInSteamDating(this.index);
+    }, function() {
+      beforeEach(function() {
+        this.index = 1;
+        this.scope.state = [
+          { name: 'result1', state: 'state1' },
+          { name: 'result2', state: 'state2' },
+        ];
+      });
+      
+      it('should ask user for confirmation', function() {
+        expect(this.promptService.prompt)
+          .toHaveBeenCalledWith('confirm', jasmine.any(String));
+      });
+
+      describe('when user confirms', function() {
+        it('should store <index> state', function() {
+          this.promptService.prompt.resolve();
+          expect(this.stateService.store)
+            .toHaveBeenCalledWith('state2');
+        });
+
+        it('should load steamdating', function() {
+          this.promptService.prompt.resolve();
+          expect(this.windowService.location.href)
+            .toBe('/index.html');
+        });
+      });
+    });
+
+    when('doServerSelection(<index>)', function() {
+      this.scope.doServerSelection(this.index);
+    }, function() {
+      beforeEach(function() {
+        this.index = 1;
+        spyOn(this.scope, 'doLoadFromServer');
+      });
+
+      when('<index> is not already selected', function() {
+        this.scope.selection.server = null;
+      }, function() {
+        it('should select <index>', function() {
+          expect(this.scope.selection.server)
+            .toBe(this.index);
+        });
+      });
+
+      when('<index> is already selected', function() {
+        this.scope.selection.server = this.index;
+      }, function() {
+        it('should load selected <index>', function() {
+          expect(this.scope.doLoadFromServer)
+            .toHaveBeenCalledWith(this.index);
+        });
+      });
+    });
+
+    when('doLoadFromServer(<index>)', function() {
+      this.scope.doLoadFromServer(this.index);
+    }, function() {
+      beforeEach(function() {
+        this.index = 1;
+      });
+
+      when('data is not already loaded', function() {
         this.$httpBackend.expectGET('url2')
           .respond({ result: 2 });
-        this.scope.doLoadFromServer(this.index);
-        this.$httpBackend.flush();
+      }, function() {
+        it('should migrate state data', function() {
+          this.$httpBackend.flush();
+          expect(this.stateService.create)
+            .toHaveBeenCalledWith({ result: 2 });
+        });
+        
+        it('should push data into state', function() {
+          this.$httpBackend.flush();
+          expect(this.scope.pushState).toHaveBeenCalledWith({
+            name: 'result2',
+            state: 'state.create.returnValue',
+            from_server: this.index
+          });
+        });
       });
 
-      it('should migrate state data', function() {
-        expect(this.stateService.create)
-          .toHaveBeenCalledWith({ result: 2 });
-      });
-
-      it('should push data into state', function() {
-        expect(this.scope.pushState).toHaveBeenCalledWith({
-          name: 'result2',
-          state: 'state.create.returnValue',
-          from_server: this.index
+      when('data is already loaded', function() {
+        this.scope.server_results[this.index].loaded = true;
+      }, function() {
+        it('should do nothing', function() {
+          expect(this.scope.pushState).not.toHaveBeenCalled();
         });
       });
     });

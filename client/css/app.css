@@ -163,3 +163,16 @@
 #rounds-list .register-btn {
     margin-bottom: 5px;
 }
+
+/******************************************************/
+/* statsFile
+/******************************************************/
+
+.table-hover > tbody > tr.selected {
+    background-color: #DEDEDE;
+}
+
+.hint {
+    color: #999;
+    font-style: italic;
+}
