@@ -163,8 +163,12 @@ angular.module('srApp.services')
       var srPairingService = {
         sortPlayers: function(players) {
           var players_grouped_by_tp;
+          var is_team_tournament = playersService.hasTeam(players);
+          var group_key = (is_team_tournament ?
+                           'team_tournament' :
+                           'tournament');
           return R.pipe(
-            R.groupBy(R.path(['points','tournament'])),
+            R.groupBy(R.path(['points',group_key])),
             R.tap(function(players) { players_grouped_by_tp = players; }),
             R.keys,
             R.sortBy(function(key) { return parseFloat(key); }),
@@ -176,8 +180,12 @@ angular.module('srApp.services')
         },
         sortAvailablePlayersFor: function(available_players, p1) {
           var players_grouped_by_tp;
+          var is_team_tournament = playersService.hasTeam(available_players);
+          var group_key = (is_team_tournament ?
+                           'team_tournament' :
+                           'tournament');
           return R.pipe(
-            R.groupBy(R.path(['points','tournament'])),
+            R.groupBy(R.path(['points',group_key])),
             R.tap(function(players) { players_grouped_by_tp = players; }),
             R.keys,
             R.sortBy(function(key) { return "undefined" === key ? -1 : parseFloat(key); }),
