@@ -6,9 +6,9 @@
     "hue": [210,75],
     "casters": {
       "blaize1": {
-       "name": "Constance Blaize, Knights of the Prophet"
+        "name": "Constance Blaize, Knights of the Prophet"
       },
-      "siege1": {
+      "brisbane1": {
         "name": "Major Markus 'Siege' Brisbane"
       },
       "caine1": {
@@ -25,6 +25,9 @@
       },
       "haley2": {
         "name": "Major Victoria Haley"
+      },
+      "haley3": {
+        "name": "Major Prime Victoria Haley"
       },
       "kraye1": {
         "name": "Captain Jeremiah Kraye"
@@ -62,6 +65,21 @@
     "color" : "#ecc76d",
     "hue": [60,75],
     "casters": {
+      "amon1": {
+        "name": "High Allegiant Amon Ad-Raza"
+      },
+      "anson1": {
+        "name": "Anson Durst, Rock of the Faith"
+      },
+      "feora1": {
+        "name": "Feora, Priestess of the Flame"
+      },
+      "feora2": {
+        "name": "Feora, Protector of the Flame"
+      },
+      "harbinger1": {
+        "name": "Harbinger of Menoth"
+      },
       "kreoss1": {
         "name": "High Exemplar Kreoss"
       },
@@ -77,29 +95,17 @@
       "reclaimer2": {
         "name": "Testament of Menoth"
       },
-      "severius1": {
-        "name": "Grand Scrutator Severius"
-      },
-      "severius2": {
-        "name": "Hierarch Severius"
-      },
-      "feora1": {
-        "name": "Feora, Priestess of the Flame"
-      },
-      "feora2": {
-        "name": "Feora, Protector of the Flame"
-      },
-      "amon1": {
-        "name": "High Allegiant Amon Ad-Raza"
-      },
-      "harbinger1": {
-        "name": "Harbinger of Menoth"
-      },
       "reznik1": {
         "name": "High Executioner Servath Reznik"
       },
       "reznik2": {
         "name": "Servath Reznik, Wrath of Ages"
+      },
+      "severius1": {
+        "name": "Grand Scrutator Severius"
+      },
+      "severius2": {
+        "name": "Hierarch Severius"
       },
       "thyra1": {
         "name": "Thyra, Flame of Sorrow"
@@ -160,6 +166,9 @@
       },
       "zerkova1": {
         "name": "Koldun Kommander Aleksandra Zerkova"
+      },
+      "zerkova2": {
+        "name": "Obavnik Kommander Zerkova and Reaver Guard"
       }
     },
     "icon": "khador.png"
@@ -184,6 +193,9 @@
       },
       "deneghra2": {
         "name": "Wraith Witch Deneghra"
+      },
+      "deneghra3": {
+        "name": "Deneghra, the Soul Weaver"
       },
       "goreshade1": {
         "name": "Goreshade the Bastard"
@@ -245,6 +257,9 @@
       "ravyn1": {
         "name": "Ravyn, Eternal Light"
       },
+      "thyron1": {
+        "name": "Thyron, Sword of Truth"
+      },
       "vyros1": {
         "name": "Dawnlord Vyros"
       },
@@ -290,6 +305,9 @@
       "hoarluk2": {
         "name": "Hoarluk Doomshaper, Rage of Dhunia"
       },
+      "hoarluk3": {
+        "name": "Hoarluk Doomshaper, Dire Prophet"
+      },
       "jarl1": {
         "name": "Jarl Skuld, Devil Of Thornwood"
       },
@@ -331,6 +349,9 @@
       },
       "kromac1": {
         "name": "Kromac the Ravenous"
+      },
+      "kromac2": {
+        "name": "Kromac, Champion of the Wurm"
       },
       "krueger1": {
         "name": "Krueger the Stormwrath"
@@ -394,6 +415,9 @@
       },
       "zaal1": {
         "name": "Supreme Aptimus Zaal & Kovaas"
+      },
+      "zaal2": {
+        "name": "Zaal, the Ancestral Advocate"
       }
     },
     "icon": "skorne.png"
@@ -431,6 +455,9 @@
       "saeryn1": {
         "name": "Saeryn, Omen of Everblight"
       },
+      "saeryn&rhyas2": {
+        "name": "Saeryn & Rhyas, Talons of Everblight"
+      },
       "thagrosh1": {
         "name": "Thagrosh, Prophet of Everblight"
       },
@@ -459,13 +486,13 @@
         "name": "Captain Bartolo Montador"
       },
       "blaize1": {
-       "name": "Constance Blaize, Knights of the Prophet"
+        "name": "Constance Blaize, Knights of the Prophet"
+      },
+      "cyphon1": {
+        "name": "Cognifex Cyphon"
       },
       "damiano1": {
         "name": "Captain Damiano"
-      },
-      "exulon1": {
-        "name": "Exulon Thexus"
       },
       "fiona1": {
         "name": "Fiona the Black"
@@ -490,6 +517,9 @@
       },
       "shae1": {
         "name": "Captain Phinneus Shae"
+      },
+      "thexus1": {
+        "name": "Exulon Thexus"
       }
     },
     "icon": "mercs.png"
